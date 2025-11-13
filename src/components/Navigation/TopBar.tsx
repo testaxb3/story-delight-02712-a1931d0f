@@ -15,18 +15,13 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
-import { useTheme } from 'next-themes';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function TopBar() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { activeChild, childProfiles, setActiveChild, onboardingRequired } = useChildProfiles();
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const { theme, toggleTheme } = useTheme();
 
   const profileInitials = useMemo(() => {
     if (user?.user_metadata?.full_name) {
@@ -144,14 +139,14 @@ export function TopBar() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+            className="rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
           >
-            {mounted && theme === 'dark' ? (
-              <Sun className="h-5 w-5" />
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5 transition-transform" />
             ) : (
-              <Moon className="h-5 w-5" />
+              <Moon className="h-5 w-5 transition-transform" />
             )}
           </Button>
 

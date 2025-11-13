@@ -25,7 +25,7 @@
     --secondary: 280 70% 75%;
     --secondary-foreground: 0 0% 100%;
     --muted: 250 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 20% 40%;  /* Increased contrast from 47% to 40% */
     --accent: 340 75% 65%;
     --accent-foreground: 0 0% 100%;
     --success: 150 60% 55%;
@@ -83,7 +83,7 @@
     --secondary: 217 33% 20%;         /* #2d3748 - Subtle gray-blue */
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 16%;             /* #1f2937 - Muted surface */
-    --muted-foreground: 215 20% 65%;  /* #94a3b8 - Slate-400 */
+    --muted-foreground: 215 25% 75%;  /* Increased contrast from 65% to 75% */
     --accent: 340 75% 65%;            /* Mantém accent vibrante */
     --accent-foreground: 0 0% 100%;
     --success: 150 60% 55%;

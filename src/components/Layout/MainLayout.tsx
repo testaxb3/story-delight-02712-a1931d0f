@@ -11,12 +11,12 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-background pb-16 pt-16">
+    <div className="min-h-screen bg-background pb-20 pt-16 transition-colors duration-300">
       {!hideTopBar && <TopBar />}
       <main className={
         fullWidth
           ? ''
-          : `container mx-auto px-4 ${noPaddingTop ? 'pb-6' : 'py-6'}`
+          : `container mx-auto px-4 sm:px-6 ${noPaddingTop ? 'pb-8' : 'py-8'} space-y-6`
       }>
         {children}
       </main>
