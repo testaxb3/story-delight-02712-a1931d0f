@@ -17,6 +17,7 @@ import { validateMarkdown } from '@/utils/markdownValidator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ChaptersPreview } from './ChaptersPreview';
+import { TemplateGuideModal } from './TemplateGuideModal';
 
 interface BonusFormModalProps {
   open: boolean;
@@ -76,6 +77,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   const [ebookUploading, setEbookUploading] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [parsedChapters, setParsedChapters] = useState<any[]>([]);
+  const [showTemplateGuide, setShowTemplateGuide] = useState(false);
 
   // Load bonus data when editing
   useEffect(() => {
@@ -642,6 +644,46 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
 
       {formData.category === 'ebook' && (
         <TabsContent value="upload" className="space-y-4 mt-4">
+          {/* Template Download */}
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Upload className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm mb-1">Template de Ebook</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Use nosso template completo com 10 capítulos de exemplo e instruções detalhadas.
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = '/ebook-template.md';
+                      link.download = 'ebook-template.md';
+                      link.click();
+                    }}
+                    className="gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Baixar Template
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowTemplateGuide(true)}
+                  >
+                    Ver Guia
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="markdown-file">Upload Markdown File</Label>
             <Input
@@ -777,5 +819,12 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         </form>
       </DialogContent>
     </Dialog>
+
+    {/* Template Guide Modal */}
+    <TemplateGuideModal
+      open={showTemplateGuide}
+      onOpenChange={setShowTemplateGuide}
+    />
+  </>
   );
 }
