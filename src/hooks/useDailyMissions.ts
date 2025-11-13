@@ -182,23 +182,31 @@ export function useDailyMissions(userId?: string, childBrainType?: 'INTENSE' | '
             .eq('date', today),
 
           // Videos watched (you might not have this table, so handle gracefully)
-          supabase
-            .from('user_activity')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', userId)
-            .eq('activity_type', 'video_watched')
-            .gte('created_at', `${today}T00:00:00`)
-            .then(r => r)
-            .catch(() => ({ count: 0, error: null })),
+          (async () => {
+            try {
+              return await supabase
+                .from('user_activity')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .eq('activity_type', 'video_watched')
+                .gte('created_at', `${today}T00:00:00`);
+            } catch {
+              return { count: 0, error: null };
+            }
+          })(),
 
           // Community posts today
-          supabase
-            .from('community_posts')
-            .select('id', { count: 'exact', head: true })
-            .eq('user_id', userId)
-            .gte('created_at', `${today}T00:00:00`)
-            .then(r => r)
-            .catch(() => ({ count: 0, error: null })),
+          (async () => {
+            try {
+              return await supabase
+                .from('community_posts')
+                .select('id', { count: 'exact', head: true })
+                .eq('user_id', userId)
+                .gte('created_at', `${today}T00:00:00`);
+            } catch {
+              return { count: 0, error: null };
+            }
+          })(),
         ]);
 
         const scriptsUsedToday = scriptsResult.count || 0;

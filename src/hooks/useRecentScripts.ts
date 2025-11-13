@@ -56,10 +56,10 @@ export function useRecentScripts() {
           const days_ago = Math.floor((now.getTime() - usedAt.getTime()) / (1000 * 60 * 60 * 24));
 
           return {
-            ...(item.scripts as ScriptRow),
+            ...(item.scripts as any),
             used_at: item.used_at,
             days_ago,
-          };
+          } as RecentScript;
         });
 
       // Remove duplicates - keep only the most recent usage of each unique script

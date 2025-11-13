@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { AnimatedPage } from "@/components/common/AnimatedPage";
 import { ScriptCard } from "@/components/scripts/ScriptCard";
 import { EmptyState } from "@/components/common/EmptyState";

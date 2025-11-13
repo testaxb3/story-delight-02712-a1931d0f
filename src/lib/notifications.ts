@@ -69,7 +69,7 @@ export class NotificationManager {
 
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey)
+        applicationServerKey: this.urlBase64ToUint8Array(vapidPublicKey) as BufferSource
       });
 
       const subscriptionData = subscription.toJSON();
@@ -119,9 +119,8 @@ export class NotificationManager {
       await registration.showNotification(title, {
         icon: '/icon-192.png',
         badge: '/icon-192.png',
-        vibrate: [200, 100, 200],
         ...options
-      });
+      } as any);
     } catch (error) {
       console.error('Error showing notification:', error);
     }

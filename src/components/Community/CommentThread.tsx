@@ -13,6 +13,7 @@ type PostComment = Database['public']['Tables']['post_comments']['Row'] & {
     email: string | null;
     photo_url: string | null;
   } | null;
+  parent_comment_id?: string | null;
 };
 
 interface CommentThreadProps {

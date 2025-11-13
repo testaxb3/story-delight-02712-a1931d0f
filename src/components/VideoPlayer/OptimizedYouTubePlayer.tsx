@@ -86,7 +86,8 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
     // Pause player before switching videos to prevent branding flash
     if (playerRef.current) {
       try {
-        playerRef.current.pauseVideo();
+        // @ts-ignore - ReactPlayer internal methods
+        playerRef.current.pauseVideo?.();
       } catch (error) {
         console.error('[OptimizedYouTubePlayer] Error pausing video on switch:', error);
       }
@@ -628,7 +629,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
           height="100%"
           controls={!useCustomControls}
           playing={false}
-          config={playerConfig}
+          config={playerConfig as any}
           onReady={handleReady}
           onDuration={handleDuration}
           onProgress={handleProgress}

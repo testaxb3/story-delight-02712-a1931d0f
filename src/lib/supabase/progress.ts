@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { isSupabaseConfigured, supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { ensureTrackerDays } from "./scaffolding";

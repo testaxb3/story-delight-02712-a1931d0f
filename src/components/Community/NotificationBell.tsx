@@ -11,9 +11,15 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useNavigate } from 'react-router-dom';
-import type { Database } from '@/integrations/supabase/types';
-
-type Notification = Database['public']['Tables']['notifications']['Row'];
+type Notification = {
+  id: string;
+  user_id: string;
+  type: string;
+  content: string | null;
+  read: boolean;
+  metadata: any;
+  created_at: string;
+};
 
 interface NotificationBellProps {
   userId: string | null;
