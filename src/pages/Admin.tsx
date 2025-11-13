@@ -8,6 +8,7 @@ import { AdminPDFsTab } from '@/components/Admin/AdminPDFsTab';
 import { AdminVideosTab } from '@/components/Admin/AdminVideosTab';
 import { AdminAnalyticsTab } from '@/components/Admin/AdminAnalyticsTab';
 import { AdminNotificationsTab } from '@/components/Admin/AdminNotificationsTab';
+import { AdminEbooksTab } from '@/components/Admin/AdminEbooksTab';
 import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,7 +26,8 @@ import {
   TrendingUp,
   Bell,
   DollarSign,
-  Gift
+  Gift,
+  Book
 } from 'lucide-react';
 
 export default function Admin() {
@@ -197,7 +199,7 @@ export default function Admin() {
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-8 w-full h-auto p-2 bg-muted/50">
+            <TabsList className="grid grid-cols-9 w-full h-auto p-2 bg-muted/50">
               <TabsTrigger
                 value="feed"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
@@ -301,6 +303,19 @@ export default function Admin() {
                   </span>
                 </div>
               </TabsTrigger>
+
+              <TabsTrigger
+                value="ebooks"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Book className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Ebooks</span>
+                  <span className="text-xs bg-teal-500 text-white px-2 py-0.5 rounded-full">
+                    3
+                  </span>
+                </div>
+              </TabsTrigger>
             </TabsList>
 
             <div className="p-6">
@@ -334,6 +349,10 @@ export default function Admin() {
 
               <TabsContent value="bonuses" className="mt-0">
                 <AdminBonusesTab onContentChanged={fetchCounts} />
+              </TabsContent>
+
+              <TabsContent value="ebooks" className="mt-0">
+                <AdminEbooksTab />
               </TabsContent>
             </div>
           </Tabs>

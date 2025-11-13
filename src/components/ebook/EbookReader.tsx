@@ -14,13 +14,26 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 
 interface EbookReaderProps {
   chapters: Chapter[];
+  initialChapter?: number;
+  completedChapters?: Set<number>;
+  onChapterChange?: (index: number) => void;
+  onChapterComplete?: (index: number) => void;
   onClose?: () => void;
 }
 
-export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
-  const [currentChapterIndex, setCurrentChapterIndex] = useState(0);
+export const EbookReader = ({ 
+  chapters, 
+  initialChapter = 0,
+  completedChapters: externalCompleted,
+  onChapterChange,
+  onChapterComplete,
+  onClose 
+}: EbookReaderProps) => {
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(initialChapter);
   const [fontSize, setFontSize] = useState(1);
-  const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
+  const [completedChapters, setCompletedChapters] = useState<Set<number>>(
+    externalCompleted || new Set()
+  );
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentChapter = chapters[currentChapterIndex];
@@ -45,10 +58,13 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
       const documentHeight = document.documentElement.scrollHeight;
 
       if (scrollPosition >= documentHeight - 100) {
-        const newCompleted = new Set(completedChapters);
-        newCompleted.add(currentChapterIndex);
-        setCompletedChapters(newCompleted);
-        localStorage.setItem("ebook-completed", JSON.stringify(Array.from(newCompleted)));
+        if (!completedChapters.has(currentChapterIndex)) {
+          const newCompleted = new Set(completedChapters);
+          newCompleted.add(currentChapterIndex);
+          setCompletedChapters(newCompleted);
+          localStorage.setItem("ebook-completed", JSON.stringify(Array.from(newCompleted)));
+          onChapterComplete?.(currentChapterIndex);
+        }
       }
     };
 
@@ -58,20 +74,25 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
 
   const handleNext = () => {
     if (currentChapterIndex < chapters.length - 1) {
-      setCurrentChapterIndex(currentChapterIndex + 1);
+      const newIndex = currentChapterIndex + 1;
+      setCurrentChapterIndex(newIndex);
+      onChapterChange?.(newIndex);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handlePrevious = () => {
     if (currentChapterIndex > 0) {
-      setCurrentChapterIndex(currentChapterIndex - 1);
+      const newIndex = currentChapterIndex - 1;
+      setCurrentChapterIndex(newIndex);
+      onChapterChange?.(newIndex);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const handleChapterSelect = (index: number) => {
     setCurrentChapterIndex(index);
+    onChapterChange?.(index);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
