@@ -35,7 +35,7 @@ export default function Bonuses() {
 
   // Fetch bonuses and ebook progress from Supabase
   const { data: allBonuses = [], isLoading, error } = useBonuses();
-  const { progressMap, isLoading: isLoadingProgress } = useUserEbooksProgress();
+  const { progressMap, titleProgressMap, isLoading: isLoadingProgress } = useUserEbooksProgress();
   const { ebooks } = useEbooks();
 
   // Calculate category counts
@@ -96,10 +96,15 @@ export default function Bonuses() {
           ebookId = ebookByBonusId.get(bonus.id);
         }
 
-        // Priority 3: Match by normalized title
+        // Priority 3: Match by normalized title using user's progress data
         if (!ebookId) {
           const key = bonus.title?.toLowerCase().trim();
-          if (key) ebookId = ebookByTitle.get(key);
+          if (key) {
+            const pct = titleProgressMap.get(key);
+            if (pct && pct > 0) {
+              return { ...bonus, progress: pct };
+            }
+          }
         }
 
         if (ebookId) {
