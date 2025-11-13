@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "./ProgressBar";
@@ -15,18 +15,22 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 interface EbookReaderProps {
   chapters: Chapter[];
   initialChapter?: number;
+  initialScrollPosition?: number;
   completedChapters?: Set<number>;
   onChapterChange?: (index: number) => void;
   onChapterComplete?: (index: number) => void;
+  onScrollPositionChange?: (position: number) => void;
   onClose?: () => void;
 }
 
 export const EbookReader = ({ 
   chapters, 
   initialChapter = 0,
+  initialScrollPosition = 0,
   completedChapters: externalCompleted,
   onChapterChange,
   onChapterComplete,
+  onScrollPositionChange,
   onClose 
 }: EbookReaderProps) => {
   if (!chapters || chapters.length === 0) {
@@ -44,6 +48,10 @@ export const EbookReader = ({
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(
     externalCompleted || new Set()
   );
+  const [showHeader, setShowHeader] = useState(true);
+  const lastScrollY = useRef(0);
+  const scrollTimeout = useRef<NodeJS.Timeout>();
+  
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentChapter = chapters[currentChapterIndex];
@@ -63,12 +71,31 @@ export const EbookReader = ({
     }
   }, []);
 
-  // Mark chapter as completed when user reaches the end
+  // Restore scroll position when component mounts
+  useEffect(() => {
+    if (initialScrollPosition > 0) {
+      setTimeout(() => {
+        window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
+      }, 100);
+    }
+  }, []);
+
+  // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + window.innerHeight;
+      const currentScrollY = window.scrollY;
+      const scrollPosition = currentScrollY + window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
 
+      // Smart header: show when scrolling up, hide when scrolling down
+      if (currentScrollY < lastScrollY.current || currentScrollY < 100) {
+        setShowHeader(true);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setShowHeader(false);
+      }
+      lastScrollY.current = currentScrollY;
+
+      // Mark chapter as completed when reaching the end
       if (scrollPosition >= documentHeight - 100) {
         if (!completedChapters.has(currentChapterIndex)) {
           const newCompleted = new Set(completedChapters);
@@ -78,11 +105,20 @@ export const EbookReader = ({
           onChapterComplete?.(currentChapterIndex);
         }
       }
+
+      // Debounce scroll position save
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+      scrollTimeout.current = setTimeout(() => {
+        onScrollPositionChange?.(Math.floor(currentScrollY));
+      }, 1000);
     };
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [currentChapterIndex, completedChapters]);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+    };
+  }, [currentChapterIndex, completedChapters, onChapterComplete, onScrollPositionChange]);
 
   const handleNext = () => {
     if (currentChapterIndex < chapters.length - 1) {
@@ -114,9 +150,15 @@ export const EbookReader = ({
 
   return (
     <div className="min-h-screen bg-background" style={{ fontSize: `${fontSize}rem` }}>
-        <div className="max-w-3xl mx-auto px-6 py-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
+        {/* Fixed Header with Smart Visibility */}
+        <div 
+          className={`
+            fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border
+            transition-transform duration-300
+            ${showHeader ? 'translate-y-0' : '-translate-y-full'}
+          `}
+        >
+          <div className="max-w-3xl mx-auto px-6 py-4 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
@@ -152,13 +194,16 @@ export const EbookReader = ({
               />
             </div>
           </div>
+        </div>
         
-        {/* Progress */}
-        <ProgressBar
-          current={currentChapterIndex + 1}
-          total={chapters.length}
-          percentage={progress}
-        />
+        {/* Content with top padding to account for fixed header */}
+        <div className="max-w-3xl mx-auto px-6 pt-24 pb-8">
+          {/* Progress */}
+          <ProgressBar
+            current={currentChapterIndex + 1}
+            total={chapters.length}
+            percentage={progress}
+          />
         
         {/* Chapter Cover */}
         <div className="mt-12">
@@ -188,7 +233,7 @@ export const EbookReader = ({
           hasPrevious={currentChapterIndex > 0}
           hasNext={currentChapterIndex < chapters.length - 1}
         />
-        </div>
       </div>
+    </div>
   );
 };

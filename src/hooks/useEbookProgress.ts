@@ -91,6 +91,29 @@ export function useEbookProgress(ebookId: string | undefined) {
     },
   });
 
+  // Update scroll position
+  const updateScrollPosition = useMutation({
+    mutationFn: async (scrollPosition: number) => {
+      if (!ebookId || !user) throw new Error('Missing required data');
+
+      const { error } = await supabase
+        .from('user_ebook_progress')
+        .upsert({
+          user_id: user.id,
+          ebook_id: ebookId,
+          scroll_position: scrollPosition,
+          last_read_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,ebook_id',
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
+    },
+  });
+
   // Update reading time
   const updateReadingTime = useMutation({
     mutationFn: async (minutesDelta: number) => {
@@ -232,6 +255,7 @@ export function useEbookProgress(ebookId: string | undefined) {
     isLoading,
     updateCurrentChapter,
     markChapterComplete,
+    updateScrollPosition,
     updateReadingTime,
     saveNote,
     saveHighlight,
