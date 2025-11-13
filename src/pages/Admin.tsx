@@ -2,13 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import { AdminFeedTab } from '@/components/Admin/AdminFeedTab';
 import { AdminScriptsTab } from '@/components/Admin/AdminScriptsTab';
-import { AdminPDFsTab } from '@/components/Admin/AdminPDFsTab';
 import { AdminVideosTab } from '@/components/Admin/AdminVideosTab';
 import { AdminAnalyticsTab } from '@/components/Admin/AdminAnalyticsTab';
 import { AdminNotificationsTab } from '@/components/Admin/AdminNotificationsTab';
-import { AdminEbooksTab } from '@/components/Admin/AdminEbooksTab';
 import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,22 +14,16 @@ import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { supabase } from '@/integrations/supabase/client';
 import {
   LayoutDashboard,
-  FileText,
   Video,
-  BookOpen,
   BarChart3,
-  Users,
-  Activity,
-  TrendingUp,
   Bell,
   DollarSign,
-  Gift,
-  Book
+  Gift
 } from 'lucide-react';
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState('feed');
-  const [counts, setCounts] = useState({ feed: 0, scripts: 0, pdfs: 0, videos: 0, refunds: 0, bonuses: 0 });
+  const [activeTab, setActiveTab] = useState('scripts');
+  const [counts, setCounts] = useState({ scripts: 0, videos: 0, refunds: 0, bonuses: 0 });
   const [loadingCounts, setLoadingCounts] = useState(false);
   const { user } = useAuth();
   const { isAdmin, checking } = useAdminStatus();
@@ -41,9 +32,7 @@ export default function Admin() {
   const fetchCounts = useCallback(async () => {
     setLoadingCounts(true);
     const tables = [
-      { key: 'feed', table: 'feed_posts' },
       { key: 'scripts', table: 'scripts' },
-      { key: 'pdfs', table: 'pdfs' },
       { key: 'videos', table: 'videos' },
       { key: 'refunds', table: 'refund_requests' },
     ] as const;
@@ -63,14 +52,15 @@ export default function Admin() {
       })
     );
 
-    // Get bonuses count from localStorage
-    const bonusesData = localStorage.getItem('nep_bonuses_data');
-    const bonusesCount = bonusesData ? JSON.parse(bonusesData).length : 0;
+    // Get bonuses count from Supabase
+    const { count: bonusesCount } = await supabase
+      .from('bonuses')
+      .select('*', { count: 'exact', head: true });
 
     setCounts(
       results.reduce(
         (acc, result) => ({ ...acc, [result.key]: result.value }),
-        { feed: 0, scripts: 0, pdfs: 0, videos: 0, refunds: 0, bonuses: bonusesCount }
+        { scripts: 0, videos: 0, refunds: 0, bonuses: bonusesCount ?? 0 }
       )
     );
     setLoadingCounts(false);
@@ -106,7 +96,7 @@ export default function Admin() {
     );
   }
 
-  const totalItems = counts.feed + counts.scripts + counts.pdfs + counts.videos + counts.refunds + counts.bonuses;
+  const totalItems = counts.scripts + counts.videos + counts.refunds + counts.bonuses;
 
   return (
     <MainLayout>
