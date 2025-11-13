@@ -1,13 +1,12 @@
 // @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
-import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Flag, Info, Heart, Send, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Smile, Edit2, Pin } from 'lucide-react';
+import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Info, Heart, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Edit2, Pin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
 import { PostImageUpload } from '@/components/Community/PostImageUpload';
-import { ReactionPicker, ReactionType, REACTIONS } from '@/components/Community/ReactionPicker';
-import { ReactionsList, ReactionCount } from '@/components/Community/ReactionsList';
+// Removed Reaction components (not in use)
 import { CommentThread } from '@/components/Community/CommentThread';
 import { UserProfileModal } from '@/components/Community/UserProfileModal';
 import { SearchBar, SearchFilters } from '@/components/Community/SearchBar';
@@ -149,8 +148,6 @@ export default function Community() {
   const [likeAnimations, setLikeAnimations] = useState<Set<string>>(new Set());
   const [postImageUrl, setPostImageUrl] = useState<string>('');
   const [postImageThumbnailUrl, setPostImageThumbnailUrl] = useState<string>('');
-  const [openReactionPicker, setOpenReactionPicker] = useState<string | null>(null);
-  const [postReactions, setPostReactions] = useState<Record<string, ReactionCount[]>>({});
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [searchFilters, setSearchFilters] = useState<SearchFilters>({
@@ -924,7 +921,6 @@ export default function Community() {
     const postComments = comments[post.id] || [];
     const isCommentsExpanded = expandedComments.has(post.id);
     const isLiking = likeAnimations.has(post.id);
-    const [showReactionPicker, setShowReactionPicker] = useState(false);
 
     // Memoize the callback to prevent re-renders
     const handleCommentCountChange = useCallback((newCount: number) => {
@@ -1032,32 +1028,22 @@ export default function Community() {
               </div>
             </div>
 
-            {/* More Options */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
-                  <MoreHorizontal className="w-4 h-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {post.userId && user?.profileId === post.userId ? (
-                  <>
-                    <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive">
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete Post
-                    </DropdownMenuItem>
-                  </>
-                ) : (
-                  <DropdownMenuItem
-                    onClick={() => handleFlagPost(post.id)}
-                    disabled={flaggedPosts.has(post.id)}
-                  >
-                    <Flag className="w-4 h-4 mr-2" />
-                    {flaggedPosts.has(post.id) ? 'Flagged' : 'Report Post'}
+            {/* More Options (owner only) */}
+            {post.userId && user?.profileId === post.userId && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => handleDeletePost(post.id)} className="text-destructive">
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Delete Post
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
 
           {/* Post Content */}
@@ -1100,31 +1086,19 @@ export default function Community() {
             </div>
           )}
 
-          {/* Action Buttons with Reactions */}
-          <div className="flex items-center gap-2">
-            {/* React Button with Picker */}
-            <div className="relative flex-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowReactionPicker(!showReactionPicker)}
-                onMouseLeave={() => setTimeout(() => setShowReactionPicker(false), 200)}
-                className={`w-full gap-2 ${post.userHasLiked ? 'text-primary' : 'hover:bg-primary/5'} transition-all`}
-              >
-                <Smile className="w-4 h-4" />
-                <span className="font-medium">React</span>
-              </Button>
-
-              <ReactionPicker
-                isOpen={showReactionPicker}
-                onSelect={(reactionType) => {
-                  handleToggleLike(post.id);
-                  setShowReactionPicker(false);
-                }}
-                onClose={() => setShowReactionPicker(false)}
-                currentReaction={post.userHasLiked ? 'like' : null}
-              />
-            </div>
+          {/* Action Buttons */}
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleToggleLike(post.id)}
+              className={`flex-1 gap-2 ${post.userHasLiked ? 'text-primary' : 'hover:bg-primary/5'} ${
+                isLiking ? 'scale-110' : ''
+              } transition-all duration-300`}
+            >
+              <Heart className={`w-4 h-4 ${post.userHasLiked ? 'fill-current' : ''}`} />
+              <span className="font-medium">{post.userHasLiked ? 'Liked' : 'Like'}</span>
+            </Button>
 
             <Button
               variant="ghost"
@@ -1134,25 +1108,6 @@ export default function Community() {
             >
               <MessageCircle className="w-4 h-4" />
               <span className="font-medium">Comment</span>
-            </Button>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                navigator.share?.({
-                  title: `Post by ${post.author}`,
-                  text: post.content.substring(0, 100),
-                  url: window.location.href,
-                }).catch(() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('Link copied to clipboard!');
-                });
-              }}
-              className="flex-1 gap-2 hover:bg-green-50 dark:hover:bg-green-950/30 transition-all"
-            >
-              <Send className="w-4 h-4" />
-              <span className="font-medium">Share</span>
             </Button>
           </div>
 
