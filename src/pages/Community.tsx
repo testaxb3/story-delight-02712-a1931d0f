@@ -764,7 +764,7 @@ export default function Community() {
     );
   };
 
-  const formatTimestamp = (timestamp: string) => {
+  const formatTimestamp = useCallback((timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -778,7 +778,7 @@ export default function Community() {
     if (days < 7) return `${days}d`;
 
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
+  }, []);
 
   const brainTypeFilters = [
     { label: 'All', value: null, icon: '🌐' },

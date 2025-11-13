@@ -26,7 +26,7 @@ interface CommentThreadProps {
   onCommentCountChange?: (newCount: number) => void;
 }
 
-export function CommentThread({
+export const CommentThread = React.memo(function CommentThread({
   postId,
   currentUserId,
   userPhotoUrl,
@@ -297,4 +297,4 @@ export function CommentThread({
       </div>
     </div>
   );
-}
+});
