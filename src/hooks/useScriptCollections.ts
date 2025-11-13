@@ -1,17 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-
+import { useCallback, useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { supabase } from '@/integrations/supabase/client';
-import type { Database } from '@/integrations/supabase/types';
 import { toast } from '@/components/ui/use-toast';
-import { t } from '@/hooks/useTranslation';
-
-type ScriptRow = Database['public']['Tables']['scripts']['Row'];
 
 export interface ScriptCollection {
   id: string;
   name: string;
+  description?: string;
   createdAt: string;
   updatedAt: string;
   childProfileId: string | null;
@@ -22,25 +18,12 @@ interface UseScriptCollectionsResult {
   collections: ScriptCollection[];
   scopedCollections: ScriptCollection[];
   loading: boolean;
-  createCollection: (name: string, scopeToChild?: boolean) => Promise<ScriptCollection | null>;
+  createCollection: (name: string, description?: string, scopeToChild?: boolean) => Promise<ScriptCollection | null>;
   addScriptToCollection: (collectionId: string, scriptId: string) => Promise<void>;
   removeScriptFromCollection: (collectionId: string, scriptId: string) => Promise<void>;
+  deleteCollection: (collectionId: string) => Promise<void>;
+  updateCollection: (collectionId: string, name: string, description?: string) => Promise<void>;
   refresh: () => Promise<void>;
-}
-
-// NOTE: Since 'script_collections' table does not exist, this hook will simulate collections
-// based on the 'scripts' table and the 'user_favorites' table.
-// This is a temporary solution until a proper 'script_collections' table is implemented.
-
-function mapScriptToCollection(script: ScriptRow): ScriptCollection {
-  return {
-    id: script.id,
-    name: script.title || 'Untitled Script',
-    createdAt: script.created_at || new Date().toISOString(),
-    updatedAt: script.created_at || new Date().toISOString(),
-    childProfileId: null, // No direct childProfileId for individual scripts
-    scriptIds: [script.id],
-  };
 }
 
 export function useScriptCollections(): UseScriptCollectionsResult {
@@ -57,51 +40,50 @@ export function useScriptCollections(): UseScriptCollectionsResult {
 
     setLoading(true);
     try {
-      // Fetch all scripts that are favorited by the user
-      const { data: favoriteScriptsData, error: favoriteScriptsError } = await supabase
-        .from('user_favorites')
-        .select('script_id')
-        .eq('user_id', user.profileId);
+      const { data: collectionsData, error: collectionsError } = await supabase
+        .from('script_collections')
+        .select(`
+          id,
+          name,
+          description,
+          created_at,
+          updated_at,
+          collection_scripts (
+            script_id,
+            position
+          )
+        `)
+        .eq('user_id', user.profileId)
+        .order('created_at', { ascending: false });
 
-      if (favoriteScriptsError) {
-        console.error('Failed to load favorite script IDs', favoriteScriptsError);
+      if (collectionsError) {
+        console.error('Failed to load collections', collectionsError);
         toast({
-          title: t().recommendations.errors.loadFavoritesFailed,
-          description: favoriteScriptsError.message,
+          title: 'Failed to load collections',
+          description: collectionsError.message,
           variant: 'destructive',
         });
         setCollections([]);
         return;
       }
 
-      const favoriteScriptIds = favoriteScriptsData?.map(item => item.script_id) || [];
+      const mappedCollections: ScriptCollection[] = (collectionsData || []).map(col => ({
+        id: col.id,
+        name: col.name,
+        description: col.description || undefined,
+        createdAt: col.created_at,
+        updatedAt: col.updated_at,
+        childProfileId: null,
+        scriptIds: (col.collection_scripts || [])
+          .sort((a: any, b: any) => a.position - b.position)
+          .map((cs: any) => cs.script_id),
+      }));
 
-      // Fetch the actual script details for the favorited scripts
-      const { data: scriptsData, error: scriptsError } = await supabase
-        .from('scripts')
-        .select('*')
-        .in('id', favoriteScriptIds);
-
-      if (scriptsError) {
-        console.error('Failed to load favorite scripts', scriptsError);
-        toast({
-          title: t().recommendations.errors.loadFavoriteScriptsFailed,
-          description: scriptsError.message,
-          variant: 'destructive',
-        });
-        setCollections([]);
-        return;
-      }
-
-      // For now, each favorited script is treated as its own collection
-      // This can be expanded later to support actual user-defined collections
-      const mappedCollections = (scriptsData || []).map(mapScriptToCollection);
       setCollections(mappedCollections);
-
     } catch (error) {
       console.error('Failed to load script collections', error);
       toast({
-        title: t().recommendations.errors.loadCollectionsFailed,
+        title: 'Failed to load collections',
         description: (error as Error).message,
         variant: 'destructive',
       });
@@ -115,94 +97,223 @@ export function useScriptCollections(): UseScriptCollectionsResult {
     fetchCollections();
   }, [fetchCollections]);
 
-  const scopedCollections = useMemo(() => {
-    if (!activeChild) return collections.filter((collection) => !collection.childProfileId);
-    return collections.filter(
-      (collection) => !collection.childProfileId || collection.childProfileId === activeChild.id,
-    );
-  }, [collections, activeChild]);
+  const createCollection = useCallback(async (
+    name: string,
+    description?: string,
+    scopeToChild = false
+  ): Promise<ScriptCollection | null> => {
+    if (!user?.profileId) {
+      toast({
+        title: 'Authentication required',
+        description: 'Please sign in to create collections',
+        variant: 'destructive',
+      });
+      return null;
+    }
 
-  const createCollection = useCallback<UseScriptCollectionsResult['createCollection']>(async (name, scopeToChild = true) => {
-    // Since there's no 'script_collections' table, we'll simulate creation by adding to favorites
-    // This function needs to be re-evaluated if actual collection creation is desired.
-    toast({
-      title: 'Funcionalidade de criação de coleção temporariamente indisponível',
-      description: 'A criação de coleções customizadas não está disponível no momento. Scripts são salvos como favoritos.',
-      variant: 'default',
-    });
-    return null;
+    try {
+      const { data, error } = await supabase
+        .from('script_collections')
+        .insert({
+          user_id: user.profileId,
+          name,
+          description,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Failed to create collection', error);
+        toast({
+          title: 'Failed to create collection',
+          description: error.message,
+          variant: 'destructive',
+        });
+        return null;
+      }
+
+      const newCollection: ScriptCollection = {
+        id: data.id,
+        name: data.name,
+        description: data.description || undefined,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+        childProfileId: null,
+        scriptIds: [],
+      };
+
+      setCollections(prev => [newCollection, ...prev]);
+      
+      toast({
+        title: 'Collection created',
+        description: `"${name}" collection has been created`,
+      });
+
+      return newCollection;
+    } catch (error) {
+      console.error('Failed to create collection', error);
+      toast({
+        title: 'Failed to create collection',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+      return null;
+    }
+  }, [user?.profileId]);
+
+  const addScriptToCollection = useCallback(async (collectionId: string, scriptId: string) => {
+    try {
+      const { data: existingScripts } = await supabase
+        .from('collection_scripts')
+        .select('position')
+        .eq('collection_id', collectionId)
+        .order('position', { ascending: false })
+        .limit(1);
+
+      const nextPosition = existingScripts && existingScripts.length > 0 
+        ? existingScripts[0].position + 1 
+        : 0;
+
+      const { error } = await supabase
+        .from('collection_scripts')
+        .insert({
+          collection_id: collectionId,
+          script_id: scriptId,
+          position: nextPosition,
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          toast({
+            title: 'Script already in collection',
+            variant: 'default',
+          });
+          return;
+        }
+        throw error;
+      }
+
+      setCollections(prev =>
+        prev.map(col =>
+          col.id === collectionId
+            ? { ...col, scriptIds: [...col.scriptIds, scriptId] }
+            : col
+        )
+      );
+
+      toast({
+        title: 'Script added',
+        description: 'Script has been added to the collection',
+      });
+    } catch (error) {
+      console.error('Failed to add script to collection', error);
+      toast({
+        title: 'Failed to add script',
+        description: (error as Error).message,
+        variant: 'destructive',
+      });
+    }
   }, []);
 
-  const addScriptToCollection = useCallback<UseScriptCollectionsResult['addScriptToCollection']>(async (collectionId, scriptId) => {
-    if (!user?.profileId) {
+  const removeScriptFromCollection = useCallback(async (collectionId: string, scriptId: string) => {
+    try {
+      const { error } = await supabase
+        .from('collection_scripts')
+        .delete()
+        .eq('collection_id', collectionId)
+        .eq('script_id', scriptId);
+
+      if (error) throw error;
+
+      setCollections(prev =>
+        prev.map(col =>
+          col.id === collectionId
+            ? { ...col, scriptIds: col.scriptIds.filter(id => id !== scriptId) }
+            : col
+        )
+      );
+
       toast({
-        title: 'Please log in again',
-        description: t().auth.errors.accountNotFound,
+        title: 'Script removed',
+        description: 'Script has been removed from the collection',
+      });
+    } catch (error) {
+      console.error('Failed to remove script from collection', error);
+      toast({
+        title: 'Failed to remove script',
+        description: (error as Error).message,
         variant: 'destructive',
       });
-      return;
     }
+  }, []);
 
-    // In this simulated setup, collectionId is effectively the scriptId for a favorited script
-    // So, we just add to user_favorites
-    const { error } = await supabase
-      .from('user_favorites')
-      .insert({ user_id: user.profileId, script_id: scriptId });
+  const deleteCollection = useCallback(async (collectionId: string) => {
+    try {
+      const { error } = await supabase
+        .from('script_collections')
+        .delete()
+        .eq('id', collectionId);
 
-    if (error) {
-      console.error('Failed to add script to favorites', error);
+      if (error) throw error;
+
+      setCollections(prev => prev.filter(col => col.id !== collectionId));
+
       toast({
-        title: t().scripts.errors.addFavoriteFailed,
-        description: error.message,
+        title: 'Collection deleted',
+        description: 'Collection has been deleted successfully',
+      });
+    } catch (error) {
+      console.error('Failed to delete collection', error);
+      toast({
+        title: 'Failed to delete collection',
+        description: (error as Error).message,
         variant: 'destructive',
       });
-      return;
     }
+  }, []);
 
-    setCollections((prev) => {
-      const existingCollection = prev.find(col => col.id === scriptId);
-      if (existingCollection) {
-        return prev.map(col => col.id === scriptId ? { ...col, scriptIds: [...new Set([...col.scriptIds, scriptId])] } : col);
-      } else {
-        // If it's a new favorite, fetch the script details to create a new 'collection'
-        // This is a simplified approach, a full implementation would fetch the script and map it
-        return [...prev, { id: scriptId, name: 'Favorito', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), childProfileId: null, scriptIds: [scriptId] }];
-      }
-    });
-    toast({ title: 'Script salvo', description: 'O script foi adicionado aos seus favoritos.' });
-    fetchCollections(); // Refresh to get accurate data
-  }, [user?.profileId, fetchCollections]);
+  const updateCollection = useCallback(async (
+    collectionId: string,
+    name: string,
+    description?: string
+  ) => {
+    try {
+      const { error } = await supabase
+        .from('script_collections')
+        .update({
+          name,
+          description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', collectionId);
 
-  const removeScriptFromCollection = useCallback<UseScriptCollectionsResult['removeScriptFromCollection']>(async (collectionId, scriptId) => {
-    if (!user?.profileId) {
+      if (error) throw error;
+
+      setCollections(prev =>
+        prev.map(col =>
+          col.id === collectionId
+            ? { ...col, name, description, updatedAt: new Date().toISOString() }
+            : col
+        )
+      );
+
       toast({
-        title: 'Please log in again',
-        description: t().auth.errors.accountNotFound,
+        title: 'Collection updated',
+        description: 'Collection has been updated successfully',
+      });
+    } catch (error) {
+      console.error('Failed to update collection', error);
+      toast({
+        title: 'Failed to update collection',
+        description: (error as Error).message,
         variant: 'destructive',
       });
-      return;
     }
+  }, []);
 
-    const { error } = await supabase
-      .from('user_favorites')
-      .delete()
-      .eq('user_id', user.profileId)
-      .eq('script_id', scriptId);
-
-    if (error) {
-      console.error('Failed to remove script from favorites', error);
-      toast({
-        title: t().scripts.errors.removeFavoriteFailed,
-        description: error.message,
-        variant: 'destructive',
-      });
-      return;
-    }
-
-    setCollections((prev) => prev.filter(col => col.id !== scriptId));
-    toast({ title: 'Removido dos favoritos' });
-    fetchCollections(); // Refresh to get accurate data
-  }, [user?.profileId, fetchCollections]);
+  const scopedCollections = collections.filter(col =>
+    !col.childProfileId || col.childProfileId === activeChild?.id
+  );
 
   return {
     collections,
@@ -211,7 +322,8 @@ export function useScriptCollections(): UseScriptCollectionsResult {
     createCollection,
     addScriptToCollection,
     removeScriptFromCollection,
+    deleteCollection,
+    updateCollection,
     refresh: fetchCollections,
   };
 }
-

@@ -98,6 +98,9 @@ export default function Quiz() {
     setSavingProfile(true);
     setSaveError(null);
 
+    // Clear quiz_in_progress from localStorage when starting to save
+    localStorage.removeItem('quiz_in_progress');
+
     try {
       // ✅ CRITICAL: Ensure parent profile exists before creating child profile
       // This fixes FK violation error
