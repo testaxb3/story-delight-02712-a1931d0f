@@ -8,6 +8,7 @@ import { AdminAnalyticsTab } from '@/components/Admin/AdminAnalyticsTab';
 import { AdminNotificationsTab } from '@/components/Admin/AdminNotificationsTab';
 import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
+import { BonusesManagement } from '@/components/Admin/BonusesManagement';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -277,7 +278,7 @@ export default function Admin() {
               </TabsContent>
 
               <TabsContent value="bonuses" className="mt-0">
-                <AdminBonusesTab onContentChanged={fetchCounts} />
+                <BonusesManagement onContentChanged={fetchCounts} />
               </TabsContent>
             </div>
           </Tabs>

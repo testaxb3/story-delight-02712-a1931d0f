@@ -13,8 +13,10 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { parseMarkdownToChapters } from '@/utils/markdownToChapters';
+import { validateMarkdown } from '@/utils/markdownValidator';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ChaptersPreview } from './ChaptersPreview';
 
 interface BonusFormModalProps {
   open: boolean;
@@ -72,6 +74,8 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   // Ebook upload state
   const [markdownContent, setMarkdownContent] = useState('');
   const [ebookUploading, setEbookUploading] = useState(false);
+  const [validationResult, setValidationResult] = useState<any>(null);
+  const [parsedChapters, setParsedChapters] = useState<any[]>([]);
 
   // Load bonus data when editing
   useEffect(() => {
@@ -648,23 +652,96 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
               className="cursor-pointer"
             />
             <p className="text-sm text-muted-foreground">
-              Faça upload de um arquivo .md formatado
+              Faça upload de um arquivo .md formatado com capítulos (## CHAPTER X:)
             </p>
           </div>
 
+          {/* Validation Results */}
+          {validationResult && (
+            <div className="space-y-3">
+              {validationResult.errors.length > 0 && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-1">
+                      <p className="font-semibold">Erros encontrados:</p>
+                      <ul className="list-disc list-inside text-sm">
+                        {validationResult.errors.map((error: string, i: number) => (
+                          <li key={i}>{error}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {validationResult.warnings.length > 0 && (
+                <Alert>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="space-y-1">
+                      <p className="font-semibold">Avisos:</p>
+                      <ul className="list-disc list-inside text-sm">
+                        {validationResult.warnings.map((warning: string, i: number) => (
+                          <li key={i}>{warning}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {validationResult.isValid && (
+                <Alert className="border-green-500 bg-green-50 dark:bg-green-950/30">
+                  <CheckCircle2 className="h-4 w-4 text-green-600" />
+                  <AlertDescription>
+                    <div className="space-y-1 text-green-900 dark:text-green-100">
+                      <p className="font-semibold">Markdown validado com sucesso!</p>
+                      <div className="text-sm space-y-1">
+                        <p>• {validationResult.stats.totalChapters} capítulos</p>
+                        <p>• {validationResult.stats.totalSections} seções</p>
+                        <p>• {validationResult.stats.totalWords} palavras</p>
+                        <p>• ~{validationResult.stats.estimatedReadingTime} min de leitura</p>
+                      </div>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+          )}
+
+          {/* Chapters Preview */}
+          {parsedChapters.length > 0 && (
+            <div className="space-y-2">
+              <Label>Preview dos Capítulos Parseados</Label>
+              <ChaptersPreview chapters={parsedChapters} />
+            </div>
+          )}
+
           {markdownContent && (
             <div className="space-y-2">
-              <Label>Preview do Conteúdo</Label>
+              <Label>Markdown Source (Editável)</Label>
               <Textarea
                 value={markdownContent}
-                onChange={(e) => setMarkdownContent(e.target.value)}
+                onChange={(e) => {
+                  setMarkdownContent(e.target.value);
+                  // Re-validate on edit
+                  const validation = validateMarkdown(e.target.value);
+                  setValidationResult(validation);
+                  if (validation.isValid) {
+                    const chapters = parseMarkdownToChapters(e.target.value);
+                    setParsedChapters(chapters);
+                  } else {
+                    setParsedChapters([]);
+                  }
+                }}
                 rows={10}
                 className="font-mono text-xs"
               />
               <Button
                 type="button"
                 onClick={handleCreateEbook}
-                disabled={ebookUploading}
+                disabled={ebookUploading || !validationResult?.isValid}
                 className="w-full"
               >
                 {ebookUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
