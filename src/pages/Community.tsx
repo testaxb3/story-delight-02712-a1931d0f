@@ -442,13 +442,13 @@ export default function Community() {
           .eq('user_id', user.id)
       : supabase
           .from('post_likes')
-          .insert({ post_id: postId, user_id: user.id });
+          .insert({ post_id: postId, user_id: user.id, reaction_type: 'like' });
 
     const { error } = await mutation;
 
     if (error) {
       console.error('Failed to toggle like', error);
-      toast.error(hasLiked ? 'Unable to remove your like.' : 'Unable to like this post.');
+      toast.error(error?.message || (hasLiked ? 'Unable to remove your like.' : 'Unable to like this post.'));
       return;
     }
 
@@ -641,7 +641,7 @@ export default function Community() {
       toast.success('Comment added!');
     } else if (error) {
       console.error('Failed to add comment', error);
-      toast.error('Unable to add comment.');
+      toast.error(error?.message || 'Unable to add comment.');
     }
   };
 
