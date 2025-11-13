@@ -295,6 +295,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   };
 
   return (
+    <>
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
