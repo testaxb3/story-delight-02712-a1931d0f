@@ -19,7 +19,7 @@ const EbookReaderPage = () => {
   } = useEbookProgress(ebookId);
 
   const handleClose = () => {
-    navigate(-1);
+    navigate('/ebooks');
   };
 
   if (isLoading) {
