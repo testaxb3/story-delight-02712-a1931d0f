@@ -1,6 +1,6 @@
 // @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
-import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Info, Heart, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Edit2, Pin } from 'lucide-react';
+import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Info, Heart, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Edit2, Pin, Send } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
