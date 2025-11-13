@@ -29,7 +29,17 @@ export const EbookReader = ({
   onChapterComplete,
   onClose 
 }: EbookReaderProps) => {
-  const [currentChapterIndex, setCurrentChapterIndex] = useState(initialChapter);
+  if (!chapters || chapters.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Conteúdo indisponível.</p>
+      </div>
+    );
+  }
+
+  const safeInitialChapter = Math.min(Math.max(initialChapter, 0), chapters.length - 1);
+  
+  const [currentChapterIndex, setCurrentChapterIndex] = useState(safeInitialChapter);
   const [fontSize, setFontSize] = useState(1);
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(
     externalCompleted || new Set()
@@ -37,7 +47,9 @@ export const EbookReader = ({
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentChapter = chapters[currentChapterIndex];
-  const progress = Math.round(((currentChapterIndex + 1) / chapters.length) * 100);
+  const progress = chapters.length > 0 
+    ? Math.round(((currentChapterIndex + 1) / chapters.length) * 100)
+    : 0;
 
   // Load completed chapters from localStorage
   useEffect(() => {
