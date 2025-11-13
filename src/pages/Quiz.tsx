@@ -112,7 +112,7 @@ export default function Quiz() {
       const { data: existingChild, error: childCheckError } = await supabase
         .from('child_profiles')
         .select('id')
-        .eq('parent_profile_id', user.profileId)
+        .eq('parent_id', user.profileId)
         .eq('name', childName.trim())
         .maybeSingle();
 
@@ -139,9 +139,10 @@ export default function Quiz() {
         const { data: newChild, error: insertError } = await supabase
           .from('child_profiles')
           .insert([{
-            parent_profile_id: user.profileId,
+            parent_id: user.profileId,
             name: childName.trim(),
-            brain_type: brainType
+            brain_type: brainType,
+            brain_profile: brainType
           }])
           .select()
           .single();
