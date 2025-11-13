@@ -80,10 +80,17 @@ export function useBonuses(filters?: { category?: string; search?: string }) {
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching bonuses:", error);
+        console.error("❌ Error fetching bonuses:", error);
+        console.error("Error details:", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code
+        });
         throw error;
       }
 
+      console.log("✅ Bonuses fetched successfully:", data?.length || 0, "items");
       return data?.map(transformBonusRow) || [];
     },
     staleTime: 1000 * 60 * 5, // 5 minutes
