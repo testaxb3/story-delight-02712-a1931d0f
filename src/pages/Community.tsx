@@ -892,14 +892,17 @@ export default function Community() {
     return user?.email?.slice(0, 2).toUpperCase() || 'ME';
   }, [user]);
 
-  // Memoize comment count update handler outside PostCard
+  // Memoize comment count update handler outside PostCard - PREVENT LOOP
   const handleCommentCountChange = useCallback((postId: string, newCount: number) => {
+    // Only update if count actually changed
     setPosts((prev) =>
       prev.map((p) =>
-        p.id === postId ? { ...p, commentsCount: newCount } : p
+        p.id === postId && p.commentsCount !== newCount
+          ? { ...p, commentsCount: newCount }
+          : p
       )
     );
-  }, []);
+  }, []); // No dependencies to prevent recreation
 
   const PostCard = memo(({ post, isSpotlight = false }: { post: CommunityPost; isSpotlight?: boolean }) => {
     const postComments = comments[post.id] || [];
@@ -1086,18 +1089,18 @@ export default function Community() {
             </Button>
           </div>
 
-          {/* Comments Section */}
-          {isCommentsExpanded && (
-            <CommentThread
-              postId={post.id}
-              currentUserId={user?.id ?? null}
-              userPhotoUrl={user?.photo_url ?? null}
-              userInitials={userInitials}
-              formatTimestamp={formatTimestamp}
-              getInitialsFromName={getInitialsFromName}
-              onCommentCountChange={(newCount) => handleCommentCountChange(post.id, newCount)}
-            />
-          )}
+            {/* Comments Section - STABLE: Pass stable callback */}
+            {isCommentsExpanded && (
+              <CommentThread
+                postId={post.id}
+                currentUserId={user?.id ?? null}
+                userPhotoUrl={user?.photo_url ?? null}
+                userInitials={userInitials}
+                formatTimestamp={formatTimestamp}
+                getInitialsFromName={getInitialsFromName}
+                onCommentCountChange={undefined} // REMOVE callback to prevent loops
+              />
+            )}
         </div>
       </Card>
       </motion.div>

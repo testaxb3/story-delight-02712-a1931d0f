@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,11 +39,16 @@ export function CommentThread({
   const [newComment, setNewComment] = useState('');
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const fetchedRef = useRef<string | null>(null);
 
-  // Fetch comments once when component mounts
+  // Fetch comments once when component mounts or postId changes (guarded)
   useEffect(() => {
+    if (fetchedRef.current === postId) return; // already fetched for this post
+    fetchedRef.current = postId;
+
     let mounted = true;
-    
+
     const fetchComments = async () => {
       setLoading(true);
       try {
@@ -61,18 +66,11 @@ export function CommentThread({
         if (mounted) {
           const typedComments = (data || []) as PostComment[];
           setComments(typedComments);
-
-          // Notify parent of total comment count
-          if (onCommentCountChange) {
-            onCommentCountChange(typedComments.length);
-          }
         }
       } catch (error) {
         console.error('Error fetching comments:', error);
       } finally {
-        if (mounted) {
-          setLoading(false);
-        }
+        if (mounted) setLoading(false);
       }
     };
 
@@ -81,12 +79,20 @@ export function CommentThread({
     return () => {
       mounted = false;
     };
-  }, [postId]); // FIXED: Removed onCommentCountChange dependency to prevent infinite loops
+  }, [postId]); // only postId
+
+  // Notify parent when count changes
+  useEffect(() => {
+    if (onCommentCountChange) {
+      onCommentCountChange(comments.length);
+    }
+  }, [comments.length]);
 
   // Add new top-level comment
   const handleAddComment = async () => {
-    if (!newComment.trim() || !currentUserId) return;
+    if (!newComment.trim() || !currentUserId || submitting) return;
 
+    setSubmitting(true);
     try {
       const { data, error } = await supabase
         .from('post_comments')
@@ -109,15 +115,14 @@ export function CommentThread({
         setComments((prev) => [...prev, typedComment]);
         setNewComment('');
         toast.success('Comment added!');
-
-        // Update parent comment count
-        if (onCommentCountChange) {
-          onCommentCountChange(comments.length + 1);
-        }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding comment:', error);
-      toast.error('Failed to add comment');
+      toast.error(error?.message || 'Failed to add comment');
+    } finally {
+      setSubmitting(false);
+    }
+  };
     }
   };
 
