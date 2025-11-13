@@ -28,6 +28,7 @@ import { CommunityPostSkeletonList } from '@/components/Skeletons/CommunityPostS
 import { CommunityGuidelines } from '@/components/CommunityGuidelines';
 import { TopContributors } from '@/components/Community/TopContributors';
 import { ActivityStreak } from '@/components/Community/ActivityStreak';
+import { LazyImage } from '@/components/common/LazyImage';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -214,24 +215,11 @@ export default function Community() {
       // 1. User's own posts (real)
       // 2. Seed posts (fake community posts for social proof)
       // This hides other users' real posts to create isolated experience
-      // PERFORMANCE FIX: Use single query with aggregations instead of N+1 queries
-      // This query fetches posts, comment counts, and like counts in one go
+      // PERFORMANCE OPTIMIZED: Use aggregated view to fetch posts with stats in ONE query
+      // This eliminates N+1 queries by using community_posts_with_stats view
       const { data, error, count } = await supabase
-        .from('community_posts')
-        .select(`
-          id,
-          content,
-          created_at,
-          user_id,
-          is_seed_post,
-          author_name,
-          author_brain_type,
-          author_photo_url,
-          post_type,
-          image_url,
-          image_thumbnail_url,
-          profiles:user_id (name, email, photo_url)
-        `, { count: 'exact' })
+        .from('community_posts_with_stats')
+        .select('*', { count: 'exact' })
         .or(`user_id.eq.${currentUserId},is_seed_post.eq.true`)
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -243,60 +231,46 @@ export default function Community() {
       // Check if there are more posts to load
       setHasMore((count || 0) > (from + data.length));
 
+      // Fetch user's like status separately (lightweight query)
       const postIds = data.map((post) => post.id);
-      const likeSummaryByPost = new Map<string, { count: number; liked: boolean }>();
-      const commentCountByPost = new Map<string, number>();
+      const userLikes = new Set<string>();
 
-      if (postIds.length > 0) {
-        // PERFORMANCE FIX: Batch fetch likes and comments in parallel
-        const [likesResult, commentsResult] = await Promise.all([
-          supabase
-            .from('post_likes')
-            .select('post_id, user_id')
-            .in('post_id', postIds),
-          supabase
-            .from('post_comments')
-            .select('post_id')
-            .in('post_id', postIds)
-        ]);
+      if (currentUserId && postIds.length > 0) {
+        const { data: likeData } = await supabase
+          .from('post_likes')
+          .select('post_id')
+          .eq('user_id', currentUserId)
+          .in('post_id', postIds);
 
-        const { data: likeRows, error: likesError } = likesResult;
-        const { data: commentRows, error: commentsError } = commentsResult;
-
-        if (likesError) {
-          console.error('Failed to load post likes', likesError);
-        } else {
-          likeRows?.forEach((like) => {
-            const summary = likeSummaryByPost.get(like.post_id) ?? { count: 0, liked: false };
-            summary.count += 1;
-            if (currentUserId && like.user_id === currentUserId) {
-              summary.liked = true;
-            }
-            likeSummaryByPost.set(like.post_id, summary);
-          });
-        }
-
-        if (commentsError) {
-          console.error('Failed to load comment counts', commentsError);
-        } else {
-          commentRows?.forEach((row) => {
-            commentCountByPost.set(row.post_id, (commentCountByPost.get(row.post_id) ?? 0) + 1);
-          });
-        }
+        likeData?.forEach((like) => userLikes.add(like.post_id));
       }
 
-      const postsWithCounts = data.map((post, index) => {
-        const likeSummary = likeSummaryByPost.get(post.id);
-        const commentCount = commentCountByPost.get(post.id) ?? 0;
-
+      const postsWithCounts = data.map((post: any, index) => {
         return buildCommunityPost(
-          post as SupabasePost,
-          commentCount,
-          index === 0 && pageNum === 0, // Only first post on first page is spotlight
+          {
+            id: post.id,
+            content: post.content,
+            created_at: post.created_at,
+            user_id: post.user_id,
+            is_seed_post: post.is_seed_post,
+            author_name: post.author_name,
+            author_brain_type: post.author_brain_type,
+            author_photo_url: post.author_photo_url,
+            post_type: post.post_type,
+            image_url: post.image_url,
+            image_thumbnail_url: post.image_thumbnail_url,
+            profiles: post.profile_name ? {
+              name: post.profile_name,
+              email: post.profile_email,
+              photo_url: post.profile_photo
+            } : null
+          } as SupabasePost,
+          post.comments_count,
+          index === 0 && pageNum === 0,
           currentBrain,
           {
-            count: likeSummary?.count ?? 0,
-            liked: likeSummary?.liked ?? false,
+            count: post.likes_count,
+            liked: userLikes.has(post.id),
           }
         );
       });
@@ -1045,15 +1019,16 @@ export default function Community() {
             {highlightContent(post.content, 300, post.id)}
           </div>
 
-          {/* Post Image with Lightbox */}
+          {/* Post Image with Lightbox - OPTIMIZED: Lazy loading com progressive enhancement */}
           {post.imageUrl && (
             <motion.div
               whileHover={{ scale: 1.02 }}
               className="relative overflow-hidden rounded-xl mb-4 cursor-pointer group"
               onClick={() => window.open(post.imageUrl, '_blank')}
             >
-              <img
+              <LazyImage
                 src={post.imageUrl}
+                blurDataURL={post.imageThumbnailUrl}
                 alt="Post attachment"
                 className="w-full rounded-xl shadow-md transition-transform duration-300 group-hover:scale-105"
               />
