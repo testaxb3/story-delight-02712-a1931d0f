@@ -1,0 +1,216 @@
+import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { PWAInstallGuide } from '@/components/PWAInstallGuide';
+import { ProfileHeader } from '@/components/Profile/ProfileHeader';
+import { QuickActionsGrid } from '@/components/Profile/QuickActionsGrid';
+import { ProfileStatsGrid } from '@/components/Profile/ProfileStatsGrid';
+import { RecentActivityCard } from '@/components/Profile/RecentActivityCard';
+import { ChildProfilesCard } from '@/components/Profile/ChildProfilesCard';
+import { AchievementsCard } from '@/components/Profile/AchievementsCard';
+import { ProfileSettingsCard } from '@/components/Profile/ProfileSettingsCard';
+import { ProfileActionsSection } from '@/components/Profile/ProfileActionsSection';
+import { useAuth } from '@/contexts/AuthContext';
+import { useChildProfiles } from '@/contexts/ChildProfilesContext';
+import { useAdminStatus } from '@/hooks/useAdminStatus';
+import { useUserStats } from '@/hooks/useUserStats';
+import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/hooks/useTranslation';
+import { getUserInitials, getDisplayName } from '@/lib/profileUtils';
+
+type StandaloneNavigator = Navigator & { standalone?: boolean };
+
+export default function Profile() {
+  const { user, signOut, refreshUser } = useAuth();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [showPWAGuide, setShowPWAGuide] = useState(false);
+  const { childProfiles, activeChild, setActiveChild, refreshChildren } = useChildProfiles();
+  const { isAdmin } = useAdminStatus();
+  const [childName, setChildName] = useState(activeChild?.name ?? '');
+  const [childAge, setChildAge] = useState<number | ''>(activeChild?.age ?? '');
+  const [childChallenges, setChildChallenges] = useState(activeChild?.primary_challenges ?? '');
+  const [savingChild, setSavingChild] = useState(false);
+  const [refundStatus, setRefundStatus] = useState<{
+    status: string;
+    created_at: string;
+  } | null>(null);
+
+  // Use custom hooks
+  const { stats, recentActivity, loading: loadingStats } = useUserStats(user?.id);
+
+  const nav = window.navigator as StandaloneNavigator;
+  const isInstalled =
+    window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
+
+  // Fetch refund status
+  useEffect(() => {
+    const fetchRefundStatus = async () => {
+      if (!user?.id) return;
+
+      const { data } = await supabase
+        .from('refund_requests')
+        .select('status, created_at')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data) {
+        setRefundStatus(data);
+      }
+    };
+
+    fetchRefundStatus();
+  }, [user]);
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success(t.auth.success.loggedOut);
+    navigate('/auth');
+  };
+
+  const initials = useMemo(() => getUserInitials(user), [user]);
+  const displayName = useMemo(() => getDisplayName(user), [user]);
+  const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
+
+  useEffect(() => {
+    setChildName(activeChild?.name ?? '');
+    setChildAge(activeChild?.age ?? '');
+    setChildChallenges(activeChild?.primary_challenges ?? '');
+  }, [activeChild?.id, activeChild?.name, activeChild?.age, activeChild?.primary_challenges]);
+
+  const handleChildNameUpdate = async () => {
+    if (!activeChild?.id) return;
+    const trimmed = childName.trim();
+    if (!trimmed || trimmed === activeChild.name) return;
+
+    setSavingChild(true);
+    const { error } = await supabase
+      .from('children_profiles')
+      .update({ name: trimmed })
+      .eq('id', activeChild.id);
+
+    setSavingChild(false);
+
+    if (error) {
+      toast.error(t.profile.errors.updateNameFailed);
+      return;
+    }
+
+    toast.success(t.profile.success.nameUpdated);
+    await refreshChildren();
+  };
+
+  const handleChildInfoUpdate = async () => {
+    if (!activeChild?.id) return;
+
+    const updates: any = {};
+    let hasChanges = false;
+
+    if (childAge && childAge !== activeChild.age) {
+      updates.age = typeof childAge === 'number' ? childAge : parseInt(childAge.toString());
+      hasChanges = true;
+    }
+
+    const trimmedChallenges = childChallenges.trim();
+    if (trimmedChallenges !== activeChild.primary_challenges) {
+      updates.primary_challenges = trimmedChallenges || null;
+      hasChanges = true;
+    }
+
+    if (!hasChanges) return;
+
+    setSavingChild(true);
+    const { error } = await supabase
+      .from('children_profiles')
+      .update(updates)
+      .eq('id', activeChild.id);
+
+    setSavingChild(false);
+
+    if (error) {
+      toast.error('Failed to update child info');
+      return;
+    }
+
+    toast.success('Child info updated!');
+    await refreshChildren();
+  };
+
+  const handlePhotoUpdate = async () => {
+    await refreshChildren();
+    toast.success('Photo updated successfully!');
+  };
+
+  const handleUserPhotoUpdate = async () => {
+    await refreshUser();
+    toast.success('Profile photo updated!');
+  };
+
+  return (
+    <MainLayout>
+      <PWAInstallGuide open={showPWAGuide} onClose={() => setShowPWAGuide(false)} />
+      <div className="space-y-6">
+        {/* Profile Header */}
+        <ProfileHeader
+          user={user}
+          userInitials={initials}
+          displayName={displayName}
+          onPhotoUpdate={handleUserPhotoUpdate}
+        />
+
+        {/* Quick Actions */}
+        <QuickActionsGrid
+          scriptsUsed={stats.scriptsUsed}
+          videosWatched={stats.videosWatched}
+          postsCreated={stats.postsCreated}
+        />
+
+        {/* Enhanced Stats with Real Data */}
+        <ProfileStatsGrid stats={stats} />
+
+        {/* Recent Activity */}
+        <RecentActivityCard activities={recentActivity} />
+
+        {/* Child's Profile Card */}
+        <ChildProfilesCard
+          childProfiles={childProfiles}
+          activeChild={activeChild}
+          currentBrain={currentBrain}
+          onSetActiveChild={setActiveChild}
+        />
+
+        {/* Achievements - Gamified */}
+        <AchievementsCard stats={stats} />
+
+        {/* Settings, Notifications, PWA, Refund */}
+        <ProfileSettingsCard
+          activeChild={activeChild}
+          childName={childName}
+          childAge={childAge}
+          childChallenges={childChallenges}
+          savingChild={savingChild}
+          onChildNameChange={setChildName}
+          onChildAgeChange={setChildAge}
+          onChildChallengesChange={setChildChallenges}
+          onChildNameUpdate={handleChildNameUpdate}
+          onChildInfoUpdate={handleChildInfoUpdate}
+          onPhotoUpdate={handlePhotoUpdate}
+          refundStatus={refundStatus}
+          isInstalled={isInstalled}
+        />
+
+        {/* Admin & Logout */}
+        <ProfileActionsSection
+          isAdmin={isAdmin}
+          onLogout={handleLogout}
+          logoutText={t.nav.logout}
+          adminText={t.nav.adminPanel}
+        />
+      </div>
+    </MainLayout>
+  );
+}

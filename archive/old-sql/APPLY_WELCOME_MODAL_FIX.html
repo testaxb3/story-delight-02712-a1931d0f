@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Apply Welcome Modal Migration</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: system-ui;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #9b87f5;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    button:hover { background: #8b77e5; }
+    #log {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f8f8;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 Apply Welcome Modal Fix</h1>
+    <p>This will add the <code>welcome_modal_shown</code> column to your profiles table and set it to TRUE for existing users.</p>
+    <button onclick="applyMigration()">Apply Migration</button>
+    <div id="log"></div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+
+    const supabaseClient = createClient(
+      'https://iogceaotdodvugrmogpp.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZ2NlYW90ZG9kdnVncm1vZ3BwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDg4NzA4NCwiZXhwIjoyMDc2NDYzMDg0fQ.UBWhZUiQY0CklVKJonHbnjQRX51PvBaQDKy6-66Q-jU'
+    );
+
+    function log(message) {
+      document.getElementById('log').innerHTML += message + '\n';
+      console.log(message);
+    }
+
+    async function applyMigration() {
+      log('🔧 Starting migration...\n');
+
+      try {
+        // Step 1: Check if column exists by trying to select it
+        log('📋 Checking current schema...');
+        const { data: testData, error: testError } = await supabaseClient
+          .from('profiles')
+          .select('welcome_modal_shown')
+          .limit(1);
+
+        if (testError && testError.message.includes('column')) {
+          log('❌ Column does not exist, needs to be added via SQL Editor\n');
+          log('📝 Please copy and run this SQL in Supabase Dashboard > SQL Editor:\n');
+          log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+          log('ALTER TABLE profiles');
+          log('ADD COLUMN IF NOT EXISTS welcome_modal_shown BOOLEAN DEFAULT FALSE;');
+          log('');
+          log('UPDATE profiles');
+          log('SET welcome_modal_shown = TRUE;');
+          log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+          log('⚠️  After running the SQL, the app code updates will handle the rest!');
+          return;
+        }
+
+        log('✅ Column exists!\n');
+
+        // Step 2: Update all existing users
+        log('🔄 Setting welcome_modal_shown = TRUE for all existing users...');
+        const { error: updateError } = await supabaseClient
+          .from('profiles')
+          .update({ welcome_modal_shown: true })
+          .is('welcome_modal_shown', null)
+          .or('welcome_modal_shown.eq.false');
+
+        if (updateError) {
+          log('❌ Error updating: ' + updateError.message);
+          return;
+        }
+
+        log('✅ All existing users updated!\n');
+        log('🎉 Migration completed successfully!\n');
+        log('👉 Now update your app code to use the database field.');
+
+      } catch (err) {
+        log('❌ Error: ' + err.message);
+      }
+    }
+  </script>
+</body>
+</html>

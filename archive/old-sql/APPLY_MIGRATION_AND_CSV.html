@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Apply Migration + Upload CSV</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body style="font-family: system-ui; max-width: 800px; margin: 40px auto; padding: 20px;">
+  <h1>🚀 Apply Hyper-Specific Migration + Upload CSV</h1>
+  <pre id="log" style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; max-height: 600px; overflow-y: auto; font-size: 13px;"></pre>
+
+  <script>
+    const log = document.getElementById('log');
+    function print(msg) {
+      log.textContent += msg + '\n';
+      log.scrollTop = log.scrollHeight;
+    }
+
+    const supabase = window.supabase.createClient(
+      'https://iogceaotdodvugrmogpp.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZ2NlYW90ZG9kdnVncm1vZ3BwIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDg4NzA4NCwiZXhwIjoyMDc2NDYzMDg0fQ.UBWhZUiQY0CklVKJonHbnjQRX51PvBaQDKy6-66Q-jU'
+    );
+
+    async function run() {
+      print('📦 Step 1: Applying schema migration...\n');
+
+      const migrationSQL = `
+-- Add new hyper-specific fields
+ALTER TABLE scripts
+ADD COLUMN IF NOT EXISTS the_situation TEXT,
+ADD COLUMN IF NOT EXISTS what_doesnt_work TEXT,
+ADD COLUMN IF NOT EXISTS strategy_steps JSONB,
+ADD COLUMN IF NOT EXISTS why_this_works TEXT,
+ADD COLUMN IF NOT EXISTS what_to_expect JSONB,
+ADD COLUMN IF NOT EXISTS common_variations JSONB,
+ADD COLUMN IF NOT EXISTS parent_state_needed TEXT,
+ADD COLUMN IF NOT EXISTS difficulty TEXT,
+ADD COLUMN IF NOT EXISTS duration_minutes INTEGER;
+`;
+
+      const { error: migError } = await supabase.rpc('exec', { sql: migrationSQL }).catch(e => ({error: e}));
+
+      if (migError) {
+        print('⚠️  Migration might have failed (columns may already exist): ' + migError.message);
+      } else {
+        print('✅ Migration applied successfully!\n');
+      }
+
+      print('\n📊 Step 2: Loading CSV scripts...\n');
+
+      const csvScripts = [
+        ${JSON.stringify({
+  title: "Toothbrush bristles feel 'scratchy' - clamps mouth shut",
+  category: "Hygiene",
+  profile: "INTENSE"
+})}
+        // Add more scripts here
+      ];
+
+      print('✅ Ready to upload ' + csvScripts.length + ' scripts\n');
+      print('❗ CSV upload will be added in next iteration\n');
+    }
+
+    run().catch(e => print('❌ Error: ' + e.message));
+  </script>
+</body>
+</html>

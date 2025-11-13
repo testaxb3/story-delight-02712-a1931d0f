@@ -1,0 +1,1528 @@
+-- ========================================
+-- RESET AND INSERT ALL SCRIPTS
+-- ========================================
+-- This will:
+-- 1. DELETE all existing scripts
+-- 2. INSERT all 83 scripts from scripts_upload.csv
+-- ========================================
+
+-- STEP 1: Show current count
+SELECT 'BEFORE DELETE' as step, COUNT(*) as total_scripts FROM public.scripts;
+
+-- STEP 2: Delete ALL existing scripts
+DELETE FROM public.scripts;
+
+-- STEP 3: Verify deletion
+SELECT 'AFTER DELETE' as step, COUNT(*) as total_scripts FROM public.scripts;
+
+-- STEP 4: Insert all 83 new scripts
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime Resistance - Won''t Get in PJs',
+  'DISTRACTED',
+  'Bedtime',
+  'Stop playing and put your pajamas on right now!',
+  'I see your brain is still in play mode. Let''s help it switch to sleep mode.',
+  'Hold up two pairs of pajamas for visual choice',
+  'Do you want the dinosaur PJs or the superhero PJs? You pick.',
+  'Point to each option and wait for their decision',
+  'Great choice! Let''s put them on and then we''ll do one calm activity.',
+  'Guide them step-by-step through getting dressed',
+  'DISTRACTED children need external cues to shift tasks. Offering choice activates their prefrontal cortex for decision-making while the visual options and step-by-step guidance provide the external structure their developing executive function needs.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Overtired Hyperactivity',
+  'DISTRACTED',
+  'Bedtime',
+  'Calm down and go to bed! You''re acting crazy!',
+  'Your body missed its sleepy window and now it feels buzzy. Let''s help your brain calm down.',
+  'Dim the lights and speak in a quieter voice',
+  'We''re going to do some heavy work to help your muscles relax.',
+  'Guide them to push against your hands or do wall push-ups for 2 minutes',
+  'Now your body is ready for sleep. Let''s get into bed.',
+  'Lead them to bed with a calm presence',
+  'When DISTRACTED children miss their sleep window, cortisol surges create hyperactivity. Heavy proprioceptive work (pushing, pulling) increases dopamine and helps their sympathetic nervous system down-regulate so melatonin can take effect.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Screen Time Too Close',
+  'DISTRACTED',
+  'Bedtime',
+  'Turn off that screen! It''s bedtime!',
+  'I know the screen is exciting for your brain. The blue light is telling your brain it''s daytime.',
+  'Begin turning off screens together',
+  'Let''s help your brain know it''s actually nighttime now. We''re going to do something different.',
+  'Hand them a book or quiet toy',
+  'In a few minutes your brain will start making sleepy chemicals. Let''s read this together.',
+  'Sit together with the calm activity',
+  'Blue light suppresses melatonin production by 58-81% in children. DISTRACTED brains are especially vulnerable to screen-based dopamine loops. Transitioning to low-stimulation activities allows their circadian rhythm to reset and melatonin production to resume.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Wants One More Story',
+  'DISTRACTED',
+  'Bedtime',
+  'No more stories! I already read three!',
+  'Your brain loves stories and wants to keep going. Let''s look at how many we planned.',
+  'Point to visual bedtime chart showing story limit',
+  'We agreed on two stories tonight. Your brain might want more, but your body needs sleep.',
+  'Place hand on their shoulder for grounding',
+  'Tomorrow night we get to pick two new stories. Which ones should we read?',
+  'Help them think ahead to create anticipation',
+  'DISTRACTED children struggle with stopping preferred activities due to poor impulse control and novelty-seeking. Referring to a pre-agreed visual plan bypasses in-the-moment resistance, while previewing tomorrow''s stories gives their dopamine-seeking brain something to look forward to.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Won''t Stay in Bed',
+  'DISTRACTED',
+  'Bedtime',
+  'Get back in bed right now! Stop getting up!',
+  'I notice your body keeps getting up. Your brain is having trouble staying still.',
+  'Walk them back calmly without excessive talking',
+  'Let''s give your body something to do while it falls asleep. Try squeezing and relaxing your muscles.',
+  'Demonstrate progressive muscle relaxation: tense for 5 seconds',
+  ' release',
+  'Each time your brain thinks of something, just notice it and let it float away like a cloud.',
+  'Sit nearby briefly to provide calm presence'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Fears/Anxiety About Dark',
+  'DISTRACTED',
+  'Bedtime',
+  'There''s nothing to be scared of! Just go to sleep!',
+  'Your brain is very alert right now and noticing everything. That''s how brains keep us safe.',
+  'Sit on the edge of the bed at eye level',
+  'Let''s teach your brain that this room is a safe place. What do you see that''s familiar?',
+  'Have them name 5 things they can see in the room',
+  'Your brain is learning that everything here is safe. I''m right here with you.',
+  'Provide physical comfort (hand on back',
+  ' sitting nearby)'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Can''t Fall Asleep',
+  'DISTRACTED',
+  'Bedtime',
+  'Just close your eyes and fall asleep!',
+  'Your brain is still making wake-up chemicals instead of sleep chemicals. Let''s help it switch.',
+  'Guide them to a comfortable position',
+  'We''re going to breathe in for 4, hold for 4, and out for 4. This tells your brain it''s safe to rest.',
+  'Breathe together',
+  ' placing their hand on their belly to feel it rise and fall',
+  'Each breath is helping your brain make melatonin, the sleepy chemical. Keep breathing slowly.',
+  'Continue breathing together for 2-3 minutes'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Transition from Active Play',
+  'DISTRACTED',
+  'Bedtime',
+  'No more playing! It''s bed time now!',
+  'Your body is still in play mode with lots of energy. Let''s help it shift to calm mode.',
+  'Set a visible timer for 10 minutes',
+  'You have 10 more minutes of play time. When the timer goes off, we''ll start our wind-down routine.',
+  'Check in at 5 minutes: "5 minutes left. Start thinking about how you''ll finish up."',
+  'Time''s up. Let''s do our walk-to-bed like astronauts in slow motion.',
+  'Make the transition playful with slow-motion walking',
+  'DISTRACTED children need extended transition times due to poor task-switching abilities in their developing prefrontal cortex. Visual timers provide external structure, while making the transition itself playful reduces resistance by maintaining engagement rather than abruptly stopping preferred activity.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Needs Movement to Settle',
+  'DISTRACTED',
+  'Bedtime',
+  'Stop wiggling and lie still!',
+  'I see your body needs to move before it can be still. That''s how your brain works.',
+  'Lead them to do 10 jumping jacks or running in place',
+  'Now let''s do some stretches to help your muscles relax.',
+  'Guide through 3-4 gentle stretches (reach up',
+  ' touch toes',
+  ' twist side to side)',
+  'Your body did the movement it needed. Now it''s ready to rest.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Forgot Part of Routine',
+  'DISTRACTED',
+  'Bedtime',
+  'We already did the routine! Stop stalling!',
+  'Your brain is checking to make sure we did all the steps. Let''s look at our chart together.',
+  'Walk to the visual bedtime routine chart',
+  'Let''s check off what we did: bath, pajamas, teeth, story. What are we missing?',
+  'Help them identify if anything is truly missing or if anxiety is talking',
+  'Everything is done. Your brain can relax now. You''re safe and ready for sleep.',
+  'Provide reassurance while guiding back to bed',
+  'DISTRACTED children have poor working memory, so they genuinely may not remember completing steps. Visual checklists provide external memory support. Also, the uncertainty triggers their threat-detection system. Reviewing the chart provides concrete reassurance that everything is complete.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Sibling Keeping Them Awake',
+  'DISTRACTED',
+  'Bedtime',
+  'Both of you be quiet and go to sleep!',
+  'I hear that the sounds from your sister''s bed are hard for your brain to ignore. Let''s give your ears something else to focus on.',
+  'Offer white noise machine or quiet music',
+  'This sound will help your brain stop paying attention to every little noise.',
+  'Turn on the consistent background sound at low volume',
+  'Now your brain has one steady sound instead of surprising sounds. That helps it relax.',
+  'Sit briefly to ensure they''re settling',
+  'DISTRACTED brains have poor sensory gating—they notice all stimuli equally rather than filtering background noise. White noise or steady music provides consistent auditory input that''s easier to habituate to, reducing the orienting response to novel sounds that keeps them alert.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Hunger Before Sleep',
+  'DISTRACTED',
+  'Bedtime',
+  'You should have eaten at dinner! No food now!',
+  'Your body is sending hunger signals to your brain. That makes it hard to sleep.',
+  'Take them to the kitchen calmly',
+  'Let''s give your body a small snack so your brain can focus on sleep instead of hunger.',
+  'Offer protein/fat snack (cheese',
+  ' nuts',
+  ' milk) not sugar',
+  'Now your body has what it needs. Bed time.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Worried About Tomorrow',
+  'DISTRACTED',
+  'Bedtime',
+  'Stop worrying! Tomorrow will be fine!',
+  'Your brain is thinking about tomorrow and that''s making it hard to rest. Let''s get those thoughts out.',
+  'Get a piece of paper and pencil',
+  'Let''s write down or draw what you''re thinking about. Once it''s on paper, your brain can stop holding onto it.',
+  'Help them externalize their worries',
+  'Now we''ll put this in your special drawer. Your worries are safe here and tomorrow you can look if you want.',
+  'Place the paper away together with a ritual',
+  'DISTRACTED children have poor working memory and executive function, so worries loop repetitively because they can''t mentally organize or resolve them. Externalizing thoughts onto paper literally removes cognitive load, allowing their overactive Default Mode Network to quiet.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Room Temperature Issues',
+  'DISTRACTED',
+  'Bedtime',
+  'Just deal with it and go to sleep!',
+  'Your body is telling you the temperature doesn''t feel right. Temperature affects sleep chemicals.',
+  'Check the thermostat or add/remove blankets',
+  'Bodies sleep best when they''re slightly cool. Let''s fix this so your brain can make sleep chemicals.',
+  'Adjust temperature or bedding to their comfort',
+  'Now your body temperature can drop like it needs to for sleep. That helps melatonin work.',
+  'Ensure they''re comfortable before leaving',
+  'Melatonin production is tied to core body temperature dropping. DISTRACTED children with sensory sensitivities are especially affected by temperature discomfort—it keeps their arousal system activated. Ideal sleep temperature is 65-70°F. Addressing this removes a physiological sleep barrier.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Bedtime - Won''t Brush Teeth First',
+  'DISTRACTED',
+  'Bedtime',
+  'Go brush your teeth or no story time!',
+  'Your brain wants to skip to the fun part. Let''s gamify tooth brushing so it''s interesting too.',
+  'Set a timer for 2 minutes with fun sound',
+  'Can you brush every tooth before the timer goes off? I bet you can!',
+  'Stand with them and make it a challenge/game',
+  'You did it! Now your brain gets the story reward it was waiting for.',
+  'Follow through with the promised story time',
+  'DISTRACTED brains are driven by immediate rewards and find boring tasks almost painful due to low dopamine. Gamification releases dopamine through challenge and achievement, making the task neurologically tolerable. Immediate reward (story) reinforces the behavior chain.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Tantrum When Time Ends',
+  'DISTRACTED',
+  'Screens',
+  'I said screen time is over! Stop crying!',
+  'I know the screen is super interesting to your brain. It''s hard to stop when your brain wants to keep going.',
+  'Sit at their level and acknowledge their frustration',
+  'Your brain got used to the fast excitement from the screen. Let''s help it calm down.',
+  'Take their hand and do 10 deep breaths together',
+  'The upset feeling will pass. In a few minutes your brain will adjust. Let''s do something with your hands.',
+  'Offer a sensory activity or fidget toy',
+  'Screens flood DISTRACTED brains with dopamine. Abruptly stopping feels like reward removal, triggering a stress response. The tantrum is neurological withdrawal, not manipulation. Deep breathing activates the parasympathetic nervous system, while offering alternative stimulation helps their brain transition.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Can''t Transition Off',
+  'DISTRACTED',
+  'Screens',
+  'Turn it off now! We need to go!',
+  'Your brain is very focused on the screen right now. Let''s use a timer so your brain can prepare to stop.',
+  'Set a visible countdown timer for 5 minutes',
+  'When you see the timer getting close to zero, your brain can start getting ready to finish.',
+  'Give a 2-minute warning: "Almost time. Start thinking about stopping."',
+  'Time''s up. Let''s turn it off together and I''ll help your brain switch activities.',
+  'Turn off the device with them and immediately engage them in the next activity',
+  'DISTRACTED children have poor task-switching due to prefrontal cortex immaturity. Timers provide external structure for their weak internal time perception. Gradual warnings allow their brain to anticipate the change, reducing amygdala activation when the transition occurs.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Negotiating for More Time',
+  'DISTRACTED',
+  'Screens',
+  'I already said no! Stop asking!',
+  'Your brain really wants more screen time because it feels good. Let''s look at our agreement.',
+  'Point to the pre-set screen time rules visible on a chart',
+  'We agreed on 30 minutes today. Your brain''s job is to want more, but we help it make healthy choices.',
+  'Acknowledge their desire without changing the boundary',
+  'Tomorrow you''ll get another turn. What would you like to do right now instead?',
+  'Redirect to the next engaging activity',
+  'DISTRACTED brains have poor impulse control and delayed gratification abilities due to dopamine regulation differences. Negotiating in the moment enables executive dysfunction. Pre-agreed visual rules create external structure, while redirecting to a new activity gives their novelty-seeking brain something to engage with.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Sneaking Device Access',
+  'DISTRACTED',
+  'Screens',
+  'You''re in trouble for sneaking the tablet!',
+  'I noticed you took the tablet when it wasn''t screen time. Your brain wanted that excitement and had trouble stopping itself.',
+  'State the observation calmly without anger or shame',
+  'Your brain''s job is to want fun things. My job is to help you make good choices when your brain has trouble stopping.',
+  'Physical action: Take device and place in a locked location',
+  'Let''s figure out how to help your brain remember the rules. What could we do differently?',
+  'Problem-solve together about environmental modifications',
+  'Sneaking behavior in DISTRACTED children reflects poor impulse control and reward-seeking, not moral failure. Their prefrontal cortex cannot consistently override urges. Environmental modifications (physical device storage, parental controls) provide external executive function their brain lacks.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Aggressive When Interrupted',
+  'DISTRACTED',
+  'Screens',
+  'Don''t you dare yell at me!',
+  'I see you''re very upset right now. The screen was giving your brain lots of excitement and stopping feels bad.',
+  'Take a step back and speak calmly',
+  'Your body needs a few minutes to calm down from that big reaction. Let''s breathe together.',
+  'Model slow breathing and wait for them to join',
+  'When your body is calmer, we can talk about what happened. I''m going to wait right here.',
+  'Sit nearby in calm presence until arousal decreases',
+  'Interrupting screen time in DISTRACTED children triggers a stress response—cortisol spikes when expected rewards are removed. Their amygdala hijacks prefrontal control. Co-regulating through calm presence and breathing helps their nervous system down-regulate before any teaching or consequences can be processed.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Morning Device Demands',
+  'DISTRACTED',
+  'Screens',
+  'No screens until after breakfast!',
+  'I hear your brain wants the tablet right away. Mornings are for getting our bodies ready first.',
+  'Redirect physically to the next morning task',
+  'First we do breakfast and getting dressed, then we can talk about screen time.',
+  'Use first-then language with visual support if available',
+  'Look how fast you got ready! That was great self-control. You can have 10 minutes before we leave.',
+  'Provide the reward if they complete morning tasks',
+  'DISTRACTED brains seek immediate dopamine hits. Screens first thing hijack their motivation for boring but necessary tasks. Using first-then structures and immediate rewards (10 minutes after completing tasks) provides motivation while building the behavior chain of morning routines before screens.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Gaming Session Won''t End',
+  'DISTRACTED',
+  'Screens',
+  'The game is not more important than our plans!',
+  'I see you''re at an exciting part of the game. Your brain is very focused right now.',
+  'Kneel next to them to be in their line of vision',
+  'Let''s find a good stopping point. Can you pause or save in the next 2 minutes?',
+  'Give them agency in finding a stopping point within a boundary',
+  'Thanks for finding a place to save. That shows good thinking. Now let''s go do [next activity].',
+  'Acknowledge their cooperation immediately',
+  'Games are designed for endless engagement, especially challenging for DISTRACTED brains with poor inhibitory control. Offering limited agency (you choose when to pause within 2 minutes) engages their prefrontal cortex and reduces reactance, while the time boundary provides necessary external structure.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Comparison to Real Activities',
+  'DISTRACTED',
+  'Screens',
+  'Why can''t you ever want to play outside?',
+  'Your brain got really used to the fast excitement from screens. Regular activities feel slow to your brain now.',
+  'Sit with them and explain the concept simply',
+  'We''re going to do a screen break for a few days so your brain can enjoy regular fun again.',
+  'Present it as a science experiment',
+  ' not punishment',
+  'Let''s go outside and see what we can find. I''ll do it with you.',
+  'Actively engage with them in the alternative activity'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Bedtime Screen Exposure',
+  'DISTRACTED',
+  'Screens',
+  'Turn off the iPad! It''s bedtime!',
+  'I know that game is fun, but screens tell your brain it''s daytime, not bedtime.',
+  'Take the device and show them the blue light',
+  'This blue light stops your brain from making sleepy chemicals. Let''s turn it off so your brain can make melatonin.',
+  'Place the device in its charging location away from bedroom',
+  'Now your brain can start making the chemicals that help you sleep. Let''s do our bedtime routine.',
+  'Begin the established wind-down routine',
+  'Blue light suppresses melatonin by 58-81% in children. DISTRACTED children are especially vulnerable because their circadian rhythm regulation is already challenged. Screens within 1-2 hours of bed shift their circadian phase later, creating bedtime resistance. Physical device removal is necessary.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - YouTube Auto-Play Trap',
+  'DISTRACTED',
+  'Screens',
+  'You''ve watched enough videos!',
+  'I notice you''ve been watching for a while. YouTube is designed to keep playing new videos automatically so you never want to stop.',
+  'Show them the auto-play feature and turn it off together',
+  'That''s how the app tricks your brain into watching more. Let''s turn off auto-play so you can stop when the video ends.',
+  'Set the device to require choosing each new video manually',
+  'Now your brain has a chance to decide if it wants more instead of just automatically continuing.',
+  'Empower them with knowledge about persuasive design',
+  'DISTRACTED brains are especially vulnerable to infinite scroll and auto-play features designed to eliminate stopping cues. Teaching them about persuasive technology builds metacognitive awareness. Disabling auto-play creates natural stopping points, giving their weak inhibitory control a chance to engage.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Family Meal Screen Use',
+  'DISTRACTED',
+  'Screens',
+  'Put your phone away at the table!',
+  'I notice the phone is very interesting to your brain. At meals we focus on our food and each other.',
+  'Create a device basket or charging station visible to everyone',
+  'Everyone''s phones go here during meals. That way all our brains can pay attention to being together.',
+  'Model the behavior by putting your own device in the basket',
+  'Now our brains can notice the food taste and hear each other''s voices. What was the best part of your day?',
+  'Actively engage in conversation immediately',
+  'DISTRACTED brains are easily pulled by notifications and visual stimuli. Screens at meals prevent mindful eating and social engagement. Family-wide device removal (not singling them out) reduces reactance. Immediate positive engagement gives their attention system something else to focus on.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Educational Content Argument',
+  'DISTRACTED',
+  'Screens',
+  'It doesn''t matter if it''s educational! Turn it off!',
+  'I hear you saying this video is teaching you things. Some screen time can be learning, and you still need breaks.',
+  'Acknowledge the content value while maintaining the boundary',
+  'Your brain learns best when it also has time away from screens to practice and think.',
+  'Begin transitioning them away from the device',
+  'Let''s go try something you learned about. Show me what you know.',
+  'Channel the content into real-world application',
+  'Even educational screen time activates the same dopamine pathways. DISTRACTED brains need breaks for information consolidation—the hippocampus processes learning during downtime. Transitioning to real-world application reinforces learning while reducing screen dependence.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Parent Phone Modeling Issue',
+  'DISTRACTED',
+  'Screens',
+  'Stop telling me what to do! I''m an adult!',
+  'You''re right that you notice I look at my phone a lot. That''s a good observation.',
+  'Model acknowledging their point without defensiveness',
+  'I''m going to work on that too because screens are hard for everyone''s brains. Let''s both try screen-free time.',
+  'Place your phone away during dedicated family time',
+  'During this time, both our brains will focus on being together instead of screens.',
+  'Follow through consistently to build trust',
+  'DISTRACTED children are keenly attuned to hypocrisy and have a strong sense of fairness. Defensive reactions model poor emotional regulation. Acknowledging their valid observation and making it a collaborative family effort reduces reactance and models accountability, strengthening both the rule and the relationship.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Screens - Multiplayer Game Social Pressure',
+  'DISTRACTED',
+  'Screens',
+  'I don''t care if your friends are playing! Get off!',
+  'I understand your friends are online and you don''t want to miss out. Your brain feels pulled to stay connected.',
+  'Acknowledge the social aspect specifically',
+  'We''re going to set a time limit ahead of time. You can tell your friends ''I have to log off at 7:30.''',
+  'Help them communicate boundaries to peers',
+  'That way your friends know when you''re leaving and your brain can prepare too.',
+  'Give them language to maintain social connection while honoring limits',
+  'DISTRACTED children often have social challenges and online gaming may be their primary peer connection. Arbitrary cutoffs damage their social standing. Pre-set limits they can communicate to peers allows their brain to prepare (weak time perception needs support) and maintains their social relationships.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Toddler Prediction Error',
+  'INTENSE',
+  'Tantrums',
+  'Stop crying! It''s just a banana!',
+  'You were expecting something to be one way and it''s different. That feels really big in your body right now.',
+  'Get down to their eye level and use a calm voice',
+  'I see how upset you are. Your feelings are so big. I''m right here with you.',
+  'Place a gentle hand on their back or offer a hug if wanted',
+  'This feeling will pass. We''ll wait together. You''re safe.',
+  'Stay present in calm silence until the intensity decreases',
+  'INTENSE children have heightened emotional reactivity due to amygdala hyperactivation and altered amygdala-prefrontal connectivity. Unexpected events trigger strong stress responses. Co-regulation through calm presence allows their nervous system to sync with yours and return to baseline.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Sensory Overwhelm Meltdown',
+  'INTENSE',
+  'Tantrums',
+  'You need to calm down right now!',
+  'I think your senses are getting too much information right now. Let''s get you somewhere quiet.',
+  'Immediately remove them from the overwhelming environment',
+  'Your nervous system needs a break. Let''s find a calm space.',
+  'Lead them to a quiet',
+  ' dim area',
+  'I''m going to sit with you while your body calms down. You don''t have to talk.',
+  'Provide silent'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Frustration Intolerance Rage',
+  'INTENSE',
+  'Tantrums',
+  'If you don''t stop crying I''m taking that toy away!',
+  'This is really frustrating and your body is showing big feelings. That''s okay.',
+  'Don''t try to fix the problem yet—just witness the emotion',
+  'You''re working so hard and it''s not working the way you want. That feels terrible.',
+  'Validate the experience specifically',
+  'When your body is ready, I can help if you want. Or we can take a break. You choose.',
+  'Offer options only after emotion decreases',
+  'INTENSE children feel emotions more strongly due to their neurobiology. Threats during dysregulation further activate the amygdala. Validation reduces emotional intensity faster than any other intervention. Only after ventral vagal (calm) state returns can they access problem-solving.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Transition Difficulty Rage',
+  'INTENSE',
+  'Tantrums',
+  'We''re leaving now! Stop throwing a fit!',
+  'I know it''s really hard to stop when you''re having fun. Your brain doesn''t like surprises.',
+  'Kneel down and connect emotionally first',
+  'I should have given you more warning. Let''s take a few breaths together.',
+  'Breathe slowly and wait for them to match your rhythm',
+  'Now let''s think together. What''s one thing you want to do before we go?',
+  'Give them limited control within the necessary transition',
+  'INTENSE children need more preparation time for transitions due to their highly active behavioral inhibition system. Abrupt changes feel threatening. Taking responsibility as the parent (co-regulator) models accountability, while offering limited choice restores their sense of agency and reduces amygdala activation.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Aggressive Hitting Parent',
+  'INTENSE',
+  'Tantrums',
+  'We do not hit! Go to your room!',
+  'Your body is so upset it''s trying to hit. I need to keep both of us safe.',
+  'Gently block or catch their hands without aggression',
+  'You''re having such big feelings and your body doesn''t know what to do with them. Let''s find a safe way.',
+  'Guide them to hit a pillow or stomp feet',
+  'Your anger is okay. Hitting people is not okay. Hitting this pillow is okay.',
+  'Teach the distinction between feeling and action',
+  'Hitting during tantrums in INTENSE children is a sympathetic nervous system fight response, not calculated aggression. Punishment escalates arousal. Stopping the behavior while validating the emotion and providing an acceptable alternative teaches their developing prefrontal cortex to channel impulses safely.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Shutdown/Withdrawal',
+  'INTENSE',
+  'Tantrums',
+  'Answer me when I''m talking to you!',
+  'I notice you''ve gone very quiet. Your body might be shutting down because everything felt like too much.',
+  'Reduce your own intensity immediately—softer voice',
+  ' more space',
+  'You don''t have to talk right now. I''m going to stay nearby where you can see me.',
+  'Sit at a comfortable distance without hovering',
+  'When you''re ready, you can come find me. I''ll be right here.',
+  'Wait patiently for them to re-engage on their timeline'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Public Meltdown Shame',
+  'INTENSE',
+  'Tantrums',
+  'Everyone is looking at us! Stop it!',
+  'I know there are a lot of people around and that makes this harder. But you and I are the only ones that matter right now.',
+  'Shield them from onlookers with your body if possible',
+  'Your feelings are more important than what anyone thinks. Let''s focus on helping you feel better.',
+  'Use calm voice and minimal words',
+  'I''m going to help you get somewhere calmer. Come with me.',
+  'Move to a quieter location (bathroom',
+  ' outside'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - After-School Collapse',
+  'INTENSE',
+  'Tantrums',
+  'Why are you acting like this? You were fine at school!',
+  'You held it together all day at school and now your body needs to let out all those feelings. This is actually a sign you feel safe with me.',
+  'Reframe the behavior as trust',
+  ' not disrespect',
+  'Your nervous system needs to discharge all that stress. Let''s give it what it needs.',
+  'Offer water',
+  ' a snack',
+  ' dim lights'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Sibling Conflict Explosion',
+  'INTENSE',
+  'Tantrums',
+  'Both of you stop fighting right now!',
+  'I see both of you are upset. Let''s separate first so you can both calm down.',
+  'Physically separate them to reduce stimulation',
+  '(To the INTENSE child) Your body is very activated right now. Let''s help it calm.',
+  'Focus on co-regulation with the intense child first',
+  'We''ll talk about what happened after everyone is calm. Right now we just breathe.',
+  'Model slow breathing and stay near',
+  'During conflict, INTENSE children''s amygdala activates intensely and prefrontal cortex goes offline. Attempting conflict resolution during dysregulation is neurologically impossible. Separation reduces threat perception. Individual co-regulation must precede any problem-solving or consequence discussion.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Hunger/Fatigue Trigger',
+  'INTENSE',
+  'Tantrums',
+  'You''re just tired! Stop being difficult!',
+  'Your body is sending stress signals to your brain because you need food or rest. Let''s take care of your body first.',
+  'Immediately offer a snack or path to rest',
+  'When your body''s basic needs aren''t met, everything feels harder and emotions get bigger.',
+  'Provide sustenance without requiring good behavior first',
+  'Once your body has what it needs, your emotions will be easier to manage. Let''s get you comfortable.',
+  'Help them meet the physiological need urgently',
+  'INTENSE children have narrow windows of tolerance that shrink further with hunger or fatigue. Physiological stress amplifies emotional sensitivity. Addressing the root cause (low blood sugar, sleep pressure) is required before any emotional regulation is possible. This is biology, not discipline.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Morning Meltdown Rush',
+  'INTENSE',
+  'Tantrums',
+  'We don''t have time for this! You need to get ready!',
+  'I see you''re overwhelmed right now. Our rushing is making your nervous system feel stressed.',
+  'Stop and take three breaths yourself to model regulation',
+  'Let''s slow down for one minute. Sometimes going slower actually helps us get ready faster.',
+  'Speak more softly and move more slowly',
+  'What''s the hardest part right now? Let''s do that first together.',
+  'Help them through the biggest obstacle with co-regulation',
+  'Morning cortisol is naturally higher in children. Rushing further activates their stress response. INTENSE children sense parental stress and it dysregulates them further. Paradoxically, pausing to co-regulate saves time because trying to force a dysregulated child forward is impossible—their prefrontal cortex is offline.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Bedtime Emotional Meltdown',
+  'INTENSE',
+  'Tantrums',
+  'You need to stop crying and go to sleep!',
+  'Bedtime brings up big feelings for lots of kids. Your body might be tired but your mind is still active.',
+  'Sit on the edge of their bed at eye level',
+  'Sometimes when our bodies get very tired, everything feels more intense. It''s not your fault.',
+  'Validate without trying to stop the emotion',
+  'I''m going to stay right here while these feelings move through you. You''re not alone.',
+  'Provide consistent presence without demands',
+  'Sleep pressure intensifies emotions in INTENSE children—fatigue narrows their window of tolerance while their amygdala becomes more reactive. Separation anxiety often peaks at bedtime. Trying to force sleep is counterproductive. Calm presence allows their parasympathetic nervous system to engage, enabling sleep.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Perfectionism Rage',
+  'INTENSE',
+  'Tantrums',
+  'It doesn''t have to be perfect! You''re being ridiculous!',
+  'I see you want this to be exactly right and it''s not working how you imagined. That''s so frustrating.',
+  'Acknowledge their high standards without dismissing them',
+  'Your brain has a strong picture of how this should be. Sometimes our hands can''t do what our brain imagines yet.',
+  'Normalize the gap between vision and ability',
+  'Let''s take a break and come back. Or I can help. What sounds better?',
+  'Offer options without forcing',
+  'INTENSE children often have perfectionism linked to anxiety—their hyperactive amygdala perceives mistakes as threats. Calling them ridiculous increases shame and escalates the meltdown. Validating their high standards while normalizing the vision-ability gap reduces amygdala activation and engages problem-solving networks.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Change in Plans Meltdown',
+  'INTENSE',
+  'Tantrums',
+  'Stop overreacting! We''ll do it another day!',
+  'I know you were really looking forward to that plan and now it changed. Disappointment feels huge in your body.',
+  'Validate the emotion with specificity',
+  'Your brain prepared for one thing and now it has to adjust to something different. Brains don''t like that.',
+  'Explain what''s happening neurologically in simple terms',
+  'It''s okay to feel disappointed. The feeling won''t last forever. Let''s be sad about it together for a minute.',
+  'Give them permission and space to feel it fully',
+  'INTENSE children''s nervous systems are highly sensitive to prediction errors—unexpected changes trigger strong stress responses. Their highly active behavioral inhibition system prepared for the original plan. Validation and time to process the emotion are necessary before they can cognitively adjust to the new plan.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Tantrums - Refusal to Participate',
+  'INTENSE',
+  'Tantrums',
+  'Everyone else is doing it! Stop being difficult!',
+  'I notice you''re holding back. Sometimes new things feel scary or overwhelming.',
+  'Don''t force participation—kneel beside them',
+  'Your body is telling you this doesn''t feel safe or comfortable yet. That''s important information.',
+  'Validate their hesitation as wisdom',
+  ' not defiance',
+  'You can watch from here with me, or we can leave if it''s too much. What feels better?',
+  'Offer options that respect their nervous system'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Won''t Try New Foods',
+  'INTENSE',
+  'Mealtime',
+  'Just take one bite! You haven''t even tried it!',
+  'I notice this food is new to your eyes. Sometimes new things feel uncomfortable to your senses.',
+  'Don''t pressure or force—place the food on the table without demands',
+  'It''s okay if you don''t eat it today. It can just sit there. Maybe you''ll smell it or touch it, or maybe not.',
+  'Neutralize all pressure completely',
+  'There''s [familiar safe food] here too. You can eat what feels right to your body.',
+  'Point out the safe option always present',
+  'INTENSE children have heightened sensory processing sensitivity, especially with food. Pressure backfires catastrophically—it takes 10-30+ exposures for acceptance. Food neophobia is partly genetic. Removing all pressure is the only evidence-based approach. Their nervous system needs to feel safe to explore.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Texture Sensitivity Refusal',
+  'INTENSE',
+  'Mealtime',
+  'Stop being picky! It''s just food!',
+  'I notice your body doesn''t like the way that food feels. Your mouth is extra sensitive.',
+  'Validate their sensory experience as real',
+  ' not defiance',
+  'Some textures feel uncomfortable or even painful to some people. Your feelings about food are real.',
+  'Acknowledge sensory processing differences',
+  'You don''t have to eat it. Let''s find foods with textures your mouth likes.',
+  'Shift to finding acceptable alternatives within food groups'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Gagging on Food',
+  'INTENSE',
+  'Mealtime',
+  'Swallow it! Don''t be dramatic!',
+  'Your body is having a strong reaction. Let''s help your mouth feel okay.',
+  'Immediately give them a napkin or let them spit it out',
+  'Some foods trigger a strong reflex in your mouth. That''s your body trying to protect you.',
+  'Explain the gag reflex without shame',
+  'You don''t have to eat that food. Let''s rinse your mouth and try something easier.',
+  'Offer water and move on without drama',
+  'Gagging is an involuntary reflex, especially strong in sensory-sensitive children. It can''t be controlled through willpower. Forcing them to keep food in their mouth risks aspiration and creates trauma associations. Supporting them through the reflex and moving on prevents long-term food aversion.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Overwhelmed by Multiple Foods',
+  'INTENSE',
+  'Mealtime',
+  'Try everything on your plate!',
+  'I see a lot of different foods touching each other. Sometimes that''s overwhelming for your brain.',
+  'Separate foods on the plate or use divided plates',
+  'Let''s give each food its own space so your eyes and brain can focus on one thing.',
+  'Physically separate everything clearly',
+  'Now you can choose which one to try first. Your body will tell you what it wants.',
+  'Offer choice and autonomy without pressure',
+  'INTENSE children can experience sensory overload from mixed textures, colors, and smells. Their nervous system processes stimuli more deeply. Divided plates reduce cognitive load and visual chaos. Offering choice engages their prefrontal cortex, reducing anxiety-based refusal.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Smell Sensitivity',
+  'INTENSE',
+  'Mealtime',
+  'It doesn''t smell bad! Just eat it!',
+  'I hear that smell is really strong to your nose. Your sense of smell is more sensitive than some people''s.',
+  'Acknowledge their olfactory sensitivity as real',
+  'When smells are too strong, they can make your stomach feel uncomfortable. That''s your body talking.',
+  'Validate the mind-body connection',
+  'You don''t have to eat it. Let''s find foods that smell okay to your nose.',
+  'Respect sensory boundaries while problem-solving',
+  'INTENSE children often have heightened olfactory sensitivity. Strong smells can trigger genuine nausea and activate their stress response. Dismissing their experience breaks trust. Sensory sensitivities are neurological, not manipulative. Finding acceptable alternatives honors their neurobiology.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Anxiety About Trying Food',
+  'INTENSE',
+  'Mealtime',
+  'What''s the worst that could happen? Just try it!',
+  'I see you''re worried about what might happen if you eat this. Your brain is trying to keep you safe.',
+  'Validate the anxiety without forcing',
+  'Food neophobia is your brain''s way of being careful about new things. Long ago, that protected people.',
+  'Normalize the evolutionary basis',
+  'We can leave it here and just look at it today. Looking is the first step. No eating required.',
+  'Remove all eating pressure—exposure without consumption',
+  'Food neophobia in INTENSE children is amplified by their hyperactive amygdala (threat detection). Pressure increases anxiety. Evidence-based approach: exposure without consumption for multiple sessions. Honoring their fear response while maintaining proximity to the food is the pathway to eventual acceptance.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Meltdown When Preferred Food Unavailable',
+  'INTENSE',
+  'Mealtime',
+  'We''re out of that! You can''t have it!',
+  'I hear you really wanted that specific food and we don''t have it. That''s so disappointing.',
+  'Validate the disappointment without dismissing it',
+  'Your brain was expecting that food and now it has to adjust. That''s hard for brains.',
+  'Explain the cognitive challenge simply',
+  'Let''s look together at what we do have. What sounds okay to your body right now?',
+  'Involve them in finding an acceptable alternative',
+  'INTENSE children have difficulty with flexibility when expectations aren''t met—their amygdala perceives it as a threat. Food jags and rigidity are partly neurological. Validation reduces emotional intensity. Collaborative problem-solving engages their prefrontal cortex, helping them shift from emotional to cognitive processing.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Family Meal Overwhelm',
+  'INTENSE',
+  'Mealtime',
+  'Sit still and eat! Everyone else is!',
+  'I notice family dinner is a lot of stimulation—voices, smells, people. That''s overwhelming for your senses.',
+  'Acknowledge their sensory experience',
+  'Your body needs quieter eating sometimes. That''s okay. Let''s set you up where it feels calmer.',
+  'Offer to let them eat in a quieter space without punishment',
+  'When your body is ready, you can join us, or you can stay here. Both are fine.',
+  'Remove shame from needing accommodation',
+  'Family meals with multiple sensory inputs (noise, smells, visual chaos) can overwhelm INTENSE children''s sensitive nervous systems. Forcing participation activates fight/flight. Offering accommodation without shame honors their needs while maintaining family connection when they''re able to tolerate it.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Eating Very Slowly',
+  'INTENSE',
+  'Mealtime',
+  'Hurry up! We don''t have all day!',
+  'I notice you''re eating very slowly and carefully. Your body might need time to process each bite.',
+  'Validate their pace as a sensory need',
+  ' not defiance',
+  'Some people need more time to notice how food feels and tastes. That''s how your body works.',
+  'Explain individual differences in sensory processing',
+  'There''s no rush. You can take the time your body needs.',
+  'Explicitly give permission to eat at their pace'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Won''t Eat When Upset',
+  'INTENSE',
+  'Mealtime',
+  'You have to eat something!',
+  'I see you''re feeling upset. Sometimes when our bodies are stressed, eating feels impossible.',
+  'Recognize that emotional state affects appetite',
+  'Your stomach and your feelings are connected. When you''re upset, your stomach closes up.',
+  'Explain the gut-brain connection simply',
+  'We''ll save your food. When your body calms down, you might feel hungry again.',
+  'Remove pressure and offer later',
+  'Stress activates the sympathetic nervous system, shutting down digestion (blood flow diverts from the gut). INTENSE children''s strong emotions make this especially pronounced. Forcing food during distress can cause nausea or vomiting. Supporting their regulation first allows appetite to return naturally.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Mealtime - Refuses Dinner Then Wants Snacks',
+  'INTENSE',
+  'Mealtime',
+  'You didn''t eat dinner so no snacks!',
+  'I notice you didn''t eat at dinner time and now your body is saying it''s hungry.',
+  'Acknowledge the physiological reality',
+  'Sometimes bodies aren''t ready to eat when we serve food, and that''s okay.',
+  'Normalize variable hunger patterns',
+  'Let me offer you some of the dinner food now. Your body might be ready for it.',
+  'Re-offer the meal food without punishment',
+  'INTENSE children may have poor interoceptive awareness and not recognize hunger when food is first offered. Punishing with hunger is harmful. Offering the meal food later respects both hunger cues and boundaries (no short-order cooking). Their delayed recognition is neurological, not manipulation.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Can''t Initiate Starting',
+  'DISTRACTED',
+  'Homework',
+  'Stop procrastinating and start your homework!',
+  'I see your brain is having trouble starting. Brains sometimes freeze when tasks feel big or boring.',
+  'Sit down next to them at their level',
+  'Let''s break this into tiny pieces. What''s the very first step—like opening your folder?',
+  'Make the first step so small it feels doable',
+  'Great! You started. Now let''s do just one problem together, then you try one.',
+  'Build momentum with scaffolding and celebration of small steps',
+  'DISTRACTED children struggle with task initiation due to executive function deficits in their developing prefrontal cortex. Large tasks overwhelm their working memory. Breaking into micro-steps and doing the first steps together reduces activation energy and builds momentum through small dopamine hits.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Easily Distracted',
+  'DISTRACTED',
+  'Homework',
+  'Pay attention and finish your work!',
+  'Your brain keeps noticing things around the room. Let''s set up your environment to help your brain focus.',
+  'Remove visible distractions—clutter',
+  ' toys',
+  ' screens',
+  'Now let''s use a timer. Your brain can focus for 15 minutes, then take a 5-minute break.',
+  'Set up structured work/break intervals using Pomodoro technique',
+  'During breaks, move your body. That helps your brain focus better for the next round.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Forgets to Turn In',
+  'DISTRACTED',
+  'Homework',
+  'How could you forget again? You just did it!',
+  'Your brain has a hard time remembering all the steps. Let''s create a system that remembers for you.',
+  'Set up a checklist: Do homework → Put in folder → Folder in backpack → Backpack by door → Turn in',
+  'We''re going to practice the whole routine tonight so your brain learns the pattern.',
+  'Walk through the entire sequence physically',
+  'Tomorrow morning, you''ll see your backpack right by the door. That will remind your brain to take it.',
+  'Use environmental cues as external memory',
+  'DISTRACTED children have poor working memory—they genuinely forget steps in multi-step processes. This is executive dysfunction, not carelessness. External systems (checklists, environmental cues, routines) provide the memory support their developing prefrontal cortex can''t yet generate internally.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Frustrated and Quits',
+  'DISTRACTED',
+  'Homework',
+  'Stop giving up! You can do this!',
+  'I see this is frustrating. Your brain is working really hard and it''s not coming easily.',
+  'Validate the struggle without dismissing the difficulty',
+  'When something is hard, your brain needs breaks and strategies. Let''s try a different way.',
+  'Offer scaffolding—break the problem into smaller steps or model one',
+  'Look at that! You got it with a little help. Your brain can learn this.',
+  'Celebrate the process and persistence',
+  ' not just the right answer'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Rushes Through Carelessly',
+  'DISTRACTED',
+  'Homework',
+  'Slow down and check your work!',
+  'Your brain wants to be done fast because homework isn''t fun. Speed feels good, but your brain skips steps when it rushes.',
+  'Point out the pattern without harsh criticism',
+  'Let''s use a checklist so your brain remembers to do each part carefully.',
+  'Provide external structure for quality control',
+  'Before you say you''re done, we''ll check off each step together. Does that sound okay?',
+  'Collaborative review process',
+  'DISTRACTED children seek immediate task completion for the dopamine reward (being done). They lack the internal monitoring for quality. Rushing reflects poor impulse control and weak working memory, not laziness. Checklists provide external quality control their prefrontal cortex can''t yet provide.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Refuses to Start',
+  'DISTRACTED',
+  'Homework',
+  'You have to do your homework! It''s not optional!',
+  'I hear your brain really doesn''t want to do homework right now. Boring tasks feel painful to your brain.',
+  'Validate without removing the expectation',
+  'Let''s make a deal. You can choose when to start in the next 30 minutes, and what subject to do first.',
+  'Offer bounded choice to increase intrinsic motivation',
+  'Once you finish, you get to choose a reward activity. What sounds good?',
+  'Use immediate reward to leverage their motivation',
+  'DISTRACTED brains have low dopamine, making boring tasks almost painful. Complete refusal is often dopamine-seeking. Offering choice activates their prefrontal cortex and increases autonomy (intrinsic motivation). Immediate rewards provide the dopamine their brain craves, making the task neurologically tolerable.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Perfectionism Paralysis',
+  'DISTRACTED',
+  'Homework',
+  'It doesn''t have to be perfect! Just start!',
+  'I see your brain is stuck worrying about making mistakes. That''s keeping you from starting.',
+  'Acknowledge the anxiety specifically',
+  'Mistakes are how brains learn. Your brain grows when you try things, even if they''re not perfect.',
+  'Teach growth mindset explicitly',
+  'Let''s agree to make some mistakes on purpose today. That takes the pressure off.',
+  'Paradoxical intervention to reduce perfectionism',
+  'DISTRACTED children with perfectionism (often with comorbid anxiety) experience paralysis from fear of failure. Their weak working memory makes them doubt their abilities. Reframing mistakes as brain growth and intentionally making mistakes engages their prefrontal cortex differently, reducing amygdala-based avoidance.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Loses Materials',
+  'DISTRACTED',
+  'Homework',
+  'Where is your folder? You just had it!',
+  'Your brain has trouble keeping track of lots of things at once. Let''s set up a system so your stuff knows where to go.',
+  'Create a designated homework station with all materials in one spot',
+  'Every day when you come home, backpack goes here, folder comes out and goes here.',
+  'Make it a physical routine with clear locations',
+  'Now your brain doesn''t have to remember—the place remembers for you.',
+  'Use environmental structure as external executive function',
+  'Poor working memory and organization are hallmark executive function deficits in DISTRACTED children. Expecting them to track materials mentally sets them up for failure. Environmental organization systems (designated spots, color coding, one homework location) provide external structure their brain lacks.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Needs Constant Supervision',
+  'DISTRACTED',
+  'Homework',
+  'Why can''t you just work independently?',
+  'Your brain needs check-ins and encouragement to stay on track. That''s how some brains work.',
+  'Normalize their need for support without shame',
+  'Let''s try this: Do 3 problems, then show me. Then 3 more, then show me.',
+  'Create structured check-in intervals',
+  'Each time you show me, you get immediate feedback. That helps your brain stay motivated.',
+  'Use frequent reinforcement',
+  'DISTRACTED children have poor sustained attention and motivation. They''re not manipulating for attention—they need external reinforcement to maintain task engagement because their dopamine system doesn''t provide internal motivation. Frequent check-ins prevent drift and provide the encouragement their brain needs.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Time Blindness',
+  'DISTRACTED',
+  'Homework',
+  'You''ve been working for 5 minutes! This shouldn''t take this long!',
+  'Your brain has a hard time feeling how much time has passed. Time moves differently in your mind.',
+  'Set up a visible analog timer or clock',
+  'This timer will show you how much time you''re using. Let''s guess how long this will take.',
+  'Have them estimate',
+  ' then compare actual to estimate',
+  'Wow, you thought 10 minutes but it was 25. That''s how we teach your brain about time.',
+  'Build time awareness through repeated practice with feedback'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Needs Movement While Working',
+  'DISTRACTED',
+  'Homework',
+  'Sit still and focus!',
+  'I notice your body needs to move. Movement actually helps your brain focus better.',
+  'Provide fidgets',
+  ' allow standing',
+  ' or let them use a wobble cushion',
+  'Let''s set up your work space so your body can move while your brain thinks.',
+  'Accommodate the sensory need without judgment',
+  'Try doing your work standing up or bouncing on this ball. See if that helps.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Homework - Executive Function Overload',
+  'DISTRACTED',
+  'Homework',
+  'You should be able to do this yourself by now!',
+  'This homework requires a lot of planning and organizing, and that''s hard for your brain right now.',
+  'Acknowledge that executive function skills are still developing',
+  'Let''s use a graphic organizer to help your brain see all the parts.',
+  'Provide scaffolding through external tools',
+  'As your brain gets more practice, these tools will get easier and eventually you won''t need them as much.',
+  'Frame supports as temporary brain-building tools',
+  'Multi-step assignments overwhelm DISTRACTED children''s limited working memory and planning abilities. Graphic organizers, checklists, and templates provide external structure. These are accommodations for genuine neurological deficits, not enabling. Scaffolding builds skills that will eventually internalize.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Leaving Playground',
+  'DEFIANT',
+  'Transitions',
+  'We''re leaving right now! Let''s go!',
+  'I know you''re having fun and don''t want to go. Let''s figure this out together.',
+  'Acknowledge their perspective and feelings first',
+  'We need to leave in 5 minutes. What''s one more thing you want to do before we go?',
+  'Offer limited choice within the boundary',
+  'Okay, you can do that. Then we''ll leave together. Do you want to walk to the car or hop?',
+  'Give them autonomy over HOW the transition happens',
+  'DEFIANT children resist when they feel controlled. Offering choice preserves autonomy (reducing reactance), while the time boundary maintains necessary structure. Letting them choose the manner of transition (walk/hop) gives additional agency, transforming a power struggle into collaboration.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Stopping Play for Dinner',
+  'DEFIANT',
+  'Transitions',
+  'Dinner time! Stop playing now!',
+  'I see you''re really into your game. Let''s make a plan together for stopping.',
+  'Sit down at their level and engage with curiosity about what they''re doing',
+  'How much more time do you think you need to finish this part?',
+  'Ask their input genuinely',
+  'Okay, 5 more minutes. When the timer goes off, we have a deal that you''ll come to dinner. Agreed?',
+  'Get explicit agreement—involves them in the decision',
+  'DEFIANT children need to feel heard and involved in decisions. Asking their input (within reason) engages their prefrontal cortex and provides autonomy. Explicit agreement activates their sense of integrity—they''re more likely to honor commitments they made than orders they received.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Starting Homework',
+  'DEFIANT',
+  'Transitions',
+  'Go do your homework right now!',
+  'I know homework isn''t fun. Let''s talk about when it makes sense for you to start.',
+  'Use collaborative language—"let''s talk" vs. "you will"',
+  'Do you want to start now and have the evening free, or have a snack first and start in 20 minutes?',
+  'Offer real choices within acceptable parameters',
+  'Your call. What works better for your brain?',
+  'Explicitly give them decision-making power',
+  'DEFIANT children have strong autonomy needs. Direct commands trigger psychological reactance—a biological drive to restore freedom by resisting. Collaborative problem-solving and genuine choice engage their prefrontal cortex, shifting from defiance to partnership. They cooperate with decisions they''ve made.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Going to School Refusal',
+  'DEFIANT',
+  'Transitions',
+  'You have to go to school! Stop arguing!',
+  'I hear that you don''t want to go to school. That''s important information. What''s going on?',
+  'Ask with genuine curiosity instead of commanding',
+  'School isn''t optional, and I want to understand what makes it hard.',
+  'Acknowledge the boundary while still validating their perspective',
+  'Let''s problem-solve together. What would make mornings easier?',
+  'Invite collaborative solution-finding',
+  'DEFIANT children refuse when they feel powerless. Acknowledging their feelings without removing boundaries shows respect. Collaborative problem-solving addresses the root cause (often anxiety, social issues, or sensory overwhelm) rather than just forcing compliance, which would escalate the power struggle.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Bedtime Resistance',
+  'DEFIANT',
+  'Transitions',
+  'It''s bedtime! Get upstairs now!',
+  'Bedtime is coming up. Let''s look at our evening plan together.',
+  'Use collaborative framing—"our plan" vs. "my rule"',
+  'You can choose the order: PJs first or teeth first? And do you want 2 books or 3 tonight?',
+  'Offer multiple points of choice within the structure',
+  'Great. Let''s get started then.',
+  'Follow their lead on the choices they made',
+  'DEFIANT children resist bedtime as a control issue, not because they''re not tired. Providing choices within the routine preserves their autonomy while maintaining the necessary boundary (bedtime happens). Multiple choice points reduce accumulated reactance that comes from feeling controlled all day.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Leaving a Friend''s House',
+  'DEFIANT',
+  'Transitions',
+  'Say goodbye! We''re leaving!',
+  'I know you''re having fun with your friend and leaving is disappointing. What''s a good way to say goodbye?',
+  'Involve them in the transition process',
+  'Do you want to pick a time to see them again, or make plans now?',
+  'Give them some control over the situation',
+  'Thanks for being flexible even though you wanted to stay. That was mature.',
+  'Acknowledge their cooperation specifically and genuinely',
+  'DEFIANT children need agency even in necessary transitions. Involving them in how the goodbye happens and future planning gives them appropriate control. Genuine acknowledgment of their flexibility (not manipulation through praise) builds intrinsic motivation for cooperation.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Screen to Mealtime',
+  'DEFIANT',
+  'Transitions',
+  'Turn that off and come eat!',
+  'I see you''re in the middle of something. Let''s look at our screen time agreement together.',
+  'Reference pre-agreed rules rather than asserting authority in the moment',
+  'Our agreement says screens go off at 6:00 for dinner. It''s 6:00 now.',
+  'State the fact neutrally—the rule',
+  ' not you',
+  ' is the authority',
+  'Do you want to save it yourself or should I help you?'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Transitions - Change in Plans',
+  'DEFIANT',
+  'Transitions',
+  'Plans changed. Deal with it.',
+  'I know we had different plans and now they''ve changed. That''s frustrating and I''m disappointed too.',
+  'Share your own disappointment—model transparency',
+  'Let''s figure out what we can do instead. Do you have any ideas?',
+  'Invite their input on the new plan',
+  'What if we do [their idea] now and reschedule [original plan] for next weekend?',
+  'Incorporate their suggestions when possible',
+  'DEFIANT children feel powerless when plans change without their input. Modeling your own disappointment shows emotions are valid. Inviting their solutions for alternatives gives them agency in the new situation, reducing the feeling of being controlled by circumstances or authority figures.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Hygiene - Toothbrushing Refusal',
+  'INTENSE',
+  'Hygiene',
+  'You have to brush your teeth!',
+  'I notice toothbrushing feels uncomfortable to your mouth. Let''s find a way that feels better.',
+  'Acknowledge the sensory challenge as real',
+  'Do you want to pick the toothbrush? We have soft, extra soft, or this vibrating one.',
+  'Offer control over the tools',
+  'Let''s try brushing for just 30 seconds today and work up to longer. I''ll set a timer.',
+  'Make the demand smaller and more manageable',
+  'Oral defensiveness in INTENSE children makes toothbrushing genuinely painful or overwhelming. Forcing creates trauma. Offering choice of tools, shortening duration, and gradual desensitization with their cooperation is the occupational therapy approach that actually works.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Hygiene - Hair Washing Screaming',
+  'INTENSE',
+  'Hygiene',
+  'Stop screaming! It''s just water!',
+  'Water on your head and face feels really overwhelming to your senses. Let''s make it easier.',
+  'Validate the sensory experience without dismissing',
+  'Today let''s try using a washcloth with just a little water instead of pouring. You can control it.',
+  'Offer an alternative method that reduces sensory overwhelm',
+  'Or we can use dry shampoo today and try washing another time when you''re ready.',
+  'Provide an out if the sensory challenge is too much',
+  'Hair washing involves multiple overwhelming sensory inputs for INTENSE children—water temperature, pressure, facial sensations. Their heightened sensitivity is neurological. Offering alternatives and gradual exposure respects their nervous system while maintaining hygiene. Force causes long-term aversion.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Hygiene - Nail Trimming Battle',
+  'INTENSE',
+  'Hygiene',
+  'Hold still! I''m just trimming your nails!',
+  'I know nail trimming feels uncomfortable or maybe ticklish or scary. Your body is very sensitive.',
+  'Acknowledge their sensory experience as valid',
+  'Let''s just do one nail today. Just one. Then we''re done.',
+  'Make the exposure so minimal they can tolerate it',
+  'Tomorrow we can do one more. Slow is okay.',
+  'Gradual desensitization without pressure',
+  'INTENSE children may have tactile hypersensitivity making nail trimming feel painful or threatening. All-or-nothing approaches fail. Doing one nail per day prevents overwhelm and builds tolerance gradually. Occupational therapy principles: make the exposure small enough to tolerate, repeat consistently.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Hygiene - Bath Refusal',
+  'INTENSE',
+  'Hygiene',
+  'You have to take a bath! You''re dirty!',
+  'I hear you don''t want a bath. Sometimes the way water and soap feel is too much for your senses.',
+  'Validate their sensory sensitivity',
+  'Let''s find a way that feels okay. Do you want a bath with toys, or a quick shower, or a washcloth wash tonight?',
+  'Offer multiple options with decreasing sensory demands',
+  'You choose what your body can handle tonight.',
+  'Give them full agency in meeting the hygiene need',
+  'INTENSE children''s sensory processing sensitivity makes full baths overwhelming sometimes. Respecting their sensory limits while maintaining hygiene builds trust. Offering graduated options (bath/shower/washcloth) ensures cleanliness while honoring their nervous system''s capacity in that moment.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Social - Sharing Toys',
+  'DEFIANT',
+  'Social',
+  'You need to share right now!',
+  'I see you both want the same toy. Let''s figure out a solution together.',
+  'Get down to their level and address both children',
+  'What are some ways we could solve this so both of you are happy?',
+  'Invite collaborative problem-solving rather than imposing a solution',
+  'That''s a good idea. Let''s try taking turns with the timer. Who wants to go first?',
+  'Help them implement their solution',
+  'DEFIANT children resist imposed solutions, even fair ones, because it feels controlling. Collaborative problem-solving (CPS model) engages their prefrontal cortex, teaches negotiation skills, and preserves autonomy. They''re more invested in solutions they create than solutions imposed on them.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Social - Hitting Sibling',
+  'DEFIANT',
+  'Social',
+  'We don''t hit! Say sorry right now!',
+  'I can''t let you hit your brother. AND I want to understand what happened.',
+  'State the boundary while inviting their perspective',
+  'What was going on right before you hit? Help me understand.',
+  'Use genuine curiosity',
+  ' not interrogation',
+  'So you were really frustrated because he took your toy. Hitting isn''t okay, but your frustration makes sense. What else could you do next time?',
+  'Validate feeling'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Social - Won''t Play with Others',
+  'DEFIANT',
+  'Social',
+  'Go play with the other kids!',
+  'I notice you''re staying by yourself. That''s okay—your body gets to decide when you''re ready to join.',
+  'Remove pressure entirely',
+  'If you want to join, you can. If you want to watch, that''s fine too. You''re in charge of your choice.',
+  'Explicitly give them control',
+  'Let me know if you want help joining in, or if you want me to stay here with you.',
+  'Offer support without pressure',
+  'Forced social participation with DEFIANT children triggers reactance. Respecting their choice honors autonomy. Paradoxically, removing pressure often leads them to join when they feel safe. Pressure creates avoidance. Offering support (not force) makes participation safer if they choose it.'
+);
+
+INSERT INTO public.scripts (
+  title, profile, category, wrong_way, 
+  phrase_1, phrase_1_action, phrase_2, phrase_2_action, 
+  phrase_3, phrase_3_action, neurological_tip
+) VALUES (
+  'Social - Conflict Resolution',
+  'DEFIANT',
+  'Social',
+  'You both need to work this out right now!',
+  'I see you two have a problem. Do you want to solve it yourselves, or do you want my help?',
+  'Offer choice about intervention level',
+  'If you want my help, I need to hear both perspectives. Who wants to go first?',
+  'Structure the collaborative process while honoring their autonomy',
+  'Okay, I hear you both. Now you need to come up with a solution you both agree on. I trust you can figure this out.',
+  'Empower them to solve while providing structure',
+  'DEFIANT children resist adult-imposed conflict resolution. Offering choice about intervention level preserves autonomy. Hearing both sides shows fairness (critical to them). Empowering them to generate solutions teaches skills while respecting their capability, reducing the perception of being controlled.'
+);
+
+
+-- STEP 5: Verify insertion
+SELECT 'AFTER INSERT' as step, COUNT(*) as total_scripts FROM public.scripts;
+
+-- STEP 6: Show sample of inserted scripts
+SELECT 
+  title, 
+  profile, 
+  category 
+FROM public.scripts 
+ORDER BY title 
+LIMIT 10;
+
+-- ========================================
+-- Expected result: 83 scripts inserted
+-- ========================================

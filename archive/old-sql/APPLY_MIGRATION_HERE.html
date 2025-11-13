@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Enhanced Scripts Migration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            max-width: 800px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+
+        .step {
+            background: #f7fafc;
+            border-left: 4px solid #667eea;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .step-content {
+            display: inline-block;
+            vertical-align: top;
+            width: calc(100% - 50px);
+        }
+
+        .step strong {
+            color: #2d3748;
+            font-size: 1.1rem;
+        }
+
+        .step p {
+            color: #4a5568;
+            margin-top: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #48bb78;
+            margin-left: 1rem;
+        }
+
+        .alert {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            border-radius: 4px;
+        }
+
+        .alert strong {
+            color: #d68910;
+        }
+
+        .success {
+            background: #d4edda;
+            border-left-color: #28a745;
+            color: #155724;
+            display: none;
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+
+        .success strong {
+            color: #155724;
+        }
+
+        .code {
+            background: #2d3748;
+            color: #68d391;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        #copySuccess {
+            display: none;
+            color: #28a745;
+            margin-left: 1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Apply Enhanced Scripts Migration</h1>
+        <p style="color: #4a5568; margin-bottom: 2rem;">
+            Siga os passos abaixo para aplicar a migration que adiciona 18 novos campos na tabela <span class="code">scripts</span>.
+        </p>
+
+        <div class="alert">
+            <strong>⚠️ Importante:</strong> Este processo adiciona campos à tabela existente. Nenhum dado será perdido.
+        </div>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <div class="step-content">
+                <strong>Copie o SQL da Migration</strong>
+                <p>Clique no botão abaixo para copiar todo o SQL automaticamente:</p>
+                <button class="btn" onclick="copyMigrationSQL()">
+                    📋 Copiar SQL da Migration
+                </button>
+                <span id="copySuccess">✅ Copiado!</span>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <div class="step-content">
+                <strong>Abra o Supabase SQL Editor</strong>
+                <p>Clique no botão abaixo para abrir diretamente o SQL Editor do seu projeto:</p>
+                <a href="https://supabase.com/dashboard/project/iogceaotdodvugrmogpp/sql/new" target="_blank" class="btn">
+                    🔗 Abrir SQL Editor
+                </a>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <div class="step-content">
+                <strong>Cole e Execute o SQL</strong>
+                <p>
+                    No SQL Editor:<br>
+                    • Cole o SQL copiado (Ctrl+V)<br>
+                    • Clique em <span class="code">Run</span> no canto inferior direito<br>
+                    • Aguarde a mensagem "Success. No rows returned"
+                </p>
+            </div>
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <div class="step-content">
+                <strong>Verifique a Migration</strong>
+                <p>Execute esta query para verificar se os campos foram criados:</p>
+                <button class="btn btn-secondary" onclick="copyVerificationSQL()">
+                    📋 Copiar Query de Verificação
+                </button>
+                <span id="verifySuccess" style="display: none; color: #28a745; margin-left: 1rem; font-weight: 600;">✅ Copiado!</span>
+            </div>
+        </div>
+
+        <div class="success" id="successMessage">
+            <strong>✅ Migration Aplicada com Sucesso!</strong><br>
+            Agora você pode criar os scripts usando os 3 agentes. Veja <span class="code">ENHANCED_SCRIPTS_README.md</span> para próximos passos.
+        </div>
+
+        <div class="footer">
+            <p>📚 Documentação completa: <span class="code">ENHANCED_SCRIPTS_README.md</span></p>
+            <p>📝 Template para agentes: <span class="code">.claude/SCRIPT_CREATION_TEMPLATE.md</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Migration SQL - will be loaded from file
+        const migrationSQL = `-- Enhanced Scripts Structure for Rich Context & Personalization
+-- This migration adds fields needed for intelligent script recommendations
+-- and better parent experience during crisis moments
+
+-- Add new context and metadata fields to scripts table
+ALTER TABLE scripts
+ADD COLUMN IF NOT EXISTS situation_trigger TEXT,
+ADD COLUMN IF NOT EXISTS location_type TEXT[],
+ADD COLUMN IF NOT EXISTS time_optimal TEXT[],
+ADD COLUMN IF NOT EXISTS intensity_level TEXT,
+ADD COLUMN IF NOT EXISTS success_speed TEXT,
+ADD COLUMN IF NOT EXISTS parent_state TEXT[],
+ADD COLUMN IF NOT EXISTS age_min INTEGER,
+ADD COLUMN IF NOT EXISTS age_max INTEGER,
+ADD COLUMN IF NOT EXISTS backup_plan TEXT,
+ADD COLUMN IF NOT EXISTS common_mistakes TEXT[],
+ADD COLUMN IF NOT EXISTS pause_after_phrase_1 INTEGER DEFAULT 3,
+ADD COLUMN IF NOT EXISTS pause_after_phrase_2 INTEGER DEFAULT 2,
+ADD COLUMN IF NOT EXISTS expected_time_seconds INTEGER,
+ADD COLUMN IF NOT EXISTS related_script_ids UUID[],
+ADD COLUMN IF NOT EXISTS difficulty_level TEXT,
+ADD COLUMN IF NOT EXISTS requires_preparation BOOLEAN DEFAULT false,
+ADD COLUMN IF NOT EXISTS works_in_public BOOLEAN DEFAULT true,
+ADD COLUMN IF NOT EXISTS emergency_suitable BOOLEAN DEFAULT false;
+
+-- Add comments for documentation
+COMMENT ON COLUMN scripts.situation_trigger IS 'Clear, specific description of when to use this script (e.g., "When child refuses to get in car seat and you''re already late")';
+COMMENT ON COLUMN scripts.location_type IS 'Where this script works best: home, public, car, school, etc.';
+COMMENT ON COLUMN scripts.time_optimal IS 'Best times of day: morning, afternoon, evening, anytime';
+COMMENT ON COLUMN scripts.intensity_level IS 'Meltdown intensity this handles: mild, moderate, severe';
+COMMENT ON COLUMN scripts.success_speed IS 'Expected time to see results: 30sec, 1min, 2min, 5min';
+COMMENT ON COLUMN scripts.parent_state IS 'Parent emotional states this works for: calm, frustrated, exhausted, rushed, embarrassed';
+COMMENT ON COLUMN scripts.age_min IS 'Minimum recommended age in years';
+COMMENT ON COLUMN scripts.age_max IS 'Maximum recommended age in years';
+COMMENT ON COLUMN scripts.backup_plan IS 'Simple action to take if script doesn''t work after expected time';
+COMMENT ON COLUMN scripts.common_mistakes IS 'Array of specific mistakes parents make in this situation';
+COMMENT ON COLUMN scripts.pause_after_phrase_1 IS 'Seconds to pause after CONNECTION phrase (default 3)';
+COMMENT ON COLUMN scripts.pause_after_phrase_2 IS 'Seconds to pause after VALIDATION phrase (default 2)';
+COMMENT ON COLUMN scripts.expected_time_seconds IS 'Total expected time for cooperation in seconds (15-60)';
+COMMENT ON COLUMN scripts.related_script_ids IS 'UUIDs of alternative or follow-up scripts';
+COMMENT ON COLUMN scripts.difficulty_level IS 'Skill level needed: beginner, intermediate, advanced';
+COMMENT ON COLUMN scripts.requires_preparation IS 'Whether script needs advance setup (timer, visual aid, etc)';
+COMMENT ON COLUMN scripts.works_in_public IS 'Whether script is suitable for public situations';
+COMMENT ON COLUMN scripts.emergency_suitable IS 'Whether script works when parent is already stressed/frustrated';
+
+-- Create indexes for performance on commonly filtered fields
+CREATE INDEX IF NOT EXISTS idx_scripts_location_type ON scripts USING GIN (location_type);
+CREATE INDEX IF NOT EXISTS idx_scripts_time_optimal ON scripts USING GIN (time_optimal);
+CREATE INDEX IF NOT EXISTS idx_scripts_parent_state ON scripts USING GIN (parent_state);
+CREATE INDEX IF NOT EXISTS idx_scripts_intensity_level ON scripts (intensity_level);
+CREATE INDEX IF NOT EXISTS idx_scripts_emergency_suitable ON scripts (emergency_suitable) WHERE emergency_suitable = true;
+CREATE INDEX IF NOT EXISTS idx_scripts_age_range ON scripts (age_min, age_max);
+
+-- Create a view for emergency/SOS scripts
+CREATE OR REPLACE VIEW emergency_scripts AS
+SELECT
+  s.*,
+  COUNT(su.id) as usage_count,
+  AVG(CASE
+    WHEN sf.outcome = 'worked' THEN 1.0
+    WHEN sf.outcome = 'progress' THEN 0.5
+    ELSE 0.0
+  END) as success_rate
+FROM scripts s
+LEFT JOIN script_usage su ON s.id = su.script_id
+LEFT JOIN script_feedback sf ON s.id = sf.script_id
+WHERE s.emergency_suitable = true
+  AND s.works_in_public = true
+GROUP BY s.id;
+
+COMMENT ON VIEW emergency_scripts IS 'Pre-filtered scripts suitable for crisis/SOS mode with usage stats';
+
+-- Add trigger to auto-set emergency_suitable based on other fields
+CREATE OR REPLACE FUNCTION auto_set_emergency_suitable()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Script is emergency suitable if:
+  -- - Expected time <= 60 seconds
+  -- - Works when parent is frustrated/rushed
+  -- - Doesn't require preparation
+  IF NEW.expected_time_seconds IS NOT NULL
+     AND NEW.expected_time_seconds <= 60
+     AND NEW.parent_state IS NOT NULL
+     AND (NEW.parent_state && ARRAY['frustrated', 'rushed', 'exhausted'])
+     AND NEW.requires_preparation = false
+  THEN
+    NEW.emergency_suitable = true;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_emergency_suitable_trigger
+  BEFORE INSERT OR UPDATE ON scripts
+  FOR EACH ROW
+  EXECUTE FUNCTION auto_set_emergency_suitable();
+
+-- Create function to get best SOS script for a situation
+CREATE OR REPLACE FUNCTION get_sos_script(
+  p_user_id UUID,
+  p_child_id UUID DEFAULT NULL,
+  p_situation TEXT DEFAULT NULL,
+  p_location TEXT DEFAULT 'home'
+)
+RETURNS TABLE (
+  script_id UUID,
+  title TEXT,
+  situation_trigger TEXT,
+  success_rate NUMERIC,
+  personal_success_rate NUMERIC,
+  usage_count BIGINT,
+  relevance_score INTEGER
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    s.id as script_id,
+    s.title,
+    s.situation_trigger,
+    -- Global success rate
+    COALESCE(
+      AVG(CASE
+        WHEN sf_all.outcome = 'worked' THEN 1.0
+        WHEN sf_all.outcome = 'progress' THEN 0.5
+        ELSE 0.0
+      END),
+      0.5
+    ) as success_rate,
+    -- Personal success rate
+    COALESCE(
+      AVG(CASE
+        WHEN sf_user.outcome = 'worked' THEN 1.0
+        WHEN sf_user.outcome = 'progress' THEN 0.5
+        ELSE 0.0
+      END),
+      0.0
+    ) as personal_success_rate,
+    COUNT(DISTINCT su.id) as usage_count,
+    -- Relevance scoring
+    (
+      -- Matches location
+      CASE WHEN p_location = ANY(s.location_type) THEN 20 ELSE 0 END +
+      -- Matches time of day
+      CASE
+        WHEN EXTRACT(HOUR FROM NOW()) BETWEEN 6 AND 9 AND 'morning' = ANY(s.time_optimal) THEN 15
+        WHEN EXTRACT(HOUR FROM NOW()) BETWEEN 17 AND 20 AND 'evening' = ANY(s.time_optimal) THEN 15
+        ELSE 5
+      END +
+      -- Emergency suitable
+      CASE WHEN s.emergency_suitable THEN 25 ELSE 0 END +
+      -- Has personal success history
+      CASE WHEN COUNT(sf_user.id) > 0 THEN 20 ELSE 0 END +
+      -- Situation keyword match
+      CASE
+        WHEN p_situation IS NOT NULL
+         AND s.situation_trigger ILIKE '%' || p_situation || '%'
+        THEN 30
+        ELSE 0
+      END
+    ) as relevance_score
+  FROM scripts s
+  LEFT JOIN script_usage su ON s.id = su.script_id
+  LEFT JOIN script_feedback sf_all ON s.id = sf_all.script_id
+  LEFT JOIN script_feedback sf_user ON s.id = sf_user.script_id
+    AND sf_user.user_id = p_user_id
+    AND (p_child_id IS NULL OR sf_user.child_id = p_child_id)
+  WHERE s.emergency_suitable = true
+  GROUP BY s.id
+  ORDER BY relevance_score DESC, personal_success_rate DESC, success_rate DESC
+  LIMIT 1;
+END;
+$$ LANGUAGE plpgsql;
+
+COMMENT ON FUNCTION get_sos_script IS 'Returns the best script for emergency/SOS situations based on context and user history';`;
+
+        const verificationSQL = `SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'scripts'
+  AND column_name IN (
+    'situation_trigger',
+    'location_type',
+    'time_optimal',
+    'intensity_level',
+    'success_speed',
+    'parent_state',
+    'age_min',
+    'age_max',
+    'backup_plan',
+    'common_mistakes',
+    'pause_after_phrase_1',
+    'pause_after_phrase_2',
+    'expected_time_seconds',
+    'related_script_ids',
+    'difficulty_level',
+    'requires_preparation',
+    'works_in_public',
+    'emergency_suitable'
+  )
+ORDER BY column_name;
+
+-- Should return 18 rows if migration was successful`;
+
+        function copyMigrationSQL() {
+            navigator.clipboard.writeText(migrationSQL).then(() => {
+                const successEl = document.getElementById('copySuccess');
+                successEl.style.display = 'inline';
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                }, 3000);
+            });
+        }
+
+        function copyVerificationSQL() {
+            navigator.clipboard.writeText(verificationSQL).then(() => {
+                const successEl = document.getElementById('verifySuccess');
+                successEl.style.display = 'inline';
+                setTimeout(() => {
+                    successEl.style.display = 'none';
+                    document.getElementById('successMessage').style.display = 'block';
+                }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>

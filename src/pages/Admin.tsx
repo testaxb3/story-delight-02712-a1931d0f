@@ -1,0 +1,344 @@
+import { useState, useEffect, useCallback } from 'react';
+import { MainLayout } from '@/components/Layout/MainLayout';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { AdminFeedTab } from '@/components/Admin/AdminFeedTab';
+import { AdminScriptsTab } from '@/components/Admin/AdminScriptsTab';
+import { AdminPDFsTab } from '@/components/Admin/AdminPDFsTab';
+import { AdminVideosTab } from '@/components/Admin/AdminVideosTab';
+import { AdminAnalyticsTab } from '@/components/Admin/AdminAnalyticsTab';
+import { AdminNotificationsTab } from '@/components/Admin/AdminNotificationsTab';
+import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
+import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useAdminStatus } from '@/hooks/useAdminStatus';
+import { supabase } from '@/integrations/supabase/client';
+import {
+  LayoutDashboard,
+  FileText,
+  Video,
+  BookOpen,
+  BarChart3,
+  Users,
+  Activity,
+  TrendingUp,
+  Bell,
+  DollarSign,
+  Gift
+} from 'lucide-react';
+
+export default function Admin() {
+  const [activeTab, setActiveTab] = useState('feed');
+  const [counts, setCounts] = useState({ feed: 0, scripts: 0, pdfs: 0, videos: 0, refunds: 0, bonuses: 0 });
+  const [loadingCounts, setLoadingCounts] = useState(false);
+  const { user } = useAuth();
+  const { isAdmin, checking } = useAdminStatus();
+  const navigate = useNavigate();
+
+  const fetchCounts = useCallback(async () => {
+    setLoadingCounts(true);
+    const tables = [
+      { key: 'feed', table: 'feed_posts' },
+      { key: 'scripts', table: 'scripts' },
+      { key: 'pdfs', table: 'pdfs' },
+      { key: 'videos', table: 'videos' },
+      { key: 'refunds', table: 'refund_requests' },
+    ] as const;
+
+    const results = await Promise.all(
+      tables.map(async ({ table, key }) => {
+        const { count, error } = await supabase
+          .from(table)
+          .select('*', { count: 'exact', head: true });
+
+        if (error) {
+          console.error(`Failed to load ${table} count`, error);
+          return { key, value: 0 } as const;
+        }
+
+        return { key, value: count ?? 0 } as const;
+      })
+    );
+
+    // Get bonuses count from localStorage
+    const bonusesData = localStorage.getItem('nep_bonuses_data');
+    const bonusesCount = bonusesData ? JSON.parse(bonusesData).length : 0;
+
+    setCounts(
+      results.reduce(
+        (acc, result) => ({ ...acc, [result.key]: result.value }),
+        { feed: 0, scripts: 0, pdfs: 0, videos: 0, refunds: 0, bonuses: bonusesCount }
+      )
+    );
+    setLoadingCounts(false);
+  }, []);
+
+  useEffect(() => {
+    if (!user && !checking) {
+      navigate('/auth');
+    }
+  }, [user, checking, navigate]);
+
+  useEffect(() => {
+    fetchCounts();
+  }, [fetchCounts]);
+
+  if (checking) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-6xl animate-brain-pulse">🧠</div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center h-64">
+          <p className="text-muted-foreground">You do not have permission to access the admin panel.</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  const totalItems = counts.feed + counts.scripts + counts.pdfs + counts.videos + counts.refunds + counts.bonuses;
+
+  return (
+    <MainLayout>
+      <div className="space-y-8">
+        {/* Hero Header */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-pink-900/90 p-8 text-white shadow-xl dark:shadow-2xl">
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
+                <LayoutDashboard className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+                <p className="text-purple-100 text-sm">Manage your NEP System content</p>
+              </div>
+            </div>
+          </div>
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+        </div>
+
+        {/* Quick Stats Overview */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 border-blue-200 dark:border-blue-800/60 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Feed Posts</div>
+            </div>
+            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+              {loadingCounts ? '—' : counts.feed}
+            </div>
+            <div className="text-xs text-blue-600 dark:text-blue-300 mt-1 flex items-center gap-1">
+              <TrendingUp className="w-3 h-3" />
+              Total published
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 border-green-200 dark:border-green-800/60 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-green-500 rounded-lg">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-green-900 dark:text-green-100">NEP Scripts</div>
+            </div>
+            <div className="text-3xl font-bold text-green-900 dark:text-green-100">
+              {loadingCounts ? '—' : counts.scripts}
+            </div>
+            <div className="text-xs text-green-600 dark:text-green-300 mt-1 flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              Ready to use
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 border-purple-200 dark:border-purple-800/60 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-purple-500 rounded-lg">
+                <FileText className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-purple-900 dark:text-purple-100">PDF Guides</div>
+            </div>
+            <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
+              {loadingCounts ? '—' : counts.pdfs}
+            </div>
+            <div className="text-xs text-purple-600 dark:text-purple-300 mt-1 flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              In library
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/40 border-orange-200 dark:border-orange-800/60 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-orange-500 rounded-lg">
+                <Video className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-orange-900 dark:text-orange-100">Video Lessons</div>
+            </div>
+            <div className="text-3xl font-bold text-orange-900 dark:text-orange-100">
+              {loadingCounts ? '—' : counts.videos}
+            </div>
+            <div className="text-xs text-orange-600 dark:text-orange-300 mt-1 flex items-center gap-1">
+              <Activity className="w-3 h-3" />
+              Available now
+            </div>
+          </Card>
+        </div>
+
+        {/* Content Management Tabs */}
+        <Card className="border-none shadow-lg">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="grid grid-cols-8 w-full h-auto p-2 bg-muted/50">
+              <TabsTrigger
+                value="feed"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <FileText className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Feed</span>
+                  <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.feed}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="scripts"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <BookOpen className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Scripts</span>
+                  <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.scripts}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="pdfs"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <FileText className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">PDFs</span>
+                  <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.pdfs}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="videos"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Video className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Videos</span>
+                  <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.videos}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="analytics"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <BarChart3 className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Analytics</span>
+                  <span className="text-xs bg-primary text-white px-2 py-0.5 rounded-full">
+                    {totalItems}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="notifications"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Bell className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Notifications</span>
+                  <span className="text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">
+                    Push
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="refunds"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <DollarSign className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Refunds</span>
+                  <span className="text-xs bg-yellow-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.refunds}
+                  </span>
+                </div>
+              </TabsTrigger>
+
+              <TabsTrigger
+                value="bonuses"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Gift className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Bonuses</span>
+                  <span className="text-xs bg-pink-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.bonuses}
+                  </span>
+                </div>
+              </TabsTrigger>
+            </TabsList>
+
+            <div className="p-6">
+              <TabsContent value="feed" className="mt-0">
+                <AdminFeedTab onContentChanged={fetchCounts} />
+              </TabsContent>
+
+              <TabsContent value="scripts" className="mt-0">
+                <AdminScriptsTab onContentChanged={fetchCounts} />
+              </TabsContent>
+
+              <TabsContent value="pdfs" className="mt-0">
+                <AdminPDFsTab onContentChanged={fetchCounts} />
+              </TabsContent>
+
+              <TabsContent value="videos" className="mt-0">
+                <AdminVideosTab onContentChanged={fetchCounts} />
+              </TabsContent>
+
+              <TabsContent value="analytics" className="mt-0">
+                <AdminAnalyticsTab />
+              </TabsContent>
+
+              <TabsContent value="notifications" className="mt-0">
+                <AdminNotificationsTab />
+              </TabsContent>
+
+              <TabsContent value="refunds" className="mt-0">
+                <AdminRefundsTab />
+              </TabsContent>
+
+              <TabsContent value="bonuses" className="mt-0">
+                <AdminBonusesTab onContentChanged={fetchCounts} />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </Card>
+      </div>
+    </MainLayout>
+  );
+}

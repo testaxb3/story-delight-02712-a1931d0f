@@ -11,7 +11,6 @@ import { ReadingControls } from "./ReadingControls";
 import { NotesPanel } from "./NotesPanel";
 import { Chapter } from "@/data/ebookContent";
 import { useBookmarks } from "@/hooks/useBookmarks";
-import { ThemeProvider } from "next-themes";
 
 interface EbookReaderProps {
   chapters: Chapter[];
@@ -23,7 +22,7 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
   const [fontSize, setFontSize] = useState(1);
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(new Set());
   const { toggleBookmark, isBookmarked } = useBookmarks();
-  
+
   const currentChapter = chapters[currentChapterIndex];
   const progress = Math.round(((currentChapterIndex + 1) / chapters.length) * 100);
 
@@ -44,7 +43,7 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY + window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
-      
+
       if (scrollPosition >= documentHeight - 100) {
         const newCompleted = new Set(completedChapters);
         newCompleted.add(currentChapterIndex);
@@ -56,14 +55,14 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [currentChapterIndex, completedChapters]);
-  
+
   const handleNext = () => {
     if (currentChapterIndex < chapters.length - 1) {
       setCurrentChapterIndex(currentChapterIndex + 1);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
-  
+
   const handlePrevious = () => {
     if (currentChapterIndex > 0) {
       setCurrentChapterIndex(currentChapterIndex - 1);
@@ -79,10 +78,9 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
   const handleToggleBookmark = () => {
     toggleBookmark(currentChapterIndex);
   };
-  
+
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-      <div className="min-h-screen bg-background" style={{ fontSize: `${fontSize}rem` }}>
+    <div className="min-h-screen bg-background" style={{ fontSize: `${fontSize}rem` }}>
         <div className="max-w-3xl mx-auto px-6 py-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -159,6 +157,5 @@ export const EbookReader = ({ chapters, onClose }: EbookReaderProps) => {
         />
         </div>
       </div>
-    </ThemeProvider>
   );
 };

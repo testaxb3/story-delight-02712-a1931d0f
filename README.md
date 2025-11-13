@@ -1,73 +1,196 @@
-# Welcome to your Lovable project
+# Brainy Child Guide
 
-## Project info
+A modern parenting application built with React, TypeScript, and Supabase, designed to provide science-based guidance and community support for parents.
 
-**URL**: https://lovable.dev/projects/10d909a9-6f74-49c4-aade-5522d8589abc
+## Overview
 
-## How can I edit this code?
+Brainy Child Guide is a comprehensive parenting platform that combines:
+- Science-backed methodology and research
+- Interactive community features with forums and discussions
+- Premium bonuses system with ebooks, videos, and downloadable resources
+- Admin dashboard for content management
+- Responsive design optimized for all devices
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **UI Framework**: Radix UI + Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + Auth + Storage)
+- **State Management**: Zustand + TanStack Query
+- **Forms**: React Hook Form + Zod
+- **Icons**: Lucide React
+- **Animation**: Framer Motion
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/10d909a9-6f74-49c4-aade-5522d8589abc) and start prompting.
+## Project Structure
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+brainy-child-guide/
+├── src/                          # Source code
+│   ├── components/               # React components
+│   │   ├── Admin/               # Admin panel components
+│   │   ├── bonuses/             # Bonus system components
+│   │   ├── Community/           # Community features
+│   │   ├── ebook/               # Ebook reader components
+│   │   └── Navigation/          # Navigation components
+│   ├── pages/                   # Page components
+│   ├── hooks/                   # Custom React hooks
+│   ├── lib/                     # Utility functions and services
+│   ├── data/                    # Static data and content
+│   └── integrations/            # External integrations (Supabase)
+├── public/                      # Static assets
+├── supabase/                    # Supabase configuration
+│   └── migrations/              # Database migrations
+│       └── archived/            # Archived/old migrations
+├── docs/                        # Documentation
+│   ├── implementation/          # Technical implementation docs
+│   ├── guides/                  # User guides and tutorials
+│   ├── helpers/                 # Development helper tools (HTML)
+│   └── archive/                 # Archived documentation
+├── scripts/                     # Utility scripts
+│   ├── migrations/              # Migration scripts (.mjs)
+│   ├── seeds/                   # Database seed scripts
+│   └── utilities/               # Utility scripts
+├── ebooks/                      # Ebook files
+└── PROJETO CLAUDE/              # Project documentation
 
-**Use your preferred IDE**
+```
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Getting Started
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Prerequisites
 
-Follow these steps:
+- Node.js 18+
+- npm or bun
+- Supabase account and project
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd brainy-child-guide
+```
 
-# Step 3: Install the necessary dependencies.
-npm i
+2. Install dependencies:
+```bash
+npm install
+# or
+bun install
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Set up environment variables:
+   - Copy `.env.example` to `.env.local`
+   - Fill in your Supabase credentials:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+4. Run database migrations:
+```bash
+# Apply Supabase migrations
+# See docs/guides/ for migration guides
+```
+
+5. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Available Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build for development
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run diagnose` - Run Supabase diagnostics
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Key Features
 
-## What technologies are used for this project?
+### 1. Community Premium (Phase 1)
+- Forums and discussion boards
+- User profiles with avatars
+- Comments and nested replies
+- Reactions and badges system
+- Notifications
 
-This project is built with:
+### 2. Bonuses System
+- Multiple bonus types (ebooks, videos, PDFs, audio)
+- Admin CRUD interface
+- File upload to Supabase Storage
+- Premium content access control
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### 3. Scientific Methodology
+- Research-backed parenting content
+- CartPanda validation framework
+- Evidence-based recommendations
 
-## How can I deploy this project?
+### 4. Admin Panel
+- Content management
+- User management
+- Bonus creation and editing
+- Analytics dashboard
 
-Simply open [Lovable](https://lovable.dev/projects/10d909a9-6f74-49c4-aade-5522d8589abc) and click on Share -> Publish.
+## Database Schema
 
-## Can I connect a custom domain to my Lovable project?
+Key tables:
+- `profiles` - User profiles and metadata
+- `posts` - Community forum posts
+- `comments` - Post comments with reply support
+- `reactions` - User reactions (likes, etc)
+- `badges` - User achievement badges
+- `notifications` - User notifications
+- `bonuses` - Premium bonus content
 
-Yes, you can!
+See `supabase/migrations/` for detailed schema.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Documentation
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Comprehensive documentation is available in the `docs/` folder:
+
+- **[Documentation Index](./docs/INDEX.md)** - Complete documentation overview
+- **Implementation Guides** - Technical implementation details
+  - [Community Premium Phase 1](./docs/implementation/COMMUNITY_PREMIUM_FASE1_COMPLETA.md)
+  - [Technical Documentation](./docs/implementation/TECHNICAL_DOCUMENTATION_PHASE1.md)
+- **Quick Start Guides** - Step-by-step tutorials
+  - [Bonuses Quick Start](./docs/guides/BONUSES_QUICK_START.md)
+  - [Storage Bucket Setup](./docs/guides/SETUP_STORAGE_BUCKET.md)
+- **Helper Tools** - Development utilities in `docs/helpers/`
+
+## Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Test thoroughly
+4. Submit a pull request
+
+## Deployment
+
+This project is configured for deployment on Vercel:
+
+```bash
+npm run build
+```
+
+See `vercel.json` for deployment configuration.
+
+## Environment Variables
+
+Required environment variables:
+- `VITE_SUPABASE_URL` - Your Supabase project URL
+- `VITE_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+
+Optional:
+- `VITE_SENTRY_DSN` - Sentry error tracking DSN
+
+## License
+
+Private project - All rights reserved
+
+## Support
+
+For issues and questions, please refer to the documentation in `docs/` or contact the development team.

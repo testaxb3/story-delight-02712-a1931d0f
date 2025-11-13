@@ -13,6 +13,18 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        'display': ['"Playfair Display"', 'Georgia', 'serif'], // For ebook headings
+        'serif': ['Lora', 'Georgia', 'serif'], // For ebook body text
+        'sans': ['Inter', 'system-ui', 'sans-serif'], // For UI elements
+      },
+      fontSize: {
+        'ebook-body': ['18px', { lineHeight: '1.9', letterSpacing: '0.01em' }],
+        'ebook-lead': ['20px', { lineHeight: '1.85', letterSpacing: '0.005em' }],
+      },
+      spacing: {
+        '13': '3.25rem', // 52px for mobile nav
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -39,6 +51,14 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -47,28 +67,27 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        progress: {
-          bar: "hsl(var(--progress-bar))",
-          bg: "hsl(var(--progress-bg))",
+        defiant: {
+          DEFAULT: "hsl(var(--defiant))",
+          foreground: "hsl(var(--defiant-foreground))",
         },
-        insight: {
-          bg: "hsl(var(--insight-bg))",
-          border: "hsl(var(--insight-border))",
+        intense: {
+          DEFAULT: "hsl(var(--intense))",
+          foreground: "hsl(var(--intense-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
+        distracted: {
+          DEFAULT: "hsl(var(--distracted))",
+          foreground: "hsl(var(--distracted-foreground))",
         },
       },
-      fontFamily: {
-        'display': ['Playfair Display', 'serif'],
-        'body': ['Crimson Pro', 'serif'],
+      backgroundImage: {
+        'gradient-primary': 'var(--gradient-primary)',
+        'gradient-accent': 'var(--gradient-accent)',
+        'gradient-success': 'var(--gradient-success)',
+        'gradient-warning': 'var(--gradient-warning)',
+      },
+      backdropBlur: {
+        'glass': '12px',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -92,10 +111,15 @@ export default {
             height: "0",
           },
         },
+        "shimmer": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "shimmer": "shimmer 1.5s infinite",
       },
     },
   },

@@ -40,26 +40,26 @@ const calloutConfig = {
 export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
   const config = calloutConfig[type];
   const Icon = config.icon;
-  
+
   return (
     <div className={`my-8 p-8 rounded-2xl border-2 smooth-transition backdrop-blur-sm ${config.className}`}>
       <div className="flex gap-5">
         <div className="flex-shrink-0 mt-1">
           <Icon className={`w-7 h-7 ${config.iconClassName}`} />
         </div>
-        
+
         <div className="flex-1 space-y-4">
           <Badge className={`${config.badgeClassName} px-4 py-1.5 text-xs tracking-wider uppercase`}>
             {config.title}
           </Badge>
-          
+
           <div className="space-y-3 font-body text-base">
             {content.split('\n').map((line, index) => {
               if (!line.trim()) return null;
-              
+
               // Handle bold text
               const parts = line.split(/(\*\*.*?\*\*)/g);
-              
+
               return (
                 <p key={index} className="text-foreground leading-relaxed m-0">
                   {parts.map((part, i) => {
