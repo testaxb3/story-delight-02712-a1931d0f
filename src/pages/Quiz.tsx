@@ -14,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { PWAInstallGuide } from '@/components/PWAInstallGuide';
 import { quizQuestions, calculateBrainProfile } from '@/lib/quizQuestions';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
