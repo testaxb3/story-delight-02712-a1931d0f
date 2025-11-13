@@ -69,6 +69,15 @@ export default function Bonuses() {
     return map;
   }, [ebooks]);
 
+  // Map normalized title -> ebook_id (fallback for legacy bonuses without links)
+  const ebookByTitle = useMemo(() => {
+    const map = new Map<string, string>();
+    (ebooks || []).forEach(e => {
+      if (e.title) map.set(e.title.toLowerCase().trim(), e.id);
+    });
+    return map;
+  }, [ebooks]);
+
   // Filter and sort bonuses with ebook progress merged
   const filteredAndSortedBonuses = useMemo(() => {
     // Merge ebook progress into bonuses
@@ -85,6 +94,12 @@ export default function Bonuses() {
         // Priority 2: Map bonus.id -> ebook.id
         if (!ebookId) {
           ebookId = ebookByBonusId.get(bonus.id);
+        }
+
+        // Priority 3: Match by normalized title
+        if (!ebookId) {
+          const key = bonus.title?.toLowerCase().trim();
+          if (key) ebookId = ebookByTitle.get(key);
         }
 
         if (ebookId) {
@@ -132,7 +147,7 @@ export default function Bonuses() {
       default:
         return sorted;
     }
-  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap, ebookByBonusId]);
+  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap, ebookByBonusId, ebookByTitle]);
 
   // Get in-progress bonuses
   const inProgressBonuses = allBonuses.filter(
