@@ -18,7 +18,8 @@ import {
   BarChart3,
   Bell,
   DollarSign,
-  Gift
+  Gift,
+  Wand2
 } from 'lucide-react';
 
 export default function Admin() {
@@ -121,55 +122,19 @@ export default function Admin() {
 
         {/* Quick Stats Overview */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 border-blue-200 dark:border-blue-800/60 shadow-md hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-blue-500 rounded-lg">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Feed Posts</div>
-            </div>
-            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
-              {loadingCounts ? '—' : counts.feed}
-            </div>
-            <div className="text-xs text-blue-600 dark:text-blue-300 mt-1 flex items-center gap-1">
-              <TrendingUp className="w-3 h-3" />
-              Total published
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 border-green-200 dark:border-green-800/60 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/40 dark:to-green-800/40 border-green-200 dark:border-green-700 shadow-md hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 bg-green-500 rounded-lg">
-                <BookOpen className="w-5 h-5 text-white" />
+                <Wand2 className="w-5 h-5 text-white" />
               </div>
               <div className="text-sm font-medium text-green-900 dark:text-green-100">NEP Scripts</div>
             </div>
             <div className="text-3xl font-bold text-green-900 dark:text-green-100">
               {loadingCounts ? '—' : counts.scripts}
             </div>
-            <div className="text-xs text-green-600 dark:text-green-300 mt-1 flex items-center gap-1">
-              <Activity className="w-3 h-3" />
-              Ready to use
-            </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 border-purple-200 dark:border-purple-800/60 shadow-md hover:shadow-lg transition-shadow">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-purple-500 rounded-lg">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <div className="text-sm font-medium text-purple-900 dark:text-purple-100">PDF Guides</div>
-            </div>
-            <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
-              {loadingCounts ? '—' : counts.pdfs}
-            </div>
-            <div className="text-xs text-purple-600 dark:text-purple-300 mt-1 flex items-center gap-1">
-              <Activity className="w-3 h-3" />
-              In library
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/40 border-orange-200 dark:border-orange-800/60 shadow-md hover:shadow-lg transition-shadow">
+          <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/40 dark:to-orange-800/40 border-orange-200 dark:border-orange-700 shadow-md hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3 mb-3">
               <div className="p-2 bg-orange-500 rounded-lg">
                 <Video className="w-5 h-5 text-white" />
@@ -179,9 +144,29 @@ export default function Admin() {
             <div className="text-3xl font-bold text-orange-900 dark:text-orange-100">
               {loadingCounts ? '—' : counts.videos}
             </div>
-            <div className="text-xs text-orange-600 dark:text-orange-300 mt-1 flex items-center gap-1">
-              <Activity className="w-3 h-3" />
-              Available now
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/40 dark:to-purple-800/40 border-purple-200 dark:border-purple-700 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-purple-500 rounded-lg">
+                <Gift className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-purple-900 dark:text-purple-100">Bonuses</div>
+            </div>
+            <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">
+              {loadingCounts ? '—' : counts.bonuses}
+            </div>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/40 dark:to-red-800/40 border-red-200 dark:border-red-700 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-red-500 rounded-lg">
+                <DollarSign className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-red-900 dark:text-red-100">Refunds</div>
+            </div>
+            <div className="text-3xl font-bold text-red-900 dark:text-red-100">
+              {loadingCounts ? '—' : counts.refunds}
             </div>
           </Card>
         </div>
@@ -189,42 +174,16 @@ export default function Admin() {
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-9 w-full h-auto p-2 bg-muted/50">
-              <TabsTrigger
-                value="feed"
-                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
-              >
-                <FileText className="w-5 h-5" />
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-sm font-semibold">Feed</span>
-                  <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
-                    {loadingCounts ? '—' : counts.feed}
-                  </span>
-                </div>
-              </TabsTrigger>
-
+            <TabsList className="grid grid-cols-6 w-full h-auto p-2 bg-muted/50">
               <TabsTrigger
                 value="scripts"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
               >
-                <BookOpen className="w-5 h-5" />
+                <Wand2 className="w-5 h-5" />
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-sm font-semibold">Scripts</span>
                   <span className="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
                     {loadingCounts ? '—' : counts.scripts}
-                  </span>
-                </div>
-              </TabsTrigger>
-
-              <TabsTrigger
-                value="pdfs"
-                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
-              >
-                <FileText className="w-5 h-5" />
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-sm font-semibold">PDFs</span>
-                  <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">
-                    {loadingCounts ? '—' : counts.pdfs}
                   </span>
                 </div>
               </TabsTrigger>
@@ -294,31 +253,11 @@ export default function Admin() {
                 </div>
               </TabsTrigger>
 
-              <TabsTrigger
-                value="ebooks"
-                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
-              >
-                <Book className="w-5 h-5" />
-                <div className="flex flex-col items-center gap-1">
-                  <span className="text-sm font-semibold">Ebooks</span>
-                  <span className="text-xs bg-teal-500 text-white px-2 py-0.5 rounded-full">
-                    3
-                  </span>
-                </div>
-              </TabsTrigger>
             </TabsList>
 
             <div className="p-6">
-              <TabsContent value="feed" className="mt-0">
-                <AdminFeedTab onContentChanged={fetchCounts} />
-              </TabsContent>
-
               <TabsContent value="scripts" className="mt-0">
                 <AdminScriptsTab onContentChanged={fetchCounts} />
-              </TabsContent>
-
-              <TabsContent value="pdfs" className="mt-0">
-                <AdminPDFsTab onContentChanged={fetchCounts} />
               </TabsContent>
 
               <TabsContent value="videos" className="mt-0">
@@ -339,10 +278,6 @@ export default function Admin() {
 
               <TabsContent value="bonuses" className="mt-0">
                 <AdminBonusesTab onContentChanged={fetchCounts} />
-              </TabsContent>
-
-              <TabsContent value="ebooks" className="mt-0">
-                <AdminEbooksTab />
               </TabsContent>
             </div>
           </Tabs>
