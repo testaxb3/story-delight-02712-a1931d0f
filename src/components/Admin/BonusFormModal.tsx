@@ -143,8 +143,34 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       if (validation.isValid) {
         const chapters = parseMarkdownToChapters(content);
         setParsedChapters(chapters);
+        
+        // Auto-fill form fields based on markdown content
+        const totalWords = chapters.reduce((sum, chapter) => {
+          const chapterWords = chapter.content.reduce((sectionSum, section) => {
+            if (typeof section.content === 'string') {
+              return sectionSum + section.content.split(/\s+/).length;
+            } else if (Array.isArray(section.content)) {
+              return sectionSum + section.content.join(' ').split(/\s+/).length;
+            }
+            return sectionSum;
+          }, 0);
+          return sum + chapterWords;
+        }, 0);
+        
+        const estimatedReadingTime = Math.ceil(totalWords / 200);
+        const fileSizeKB = Math.ceil(content.length / 1024);
+        const fileSizeMB = fileSizeKB > 1024 ? (fileSizeKB / 1024).toFixed(1) + ' MB' : fileSizeKB + ' KB';
+        
+        setFormData(prev => ({
+          ...prev,
+          duration: `${estimatedReadingTime} min`,
+          size: fileSizeMB,
+        }));
+        
+        toast.success(`Markdown validado! ${chapters.length} capítulos, ~${estimatedReadingTime}min de leitura`);
       } else {
         setParsedChapters([]);
+        toast.error('Markdown inválido. Verifique os erros.');
       }
     };
     reader.readAsText(file);
@@ -468,34 +494,49 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                 )}
               </div>
 
-              <div>
-                <Label htmlFor="viewUrl">
-                  {formData.category === 'video' && 'YouTube Video URL'}
-                  {formData.category === 'ebook' && 'Document URL'}
-                  {formData.category === 'pdf' && 'Document URL'}
-                  {(formData.category === 'tool' || formData.category === 'template') && 'Tool/Template URL'}
-                  {formData.category === 'session' && 'Session URL'}
-                </Label>
-                <Input
-                  id="viewUrl"
-                  value={formData.viewUrl}
-                  onChange={(e) => handleViewUrlChange(e.target.value)}
-                  placeholder={
-                    formData.category === 'video'
-                      ? 'https://www.youtube.com/watch?v=...'
-                      : formData.category === 'ebook' || formData.category === 'pdf'
-                      ? '/ebook or document link'
-                      : '/page-url or external link'
-                  }
-                  type="url"
-                />
-                {urlError && (
-                  <Alert variant="destructive" className="mt-2">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{urlError}</AlertDescription>
-                  </Alert>
-                )}
-              </div>
+              {/* Document/View URL - Hidden for ebooks as it's auto-generated */}
+              {formData.category !== 'ebook' && (
+                <div>
+                  <Label htmlFor="viewUrl">
+                    {formData.category === 'video' && 'YouTube Video URL'}
+                    {formData.category === 'pdf' && 'Document URL'}
+                    {(formData.category === 'tool' || formData.category === 'template') && 'Tool/Template URL'}
+                    {formData.category === 'session' && 'Session URL'}
+                  </Label>
+                  <Input
+                    id="viewUrl"
+                    value={formData.viewUrl}
+                    onChange={(e) => handleViewUrlChange(e.target.value)}
+                    placeholder={
+                      formData.category === 'video'
+                        ? 'https://www.youtube.com/watch?v=...'
+                        : formData.category === 'pdf'
+                        ? '/document link'
+                        : '/page-url or external link'
+                    }
+                    type="url"
+                  />
+                  {urlError && (
+                    <Alert variant="destructive" className="mt-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{urlError}</AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+              )}
+
+              {/* Info message for ebooks */}
+              {formData.category === 'ebook' && (
+                <Alert className="border-blue-500 bg-blue-50 dark:bg-blue-950/30">
+                  <AlertCircle className="h-4 w-4 text-blue-600" />
+                  <AlertDescription className="text-blue-900 dark:text-blue-100">
+                    <p className="font-semibold mb-1">URL do Ebook</p>
+                    <p className="text-sm">
+                      O URL será gerado automaticamente quando você processar o arquivo Markdown na aba "Upload Markdown".
+                    </p>
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <div>
                 <Label htmlFor="downloadUrl">Download URL (optional)</Label>
