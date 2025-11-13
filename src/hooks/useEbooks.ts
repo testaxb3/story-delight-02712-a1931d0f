@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface Ebook {
@@ -128,4 +128,55 @@ export function useEbookByBonusId(bonusId: string | undefined) {
   });
 
   return { ebook, isLoading, error };
+}
+
+/**
+ * Hook to update an ebook
+ */
+export function useUpdateEbook() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, updates }: { id: string; updates: Partial<Ebook> }) => {
+      const { data, error } = await supabase
+        .from('ebooks')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as Ebook;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['ebooks'] });
+      queryClient.invalidateQueries({ queryKey: ['ebook', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['ebook-slug', data.slug] });
+      if (data.bonus_id) {
+        queryClient.invalidateQueries({ queryKey: ['ebook-bonus', data.bonus_id] });
+      }
+    },
+  });
+}
+
+/**
+ * Hook to delete an ebook (soft delete)
+ */
+export function useDeleteEbook() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase
+        .from('ebooks')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['ebooks'] });
+    },
+  });
 }
