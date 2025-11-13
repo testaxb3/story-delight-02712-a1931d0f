@@ -133,12 +133,12 @@ const EnhancedScriptCardComponent = ({
               </Badge>
             )}
 
-            {script.difficulty_level && (
+            {script.difficulty && (
               <Badge
                 className={`text-[10px] ${
-                  script.difficulty_level === 'beginner'
+                  script.difficulty === 'Easy'
                     ? 'bg-green-500/10 text-green-700 border-green-500/20'
-                    : script.difficulty_level === 'intermediate'
+                    : script.difficulty === 'Moderate'
                     ? 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20'
                     : 'bg-red-500/10 text-red-700 border-red-500/20'
                 }`}
