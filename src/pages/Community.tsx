@@ -1,6 +1,7 @@
 // @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Flag, Info, Heart, Send, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Smile, Edit2, Pin } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
@@ -26,6 +27,8 @@ import type { Database } from '@/integrations/supabase/types';
 import { mockCommunityPosts } from '@/lib/mockData';
 import { CommunityPostSkeletonList } from '@/components/Skeletons/CommunityPostSkeleton';
 import { CommunityGuidelines } from '@/components/CommunityGuidelines';
+import { TopContributors } from '@/components/Community/TopContributors';
+import { ActivityStreak } from '@/components/Community/ActivityStreak';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -921,16 +924,44 @@ export default function Community() {
     const postComments = comments[post.id] || [];
     const isCommentsExpanded = expandedComments.has(post.id);
     const isLiking = likeAnimations.has(post.id);
+    const [showReactionPicker, setShowReactionPicker] = useState(false);
 
     return (
-      <Card className={`glass border-none shadow-lg hover:shadow-xl transition-all duration-300 ${
-        isSpotlight ? 'border-2 border-yellow-400/50 dark:border-yellow-600/50' : ''
-      }`}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{ y: -4 }}
+      >
+        <Card className={`glass border-none shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden ${
+          isSpotlight ? 'ring-2 ring-primary/50' : ''
+        }`}>
         {isSpotlight && (
-          <div className="px-6 pt-4 pb-2">
-            <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-none shadow-md">
-              ⭐ Featured Post
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="px-6 pt-4 pb-2"
+          >
+            <Badge className="bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 text-white border-none shadow-lg animate-pulse">
+              <Star className="w-4 h-4 mr-1" />
+              Spotlight
             </Badge>
+          </motion.div>
+        )}
+
+        {/* Post Type Badge */}
+        {post.post_type && post.post_type !== 'general' && (
+          <div className="absolute top-4 right-4">
+            {post.post_type === 'win' && (
+              <Badge className="bg-gradient-to-r from-green-400 to-emerald-500 text-white border-none shadow-md">
+                🎉 Win
+              </Badge>
+            )}
+            {post.post_type === 'help' && (
+              <Badge className="bg-gradient-to-r from-blue-400 to-cyan-500 text-white border-none shadow-md">
+                ❓ Help
+              </Badge>
+            )}
           </div>
         )}
 
@@ -1025,13 +1056,22 @@ export default function Community() {
             {highlightContent(post.content, 300, post.id)}
           </div>
 
-          {/* Post Image */}
+          {/* Post Image with Lightbox */}
           {post.imageUrl && (
-            <img
-              src={post.imageUrl}
-              alt="Post attachment"
-              className="w-full rounded-lg mb-4 shadow-md"
-            />
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="relative overflow-hidden rounded-xl mb-4 cursor-pointer group"
+              onClick={() => window.open(post.imageUrl, '_blank')}
+            >
+              <img
+                src={post.imageUrl}
+                alt="Post attachment"
+                className="w-full rounded-xl shadow-md transition-transform duration-300 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                <ImageIcon className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+              </div>
+            </motion.div>
           )}
 
           {/* Engagement Stats */}
@@ -1051,25 +1091,37 @@ export default function Community() {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => handleToggleLike(post.id)}
-              className={`flex-1 gap-2 ${post.userHasLiked ? 'text-red-500 hover:text-red-600' : 'hover:bg-red-50'} ${
-                isLiking ? 'scale-110' : ''
-              } transition-all duration-300`}
-            >
-              <Heart className={`w-4 h-4 ${post.userHasLiked ? 'fill-red-500' : ''}`} />
-              <span className="font-medium">{post.userHasLiked ? 'Liked' : 'Like'}</span>
-            </Button>
+          {/* Action Buttons with Reactions */}
+          <div className="flex items-center gap-2">
+            {/* React Button with Picker */}
+            <div className="relative flex-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowReactionPicker(!showReactionPicker)}
+                onMouseLeave={() => setTimeout(() => setShowReactionPicker(false), 200)}
+                className={`w-full gap-2 ${post.userHasLiked ? 'text-primary' : 'hover:bg-primary/5'} transition-all`}
+              >
+                <Smile className="w-4 h-4" />
+                <span className="font-medium">React</span>
+              </Button>
+
+              <ReactionPicker
+                isOpen={showReactionPicker}
+                onSelect={(reactionType) => {
+                  handleToggleLike(post.id);
+                  setShowReactionPicker(false);
+                }}
+                onClose={() => setShowReactionPicker(false)}
+                currentReaction={post.userHasLiked ? 'like' : null}
+              />
+            </div>
 
             <Button
               variant="ghost"
               size="sm"
               onClick={() => toggleComments(post.id)}
-              className="flex-1 gap-2 hover:bg-blue-50"
+              className="flex-1 gap-2 hover:bg-blue-50 dark:hover:bg-blue-950/30 transition-all"
             >
               <MessageCircle className="w-4 h-4" />
               <span className="font-medium">Comment</span>
@@ -1078,7 +1130,17 @@ export default function Community() {
             <Button
               variant="ghost"
               size="sm"
-              className="flex-1 gap-2 hover:bg-green-50"
+              onClick={() => {
+                navigator.share?.({
+                  title: `Post by ${post.author}`,
+                  text: post.content.substring(0, 100),
+                  url: window.location.href,
+                }).catch(() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast.success('Link copied to clipboard!');
+                });
+              }}
+              className="flex-1 gap-2 hover:bg-green-50 dark:hover:bg-green-950/30 transition-all"
             >
               <Send className="w-4 h-4" />
               <span className="font-medium">Share</span>
@@ -1105,33 +1167,53 @@ export default function Community() {
           )}
         </div>
       </Card>
+      </motion.div>
     );
   };
 
   return (
     <MainLayout>
       <ErrorBoundary>
-        <div className="space-y-4">
-          {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">Community</h1>
-            <p className="text-sm text-muted-foreground">Connect, share, and grow together</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content Column */}
+          <div className="lg:col-span-2 space-y-4">
+          {/* Modern Header Section */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl p-8 mb-6"
+          style={{
+            background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)',
+          }}
+        >
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-black text-white mb-2">Community</h1>
+              <p className="text-white/90 text-sm font-medium">Connect, share wins, and grow together 🚀</p>
+            </div>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowGuidelines(true)}
+              className="gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30"
+            >
+              <Info className="w-4 h-4" />
+              Guidelines
+            </Button>
           </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowGuidelines(true)}
-            className="gap-2"
-          >
-            <Info className="w-4 h-4" />
-            Guidelines
-          </Button>
-        </div>
+          
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
+        </motion.div>
 
-        {/* Post Composer */}
-        <Card className="p-4 glass border-none shadow-lg">
-          <div className="flex gap-3 mb-3">
+        {/* Modern Post Composer */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <Card className="p-6 glass border-none shadow-xl hover:shadow-2xl transition-all duration-300">
+            <div className="flex gap-3 mb-4">
             {user?.photo_url ? (
               <img
                 src={user.photo_url}
@@ -1148,7 +1230,7 @@ export default function Community() {
               placeholder={composerPlaceholder}
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
-              className="flex-1 min-h-[80px] resize-none border-none bg-muted/50 focus-visible:ring-1 focus-visible:ring-primary rounded-2xl"
+              className="flex-1 min-h-[100px] resize-none border-2 border-border/50 bg-background/50 focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary rounded-2xl transition-all"
             />
           </div>
 
@@ -1170,38 +1252,44 @@ export default function Community() {
           <div className="flex items-center justify-between pl-[52px]">
             <div className="flex gap-2">
               <Button
-                variant={composerMode === 'general' ? 'default' : 'ghost'}
+                variant={composerMode === 'general' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setComposerMode('general')}
-                className="text-xs"
+                className={`text-xs transition-all ${composerMode === 'general' ? 'shadow-lg' : ''}`}
               >
                 <MessageCircle className="w-3 h-3 mr-1" />
                 General
               </Button>
               <Button
-                variant={composerMode === 'win' ? 'default' : 'ghost'}
+                variant={composerMode === 'win' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setComposerMode('win')}
-                className="text-xs"
+                className={`text-xs transition-all ${composerMode === 'win' ? 'bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg' : ''}`}
               >
                 🎉 Win
               </Button>
               <Button
-                variant={composerMode === 'help' ? 'default' : 'ghost'}
+                variant={composerMode === 'help' ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setComposerMode('help')}
-                className="text-xs"
+                className={`text-xs transition-all ${composerMode === 'help' ? 'bg-gradient-to-r from-blue-500 to-cyan-600 shadow-lg' : ''}`}
               >
                 ❓ Help
               </Button>
             </div>
 
-            <Button onClick={handlePost} disabled={!newPost.trim()} size="sm" className="gap-2">
+            <Button
+              onClick={handlePost}
+              disabled={!newPost.trim()}
+              size="sm"
+              className="gap-2 bg-gradient-to-r from-primary to-accent hover:shadow-lg transition-all"
+            >
               <Send className="w-4 h-4" />
               Post
             </Button>
           </div>
         </Card>
+        </motion.div>
 
         {/* Search Bar */}
         <SearchBar
@@ -1294,6 +1382,46 @@ export default function Community() {
             )}
           </div>
         )}
+          </div>
+
+          {/* Sidebar Column (Desktop Only) */}
+          <div className="hidden lg:block space-y-6 sticky top-4">
+            {/* Activity Streak */}
+            <ActivityStreak />
+
+            {/* Top Contributors */}
+            <TopContributors />
+
+            {/* Quick Stats */}
+            <Card className="p-6 glass border-none shadow-xl">
+              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-primary" />
+                Community Stats
+              </h3>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Total Posts</span>
+                  <span className="text-xl font-bold text-primary">{posts.length}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Active Members</span>
+                  <span className="text-xl font-bold text-accent">
+                    {new Set(posts.map(p => p.userId).filter(Boolean)).size}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Today's Activity</span>
+                  <span className="text-xl font-bold text-success">
+                    {posts.filter(p => {
+                      const postDate = new Date(p.timestamp);
+                      const today = new Date();
+                      return postDate.toDateString() === today.toDateString();
+                    }).length}
+                  </span>
+                </div>
+              </div>
+            </Card>
+          </div>
         </div>
 
         {/* Community Guidelines Modal */}
