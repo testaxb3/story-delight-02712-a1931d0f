@@ -26,7 +26,7 @@ export const TableOfContents = ({
       </SheetTrigger>
       <SheetContent side="left" className="w-80 sm:w-96">
         <SheetHeader>
-          <SheetTitle className="font-display text-2xl">Índice</SheetTitle>
+          <SheetTitle className="font-display text-2xl">Table of Contents</SheetTitle>
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-8rem)] mt-6">
           <div className="space-y-2">
@@ -52,7 +52,7 @@ export const TableOfContents = ({
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-body text-muted-foreground mb-1">
-                        Capítulo {index + 1}
+                        Chapter {index + 1}
                       </div>
                       <div className={`font-display text-sm ${isCurrent ? "text-primary font-semibold" : "text-foreground"}`}>
                         {chapter.title}

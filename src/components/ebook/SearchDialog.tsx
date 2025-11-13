@@ -85,11 +85,11 @@ export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => 
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-display text-2xl">Buscar Conteúdo</DialogTitle>
+          <DialogTitle className="font-display text-2xl">Search Content</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <Input
-            placeholder="Buscar nos capítulos..."
+            placeholder="Search chapters..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="font-body"
@@ -99,12 +99,12 @@ export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => 
             <div className="space-y-3">
               {searchResults.length === 0 && query.trim() && (
                 <p className="text-center text-muted-foreground py-8 font-body">
-                  Nenhum resultado encontrado para "{query}"
+                  No results found for "{query}"
                 </p>
               )}
               {searchResults.length === 0 && !query.trim() && (
                 <p className="text-center text-muted-foreground py-8 font-body">
-                  Comece a digitar para buscar...
+                  Start typing to search...
                 </p>
               )}
               {searchResults.map((result, index) => (
@@ -114,7 +114,7 @@ export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => 
                   className="w-full text-left p-4 rounded-lg border border-border hover:bg-muted/50 smooth-transition"
                 >
                   <div className="text-xs text-primary font-semibold font-body mb-2">
-                    Capítulo {result.chapterIndex + 1}: {result.chapterTitle}
+                    Chapter {result.chapterIndex + 1}: {result.chapterTitle}
                   </div>
                   <div className="text-sm text-foreground font-body line-clamp-2">
                     {result.preview}

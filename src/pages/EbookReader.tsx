@@ -27,7 +27,7 @@ const EbookReaderPage = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Carregando ebook...</p>
+          <p className="text-muted-foreground">Loading ebook...</p>
         </div>
       </div>
     );
@@ -37,13 +37,13 @@ const EbookReaderPage = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-3">
-          <p className="text-red-500 font-medium">Não foi possível carregar o ebook.</p>
-          <p className="text-sm text-muted-foreground">Tente novamente mais tarde.</p>
+          <p className="text-red-500 font-medium">Unable to load ebook.</p>
+          <p className="text-sm text-muted-foreground">Please try again later.</p>
           <button 
             onClick={() => navigate('/ebooks')} 
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md"
           >
-            Voltar para biblioteca
+            Back to library
           </button>
         </div>
       </div>
@@ -57,13 +57,13 @@ const EbookReaderPage = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-3">
-          <p className="font-medium">Nenhum conteúdo encontrado.</p>
-          <p className="text-sm text-muted-foreground">Volte para a biblioteca e tente novamente.</p>
+          <p className="font-medium">No content found.</p>
+          <p className="text-sm text-muted-foreground">Please return to the library and try again.</p>
           <button 
             onClick={() => navigate('/ebooks')} 
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md"
           >
-            Voltar para biblioteca
+            Back to library
           </button>
         </div>
       </div>
