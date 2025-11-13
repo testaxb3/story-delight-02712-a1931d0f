@@ -609,7 +609,9 @@ export default function Scripts() {
                           )}
                           {meta?.successScore !== undefined && meta.successScore !== null && (
                             <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
-                              {(meta.successScore * 100).toFixed(0)}% sucesso
+                              {(
+                                (meta.successScore > 1 ? meta.successScore : meta.successScore * 100)
+                              ).toFixed(0)}% sucesso
                             </Badge>
                           )}
                         </div>
