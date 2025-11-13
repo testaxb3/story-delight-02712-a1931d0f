@@ -19,10 +19,13 @@ import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast as showToast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
-import { Target, CheckCircle2, Sparkles, Heart, HelpCircle } from 'lucide-react';
+import { Target, Plus, CheckCircle2, Sparkles, Heart } from 'lucide-react';
 import { useCelebration } from '@/hooks/useCelebration';
 import { CelebrationModal } from '@/components/scripts/CelebrationModal';
 import { getStreakDays } from '@/lib/celebrationStats';
+import { VisualCalendar } from '@/components/Tracker/VisualCalendar';
+import { ProgressDashboard } from '@/components/Tracker/ProgressDashboard';
+import { InsightsCard } from '@/components/Tracker/InsightsCard';
 
 interface TrackerDayRow {
   id: string;
@@ -380,49 +383,16 @@ export default function MyPlan() {
           </div>
         </Card>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-          {planDays.map((day) => {
-            const isNextDay = nextIncompleteDay !== null && day.dayNumber === nextIncompleteDay;
-            const isAvailable =
-              day.completed ||
-              (isNextDay && !nextDayLockedUntil);
-            const isLocked = !isAvailable;
+        {/* Progress Dashboard */}
+        <ProgressDashboard days={planDays} totalDays={TOTAL_DAYS} />
 
-            return (
-              <Card
-                key={day.dayNumber}
-                className={`p-4 transition transform ${
-                  day.completed
-                    ? 'bg-primary text-white shadow-lg'
-                    : isLocked
-                      ? 'bg-white/50 backdrop-blur cursor-not-allowed opacity-60'
-                      : 'bg-white/90 backdrop-blur cursor-pointer hover:scale-105'
-                }`}
-                onClick={() => handleDayClick(day.dayNumber)}
-                aria-disabled={isLocked}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-lg font-bold">Day {day.dayNumber}</span>
-                  {day.completed && <CheckCircle2 className="w-5 h-5" />}
-                </div>
-                {day.completed ? (
-                  <p className="text-xs mt-2">
-                    Stress {day.stressLevel ?? '—'}/5 • Meltdowns {day.meltdownCount ?? '—'}
-                  </p>
-                ) : isLocked ? (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {isNextDay && nextDayLockedUntil
-                      ? 'Unlocks tomorrow'
-                      : `Unlock after logging Day ${nextIncompleteDay}`}
-                  </p>
-                ) : (
-                  <p className="text-xs text-muted-foreground mt-2">Tap to log progress</p>
-                )}
-              </Card>
-            );
-          })}
-        </div>
+        {/* Insights */}
+        <InsightsCard days={planDays} />
 
+        {/* Visual Calendar */}
+        <VisualCalendar days={planDays} onDayClick={handleDayClick} />
+
+        {/* Quick Tips */}
         <div className="grid md:grid-cols-2 gap-4">
           <Card className="p-4 bg-white/90 backdrop-blur">
             <div className="flex items-center gap-2 text-primary font-semibold mb-2">
