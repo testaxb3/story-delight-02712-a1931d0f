@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -88,8 +88,7 @@ export const CommentThread = React.memo(function CommentThread({
     }
   }, [comments.length]);
 
-  // Add new top-level comment
-  const handleAddComment = async () => {
+  const handleAddComment = useCallback(async () => {
     if (!newComment.trim() || !currentUserId || submitting) return;
 
     setSubmitting(true);
@@ -122,10 +121,9 @@ export const CommentThread = React.memo(function CommentThread({
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [newComment, currentUserId, submitting, postId]);
 
-  // Add reply to a comment
-  const handleAddReply = async (parentCommentId: string, content: string) => {
+  const handleAddReply = useCallback(async (parentCommentId: string, content: string) => {
     if (!currentUserId) return;
 
     try {
@@ -161,10 +159,9 @@ export const CommentThread = React.memo(function CommentThread({
       console.error('Error adding reply:', error);
       toast.error('Failed to add reply');
     }
-  };
+  }, [currentUserId, postId]);
 
-  // Delete comment or reply
-  const handleDeleteComment = async (commentId: string) => {
+  const handleDeleteComment = useCallback(async (commentId: string) => {
     if (!currentUserId) return;
 
     try {
@@ -197,10 +194,10 @@ export const CommentThread = React.memo(function CommentThread({
       console.error('Error deleting comment:', error);
       toast.error('Failed to delete comment');
     }
-  };
+  }, [currentUserId, comments, onCommentCountChange]);
 
   // Toggle replies visibility
-  const toggleReplies = (commentId: string) => {
+  const toggleReplies = useCallback((commentId: string) => {
     setExpandedReplies((prev) => {
       const next = new Set(prev);
       if (next.has(commentId)) {
@@ -210,12 +207,21 @@ export const CommentThread = React.memo(function CommentThread({
       }
       return next;
     });
-  };
+  }, []);
 
-  // Organize comments into threads
-  const topLevelComments = comments.filter((c) => !c.parent_comment_id);
-  const getRepliesForComment = (commentId: string) =>
-    comments.filter((c) => c.parent_comment_id === commentId);
+  const topLevelComments = useMemo(() => comments.filter((c) => !c.parent_comment_id), [comments]);
+  const repliesByParent = useMemo(() => {
+    const map = new Map<string, PostComment[]>();
+    for (const c of comments) {
+      if (c.parent_comment_id) {
+        const list = map.get(c.parent_comment_id) || [];
+        list.push(c);
+        map.set(c.parent_comment_id, list);
+      }
+    }
+    return map;
+  }, [comments]);
+  const getRepliesForComment = useCallback((commentId: string) => repliesByParent.get(commentId) || [], [repliesByParent]);
 
   return (
     <div className="mt-4 pt-4 border-t space-y-3">
