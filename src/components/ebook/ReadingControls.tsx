@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface ReadingControlsProps {
   fontSize: number;
@@ -57,19 +57,19 @@ export const ReadingControls = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Font Size</DropdownMenuLabel>
+          <DropdownMenuLabel>Tamanho da Fonte</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={increaseFontSize}>
             <span className="text-lg">A+</span>
-            <span className="ml-2">Increase</span>
+            <span className="ml-2">Aumentar</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={decreaseFontSize}>
             <span className="text-sm">A-</span>
-            <span className="ml-2">Decrease</span>
+            <span className="ml-2">Diminuir</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={resetFontSize}>
             <span className="text-base">A</span>
-            <span className="ml-2">Reset</span>
+            <span className="ml-2">Redefinir</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

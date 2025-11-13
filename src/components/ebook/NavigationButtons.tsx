@@ -24,7 +24,7 @@ export const NavigationButtons = ({
         className="smooth-transition disabled:opacity-50"
       >
         <ChevronLeft className="w-5 h-5 mr-2" />
-        Previous
+        Anterior
       </Button>
       
       <Button
@@ -33,7 +33,7 @@ export const NavigationButtons = ({
         disabled={!hasNext}
         className="smooth-transition disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90"
       >
-        Next
+        Próximo
         <ChevronRight className="w-5 h-5 ml-2" />
       </Button>
     </div>

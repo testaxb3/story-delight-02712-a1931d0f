@@ -15,7 +15,7 @@ export const ChapterCover = ({ chapterNumber, title, subtitle }: ChapterCoverPro
       <div className="relative z-10 text-center space-y-4">
         <div className="inline-block">
           <span className="text-sm font-body font-semibold tracking-widest uppercase text-primary/70">
-            Chapter {chapterNumber}
+            Capítulo {chapterNumber}
           </span>
         </div>
         

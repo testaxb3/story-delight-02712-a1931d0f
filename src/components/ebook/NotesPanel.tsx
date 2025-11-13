@@ -63,21 +63,21 @@ export const NotesPanel = ({ currentChapter }: NotesPanelProps) => {
       </SheetTrigger>
       <SheetContent side="right" className="w-80 sm:w-96">
         <SheetHeader>
-          <SheetTitle className="font-display text-2xl">Notes</SheetTitle>
+          <SheetTitle className="font-display text-2xl">Notas</SheetTitle>
         </SheetHeader>
         
         <div className="mt-6 space-y-4">
           {/* Add New Note */}
           <div className="space-y-2">
             <Textarea
-              placeholder="Add a note for this chapter..."
+              placeholder="Adicionar uma nota para este capítulo..."
               value={newNoteContent}
               onChange={(e) => setNewNoteContent(e.target.value)}
               className="font-body min-h-[100px]"
             />
             <Button onClick={handleAddNote} size="sm" className="w-full">
               <Plus className="w-4 h-4 mr-2" />
-              Add Note
+              Adicionar Nota
             </Button>
           </div>
 
@@ -86,7 +86,7 @@ export const NotesPanel = ({ currentChapter }: NotesPanelProps) => {
             <div className="space-y-3">
               {chapterNotes.length === 0 && (
                 <p className="text-center text-muted-foreground py-8 font-body text-sm">
-                  No notes yet. Add your first note!
+                  Nenhuma nota ainda. Adicione sua primeira nota!
                 </p>
               )}
               {chapterNotes.map((note) => (
@@ -103,7 +103,7 @@ export const NotesPanel = ({ currentChapter }: NotesPanelProps) => {
                       />
                       <div className="flex gap-2">
                         <Button onClick={handleSaveEdit} size="sm" variant="default">
-                          Save
+                          Salvar
                         </Button>
                         <Button onClick={handleCancelEdit} size="sm" variant="ghost">
                           <X className="w-4 h-4" />
