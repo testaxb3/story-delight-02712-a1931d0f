@@ -903,20 +903,21 @@ export default function Dashboard() {
 
       </div>
 
-      <Dialog open={showOnboardingModal} onOpenChange={setShowOnboardingModal}>
-        <DialogContent className="max-w-md">
+      <Dialog open={showOnboardingModal} onOpenChange={() => {}}>
+        <DialogContent 
+          className="max-w-md border border-border/50 bg-card"
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
           <DialogHeader>
-            <DialogTitle>Let's discover your child's profile!</DialogTitle>
+            <DialogTitle className="text-foreground">Let's discover your child's profile!</DialogTitle>
             <DialogDescription>
               Take the NEP quiz to create your first child profile and unlock a personalized My Plan experience.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3">
-            <Button onClick={() => navigate('/quiz')} className="bg-primary text-white">
+            <Button onClick={() => navigate('/quiz')} size="lg" className="w-full">
               Start the quiz
-            </Button>
-            <Button variant="outline" onClick={() => setShowOnboardingModal(false)}>
-              Maybe later
             </Button>
           </div>
         </DialogContent>

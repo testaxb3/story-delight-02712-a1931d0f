@@ -87,7 +87,7 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent 
-        className={`max-w-2xl border-none bg-gradient-to-br from-purple-600/20 via-purple-500/10 to-accent/20 backdrop-blur-xl p-0 overflow-hidden ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
+        className={`max-w-2xl border border-border/50 bg-card backdrop-blur-xl p-0 overflow-hidden ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
@@ -96,10 +96,10 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
         </DialogDescription>
         {/* Sparkles decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <Sparkles className="absolute top-4 left-4 w-6 h-6 text-yellow-400 animate-pulse" />
-          <Sparkles className="absolute top-8 right-8 w-4 h-4 text-purple-400 animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <Sparkles className="absolute bottom-12 left-12 w-5 h-5 text-yellow-300 animate-pulse" style={{ animationDelay: '1s' }} />
-          <Sparkles className="absolute bottom-8 right-16 w-6 h-6 text-purple-300 animate-pulse" style={{ animationDelay: '1.5s' }} />
+          <Sparkles className="absolute top-4 left-4 w-6 h-6 text-primary animate-pulse" />
+          <Sparkles className="absolute top-8 right-8 w-4 h-4 text-primary/70 animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <Sparkles className="absolute bottom-12 left-12 w-5 h-5 text-primary/80 animate-pulse" style={{ animationDelay: '1s' }} />
+          <Sparkles className="absolute bottom-8 right-16 w-6 h-6 text-primary/60 animate-pulse" style={{ animationDelay: '1.5s' }} />
         </div>
 
         <div className="relative p-8 sm:p-12 text-center">
@@ -107,21 +107,21 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
           <div className="text-7xl mb-4 animate-bounce">🎁</div>
 
           {/* Heading */}
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             WELCOME TO NEP SYSTEM!
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl font-semibold text-purple-600 mb-4">
+          <p className="text-xl font-semibold text-primary mb-4">
             SPECIAL LAUNCH GIFT
           </p>
 
           {/* Main announcement */}
           <div className="mb-4">
-            <p className="text-2xl font-bold mb-2">
+            <p className="text-2xl font-bold mb-2 text-foreground">
               ✨ Lifetime PREMIUM Access Unlocked!
             </p>
-            <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white border-none px-4 py-1 text-sm font-semibold">
+            <Badge className="bg-primary text-primary-foreground border-none px-4 py-1 text-sm font-semibold">
               Value: $297/year
             </Badge>
           </div>
@@ -132,28 +132,28 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
           </p>
 
           {/* Benefits card */}
-          <div className="bg-white/80 backdrop-blur-glass rounded-lg p-6 mb-6 text-left max-w-md mx-auto shadow-lg">
-            <h3 className="font-bold text-lg mb-4 text-center">What you get:</h3>
+          <div className="bg-muted/30 border border-border/30 rounded-lg p-6 mb-6 text-left max-w-md mx-auto">
+            <h3 className="font-bold text-lg mb-4 text-center text-foreground">What you get:</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">25+ Advanced NEP Scripts</span>
+                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground">25+ Advanced NEP Scripts</span>
               </li>
               <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">9 Complete Training Videos</span>
+                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground">9 Complete Training Videos</span>
               </li>
               <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">8 Premium Exclusive PDFs</span>
+                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground">8 Premium Exclusive PDFs</span>
               </li>
               <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">Priority WhatsApp Support</span>
+                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground">Priority WhatsApp Support</span>
               </li>
               <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <span className="text-sm">All Future Updates Included</span>
+                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+                <span className="text-sm text-foreground">All Future Updates Included</span>
               </li>
             </ul>
           </div>
@@ -161,14 +161,14 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
           {/* CTA Button */}
           <Button 
             size="lg" 
-            className="w-full max-w-md bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-lg py-6 shadow-lg hover:shadow-xl transition-all"
+            className="w-full max-w-md font-semibold text-lg py-6"
             onClick={handleStartTransformation}
           >
             Start My Transformation →
           </Button>
 
           {/* Footer */}
-          <p className="text-xs text-muted-foreground mt-6 opacity-75">
+          <p className="text-xs text-muted-foreground mt-6">
             This gift is exclusive to our first customers
           </p>
         </div>
