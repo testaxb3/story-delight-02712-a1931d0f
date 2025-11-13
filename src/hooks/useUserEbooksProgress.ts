@@ -9,6 +9,8 @@ export interface UserEbookProgressSummary {
   total_chapters: number;
   progress_percentage: number;
   last_read_at: string;
+  ebook_title?: string;
+  ebook_slug?: string;
 }
 
 /**
@@ -29,7 +31,7 @@ export function useUserEbooksProgress() {
           current_chapter,
           completed_chapters,
           last_read_at,
-          ebooks!inner(total_chapters)
+          ebooks!inner(total_chapters, title, slug)
         `)
         .eq('user_id', user.id);
 
@@ -50,6 +52,8 @@ export function useUserEbooksProgress() {
           total_chapters: totalChapters,
           progress_percentage: progressPercentage,
           last_read_at: item.last_read_at,
+          ebook_title: item.ebooks?.title,
+          ebook_slug: item.ebooks?.slug,
         } as UserEbookProgressSummary;
       });
     },
@@ -66,6 +70,9 @@ export function useUserEbooksProgress() {
   return {
     progressData: progressData || [],
     progressMap,
+    titleProgressMap: new Map<string, number>((progressData || []).map(p => [
+      (p.ebook_title || '').toLowerCase().trim(), p.progress_percentage
+    ])),
     isLoading,
   };
 }
