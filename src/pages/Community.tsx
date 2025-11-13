@@ -208,7 +208,7 @@ export default function Community() {
     setLoadingPosts(true);
 
     try {
-      const currentUserId = user?.profileId ?? null;
+      const currentUserId = user?.id ?? null;
       const from = pageNum * POSTS_PER_PAGE;
       const to = from + POSTS_PER_PAGE - 1;
 
@@ -318,7 +318,7 @@ export default function Community() {
     } finally {
       setLoadingPosts(false);
     }
-  }, [currentBrain, user?.profileId]);
+  }, [currentBrain, user?.id]);
 
   useEffect(() => {
     fetchPosts();
@@ -418,7 +418,7 @@ export default function Community() {
     const targetPost = posts.find((post) => post.id === postId);
     if (!targetPost) return;
 
-    if (!user?.profileId) {
+    if (!user?.id) {
       toast.error('You must be signed in to like posts.');
       return;
     }
@@ -439,10 +439,10 @@ export default function Community() {
           .from('post_likes')
           .delete()
           .eq('post_id', postId)
-          .eq('user_id', user.profileId)
+          .eq('user_id', user.id)
       : supabase
           .from('post_likes')
-          .insert({ post_id: postId, user_id: user.profileId });
+          .insert({ post_id: postId, user_id: user.id });
 
     const { error } = await mutation;
 
@@ -466,7 +466,7 @@ export default function Community() {
   };
 
   const handleDeletePost = async (postId: string) => {
-    if (!user?.profileId) {
+    if (!user?.id) {
       toast.error('You must be signed in to manage posts.');
       return;
     }
@@ -474,7 +474,7 @@ export default function Community() {
     const post = posts.find((item) => item.id === postId);
     if (!post) return;
 
-    if (post.userId !== user.profileId) {
+    if (post.userId !== user.id) {
       toast.error('You can only delete your own posts.');
       return;
     }
@@ -492,7 +492,7 @@ export default function Community() {
       .from('community_posts')
       .delete()
       .eq('id', postId)
-      .eq('user_id', user.profileId);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Failed to delete post', error);
@@ -516,7 +516,7 @@ export default function Community() {
   };
 
   const handleFlagPost = async (postId: string) => {
-    if (!user?.profileId) {
+    if (!user?.id) {
       toast.error('You must be signed in to flag posts.');
       return;
     }
@@ -528,7 +528,7 @@ export default function Community() {
 
     const { error } = await supabase.from('post_flags').insert({
       post_id: postId,
-      user_id: user.profileId,
+      user_id: user.id,
       reason: 'User-reported inappropriate content',
     });
 
@@ -549,7 +549,7 @@ export default function Community() {
   };
 
   const handleDeleteComment = async (postId: string, commentId: string) => {
-    if (!user?.profileId) {
+    if (!user?.id) {
       toast.error('You must be signed in to manage comments.');
       return;
     }
@@ -567,7 +567,7 @@ export default function Community() {
       .from('post_comments')
       .delete()
       .eq('id', commentId)
-      .eq('user_id', user.profileId);
+      .eq('user_id', user.id);
 
     if (error) {
       console.error('Failed to delete comment', error);
@@ -609,21 +609,13 @@ export default function Community() {
 
   const handleAddComment = async (postId: string) => {
     const content = newComment[postId]?.trim();
-    if (!content || !user) return;
-
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id, photo_url')
-      .eq('email', user.email)
-      .maybeSingle();
-
-    if (!profile) return;
+    if (!content || !user?.id) return;
 
     const { data, error } = await supabase
       .from('post_comments')
       .insert({
         post_id: postId,
-        user_id: profile.id,
+        user_id: user.id,
         content,
       })
       .select(`
@@ -647,6 +639,9 @@ export default function Community() {
         )
       );
       toast.success('Comment added!');
+    } else if (error) {
+      console.error('Failed to add comment', error);
+      toast.error('Unable to add comment.');
     }
   };
 
@@ -1009,7 +1004,7 @@ export default function Community() {
             </div>
 
             {/* More Options (owner only) */}
-            {post.userId && user?.profileId === post.userId && (
+            {post.userId && user?.id === post.userId && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full hover:bg-muted">
@@ -1095,7 +1090,7 @@ export default function Community() {
           {isCommentsExpanded && (
             <CommentThread
               postId={post.id}
-              currentUserId={user?.profileId ?? null}
+              currentUserId={user?.id ?? null}
               userPhotoUrl={user?.photo_url ?? null}
               userInitials={userInitials}
               formatTimestamp={formatTimestamp}
@@ -1380,7 +1375,7 @@ export default function Community() {
             open={showUserProfile}
             onOpenChange={setShowUserProfile}
             userId={selectedUserId}
-            currentUserId={user?.profileId ?? null}
+            currentUserId={user?.id ?? null}
           />
         )}
       </ErrorBoundary>
