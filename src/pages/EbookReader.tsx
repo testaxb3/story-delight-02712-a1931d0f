@@ -15,6 +15,7 @@ const EbookReaderPage = () => {
   const { 
     progress, 
     updateCurrentChapter, 
+    updateScrollPosition,
     markChapterComplete 
   } = useEbookProgress(ebookId);
 
@@ -74,16 +75,23 @@ const EbookReaderPage = () => {
     Math.max(progress?.current_chapter ?? 0, 0),
     finalChapters.length - 1
   );
+  const initialScrollPosition = progress?.scroll_position ?? 0;
   const completedChapters = new Set(progress?.completed_chapters || []);
 
   return (
     <EbookReader
       chapters={finalChapters}
       initialChapter={initialChapter}
+      initialScrollPosition={initialScrollPosition}
       completedChapters={completedChapters}
       onChapterChange={(index) => {
         if (ebookId) {
           updateCurrentChapter.mutate(index);
+        }
+      }}
+      onScrollPositionChange={(position) => {
+        if (ebookId) {
+          updateScrollPosition.mutate(position);
         }
       }}
       onChapterComplete={(index) => {
