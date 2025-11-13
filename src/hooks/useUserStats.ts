@@ -8,6 +8,9 @@ export interface UserStats {
   bestStreak: number;
   totalDays: number;
   postsCreated: number;
+  completedDays: number;
+  currentStreak: number;
+  avgStressLevel: number;
 }
 
 export interface RecentActivity {
@@ -30,6 +33,9 @@ export function useUserStats(userId: string | undefined) {
     bestStreak: 1,
     totalDays: 1,
     postsCreated: 0,
+    completedDays: 0,
+    currentStreak: 0,
+    avgStressLevel: 0,
   });
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +66,26 @@ export function useUserStats(userId: string | undefined) {
           .select('*', { count: 'exact', head: true })
           .eq('author_id', userId);
 
-        // Calculate streak
+        // Fetch tracker data
+        const { data: trackerDays } = await supabase
+          .from('tracker_days')
+          .select('day_number, completed, stress_level, completed_at')
+          .eq('user_id', userId)
+          .order('day_number', { ascending: true });
+
+        // Calculate completed days and streak from tracker
+        const completedDays = trackerDays?.filter(d => d.completed).length || 0;
+        const currentStreak = calculateTrackerStreak(trackerDays || []);
+        
+        // Calculate average stress level
+        const stressLevels = trackerDays
+          ?.filter(d => d.completed && d.stress_level !== null)
+          .map(d => d.stress_level) || [];
+        const avgStressLevel = stressLevels.length > 0
+          ? stressLevels.reduce((a, b) => a + b, 0) / stressLevels.length
+          : 0;
+
+        // Calculate streak from scripts usage
         const { data: recentUsage } = await supabase
           .from('scripts_usage')
           .select('used_at')
@@ -77,6 +102,9 @@ export function useUserStats(userId: string | undefined) {
           bestStreak: bestStreak,
           totalDays: totalDays,
           postsCreated: postsCount || 0,
+          completedDays: completedDays,
+          currentStreak: currentStreak,
+          avgStressLevel: avgStressLevel,
         });
 
         // Fetch recent activity
@@ -93,6 +121,36 @@ export function useUserStats(userId: string | undefined) {
   }, [userId]);
 
   return { stats, recentActivity, loading };
+}
+
+/**
+ * Calculates current streak from tracker days
+ */
+function calculateTrackerStreak(trackerDays: Array<{ day_number: number; completed: boolean; completed_at: string | null }>) {
+  if (!trackerDays || trackerDays.length === 0) return 0;
+
+  // Get completed days sorted by day_number descending
+  const completedDays = trackerDays
+    .filter(d => d.completed)
+    .sort((a, b) => b.day_number - a.day_number);
+
+  if (completedDays.length === 0) return 0;
+
+  // Start from the last completed day and count backwards
+  let streak = 1;
+  for (let i = 0; i < completedDays.length - 1; i++) {
+    const currentDay = completedDays[i].day_number;
+    const nextDay = completedDays[i + 1].day_number;
+    
+    // Check if consecutive days
+    if (currentDay - nextDay === 1) {
+      streak++;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
 }
 
 /**
