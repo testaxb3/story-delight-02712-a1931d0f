@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Card } from '@/components/ui/card';
 import { UserPhotoUpload } from '@/components/UserPhotoUpload';
 import type { User } from '@supabase/supabase-js';

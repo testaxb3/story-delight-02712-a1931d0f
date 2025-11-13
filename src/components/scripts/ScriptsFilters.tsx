@@ -19,7 +19,7 @@ import {
   Clock,
   Sparkles,
   TrendingUp,
-  AlphabeticalSort,
+  ArrowUpAZ,
 } from 'lucide-react';
 
 export type SortOption = 'relevance' | 'recent' | 'popular' | 'alphabetical';
@@ -40,7 +40,7 @@ const SORT_OPTIONS = [
   { value: 'relevance' as const, label: 'Most Relevant', icon: Sparkles },
   { value: 'recent' as const, label: 'Recently Added', icon: Clock },
   { value: 'popular' as const, label: 'Most Popular', icon: TrendingUp },
-  { value: 'alphabetical' as const, label: 'A-Z', icon: AlphabeticalSort },
+  { value: 'alphabetical' as const, label: 'A-Z', icon: ArrowUpAZ },
 ];
 
 export const ScriptsFilters = forwardRef<HTMLInputElement, ScriptsFiltersProps>(

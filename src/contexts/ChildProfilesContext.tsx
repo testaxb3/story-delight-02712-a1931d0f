@@ -7,6 +7,8 @@ export interface ChildProfile {
   name: string;
   brain_profile: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
   created_at?: string | null;
+  photo_url?: string | null;
+  age?: number | null;
 }
 
 interface ChildProfilesContextValue {

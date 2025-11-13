@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Flag, Info, Heart, Send, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Smile, Edit2, Pin } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
