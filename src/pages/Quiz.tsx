@@ -123,7 +123,7 @@ export default function Quiz() {
       if (existingChild) {
         const { error: updateError } = await supabase
           .from('child_profiles')
-          .update({ brain_type: brainType })
+          .update({ brain_profile: brainType })
           .eq('id', existingChild.id);
 
         if (updateError) {
@@ -141,7 +141,6 @@ export default function Quiz() {
           .insert([{
             parent_id: user.profileId,
             name: childName.trim(),
-            brain_type: brainType,
             brain_profile: brainType
           }])
           .select()
