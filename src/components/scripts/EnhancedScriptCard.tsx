@@ -41,101 +41,76 @@ const EnhancedScriptCardComponent = ({
 
   return (
     <Card
-      className="p-5 bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border-2 border-slate-200/50 dark:border-slate-700/50 shadow-xl cursor-pointer hover:shadow-2xl hover:-translate-y-1 hover:border-primary/50 transition-all duration-200 relative overflow-hidden group"
+      className="group relative p-5 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-primary/50 touch-target"
       onClick={onClick}
     >
-      {/* Brain Type Badge - Top Right */}
-      <Badge
-        className={`absolute top-4 right-16 ${getBrainTypeBadgeColor(script.profile)} border-2 text-xs font-bold px-3 py-1.5 shadow-md`}
-        variant="outline"
-      >
-        🧠 {script.profile}
-      </Badge>
+      {/* Quick Actions - Show on hover */}
+      <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
+        <button
+          onClick={onToggleFavorite}
+          className="p-2 rounded-xl bg-background/95 backdrop-blur-sm shadow-lg hover:scale-110 transition-transform touch-target"
+          aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+        >
+          <Heart
+            className={`w-5 h-5 transition-all ${
+              isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-500'
+            }`}
+          />
+        </button>
+      </div>
 
-      {/* Favorite Button - Top Right Corner */}
-      <button
-        onClick={onToggleFavorite}
-        className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-primary/10 transition-colors z-10"
-        aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-      >
-        <Heart
-          className={`w-5 h-5 transition-all ${
-            isFavorite ? 'fill-red-500 text-red-500' : 'text-muted-foreground hover:text-red-500'
-          }`}
-        />
-      </button>
-
-      {/* Emergency Badge - Top Left */}
-      {script.emergency_suitable && (
-        <Badge className="absolute top-4 left-4 bg-red-500/10 text-red-700 border-red-500/20 border-2 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 shadow-md">
-          <Zap className="w-3 h-3" />
-          SOS READY
+      {/* Priority Badges - Simplified */}
+      <div className="absolute top-4 left-4 flex gap-2 z-10">
+        {script.emergency_suitable && (
+          <Badge className="bg-destructive/90 text-destructive-foreground shadow-lg animate-pulse">
+            <Zap className="w-3 h-3 mr-1" />
+            SOS
+          </Badge>
+        )}
+        <Badge
+          className={`${getBrainTypeBadgeColor(script.profile)} font-bold shadow-md`}
+          variant="outline"
+        >
+          {script.profile}
         </Badge>
-      )}
+      </div>
 
       {/* Main Content */}
-      <div className="flex items-start gap-4 flex-1 pr-2">
-        <div
-          className={`text-4xl flex-shrink-0 ${script.emergency_suitable ? 'mt-12' : 'mt-6'} group-hover:scale-110 transition-transform`}
-        >
+      <div className="flex items-start gap-4 mt-12">
+        <div className="text-5xl flex-shrink-0 group-hover:scale-110 transition-transform">
           {emoji}
         </div>
-        <div className={`flex-1 ${script.emergency_suitable ? 'mt-12' : 'mt-6'}`}>
-          <h3 className="font-bold text-xl mb-2 group-hover:text-primary transition-colors">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-bold text-xl mb-1 group-hover:text-primary transition-colors line-clamp-2">
             {script.title}
           </h3>
-          <p className="text-sm text-muted-foreground mb-2 font-medium">{displayCategory}</p>
+          <p className="text-sm text-muted-foreground mb-3">{displayCategory}</p>
 
-          {/* Situation Trigger - NEW */}
+          {/* Situation Trigger - Compact */}
           {script.situation_trigger && (
-            <div className="mt-3 mb-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-md">
-              <p className="text-[10px] font-bold text-amber-900 dark:text-amber-200 uppercase tracking-wide mb-1">
+            <div className="mt-2 p-3 bg-warning/10 border border-warning/20 rounded-lg">
+              <p className="text-xs font-semibold text-warning-foreground mb-1">
                 WHEN TO USE:
               </p>
-              <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
+              <p className="text-xs text-muted-foreground line-clamp-2">
                 {script.situation_trigger}
               </p>
             </div>
           )}
 
-          {/* Context Badges - NEW */}
+          {/* Key Badges - Most Important Only */}
           <div className="flex flex-wrap gap-1.5 mt-3">
-            {script.success_speed && (
-              <Badge className="text-[10px] bg-green-500/10 text-green-700 dark:text-green-400 border-green-500/20">
-                <Zap className="w-3 h-3 mr-1" />
-                {script.success_speed}
-              </Badge>
-            )}
-
             {script.expected_time_seconds && (
-              <Badge className="text-[10px] bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20">
+              <Badge variant="outline" className="text-xs">
                 <Clock className="w-3 h-3 mr-1" />
                 {script.expected_time_seconds}s
               </Badge>
             )}
 
-            {script.location_type && script.location_type.includes('public') && (
-              <Badge className="text-[10px] bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/20">
-                <MapPin className="w-3 h-3 mr-1" />
-                Works in public
-              </Badge>
-            )}
-
-            {script.parent_state && script.parent_state.includes('frustrated') && (
-              <Badge className="text-[10px] bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20">
-                😤 OK when frustrated
-              </Badge>
-            )}
-
-            {script.parent_state && script.parent_state.includes('exhausted') && (
-              <Badge className="text-[10px] bg-slate-500/10 text-slate-700 dark:text-slate-400 border-slate-500/20">
-                😮‍💨 Works when tired
-              </Badge>
-            )}
-
-            {script.intensity_level === 'severe' && (
-              <Badge className="text-[10px] bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20">
-                🔥 Major meltdowns
+            {script.success_speed && (
+              <Badge variant="outline" className="text-xs">
+                <Zap className="w-3 h-3 mr-1" />
+                {script.success_speed}
               </Badge>
             )}
 

@@ -21,10 +21,14 @@ export function HeroSection({
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 p-8 text-white shadow-2xl">
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
-      <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 via-primary/80 to-accent/70 p-8 text-white shadow-xl">
+      {/* Decorative SVG elements - More subtle */}
+      <svg className="absolute top-0 right-0 w-64 h-64 -mr-16 -mt-16 opacity-10" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="80" fill="currentColor" />
+      </svg>
+      <svg className="absolute bottom-0 left-0 w-48 h-48 -ml-12 -mb-12 opacity-10" viewBox="0 0 200 200">
+        <path d="M100,0 L200,100 L100,200 L0,100 Z" fill="currentColor" />
+      </svg>
 
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-6">
@@ -44,26 +48,26 @@ export function HeroSection({
         </div>
 
         {/* Progress Section */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 sm:p-6 border border-white/20">
+        <div className="glass rounded-2xl p-4 sm:p-6 border border-white/30">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm sm:text-base text-purple-100 font-medium">Your Transformation Progress</span>
+            <span className="text-sm sm:text-base font-semibold">Your Transformation Progress</span>
             <span className="text-xl sm:text-2xl font-black">{currentDay}/{totalDays}</span>
           </div>
           <div className="relative">
             <Progress value={(currentDay / totalDays) * 100} className="h-3 bg-white/20" />
-            <div className="absolute -top-1 left-0" style={{ left: `${(currentDay / totalDays) * 100}%` }}>
-              <div className="w-5 h-5 bg-white rounded-full shadow-lg -ml-2.5 flex items-center justify-center">
-                <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+            <div className="absolute -top-1 left-0 transition-all duration-500" style={{ left: `${(currentDay / totalDays) * 100}%` }}>
+              <div className="w-5 h-5 bg-white rounded-full shadow-xl -ml-2.5 flex items-center justify-center animate-pulse">
+                <div className="w-2 h-2 bg-primary rounded-full"></div>
               </div>
             </div>
           </div>
 
-          <div className="mt-6 bg-white/10 backdrop-blur-sm p-4 rounded-xl border border-white/20">
+          <div className="mt-6 glass p-4 rounded-xl border border-white/30">
             <div className="flex items-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-yellow-300" />
-              <p className="font-bold text-yellow-300 text-sm sm:text-base">Today's Mission</p>
+              <Target className="w-5 h-5 text-warning" />
+              <p className="font-bold text-warning text-sm sm:text-base">Today's Mission</p>
             </div>
-            <p className="text-xs sm:text-sm text-purple-50">
+            <p className="text-xs sm:text-sm opacity-90">
               Watch one Foundation video and try your first NEP phrase with your child
             </p>
           </div>
@@ -72,18 +76,18 @@ export function HeroSection({
         {/* Quick Action Buttons */}
         <div className="grid grid-cols-2 gap-3 mt-6">
           <Button
-            className="bg-white text-purple-600 hover:bg-purple-50 font-bold shadow-lg h-11 sm:h-12 text-sm sm:text-base"
+            className="bg-white text-primary hover:bg-white/90 font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base touch-target"
             onClick={() => navigate('/tracker')}
           >
-            <Target className="w-4 h-4 mr-2" />
+            <Target className="w-5 h-5 mr-2" />
             My Plan
           </Button>
           <Button
             variant="outline"
-            className="bg-white/10 hover:bg-white/20 text-white border-white/30 font-bold backdrop-blur-sm h-11 sm:h-12 text-sm sm:text-base"
+            className="glass hover:bg-white/20 text-white border-white/40 font-bold h-12 sm:h-14 text-sm sm:text-base touch-target"
             onClick={() => navigate('/videos')}
           >
-            <Play className="w-4 h-4 mr-2" />
+            <Play className="w-5 h-5 mr-2" />
             Watch Videos
           </Button>
         </div>

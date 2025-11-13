@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { LucideIcon } from "lucide-react";
 
@@ -17,15 +18,41 @@ export const EmptyState = ({
   onAction,
 }: EmptyStateProps) => {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
-        <Icon className="w-10 h-10 text-muted-foreground" />
-      </div>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-muted-foreground mb-6 max-w-md">{description}</p>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="flex flex-col items-center justify-center py-16 px-4 text-center"
+    >
+      {/* Animated icon */}
+      <motion.div
+        animate={{
+          scale: [1, 1.05, 1],
+          rotate: [0, 5, -5, 0],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          repeatType: 'reverse',
+        }}
+        className="relative mb-6"
+      >
+        <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
+        <div className="relative w-24 h-24 rounded-full bg-muted/50 flex items-center justify-center border-4 border-border">
+          <Icon className="w-12 h-12 text-muted-foreground" />
+        </div>
+      </motion.div>
+
+      {/* Text content */}
+      <h3 className="text-2xl font-bold mb-3 text-foreground">{title}</h3>
+      <p className="text-muted-foreground mb-8 max-w-md leading-relaxed">{description}</p>
+      
+      {/* Action button */}
       {actionLabel && onAction && (
-        <Button onClick={onAction}>{actionLabel}</Button>
+        <Button onClick={onAction} size="lg" className="touch-target">
+          {actionLabel}
+        </Button>
       )}
-    </div>
+    </motion.div>
   );
 };
