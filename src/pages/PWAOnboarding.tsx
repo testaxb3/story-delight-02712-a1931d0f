@@ -17,9 +17,11 @@ export default function PWAOnboarding() {
     } else if (/android/i.test(userAgent)) {
       setDeviceType('android');
     } else {
-      setDeviceType('desktop');
+      // If desktop, skip onboarding immediately
+      localStorage.setItem('pwa_onboarding_completed', 'true');
+      navigate('/', { replace: true });
     }
-  }, []);
+  }, [navigate]);
 
   const handleContinue = () => {
     // Mark onboarding as completed
@@ -46,9 +48,8 @@ export default function PWAOnboarding() {
 
   const currentVideo = deviceType === 'ios' ? videos.ios : videos.android;
 
-  // If desktop, skip onboarding
+  // Show nothing while redirecting desktop users
   if (deviceType === 'desktop') {
-    handleContinue();
     return null;
   }
 
