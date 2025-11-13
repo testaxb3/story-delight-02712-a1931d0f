@@ -29,7 +29,6 @@ const Videos = lazy(() => import("./pages/Videos"));
 const Library = lazy(() => import("./pages/Library"));
 const Bonuses = lazy(() => import("./pages/Bonuses"));
 const EbookReader = lazy(() => import("./pages/EbookReader"));
-const EbookLibrary = lazy(() => import("./pages/EbookLibrary"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 
@@ -158,24 +157,7 @@ function AppContent() {
           }
         />
         <Route
-          path="/ebooks"
-          element={
-            <ProtectedRoute>
-              <EbookLibrary />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/ebook/:ebookId"
-          element={
-            <ProtectedRoute>
-              <EbookReader />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/ebook" element={<Navigate to="/ebooks" replace />} />
-        <Route
-          path="/ebook"
           element={
             <ProtectedRoute>
               <EbookReader />

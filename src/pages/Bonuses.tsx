@@ -134,13 +134,7 @@ export default function Bonuses() {
       }
     }
 
-    // If it's an ebook, navigate to the ebook reader
-    if (bonus.category === 'ebook') {
-      navigate('/ebook');
-      return;
-    }
-
-    // Otherwise, navigate or download
+    // Navigate using viewUrl (for ebooks, PDFs, tools, etc.) or download
     if (bonus.viewUrl) {
       navigate(bonus.viewUrl);
     } else if (bonus.downloadUrl) {

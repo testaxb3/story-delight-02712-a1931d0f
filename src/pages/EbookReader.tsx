@@ -19,7 +19,7 @@ const EbookReaderPage = () => {
   } = useEbookProgress(ebookId);
 
   const handleClose = () => {
-    navigate('/ebooks');
+    navigate('/bonuses');
   };
 
   if (isLoading) {
@@ -40,10 +40,10 @@ const EbookReaderPage = () => {
           <p className="text-red-500 font-medium">Unable to load ebook.</p>
           <p className="text-sm text-muted-foreground">Please try again later.</p>
           <button 
-            onClick={() => navigate('/ebooks')} 
+            onClick={() => navigate('/bonuses')} 
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md"
           >
-            Back to library
+            Back to bonuses
           </button>
         </div>
       </div>
@@ -58,12 +58,12 @@ const EbookReaderPage = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-3">
           <p className="font-medium">No content found.</p>
-          <p className="text-sm text-muted-foreground">Please return to the library and try again.</p>
+          <p className="text-sm text-muted-foreground">Please return to bonuses and try again.</p>
           <button 
-            onClick={() => navigate('/ebooks')} 
+            onClick={() => navigate('/bonuses')} 
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded-md"
           >
-            Back to library
+            Back to bonuses
           </button>
         </div>
       </div>
