@@ -166,11 +166,9 @@ export default function Community() {
   ], []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % placeholders.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, [placeholders]);
+    // Disabled rotating placeholder to prevent periodic re-renders that could remount comments
+    // If needed, re-enable with a much longer interval or move into a memoized child component
+  }, []);
 
   useEffect(() => {
     const state = location.state as { prefill?: string; defaultTab?: 'win' | 'help' } | undefined;
