@@ -57,19 +57,19 @@ export const ReadingControls = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Tamanho da Fonte</DropdownMenuLabel>
+          <DropdownMenuLabel>Font Size</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={increaseFontSize}>
             <span className="text-lg">A+</span>
-            <span className="ml-2">Aumentar</span>
+            <span className="ml-2">Increase</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={decreaseFontSize}>
             <span className="text-sm">A-</span>
-            <span className="ml-2">Diminuir</span>
+            <span className="ml-2">Decrease</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={resetFontSize}>
             <span className="text-base">A</span>
-            <span className="ml-2">Redefinir</span>
+            <span className="ml-2">Reset</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

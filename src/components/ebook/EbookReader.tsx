@@ -32,7 +32,7 @@ export const EbookReader = ({
   if (!chapters || chapters.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Conteúdo indisponível.</p>
+        <p className="text-muted-foreground">Content unavailable.</p>
       </div>
     );
   }
@@ -131,7 +131,7 @@ export const EbookReader = ({
               <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
                 <Home className="w-4 h-4" />
                 <span>/</span>
-                <span className="font-semibold text-foreground">Capítulo {currentChapterIndex + 1}</span>
+                <span className="font-semibold text-foreground">Chapter {currentChapterIndex + 1}</span>
               </div>
             </div>
             
@@ -177,7 +177,7 @@ export const EbookReader = ({
         {/* Page Number */}
         <div className="mt-12 mb-8 text-center">
           <span className="text-sm font-body text-muted-foreground">
-            Página {currentChapterIndex + 1} de {chapters.length}
+            Page {currentChapterIndex + 1} of {chapters.length}
           </span>
         </div>
         

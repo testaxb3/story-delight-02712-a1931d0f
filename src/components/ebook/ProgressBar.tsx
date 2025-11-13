@@ -12,7 +12,7 @@ export const ProgressBar = ({ current, total, percentage }: ProgressBarProps) =>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-muted-foreground">
           <BookOpen className="w-5 h-5 text-primary" />
-          <span className="text-sm font-semibold font-body tracking-wide">Progresso de Leitura</span>
+          <span className="text-sm font-semibold font-body tracking-wide">Reading Progress</span>
         </div>
         <span className="text-3xl font-display font-bold gradient-text">{percentage}%</span>
       </div>
@@ -30,9 +30,9 @@ export const ProgressBar = ({ current, total, percentage }: ProgressBarProps) =>
       
       <div className="flex items-center justify-between text-sm font-body">
         <span className="text-muted-foreground font-semibold">
-          Capítulo {current} de {total}
+          Chapter {current} of {total}
         </span>
-        <span className="text-muted-foreground">{total - current} restantes</span>
+        <span className="text-muted-foreground">{total - current} remaining</span>
       </div>
     </div>
   );
