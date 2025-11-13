@@ -144,7 +144,46 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         const chapters = parseMarkdownToChapters(content);
         setParsedChapters(chapters);
         
-        // Auto-fill form fields based on markdown content
+        // Extract title from first H1 or use filename
+        let autoTitle = formData.title;
+        const titleMatch = content.match(/^#\s+(.+)$/m);
+        if (titleMatch) {
+          autoTitle = titleMatch[1].trim();
+        } else if (file.name) {
+          autoTitle = file.name.replace(/\.md$/i, '').replace(/[-_]/g, ' ');
+        }
+        
+        // Extract description from first paragraph after title
+        let autoDescription = formData.description;
+        const descMatch = content.match(/^#\s+.+\n\n(.+?)(?:\n\n|$)/m);
+        if (descMatch) {
+          autoDescription = descMatch[1].trim().substring(0, 200);
+        }
+        
+        // Extract tags from content (looking for common parenting/child development keywords)
+        const commonKeywords = [
+          'comportamento', 'desenvolvimento', 'aprendizado', 'rotina', 'sono',
+          'alimentação', 'disciplina', 'emoções', 'socialização', 'autonomia',
+          'limites', 'comunicação', 'birra', 'ansiedade', 'autoestima',
+          'criatividade', 'foco', 'organização', 'responsabilidade', 'cooperação'
+        ];
+        
+        const contentLower = content.toLowerCase();
+        const foundTags = commonKeywords.filter(keyword => 
+          contentLower.includes(keyword)
+        ).slice(0, 5);
+        
+        // Auto-generate thumbnail with gradient based on title
+        const colors = [
+          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+          'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+          'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+          'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+        ];
+        const colorIndex = (autoTitle.length % colors.length);
+        
+        // Calculate stats
         const totalWords = chapters.reduce((sum, chapter) => {
           const chapterWords = chapter.content.reduce((sectionSum, section) => {
             if (typeof section.content === 'string') {
@@ -163,11 +202,19 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         
         setFormData(prev => ({
           ...prev,
+          title: autoTitle || prev.title,
+          description: autoDescription || prev.description,
+          thumbnail: colors[colorIndex], // Will be used as gradient background
           duration: `${estimatedReadingTime} min`,
           size: fileSizeMB,
+          tags: foundTags.length > 0 ? foundTags : prev.tags,
         }));
         
-        toast.success(`Markdown validado! ${chapters.length} capítulos, ~${estimatedReadingTime}min de leitura`);
+        if (foundTags.length > 0) {
+          setTagsInput(foundTags.join(', '));
+        }
+        
+        toast.success(`Markdown processado! ${chapters.length} capítulos, ~${estimatedReadingTime}min de leitura`);
       } else {
         setParsedChapters([]);
         toast.error('Markdown inválido. Verifique os erros.');
