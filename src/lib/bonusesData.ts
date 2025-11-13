@@ -1,14 +1,15 @@
 import { BonusData } from "@/components/bonuses/BonusCard";
+import ebookCover from "@/assets/ebook-why-child-acts-cover.jpg";
 
 export const mockBonusesData: BonusData[] = [
   // Featured - Interactive Ebook (Already unlocked)
   {
     id: "ebook-main",
     title: "Why Your Child Acts This Way - Complete Interactive Ebook",
-    description: "29 meta-analyzed studies, 3,500+ children in research samples. The definitive guide to understanding DEFIANT, INTENSE, and DISTRACTED profiles with neurological insights.",
+    description: "29 meta-analyzed studies, 3,500+ children in research samples, and word-for-word scripts for every situation. Validated by peer-reviewed research.",
     category: "ebook",
-    thumbnail: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800&auto=format&fit=crop",
-    duration: "45-60 min read",
+    thumbnail: ebookCover,
+    duration: "28 min read",
     size: "Interactive",
     locked: false,
     completed: false,
