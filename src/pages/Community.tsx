@@ -432,35 +432,53 @@ export default function Community() {
     }, 600);
 
     const hasLiked = targetPost.userHasLiked;
-    const mutation = hasLiked
-      ? supabase
+
+    try {
+      if (hasLiked) {
+        // Remove like
+        const { error } = await supabase
           .from('post_likes')
           .delete()
           .eq('post_id', postId)
-          .eq('user_id', user.id)
-      : supabase
+          .eq('user_id', user.id);
+
+        if (error) throw error;
+      } else {
+        // Add like with UPSERT to handle duplicates
+        const { error } = await supabase
           .from('post_likes')
-          .insert({ post_id: postId, user_id: user.id, reaction_type: 'like' });
-
-    const { error } = await mutation;
-
-    if (error) {
-      console.error('Failed to toggle like', error);
-      toast.error(error?.message || (hasLiked ? 'Unable to remove your like.' : 'Unable to like this post.'));
-      return;
-    }
-
-    setPosts((prev) =>
-      prev.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              userHasLiked: !hasLiked,
-              likesCount: Math.max(0, post.likesCount + (hasLiked ? -1 : 1)),
+          .upsert(
+            { 
+              post_id: postId, 
+              user_id: user.id, 
+              reaction_type: 'like' 
+            },
+            { 
+              onConflict: 'user_id,post_id',
+              ignoreDuplicates: false 
             }
-          : post
-      )
-    );
+          );
+
+        if (error) throw error;
+      }
+
+      // Update local state optimistically
+      setPosts((prev) =>
+        prev.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                userHasLiked: !hasLiked,
+                likesCount: Math.max(0, post.likesCount + (hasLiked ? -1 : 1)),
+              }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error('Failed to toggle like', error);
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      toast.error(errorMessage || (hasLiked ? 'Unable to remove your like.' : 'Unable to like this post.'));
+    }
   };
 
   const handleDeletePost = async (postId: string) => {
