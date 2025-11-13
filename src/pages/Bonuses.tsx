@@ -62,13 +62,18 @@ export default function Bonuses() {
   const filteredAndSortedBonuses = useMemo(() => {
     // Merge ebook progress into bonuses
     let filtered = allBonuses.map((bonus) => {
-      if (bonus.category === 'ebook' && bonus.id) {
-        const ebookProgress = progressMap.get(bonus.id);
-        if (ebookProgress && ebookProgress.progress_percentage > 0) {
-          return {
-            ...bonus,
-            progress: ebookProgress.progress_percentage,
-          };
+      if (bonus.category === 'ebook' && bonus.viewUrl) {
+        // Extract ebook_id from view_url (e.g., /ebook/7d245f14-1f62-4bfe-a0fb-52598f138eb4)
+        const ebookIdMatch = bonus.viewUrl.match(/\/ebook\/([a-f0-9-]+)/);
+        if (ebookIdMatch) {
+          const ebookId = ebookIdMatch[1];
+          const ebookProgress = progressMap.get(ebookId);
+          if (ebookProgress && ebookProgress.progress_percentage > 0) {
+            return {
+              ...bonus,
+              progress: ebookProgress.progress_percentage,
+            };
+          }
         }
       }
       return bonus;
