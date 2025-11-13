@@ -240,13 +240,11 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
     }
   };
 
-  // Handle category change - reset URL error and auto-loaded flag
   const handleCategoryChange = (value: string) => {
-    setFormData({ ...formData, category: value as BonusData['category'] });
+    setFormData(prev => ({ ...prev, category: value as BonusData['category'] }));
     setUrlError(null);
     setThumbnailAutoLoaded(false);
   };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
