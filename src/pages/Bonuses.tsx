@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X } from "lucide-react";
 import { useBonuses } from "@/hooks/useBonuses";
 import { useUserEbooksProgress } from "@/hooks/useUserEbooksProgress";
+import { useEbooks } from "@/hooks/useEbooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -35,6 +36,7 @@ export default function Bonuses() {
   // Fetch bonuses and ebook progress from Supabase
   const { data: allBonuses = [], isLoading, error } = useBonuses();
   const { progressMap, isLoading: isLoadingProgress } = useUserEbooksProgress();
+  const { ebooks } = useEbooks();
 
   // Calculate category counts
   const categoryCounts = useMemo(() => {
@@ -58,15 +60,34 @@ export default function Bonuses() {
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
   ];
 
+  // Map bonus_id -> ebook_id from ebooks table
+  const ebookByBonusId = useMemo(() => {
+    const map = new Map<string, string>();
+    (ebooks || []).forEach(e => {
+      if (e.bonus_id) map.set(e.bonus_id, e.id);
+    });
+    return map;
+  }, [ebooks]);
+
   // Filter and sort bonuses with ebook progress merged
   const filteredAndSortedBonuses = useMemo(() => {
     // Merge ebook progress into bonuses
     let filtered = allBonuses.map((bonus) => {
-      if (bonus.category === 'ebook' && bonus.viewUrl) {
-        // Extract ebook_id from view_url (e.g., /ebook/7d245f14-1f62-4bfe-a0fb-52598f138eb4)
-        const ebookIdMatch = bonus.viewUrl.match(/\/ebook\/([a-f0-9-]+)/);
-        if (ebookIdMatch) {
-          const ebookId = ebookIdMatch[1];
+      if (bonus.category === 'ebook') {
+        let ebookId: string | undefined;
+
+        // Priority 1: Extract from viewUrl if present
+        if (bonus.viewUrl) {
+          const match = bonus.viewUrl.match(/\/ebook\/([a-f0-9-]+)/);
+          if (match) ebookId = match[1];
+        }
+
+        // Priority 2: Map bonus.id -> ebook.id
+        if (!ebookId) {
+          ebookId = ebookByBonusId.get(bonus.id);
+        }
+
+        if (ebookId) {
           const ebookProgress = progressMap.get(ebookId);
           if (ebookProgress && ebookProgress.progress_percentage > 0) {
             return {
@@ -111,7 +132,7 @@ export default function Bonuses() {
       default:
         return sorted;
     }
-  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap]);
+  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap, ebookByBonusId]);
 
   // Get in-progress bonuses
   const inProgressBonuses = allBonuses.filter(
