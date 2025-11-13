@@ -123,8 +123,6 @@ export function CommentThread({
       setSubmitting(false);
     }
   };
-    }
-  };
 
   // Add reply to a comment
   const handleAddReply = async (parentCommentId: string, content: string) => {
