@@ -25,7 +25,7 @@ interface CommentItemProps {
   showReplies?: boolean;
 }
 
-export function CommentItem({
+function CommentItemComponent({
   comment,
   currentUserId,
   onDelete,
@@ -58,7 +58,7 @@ export function CommentItem({
         {comment.profiles?.photo_url ? (
           <img
             src={comment.profiles.photo_url}
-            alt=""
+            alt={`${comment.profiles?.name || comment.profiles?.email || 'User'} avatar`}
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
           />
         ) : (
@@ -161,3 +161,6 @@ export function CommentItem({
     </div>
   );
 }
+
+export const CommentItem = React.memo(CommentItemComponent);
+
