@@ -16,7 +16,7 @@ export const mockBonusesData: BonusData[] = [
     progress: 0,
     isNew: true,
     tags: ["Neuroscience", "All Profiles", "Research-Based", "Interactive"],
-    viewUrl: "/ebook"
+    viewUrl: "/ebook/ebook-main"
   },
 
   // Videos
