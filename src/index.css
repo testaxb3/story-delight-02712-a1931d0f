@@ -269,10 +269,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* Better touch targets */
+  /* Better touch targets - Enhanced for mobile */
   .touch-target {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 48px;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 
   /* ============================================
@@ -301,5 +303,35 @@
   .dark .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ============================================
+     FOCUS STATES - Accessibility
+     ============================================ */
+
+  *:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  button:focus-visible,
+  a:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 4px;
+  }
+
+  /* ============================================
+     ANIMATIONS - Performance optimized
+     ============================================ */
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }

@@ -16,14 +16,14 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background border-t border-border shadow-lg transition-colors"
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-lg border-t border-border shadow-2xl transition-all safe-area-bottom"
       style={{
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 8px)',
       }}
     >
       <div
-        className="flex items-center justify-around"
-        style={{ height: '65px', paddingTop: '8px' }}
+        className="flex items-center justify-around px-2"
+        style={{ height: '68px', paddingTop: '8px' }}
       >
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
@@ -32,18 +32,26 @@ export function BottomNav() {
               key={path}
               onClick={() => navigate(path)}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 transition-all duration-300 ease-in-out rounded-full",
-                "min-w-[44px] min-h-[44px] px-3 py-2",
+                "relative flex flex-col items-center justify-center gap-1 transition-all duration-300 ease-in-out rounded-2xl touch-target",
+                "min-w-[52px] min-h-[52px] px-4 py-2",
                 isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "text-primary scale-110"
+                  : "text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
               )}
               aria-label={label}
             >
-              <Icon className="w-[22px] h-[22px]" />
-              <span className="text-[10px] font-medium">
+              {/* Active indicator */}
+              {isActive && (
+                <div className="absolute inset-0 bg-primary/10 rounded-2xl animate-in fade-in zoom-in duration-200" />
+              )}
+              <Icon className={cn("w-6 h-6 relative z-10 transition-transform", isActive && "scale-110")} />
+              <span className={cn("text-[10px] font-semibold relative z-10", isActive && "font-bold")}>
                 {label}
               </span>
+              {/* Active dot indicator */}
+              {isActive && (
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+              )}
             </button>
           );
         })}
