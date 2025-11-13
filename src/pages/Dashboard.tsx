@@ -22,12 +22,7 @@ import { getRandomSuccessStory, type SuccessStory } from '@/lib/successStories';
 import { useLiveStats } from '@/hooks/useLiveStats';
 import { getBrainTypeIcon } from '@/lib/brainTypes';
 import { useVideoProgress } from '@/hooks/useVideoProgress';
-// Temporarily disabled due to schema mismatch - tracker_days uses day_number not date
-// import { StreakVisualization } from '@/components/Dashboard/StreakVisualization';
-// import { DailyMissions } from '@/components/Dashboard/DailyMissions';
-// import { Leaderboard } from '@/components/Dashboard/Leaderboard';
 
-type FeedPost = Database['public']['Tables']['feed_posts']['Row'];
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
 type StandaloneNavigator = Navigator & { standalone?: boolean };
@@ -64,8 +59,6 @@ export default function Dashboard() {
   const [scriptsUsedCount, setScriptsUsedCount] = useState(0);
   const [loadingScriptsUsed, setLoadingScriptsUsed] = useState(false);
   const [contentCounts, setContentCounts] = useState({ scripts: 0, videos: 0, pdfs: 0 });
-  const [feedPosts, setFeedPosts] = useState<FeedPost[]>([]);
-  const [loadingFeed, setLoadingFeed] = useState(false);
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
@@ -203,25 +196,6 @@ export default function Dashboard() {
     });
   }, []);
 
-  const loadFeed = useCallback(async () => {
-    setLoadingFeed(true);
-    const { data, error } = await supabase
-      .from('feed_posts')
-      .select('*')
-      .eq('published', true)
-      .order('created_at', { ascending: false })
-      .limit(3);
-
-    if (error) {
-      console.error('Failed to load feed posts', error);
-      setFeedPosts([]);
-    } else {
-      setFeedPosts(data ?? []);
-    }
-
-    setLoadingFeed(false);
-  }, []);
-
   const loadVideos = useCallback(async () => {
     setLoadingVideos(true);
     const { data, error } = await supabase
@@ -250,9 +224,8 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadContentCounts();
-    loadFeed();
     loadVideos();
-  }, [loadContentCounts, loadFeed, loadVideos]);
+  }, [loadContentCounts, loadVideos]);
 
   // Check if we should show the welcome modal
   useEffect(() => {

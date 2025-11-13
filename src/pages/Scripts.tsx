@@ -399,7 +399,7 @@ export default function Scripts() {
       return;
     }
     setCreatingCollection(true);
-    const created = await createCollection(newCollectionName, true);
+    const created = await createCollection(newCollectionName, undefined, true);
     setCreatingCollection(false);
     if (created) {
       setNewCollectionName('');

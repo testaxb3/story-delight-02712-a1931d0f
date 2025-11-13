@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -8,6 +7,7 @@ export interface LeaderboardEntry {
   name: string;
   initials: string;
   avatarColor: string;
+  photoUrl?: string;
   brainType?: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
   score: number;
   streak: number;
@@ -39,7 +39,7 @@ function getAvatarColor(userId: string): string {
 
 export function useLeaderboard(
   currentUserId?: string,
-  leaderboardType: LeaderboardType = 'streak',
+  leaderboardType: LeaderboardType = 'xp',
   brainTypeFilter?: 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | null
 ) {
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
@@ -51,167 +51,83 @@ export function useLeaderboard(
       setLoading(true);
 
       try {
-        // Get all users with their profiles
-        const { data: profiles, error: profilesError } = await supabase
-          .from('profiles')
-          .select('id, name, email')
+        const { data: cachedData, error: cacheError } = await supabase
+          .from('leaderboard_cache')
+          .select('*')
           .limit(100);
 
-        if (profilesError) {
-          console.error('Error fetching profiles:', profilesError);
+        if (cacheError) {
+          console.error('Error fetching leaderboard cache:', cacheError);
           setLoading(false);
           return;
         }
 
-        if (!profiles || profiles.length === 0) {
+        if (!cachedData || cachedData.length === 0) {
           setLoading(false);
           return;
         }
 
-        // Get child profiles to determine brain types
         const { data: childProfiles } = await supabase
           .from('child_profiles')
-          .select('parent_id, brain_profile')
+          .select('user_id, brain_profile')
           .eq('is_active', true);
 
-        // Create a map of parent_id to brain_type
         const brainTypeMap = new Map<string, 'INTENSE' | 'DISTRACTED' | 'DEFIANT'>();
         childProfiles?.forEach(cp => {
-          if (cp.brain_profile && !brainTypeMap.has(cp.parent_id)) {
-            brainTypeMap.set(cp.parent_id, cp.brain_profile as 'INTENSE' | 'DISTRACTED' | 'DEFIANT');
+          if (cp.brain_profile && !brainTypeMap.has(cp.user_id)) {
+            brainTypeMap.set(cp.user_id, cp.brain_profile as 'INTENSE' | 'DISTRACTED' | 'DEFIANT');
           }
         });
 
-        // Get leaderboard data based on type
-        const leaderboardPromises = profiles.map(async (profile) => {
-          const userId = profile.id;
-          const brainType = brainTypeMap.get(userId);
-
-          // Skip if brain type filter is active and doesn't match
-          if (brainTypeFilter && brainType !== brainTypeFilter) {
-            return null;
-          }
-
+        let entries: LeaderboardEntry[] = cachedData.map((entry, index) => {
+          const brainType = brainTypeMap.get(entry.id);
+          
           let score = 0;
-          let streak = 0;
-
-          if (leaderboardType === 'streak') {
-            // Calculate current streak
-            const { data: trackerDays } = await supabase
-              .from('tracker_days')
-              .select('date, completed')
-              .eq('user_id', userId)
-              .order('date', { ascending: false })
-              .limit(30);
-
-            if (trackerDays && trackerDays.length > 0) {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-
-              const mostRecentDate = new Date(trackerDays[0].date);
-              mostRecentDate.setHours(0, 0, 0, 0);
-
-              const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
-
-              if (daysDiff <= 1 && trackerDays[0].completed) {
-                for (const day of trackerDays) {
-                  if (day.completed) {
-                    streak++;
-                  } else {
-                    break;
-                  }
-                }
-              }
-            }
-            score = streak;
-          } else if (leaderboardType === 'scripts') {
-            // Count total scripts used (completed tracker days)
-            const { count } = await supabase
-              .from('tracker_days')
-              .select('id', { count: 'exact', head: true })
-              .eq('user_id', userId)
-              .eq('completed', true);
-
-            score = count || 0;
-          } else if (leaderboardType === 'xp') {
-            // Calculate XP based on activities
-            const { count: scriptsCount } = await supabase
-              .from('tracker_days')
-              .select('id', { count: 'exact', head: true })
-              .eq('user_id', userId)
-              .eq('completed', true);
-
-            const { count: postsCount } = await supabase
-              .from('community_posts')
-              .select('id', { count: 'exact', head: true })
-              .eq('user_id', userId)
-              .then(r => r)
-              .catch(() => ({ count: 0 }));
-
-            // XP calculation: 50 per script + 60 per community post
-            score = (scriptsCount || 0) * 50 + (postsCount || 0) * 60;
-
-            // Also calculate streak for display
-            const { data: trackerDays } = await supabase
-              .from('tracker_days')
-              .select('date, completed')
-              .eq('user_id', userId)
-              .order('date', { ascending: false })
-              .limit(30);
-
-            if (trackerDays && trackerDays.length > 0) {
-              const today = new Date();
-              today.setHours(0, 0, 0, 0);
-
-              const mostRecentDate = new Date(trackerDays[0].date);
-              mostRecentDate.setHours(0, 0, 0, 0);
-
-              const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
-
-              if (daysDiff <= 1 && trackerDays[0].completed) {
-                for (const day of trackerDays) {
-                  if (day.completed) {
-                    streak++;
-                  } else {
-                    break;
-                  }
-                }
-              }
-            }
+          switch (leaderboardType) {
+            case 'xp':
+              score = entry.total_xp || 0;
+              break;
+            case 'scripts':
+              score = entry.scripts_used || 0;
+              break;
+            case 'streak':
+              score = entry.current_streak || 0;
+              break;
           }
-
-          const name = profile.name || profile.email?.split('@')[0] || 'Anonymous Parent';
 
           return {
-            userId,
-            name,
-            initials: getInitials(name),
-            avatarColor: getAvatarColor(userId),
+            rank: index + 1,
+            userId: entry.id,
+            name: entry.full_name || 'Anonymous',
+            initials: getInitials(entry.full_name || 'Anonymous'),
+            avatarColor: getAvatarColor(entry.id),
+            photoUrl: entry.photo_url || undefined,
             brainType,
             score,
-            streak,
-            isCurrentUser: userId === currentUserId,
-          } as Omit<LeaderboardEntry, 'rank'>;
+            streak: entry.current_streak || 0,
+            isCurrentUser: entry.id === currentUserId,
+          };
         });
 
-        const results = await Promise.all(leaderboardPromises);
+        if (brainTypeFilter) {
+          entries = entries.filter(e => e.brainType === brainTypeFilter);
+        }
 
-        // Filter out nulls and sort by score
-        const validResults = results.filter(r => r !== null) as Omit<LeaderboardEntry, 'rank'>[];
-        validResults.sort((a, b) => b.score - a.score);
+        entries.sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return b.streak - a.streak;
+        });
 
-        // Add ranks
-        const rankedResults: LeaderboardEntry[] = validResults.map((entry, index) => ({
+        entries = entries.map((entry, index) => ({
           ...entry,
           rank: index + 1,
         }));
 
-        // Find current user's rank
-        const currentUserEntry = rankedResults.find(e => e.isCurrentUser);
-        setUserRank(currentUserEntry?.rank || null);
+        setLeaderboard(entries);
 
-        // Take top 10
-        setLeaderboard(rankedResults.slice(0, 10));
+        const userEntry = entries.find(e => e.isCurrentUser);
+        setUserRank(userEntry ? userEntry.rank : null);
+
       } catch (error) {
         console.error('Error fetching leaderboard:', error);
       } finally {
@@ -220,11 +136,10 @@ export function useLeaderboard(
     }
 
     fetchLeaderboard();
+
+    const interval = setInterval(fetchLeaderboard, 5 * 60 * 1000);
+    return () => clearInterval(interval);
   }, [currentUserId, leaderboardType, brainTypeFilter]);
 
-  return {
-    leaderboard,
-    loading,
-    userRank,
-  };
+  return { leaderboard, loading, userRank };
 }
