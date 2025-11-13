@@ -17,7 +17,8 @@ import { VideoCardSkeletonList } from '@/components/Skeletons/VideoCardSkeleton'
 import { useVideoProgress } from '@/hooks/useVideoProgress';
 import { EmptyState } from '@/components/common/EmptyState'; // Assumindo export nomeado
 import { useAuth } from '@/contexts/AuthContext'; // Importa useAuth
-import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer'; // Importa o NOVO player
+import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
+import { ContinueWatching } from '@/components/Videos/ContinueWatching';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 type FilterType = 'all' | 'watched' | 'unwatched' | 'in-progress';
@@ -387,7 +388,10 @@ export default function Videos() {
          )}
 
         {/* Controls Section */}
-        <div className="px-4 sm:px-6 lg:px-8 space-y-4 mt-6">
+        <div className="px-4 sm:px-6 lg:px-8 space-y-6 mt-6">
+          {/* Continue Watching Section */}
+          <ContinueWatching />
+
           {/* Simplified progress - just count */}
           <div className="flex items-center justify-between pb-3 border-b">
             <span className="text-sm font-medium text-foreground">
