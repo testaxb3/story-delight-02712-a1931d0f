@@ -7,12 +7,13 @@ import { MainLayout } from '@/components/Layout/MainLayout';
 import { PWAInstallGuide } from '@/components/PWAInstallGuide';
 import { ProfileHeader } from '@/components/Profile/ProfileHeader';
 import { QuickActionsGrid } from '@/components/Profile/QuickActionsGrid';
-import { ProfileStatsGrid } from '@/components/Profile/ProfileStatsGrid';
 import { RecentActivityCard } from '@/components/Profile/RecentActivityCard';
 import { ChildProfilesCard } from '@/components/Profile/ChildProfilesCard';
-import { AchievementsCard } from '@/components/Profile/AchievementsCard';
 import { ProfileSettingsCard } from '@/components/Profile/ProfileSettingsCard';
 import { ProfileActionsSection } from '@/components/Profile/ProfileActionsSection';
+import { LevelBadge } from '@/components/Profile/LevelBadge';
+import { AchievementsGallery } from '@/components/Profile/AchievementsGallery';
+import { EnhancedStatsCard } from '@/components/Profile/EnhancedStatsCard';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -170,8 +171,22 @@ export default function Profile() {
           postsCreated={stats.postsCreated}
         />
 
+        {/* Level Badge - Gamification */}
+        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20">
+          <LevelBadge 
+            completedDays={stats.completedDays}
+            scriptsUsed={stats.scriptsUsed}
+          />
+        </div>
+
         {/* Enhanced Stats with Real Data */}
-        <ProfileStatsGrid stats={stats} />
+        <EnhancedStatsCard 
+          completedDays={stats.completedDays}
+          totalDays={30}
+          scriptsUsed={stats.scriptsUsed}
+          currentStreak={stats.currentStreak}
+          avgStress={stats.avgStressLevel}
+        />
 
         {/* Recent Activity */}
         <RecentActivityCard activities={recentActivity} />
@@ -184,8 +199,8 @@ export default function Profile() {
           onSetActiveChild={setActiveChild}
         />
 
-        {/* Achievements - Gamified */}
-        <AchievementsCard stats={stats} />
+        {/* Achievements Gallery - Gamified */}
+        <AchievementsGallery stats={stats} />
 
         {/* Settings, Notifications, PWA, Refund */}
         <ProfileSettingsCard
