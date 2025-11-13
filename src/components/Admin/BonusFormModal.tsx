@@ -144,7 +144,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         const chapters = parseMarkdownToChapters(content);
         setParsedChapters(chapters);
         
-        // Extract title from first H1 or use filename
+        // Extract title from first H1
         let autoTitle = formData.title;
         const titleMatch = content.match(/^#\s+(.+)$/m);
         if (titleMatch) {
@@ -153,35 +153,43 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
           autoTitle = file.name.replace(/\.md$/i, '').replace(/[-_]/g, ' ');
         }
         
-        // Extract description from first paragraph after title
+        // Extract description - look for text between title and first chapter
         let autoDescription = formData.description;
-        const descMatch = content.match(/^#\s+.+\n\n(.+?)(?:\n\n|$)/m);
-        if (descMatch) {
-          autoDescription = descMatch[1].trim().substring(0, 200);
+        const lines = content.split('\n');
+        let foundTitle = false;
+        let descriptionLines = [];
+        
+        for (const line of lines) {
+          if (line.match(/^#\s+/)) {
+            foundTitle = true;
+            continue;
+          }
+          if (foundTitle && line.match(/^##\s+/)) {
+            break; // Stop at first chapter
+          }
+          if (foundTitle && line.trim() && !line.match(/^---+$/)) {
+            descriptionLines.push(line.trim());
+            if (descriptionLines.join(' ').length > 150) break;
+          }
         }
         
-        // Extract tags from content (looking for common parenting/child development keywords)
+        if (descriptionLines.length > 0) {
+          autoDescription = descriptionLines.join(' ').substring(0, 200);
+        }
+        
+        // Extract tags from content
         const commonKeywords = [
           'comportamento', 'desenvolvimento', 'aprendizado', 'rotina', 'sono',
           'alimentação', 'disciplina', 'emoções', 'socialização', 'autonomia',
           'limites', 'comunicação', 'birra', 'ansiedade', 'autoestima',
-          'criatividade', 'foco', 'organização', 'responsabilidade', 'cooperação'
+          'criatividade', 'foco', 'organização', 'responsabilidade', 'cooperação',
+          'telas', 'tecnologia', 'neurociência'
         ];
         
         const contentLower = content.toLowerCase();
         const foundTags = commonKeywords.filter(keyword => 
           contentLower.includes(keyword)
         ).slice(0, 5);
-        
-        // Auto-generate thumbnail with gradient based on title
-        const colors = [
-          'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-          'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-          'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
-          'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
-        ];
-        const colorIndex = (autoTitle.length % colors.length);
         
         // Calculate stats
         const totalWords = chapters.reduce((sum, chapter) => {
@@ -204,7 +212,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
           ...prev,
           title: autoTitle || prev.title,
           description: autoDescription || prev.description,
-          thumbnail: colors[colorIndex], // Will be used as gradient background
+          thumbnail: '/assets/ebook-screen-strategies-cover-new.jpg',
           duration: `${estimatedReadingTime} min`,
           size: fileSizeMB,
           tags: foundTags.length > 0 ? foundTags : prev.tags,
