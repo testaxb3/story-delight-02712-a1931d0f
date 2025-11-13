@@ -81,7 +81,7 @@ export function CommentThread({
     return () => {
       mounted = false;
     };
-  }, [postId, onCommentCountChange]);
+  }, [postId]); // FIXED: Removed onCommentCountChange dependency to prevent infinite loops
 
   // Add new top-level comment
   const handleAddComment = async () => {
