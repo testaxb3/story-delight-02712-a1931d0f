@@ -134,6 +134,12 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
                 Completed
               </Badge>
             )}
+            {!bonus.completed && bonus.progress !== undefined && bonus.progress > 0 && (
+              <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg">
+                <BookOpen className="w-3 h-3 mr-1" />
+                Continue Reading · {bonus.progress}%
+              </Badge>
+            )}
             {bonus.locked && (
               <Badge variant="secondary" className="bg-black/60 text-white backdrop-blur-sm shadow-lg">
                 <Lock className="w-3 h-3 mr-1" />

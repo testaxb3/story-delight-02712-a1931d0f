@@ -8,6 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X } from "lucide-react";
 import { useBonuses } from "@/hooks/useBonuses";
+import { useUserEbooksProgress } from "@/hooks/useUserEbooksProgress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -31,8 +32,9 @@ export default function Bonuses() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  // Fetch bonuses from Supabase
+  // Fetch bonuses and ebook progress from Supabase
   const { data: allBonuses = [], isLoading, error } = useBonuses();
+  const { progressMap, isLoading: isLoadingProgress } = useUserEbooksProgress();
 
   // Calculate category counts
   const categoryCounts = useMemo(() => {
@@ -56,9 +58,21 @@ export default function Bonuses() {
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
   ];
 
-  // Filter and sort bonuses
+  // Filter and sort bonuses with ebook progress merged
   const filteredAndSortedBonuses = useMemo(() => {
-    let filtered = allBonuses;
+    // Merge ebook progress into bonuses
+    let filtered = allBonuses.map((bonus) => {
+      if (bonus.category === 'ebook' && bonus.id) {
+        const ebookProgress = progressMap.get(bonus.id);
+        if (ebookProgress && ebookProgress.progress_percentage > 0) {
+          return {
+            ...bonus,
+            progress: ebookProgress.progress_percentage,
+          };
+        }
+      }
+      return bonus;
+    });
 
     // Filter by category
     if (activeCategory !== 'all') {
@@ -92,7 +106,7 @@ export default function Bonuses() {
       default:
         return sorted;
     }
-  }, [allBonuses, activeCategory, searchQuery, sortBy]);
+  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap]);
 
   // Get in-progress bonuses
   const inProgressBonuses = allBonuses.filter(
