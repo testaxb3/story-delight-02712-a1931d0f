@@ -134,7 +134,16 @@ export default function Bonuses() {
       }
     }
 
-    // Navigate using viewUrl (for ebooks, PDFs, tools, etc.) or download
+    // If it's an ebook, ensure we navigate to a valid reader path
+    if (bonus.category === 'ebook') {
+      const ebookPath = bonus.viewUrl && bonus.viewUrl.startsWith('/ebook/')
+        ? bonus.viewUrl
+        : '/ebook/ebook-main'; // fallback for legacy /ebook link
+      navigate(ebookPath);
+      return;
+    }
+
+    // Navigate using viewUrl (for PDFs, tools, etc.) or download
     if (bonus.viewUrl) {
       navigate(bonus.viewUrl);
     } else if (bonus.downloadUrl) {
