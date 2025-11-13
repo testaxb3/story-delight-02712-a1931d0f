@@ -301,7 +301,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className={`grid w-full ${formData.category === 'ebook' ? 'grid-cols-2' : 'grid-cols-1'}`}>
               <TabsTrigger value="info">Informações</TabsTrigger>
               {formData.category === 'ebook' && (
                 <TabsTrigger value="upload">Upload Markdown</TabsTrigger>
@@ -365,6 +365,15 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                   />
                 </div>
               </div>
+
+              {formData.category === 'ebook' && (
+                <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
+                  <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  <AlertDescription className="text-blue-800 dark:text-blue-300">
+                    Categoria EBOOK selecionada! Vá para a aba "Upload Markdown" acima para fazer upload do arquivo .md
+                  </AlertDescription>
+                </Alert>
+              )}
 
               <div>
                 <Label htmlFor="thumbnail">
