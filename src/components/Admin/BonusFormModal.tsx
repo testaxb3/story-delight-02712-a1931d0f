@@ -135,6 +135,17 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
     reader.onload = (event) => {
       const content = event.target?.result as string;
       setMarkdownContent(content);
+      
+      // Validate and parse the markdown
+      const validation = validateMarkdown(content);
+      setValidationResult(validation);
+      
+      if (validation.isValid) {
+        const chapters = parseMarkdownToChapters(content);
+        setParsedChapters(chapters);
+      } else {
+        setParsedChapters([]);
+      }
     };
     reader.readAsText(file);
   };
