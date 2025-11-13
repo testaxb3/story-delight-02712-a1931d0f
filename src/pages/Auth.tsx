@@ -36,7 +36,6 @@ export default function Auth() {
         toast.success(isSignUp ? 'Account created successfully! Welcome to NEP System!' : 'Welcome back!');
 
         if (isSignUp) {
-          // Check if user has completed onboarding
           const hasCompletedOnboarding = localStorage.getItem('pwa_onboarding_completed');
           if (!hasCompletedOnboarding) {
             navigate('/onboarding', { replace: true });
@@ -55,168 +54,174 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-primary p-4">
-      <div className="w-full max-w-md bg-white/95 backdrop-blur-glass rounded-3xl p-8 shadow-2xl border border-white/20">
-        {/* Logo & Title */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="text-6xl mb-3 animate-brain-pulse">🧠</div>
-          <h1 className="text-3xl font-bold text-primary mb-1">NEP SYSTEM</h1>
-          <p className="text-muted-foreground text-center text-sm">
-            Brain-Based Parenting That Works
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
+      <div className="absolute top-0 left-0 w-full h-full">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      </div>
 
-        {/* Tab Toggle */}
-        <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-          <button
-            type="button"
-            onClick={() => {
-              setIsSignUp(false);
-              setPassword('');
-            }}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
-              !isSignUp
-                ? 'bg-white text-primary shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsSignUp(true);
-              setPassword('');
-            }}
-            className={`flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all ${
-              isSignUp
-                ? 'bg-white text-primary shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
-
-        {/* Benefits (Sign Up Only) */}
-        {isSignUp && (
-          <div className="mb-6 space-y-2 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-gray-700">Instant access to brain-based scripts</p>
+      <div className="w-full max-w-md relative z-10">
+        <div className="bg-card/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-border/50">
+          {/* Logo & Title */}
+          <div className="flex flex-col items-center mb-8">
+            <div className="relative mb-4">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-40 animate-pulse" />
+              <div className="relative text-7xl animate-bounce-slow">🧠</div>
             </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-gray-700">Personalized guidance for your child's brain type</p>
-            </div>
-            <div className="flex items-start gap-2">
-              <CheckCircle2 className="w-4 h-4 text-success mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-gray-700">Join a community of 10,000+ parents</p>
-            </div>
-          </div>
-        )}
-
-        {/* Important Notice */}
-        <div className="mb-6 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <div className="flex items-start gap-2">
-            <Shield className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
-            <p className="text-xs font-medium text-amber-900">
-              {isSignUp
-                ? 'Use the same email you used to purchase NEP System'
-                : 'Sign in with your purchase email'}
+            <h1 className="text-4xl font-black bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-2">
+              NEP SYSTEM
+            </h1>
+            <p className="text-muted-foreground text-center text-sm font-medium">
+              Brain-Based Parenting That Works
             </p>
           </div>
+
+          {/* Tab Toggle */}
+          <div className="flex bg-muted/50 rounded-2xl p-1.5 mb-8 backdrop-blur-sm">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(false);
+                setPassword('');
+              }}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                !isSignUp
+                  ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg scale-105'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSignUp(true);
+                setPassword('');
+              }}
+              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                isSignUp
+                  ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg scale-105'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          {/* Benefits (Sign Up Only) */}
+          {isSignUp && (
+            <div className="mb-6 space-y-3 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-2xl p-5 border border-primary/20 backdrop-blur-sm">
+              <div className="flex items-start gap-3 group">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </div>
+                <p className="text-sm text-foreground font-medium">Instant access to brain-based scripts</p>
+              </div>
+              <div className="flex items-start gap-3 group">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </div>
+                <p className="text-sm text-foreground font-medium">Track your progress with 30-Day Plan</p>
+              </div>
+              <div className="flex items-start gap-3 group">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  <CheckCircle2 className="w-3 h-3 text-white" />
+                </div>
+                <p className="text-sm text-foreground font-medium">Join a supportive parent community</p>
+              </div>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-bold text-foreground">
+                Email
+              </Label>
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors">
+                  <Mail className="w-5 h-5 text-muted-foreground group-focus-within:text-primary" />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="pl-12 h-13 rounded-xl bg-background border-2 border-border focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-medium"
+                  placeholder="you@example.com"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-bold text-foreground">
+                Password
+              </Label>
+              <div className="relative group">
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors">
+                  <Lock className="w-5 h-5 text-muted-foreground group-focus-within:text-primary" />
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={6}
+                  className="pl-12 h-13 rounded-xl bg-background border-2 border-border focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-medium"
+                  placeholder="••••••••"
+                />
+              </div>
+              {isSignUp && (
+                <p className="text-xs text-muted-foreground mt-1.5 font-medium">
+                  Minimum 6 characters
+                </p>
+              )}
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full h-14 text-base font-bold bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-white rounded-xl shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading
+                ? 'Processing...'
+                : isSignUp
+                  ? '✨ Create Account'
+                  : '🚀 Sign In'}
+            </Button>
+          </form>
+
+          {/* Features Footer */}
+          <div className="mt-8 pt-6 border-t border-border/50">
+            <p className="text-xs text-center text-muted-foreground mb-5 font-bold uppercase tracking-wider">
+              Trusted by parents worldwide
+            </p>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 hover:scale-105 transition-transform group">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <p className="text-xs font-bold text-foreground text-center">Secure</p>
+              </div>
+              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 hover:scale-105 transition-transform group">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
+                  <Zap className="w-5 h-5 text-white" />
+                </div>
+                <p className="text-xs font-bold text-foreground text-center">Instant</p>
+              </div>
+              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-success/5 to-success/10 border border-success/20 hover:scale-105 transition-transform group">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
+                  <DollarSign className="w-5 h-5 text-white" />
+                </div>
+                <p className="text-xs font-bold text-foreground text-center">Free Trial</p>
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1.5 block">
-              Email Address
-            </Label>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-12 text-base pl-11"
-                autoFocus
-              />
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1.5 block">
-              Password
-            </Label>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                id="password"
-                type="password"
-                placeholder="Minimum 6 characters"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="h-12 text-base pl-11"
-              />
-            </div>
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full h-12 text-base font-semibold mt-6"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="flex items-center gap-2">
-                <span className="text-2xl animate-brain-pulse">🧠</span>
-                Processing...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                {isSignUp ? (
-                  <>
-                    <Zap className="w-5 h-5" />
-                    Create Account
-                  </>
-                ) : (
-                  <>
-                    <CheckCircle2 className="w-5 h-5" />
-                    Sign In
-                  </>
-                )}
-              </span>
-            )}
-          </Button>
-        </form>
-
-        {/* Trust Badges */}
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <div className="grid grid-cols-3 gap-3 text-center">
-            <div className="flex flex-col items-center gap-1">
-              <Shield className="w-5 h-5 text-success" />
-              <p className="text-xs font-medium text-gray-600">Secure</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <Zap className="w-5 h-5 text-primary" />
-              <p className="text-xs font-medium text-gray-600">Instant Access</p>
-            </div>
-            <div className="flex flex-col items-center gap-1">
-              <DollarSign className="w-5 h-5 text-success" />
-              <p className="text-xs font-medium text-gray-600">Money-Back</p>
-            </div>
-          </div>
-        </div>
-
-        <p className="text-center text-xs text-muted-foreground mt-6">
-          By continuing, you agree to our Terms & Privacy Policy
-        </p>
       </div>
     </div>
   );
