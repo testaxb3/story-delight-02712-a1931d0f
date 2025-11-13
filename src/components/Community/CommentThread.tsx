@@ -39,49 +39,49 @@ export function CommentThread({
   const [newComment, setNewComment] = useState('');
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-  const [hasFetched, setHasFetched] = useState(false);
 
-  // Fetch comments and their replies
-  const fetchComments = async () => {
-    if (loading || hasFetched) return;
+  // Fetch comments once when component mounts
+  useEffect(() => {
+    let mounted = true;
     
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('post_comments')
-        .select(`
-          *,
-          profiles:user_id (name, email, photo_url)
-        `)
-        .eq('post_id', postId)
-        .order('created_at', { ascending: true });
+    const fetchComments = async () => {
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('post_comments')
+          .select(`
+            *,
+            profiles:user_id (name, email, photo_url)
+          `)
+          .eq('post_id', postId)
+          .order('created_at', { ascending: true });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      const typedComments = (data || []) as PostComment[];
-      setComments(typedComments);
-      setHasFetched(true);
+        if (mounted) {
+          const typedComments = (data || []) as PostComment[];
+          setComments(typedComments);
 
-      // Notify parent of total comment count only once
-      if (onCommentCountChange) {
-        onCommentCountChange(typedComments.length);
+          // Notify parent of total comment count
+          if (onCommentCountChange) {
+            onCommentCountChange(typedComments.length);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
       }
-    } catch (error) {
-      console.error('Error fetching comments:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  useEffect(() => {
-    setHasFetched(false);
-  }, [postId]);
+    fetchComments();
 
-  useEffect(() => {
-    if (!hasFetched) {
-      fetchComments();
-    }
-  }, [hasFetched]);
+    return () => {
+      mounted = false;
+    };
+  }, [postId, onCommentCountChange]);
 
   // Add new top-level comment
   const handleAddComment = async () => {
@@ -153,9 +153,6 @@ export function CommentThread({
         setExpandedReplies((prev) => new Set(prev).add(parentCommentId));
 
         toast.success('Reply added!');
-
-        // Refresh to get updated counts
-        fetchComments();
       }
     } catch (error) {
       console.error('Error adding reply:', error);

@@ -597,32 +597,12 @@ export default function Community() {
     toast.success('Comment deleted.');
   };
 
-  const toggleComments = async (postId: string) => {
+  const toggleComments = (postId: string) => {
     const newSet = new Set(expandedComments);
     if (newSet.has(postId)) {
       newSet.delete(postId);
     } else {
       newSet.add(postId);
-      if (!comments[postId]) {
-        const { data, error } = await supabase
-          .from('post_comments')
-          .select(`
-            *,
-            profiles:user_id (name, email, photo_url)
-          `)
-          .eq('post_id', postId)
-          .order('created_at', { ascending: true });
-
-        if (!error && data) {
-          const typedComments = data as PostComment[];
-          setComments(prev => ({ ...prev, [postId]: typedComments }));
-          setPosts(prev =>
-            prev.map(post =>
-              post.id === postId ? { ...post, commentsCount: typedComments.length } : post
-            )
-          );
-        }
-      }
     }
     setExpandedComments(newSet);
   };
@@ -917,19 +897,19 @@ export default function Community() {
     return user?.email?.slice(0, 2).toUpperCase() || 'ME';
   }, [user]);
 
+  // Memoize comment count update handler outside PostCard
+  const handleCommentCountChange = useCallback((postId: string, newCount: number) => {
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId ? { ...p, commentsCount: newCount } : p
+      )
+    );
+  }, []);
+
   const PostCard = memo(({ post, isSpotlight = false }: { post: CommunityPost; isSpotlight?: boolean }) => {
     const postComments = comments[post.id] || [];
     const isCommentsExpanded = expandedComments.has(post.id);
     const isLiking = likeAnimations.has(post.id);
-
-    // Memoize the callback to prevent re-renders
-    const handleCommentCountChange = useCallback((newCount: number) => {
-      setPosts((prev) =>
-        prev.map((p) =>
-          p.id === post.id ? { ...p, commentsCount: newCount } : p
-        )
-      );
-    }, [post.id]);
 
     return (
       <motion.div
@@ -1120,7 +1100,7 @@ export default function Community() {
               userInitials={userInitials}
               formatTimestamp={formatTimestamp}
               getInitialsFromName={getInitialsFromName}
-              onCommentCountChange={handleCommentCountChange}
+              onCommentCountChange={(newCount) => handleCommentCountChange(post.id, newCount)}
             />
           )}
         </div>
