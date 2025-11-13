@@ -29,12 +29,17 @@ export function useEbookContent(ebookId: string | undefined) {
         .select('id, title, subtitle, slug, content, thumbnail_url, cover_color, total_chapters, estimated_reading_time, bonus_id')
         .eq('id', ebookId)
         .is('deleted_at', null)
-        .single();
+        .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Failed to fetch ebook:', error);
+        return null;
+      }
+
+      if (!data) return null;
       
       // Parse JSONB content to Chapter[]
-      const chapters: Chapter[] = (data.content as any) || [];
+      const chapters: Chapter[] = Array.isArray(data.content) ? (data.content as any) : [];
       
       return {
         ...data,
