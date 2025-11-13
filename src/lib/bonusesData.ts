@@ -1,5 +1,6 @@
 import { BonusData } from "@/components/bonuses/BonusCard";
 import ebookCover from "@/assets/ebook-why-child-acts-cover.jpg";
+import ebookScreenCover from "@/assets/ebook-screen-strategies-cover.jpg";
 
 export const mockBonusesData: BonusData[] = [
   // Featured - Interactive Ebook (Already unlocked)
@@ -17,6 +18,23 @@ export const mockBonusesData: BonusData[] = [
     isNew: true,
     tags: ["Neuroscience", "All Profiles", "Research-Based", "Interactive"],
     viewUrl: "/ebook/ebook-main"
+  },
+  
+  // NEW - Screen Strategies Ebook
+  {
+    id: "ebook-screen-strategies",
+    title: "35 Strategies to Get Your Child Off Screens",
+    description: "Evidence-based neuroscience strategies backed by Nature, NIH, and AAP research. Includes Dr. Dunckley's 4-Week Reset Protocol and the official 5Cs Framework.",
+    category: "ebook",
+    thumbnail: ebookScreenCover,
+    duration: "45 min read",
+    size: "Interactive",
+    locked: false,
+    completed: false,
+    progress: 0,
+    isNew: true,
+    tags: ["Screen Time", "Brain Science", "All Ages", "AAP Guidelines"],
+    viewUrl: "/ebook/screen-strategies"
   },
 
   // Videos
