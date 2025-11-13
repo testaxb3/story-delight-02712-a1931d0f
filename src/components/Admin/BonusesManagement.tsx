@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { EbooksList } from '@/components/Admin/EbooksList';
+import { LinkEbookToBonus } from '@/components/Admin/LinkEbookToBonus';
 import { Card } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Gift } from 'lucide-react';
+import { BookOpen, Gift, Link2 } from 'lucide-react';
 
 interface BonusesManagementProps {
   onContentChanged?: () => void;
@@ -11,11 +13,18 @@ interface BonusesManagementProps {
 
 export function BonusesManagement({ onContentChanged }: BonusesManagementProps) {
   const [activeTab, setActiveTab] = useState('bonuses');
+  const [showLinkModal, setShowLinkModal] = useState(false);
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Gestão de Bonuses & Ebooks</h2>
+        {activeTab === 'ebooks' && (
+          <Button onClick={() => setShowLinkModal(true)} variant="outline">
+            <Link2 className="w-4 h-4 mr-2" />
+            Vincular Ebook a Bonus
+          </Button>
+        )}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -48,6 +57,15 @@ export function BonusesManagement({ onContentChanged }: BonusesManagementProps) 
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Link Ebook to Bonus Modal */}
+      <LinkEbookToBonus
+        open={showLinkModal}
+        onOpenChange={setShowLinkModal}
+        onSuccess={() => {
+          onContentChanged?.();
+        }}
+      />
     </div>
   );
 }
