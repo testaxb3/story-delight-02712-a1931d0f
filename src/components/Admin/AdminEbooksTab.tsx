@@ -3,6 +3,7 @@ import { useEbooks } from "@/hooks/useEbooks";
 import { useBonuses } from "@/hooks/useBonuses";
 import { supabase } from "@/integrations/supabase/client";
 import { parseMarkdownToChapters, calculateReadingTime, countWords } from "@/utils/markdownToChapters";
+import { seedEbooks } from "@/lib/seedEbooks";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,6 +34,29 @@ export const AdminEbooksTab = () => {
   const [thumbnailUrl, setThumbnailUrl] = useState("/ebook-cover.png");
   const [coverColor, setCoverColor] = useState("#8b5cf6");
   const [selectedBonusId, setSelectedBonusId] = useState<string>("");
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeedEbooks = async () => {
+    setSeeding(true);
+    try {
+      const results = await seedEbooks();
+      const successes = results.filter(r => r.success).length;
+      const failures = results.filter(r => !r.success).length;
+      
+      if (successes > 0) {
+        toast.success(`✅ ${successes} ebooks criados com sucesso!`);
+        refetch();
+      }
+      
+      if (failures > 0) {
+        toast.error(`❌ ${failures} ebooks falharam`);
+      }
+    } catch (error: any) {
+      toast.error("Erro ao criar ebooks: " + error.message);
+    } finally {
+      setSeeding(false);
+    }
+  };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,10 +149,18 @@ export const AdminEbooksTab = () => {
             Sistema dinâmico de ebooks parseados de Markdown
           </p>
         </div>
-        <Button onClick={() => setUploadOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Ebook
-        </Button>
+        <div className="flex gap-2">
+          {ebooks?.length === 0 && (
+            <Button onClick={handleSeedEbooks} disabled={seeding} variant="outline">
+              <BookOpen className="w-4 h-4 mr-2" />
+              {seeding ? "Criando..." : "Criar 3 Ebooks Demo"}
+            </Button>
+          )}
+          <Button onClick={() => setUploadOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Novo Ebook
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
