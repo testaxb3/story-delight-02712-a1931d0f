@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState, memo } from 'react';
 import { Filter, MessageCircle, ThumbsUp, Trash2, Users, Flag, Info, Heart, Send, MoreHorizontal, TrendingUp, Clock, Star, Image as ImageIcon, Smile, Edit2, Pin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -920,11 +920,20 @@ export default function Community() {
     return user?.email?.slice(0, 2).toUpperCase() || 'ME';
   }, [user]);
 
-  const PostCard = ({ post, isSpotlight = false }: { post: CommunityPost; isSpotlight?: boolean }) => {
+  const PostCard = memo(({ post, isSpotlight = false }: { post: CommunityPost; isSpotlight?: boolean }) => {
     const postComments = comments[post.id] || [];
     const isCommentsExpanded = expandedComments.has(post.id);
     const isLiking = likeAnimations.has(post.id);
     const [showReactionPicker, setShowReactionPicker] = useState(false);
+
+    // Memoize the callback to prevent re-renders
+    const handleCommentCountChange = useCallback((newCount: number) => {
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === post.id ? { ...p, commentsCount: newCount } : p
+        )
+      );
+    }, [post.id]);
 
     return (
       <motion.div
@@ -1156,20 +1165,23 @@ export default function Community() {
               userInitials={userInitials}
               formatTimestamp={formatTimestamp}
               getInitialsFromName={getInitialsFromName}
-              onCommentCountChange={(newCount) => {
-                setPosts((prev) =>
-                  prev.map((p) =>
-                    p.id === post.id ? { ...p, commentsCount: newCount } : p
-                  )
-                );
-              }}
+              onCommentCountChange={handleCommentCountChange}
             />
           )}
         </div>
       </Card>
       </motion.div>
     );
-  };
+  }, (prevProps, nextProps) => {
+    // Custom comparison to prevent unnecessary re-renders
+    return (
+      prevProps.post.id === nextProps.post.id &&
+      prevProps.post.likesCount === nextProps.post.likesCount &&
+      prevProps.post.commentsCount === nextProps.post.commentsCount &&
+      prevProps.post.userHasLiked === nextProps.post.userHasLiked &&
+      prevProps.isSpotlight === nextProps.isSpotlight
+    );
+  });
 
   return (
     <MainLayout>

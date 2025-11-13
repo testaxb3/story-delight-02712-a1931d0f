@@ -39,9 +39,12 @@ export function CommentThread({
   const [newComment, setNewComment] = useState('');
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
+  const [hasFetched, setHasFetched] = useState(false);
 
   // Fetch comments and their replies
   const fetchComments = async () => {
+    if (loading || hasFetched) return;
+    
     setLoading(true);
     try {
       const { data, error } = await supabase
@@ -57,8 +60,9 @@ export function CommentThread({
 
       const typedComments = (data || []) as PostComment[];
       setComments(typedComments);
+      setHasFetched(true);
 
-      // Notify parent of total comment count
+      // Notify parent of total comment count only once
       if (onCommentCountChange) {
         onCommentCountChange(typedComments.length);
       }
@@ -70,8 +74,14 @@ export function CommentThread({
   };
 
   useEffect(() => {
-    fetchComments();
+    setHasFetched(false);
   }, [postId]);
+
+  useEffect(() => {
+    if (!hasFetched) {
+      fetchComments();
+    }
+  }, [hasFetched]);
 
   // Add new top-level comment
   const handleAddComment = async () => {
