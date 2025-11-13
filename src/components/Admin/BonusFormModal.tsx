@@ -486,9 +486,10 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                   placeholder={
                     formData.category === 'video'
                       ? 'Auto-extracted from YouTube URL'
-                      : 'https://images.unsplash.com/photo-...'
+                      : formData.category === 'ebook'
+                      ? 'Auto-filled from markdown upload'
+                      : 'https://images.unsplash.com/photo-... or /assets/image.jpg'
                   }
-                  type="url"
                   disabled={formData.category === 'video' && thumbnailLoading}
                 />
                 {thumbnailLoading && (
