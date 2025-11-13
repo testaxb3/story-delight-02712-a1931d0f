@@ -256,12 +256,35 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       
       const estimatedReadingTime = Math.ceil(totalWords / 200);
 
+      // Build a unique slug based on the title
+      const baseSlug = formData.title
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '');
+      let slug = baseSlug || 'ebook';
+
+      // Check existing slugs to avoid unique constraint violation
+      const { data: existingSlugs } = await supabase
+        .from('ebooks')
+        .select('slug')
+        .ilike('slug', `${baseSlug}%`);
+
+      if (existingSlugs && existingSlugs.length > 0) {
+        const used = new Set(existingSlugs.map((e: any) => e.slug));
+        if (used.has(baseSlug)) {
+          let i = 2;
+          while (used.has(`${baseSlug}-${i}`)) i++;
+          slug = `${baseSlug}-${i}`;
+        }
+      }
+
       const { data: ebookData, error: ebookError } = await supabase
         .from('ebooks')
         .insert({
           title: formData.title,
           subtitle: formData.description || null,
-          slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          slug,
           content: chapters,
           markdown_source: markdownContent,
           total_chapters: chapters.length,
