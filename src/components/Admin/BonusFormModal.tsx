@@ -8,9 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { BonusData } from '@/components/bonuses/BonusCard';
 import { BonusCard } from '@/components/bonuses/BonusCard';
-import { Loader2, X, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, X, CheckCircle2, AlertCircle, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { parseMarkdownToChapters } from '@/utils/markdownToChapters';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface BonusFormModalProps {
   open: boolean;
@@ -64,6 +68,10 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   const [thumbnailLoading, setThumbnailLoading] = useState(false);
   const [thumbnailAutoLoaded, setThumbnailAutoLoaded] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
+  
+  // Ebook upload state
+  const [markdownContent, setMarkdownContent] = useState('');
+  const [ebookUploading, setEbookUploading] = useState(false);
 
   // Load bonus data when editing
   useEffect(() => {
@@ -112,6 +120,77 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       setUrlError(null);
     }
   }, [bonus, open]);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setMarkdownContent(content);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCreateEbook = async () => {
+    if (!markdownContent || !formData.title) {
+      toast.error('Título e conteúdo markdown são obrigatórios');
+      return;
+    }
+
+    setEbookUploading(true);
+    try {
+      const chapters = parseMarkdownToChapters(markdownContent);
+      
+      // Calculate total words from all chapter sections
+      const totalWords = chapters.reduce((sum, chapter) => {
+        const chapterWords = chapter.content.reduce((sectionSum, section) => {
+          if (typeof section.content === 'string') {
+            return sectionSum + section.content.split(/\s+/).length;
+          } else if (Array.isArray(section.content)) {
+            return sectionSum + section.content.join(' ').split(/\s+/).length;
+          }
+          return sectionSum;
+        }, 0);
+        return sum + chapterWords;
+      }, 0);
+      
+      const estimatedReadingTime = Math.ceil(totalWords / 200);
+
+      const { data: ebookData, error: ebookError } = await supabase
+        .from('ebooks')
+        .insert({
+          title: formData.title,
+          subtitle: formData.description || null,
+          slug: formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+          content: chapters,
+          markdown_source: markdownContent,
+          total_chapters: chapters.length,
+          total_words: totalWords,
+          estimated_reading_time: estimatedReadingTime,
+          cover_color: '#8b5cf6',
+        })
+        .select()
+        .single();
+
+      if (ebookError) throw ebookError;
+
+      // Update formData with ebook view_url
+      setFormData(prev => ({
+        ...prev,
+        viewUrl: `/ebook/${ebookData.id}`,
+      }));
+
+      toast.success('Ebook criado com sucesso!');
+      setMarkdownContent('');
+    } catch (error: any) {
+      console.error('Erro ao criar ebook:', error);
+      toast.error('Erro ao criar ebook: ' + error.message);
+    } finally {
+      setEbookUploading(false);
+    }
+  };
 
   // Handle View URL changes with YouTube auto-thumbnail extraction
   const handleViewUrlChange = async (url: string) => {
@@ -221,7 +300,16 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid md:grid-cols-2 gap-6">
+          <Tabs defaultValue="info" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="info">Informações</TabsTrigger>
+              {formData.category === 'ebook' && (
+                <TabsTrigger value="upload">Upload Markdown</TabsTrigger>
+              )}
+            </TabsList>
+
+            <TabsContent value="info" className="space-y-6 mt-4">
+              <div className="grid md:grid-cols-2 gap-6">
             {/* Left Column - Form Fields */}
             <div className="space-y-4">
               <div>
@@ -534,11 +622,53 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                       <li>• Describe customization options</li>
                       <li>• Add relevant tags</li>
                     </>
-                  )}
-                </ul>
-              </div>
+                )}
+              </ul>
             </div>
           </div>
+        </div>
+      </TabsContent>
+
+      {formData.category === 'ebook' && (
+        <TabsContent value="upload" className="space-y-4 mt-4">
+          <div className="space-y-2">
+            <Label htmlFor="markdown-file">Upload Markdown File</Label>
+            <Input
+              id="markdown-file"
+              type="file"
+              accept=".md,.markdown"
+              onChange={handleFileUpload}
+              className="cursor-pointer"
+            />
+            <p className="text-sm text-muted-foreground">
+              Faça upload de um arquivo .md formatado
+            </p>
+          </div>
+
+          {markdownContent && (
+            <div className="space-y-2">
+              <Label>Preview do Conteúdo</Label>
+              <Textarea
+                value={markdownContent}
+                onChange={(e) => setMarkdownContent(e.target.value)}
+                rows={10}
+                className="font-mono text-xs"
+              />
+              <Button
+                type="button"
+                onClick={handleCreateEbook}
+                disabled={ebookUploading}
+                className="w-full"
+              >
+                {ebookUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                <Upload className="mr-2 h-4 w-4" />
+                Processar e Criar Ebook
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+      )}
+    </Tabs>
 
           <DialogFooter className="gap-2">
             <Button
