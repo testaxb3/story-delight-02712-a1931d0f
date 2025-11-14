@@ -16,15 +16,16 @@ export function BottomNav() {
 
   return (
     <div
-      className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/98 backdrop-blur-xl border-t border-border/50 shadow-lg transition-all safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden transition-all safe-area-bottom px-2"
       style={{
-        paddingBottom: 'calc(env(safe-area-inset-bottom) + 4px)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom) + 12px)',
       }}
     >
-      <div
-        className="flex items-center justify-around px-1"
-        style={{ height: '72px', paddingTop: '6px' }}
-      >
+      <div className="bg-background/98 backdrop-blur-xl border border-border/50 rounded-2xl shadow-lg mx-auto max-w-md">
+        <div
+          className="flex items-center justify-around px-1"
+          style={{ height: '68px', paddingTop: '4px', paddingBottom: '4px' }}
+        >
         {navItems.map(({ icon: Icon, label, path }) => {
           const isActive = location.pathname === path;
           return (
@@ -61,6 +62,7 @@ export function BottomNav() {
             </button>
           );
         })}
+      </div>
       </div>
     </div>
   );
