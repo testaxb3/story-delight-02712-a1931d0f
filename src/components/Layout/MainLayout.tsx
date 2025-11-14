@@ -7,9 +7,10 @@ interface MainLayoutProps {
   hideTopBar?: boolean;
   noPaddingTop?: boolean;
   fullWidth?: boolean;
+  hideBottomNav?: boolean;
 }
 
-export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false }: MainLayoutProps) {
+export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-background pb-20 pt-16 transition-colors duration-300">
       {!hideTopBar && <TopBar />}
@@ -20,7 +21,7 @@ export function MainLayout({ children, hideTopBar = false, noPaddingTop = false,
       }>
         {children}
       </main>
-      <BottomNav />
+      {!hideBottomNav && <BottomNav />}
     </div>
   );
 }
