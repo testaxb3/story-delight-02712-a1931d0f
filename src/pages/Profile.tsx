@@ -14,6 +14,8 @@ import { ProfileActionsSection } from '@/components/Profile/ProfileActionsSectio
 import { LevelBadge } from '@/components/Profile/LevelBadge';
 import { AchievementsGallery } from '@/components/Profile/AchievementsGallery';
 import { EnhancedStatsCard } from '@/components/Profile/EnhancedStatsCard';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -155,78 +157,106 @@ export default function Profile() {
   return (
     <MainLayout>
       <PWAInstallGuide open={showPWAGuide} onClose={() => setShowPWAGuide(false)} />
-      <div className="space-y-6">
-        {/* Profile Header */}
+      
+      {/* Simplified Header - More breathing room */}
+      <div className="mb-6">
         <ProfileHeader
           user={user}
           userInitials={initials}
           displayName={displayName}
           onPhotoUpdate={handleUserPhotoUpdate}
         />
-
-        {/* Quick Actions */}
-        <QuickActionsGrid
-          scriptsUsed={stats.scriptsUsed}
-          videosWatched={stats.videosWatched}
-          postsCreated={stats.postsCreated}
-        />
-
-        {/* Level Badge - Gamification */}
-        <div className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20">
-          <LevelBadge 
-            completedDays={stats.completedDays}
-            scriptsUsed={stats.scriptsUsed}
-          />
-        </div>
-
-        {/* Enhanced Stats with Real Data */}
-        <EnhancedStatsCard 
-          completedDays={stats.completedDays}
-          totalDays={30}
-          scriptsUsed={stats.scriptsUsed}
-          currentStreak={stats.currentStreak}
-          avgStress={stats.avgStressLevel}
-        />
-
-        {/* Recent Activity */}
-        <RecentActivityCard activities={recentActivity} />
-
-        {/* Child's Profile Card */}
-        <ChildProfilesCard
-          childProfiles={childProfiles}
-          activeChild={activeChild}
-          currentBrain={currentBrain}
-          onSetActiveChild={setActiveChild}
-        />
-
-        {/* Achievements Gallery - Gamified */}
-        <AchievementsGallery stats={stats} />
-
-        {/* Settings, Notifications, PWA, Refund */}
-        <ProfileSettingsCard
-          activeChild={activeChild}
-          childName={childName}
-          childAge={childAge}
-          childChallenges={childChallenges}
-          savingChild={savingChild}
-          onChildNameChange={setChildName}
-          onChildAgeChange={setChildAge}
-          onChildChallengesChange={setChildChallenges}
-          onChildNameUpdate={handleChildNameUpdate}
-          onChildInfoUpdate={handleChildInfoUpdate}
-          onPhotoUpdate={handlePhotoUpdate}
-          refundStatus={refundStatus}
-          isInstalled={isInstalled}
-        />
-
-        {/* Admin & Logout */}
-        <ProfileActionsSection
-          isAdmin={isAdmin}
-          onLogout={handleLogout}
-          logoutText={t.nav.logout}
-          adminText={t.nav.adminPanel}
-        />
       </div>
+
+      {/* Tabs Navigation - Clean mobile layout */}
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="grid w-full grid-cols-3 mb-6 h-12 bg-muted/50 p-1 rounded-xl">
+          <TabsTrigger value="overview" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            Overview
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            Stats
+          </TabsTrigger>
+          <TabsTrigger value="settings" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+            Settings
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Overview Tab - Key info only */}
+        <TabsContent value="overview" className="space-y-6 mt-0">
+          {/* Quick Stats Grid - Simplified */}
+          <QuickActionsGrid
+            scriptsUsed={stats.scriptsUsed}
+            videosWatched={stats.videosWatched}
+            postsCreated={stats.postsCreated}
+          />
+
+          {/* Level Badge - Gamification */}
+          <Card className="p-6 bg-gradient-to-br from-primary/10 via-accent/5 to-background border-primary/20">
+            <LevelBadge 
+              completedDays={stats.completedDays}
+              scriptsUsed={stats.scriptsUsed}
+            />
+          </Card>
+
+          {/* Child's Profile Card */}
+          <ChildProfilesCard
+            childProfiles={childProfiles}
+            activeChild={activeChild}
+            currentBrain={currentBrain}
+            onSetActiveChild={setActiveChild}
+          />
+
+          {/* Recent Activity - Compact */}
+          <RecentActivityCard activities={recentActivity.slice(0, 3)} />
+        </TabsContent>
+
+        {/* Stats Tab - All statistics */}
+        <TabsContent value="stats" className="space-y-6 mt-0">
+          {/* Enhanced Stats with Real Data */}
+          <EnhancedStatsCard 
+            completedDays={stats.completedDays}
+            totalDays={30}
+            scriptsUsed={stats.scriptsUsed}
+            currentStreak={stats.currentStreak}
+            avgStress={stats.avgStressLevel}
+          />
+
+          {/* Achievements Gallery - Gamified */}
+          <AchievementsGallery stats={stats} />
+
+          {/* Full Recent Activity */}
+          <RecentActivityCard activities={recentActivity} />
+        </TabsContent>
+
+        {/* Settings Tab */}
+        <TabsContent value="settings" className="space-y-6 mt-0">
+          {/* Settings, Notifications, PWA, Refund */}
+          <ProfileSettingsCard
+            activeChild={activeChild}
+            childName={childName}
+            childAge={childAge}
+            childChallenges={childChallenges}
+            savingChild={savingChild}
+            onChildNameChange={setChildName}
+            onChildAgeChange={setChildAge}
+            onChildChallengesChange={setChildChallenges}
+            onChildNameUpdate={handleChildNameUpdate}
+            onChildInfoUpdate={handleChildInfoUpdate}
+            onPhotoUpdate={handlePhotoUpdate}
+            refundStatus={refundStatus}
+            isInstalled={isInstalled}
+          />
+
+          {/* Admin & Logout */}
+          <ProfileActionsSection
+            isAdmin={isAdmin}
+            onLogout={handleLogout}
+            logoutText={t.nav.logout}
+            adminText={t.nav.adminPanel}
+          />
+        </TabsContent>
+      </Tabs>
     </MainLayout>
   );
 }
