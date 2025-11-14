@@ -237,7 +237,7 @@ export default function Auth() {
                   {isSignUp ? (
                     <>
                       <Zap className="w-5 h-5" />
-                      Start Free Now
+                      Access Your Account
                     </>
                   ) : (
                     <>
@@ -269,9 +269,9 @@ export default function Auth() {
               </div>
               <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-success/5 to-success/10 border border-success/20 hover:scale-105 transition-transform group">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
-                  <DollarSign className="w-5 h-5 text-white" />
+                  <CheckCircle2 className="w-5 h-5 text-white" />
                 </div>
-                <p className="text-xs font-bold text-foreground text-center">Free Trial</p>
+                <p className="text-xs font-bold text-foreground text-center">Full Access</p>
               </div>
             </div>
           </div>
