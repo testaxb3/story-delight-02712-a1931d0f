@@ -17,9 +17,9 @@ export function AchievementsGallery({ stats }: AchievementsGalleryProps) {
       {/* Header compacto */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-black text-foreground">Conquistas</h3>
+          <h3 className="text-lg font-black text-foreground">Achievements</h3>
           <p className="text-xs text-muted-foreground">
-            {progress.unlockedCount}/{progress.totalCount} desbloqueadas
+            {progress.unlockedCount}/{progress.totalCount} unlocked
           </p>
         </div>
         <div className="text-right">
@@ -74,10 +74,10 @@ export function AchievementsGallery({ stats }: AchievementsGalleryProps) {
         ))}
       </div>
 
-      {/* Próxima conquista */}
+      {/* Next achievement */}
       {progress.nextAchievement && (
         <div className="bg-primary/5 rounded-lg p-2 border border-primary/20">
-          <p className="text-xs font-semibold text-foreground mb-1">🎯 Próxima meta</p>
+          <p className="text-xs font-semibold text-foreground mb-1">🎯 Next Goal</p>
           <p className="text-[10px] text-muted-foreground">{progress.nextAchievement}</p>
         </div>
       )}
