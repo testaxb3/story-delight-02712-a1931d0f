@@ -44,6 +44,28 @@ export function useUserStats(userId: string | undefined) {
     const fetchStats = async () => {
       if (!userId) return;
 
+      // Check cache first
+      const cacheKey = `user_stats_${userId}`;
+      const cachedData = localStorage.getItem(cacheKey);
+
+      if (cachedData) {
+        try {
+          const { stats: cachedStats, recentActivity: cachedActivity, timestamp } = JSON.parse(cachedData);
+          const now = Date.now();
+          const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+          // Use cache if less than 5 minutes old
+          if (now - timestamp < CACHE_DURATION) {
+            setStats(cachedStats);
+            setRecentActivity(cachedActivity);
+            setLoading(false);
+            return;
+          }
+        } catch (e) {
+          // Invalid cache, continue to fetch
+        }
+      }
+
       setLoading(true);
 
       try {
@@ -95,7 +117,7 @@ export function useUserStats(userId: string | undefined) {
 
         const { streak, bestStreak, totalDays } = calculateStreak(recentUsage);
 
-        setStats({
+        const newStats = {
           scriptsUsed: scriptsCount || 0,
           videosWatched: videosCount || 0,
           dayStreak: streak,
@@ -105,10 +127,19 @@ export function useUserStats(userId: string | undefined) {
           completedDays: completedDays,
           currentStreak: currentStreak,
           avgStressLevel: avgStressLevel,
-        });
+        };
 
         // Fetch recent activity
         const activities = await fetchRecentActivity(userId);
+
+        // Save to cache
+        localStorage.setItem(cacheKey, JSON.stringify({
+          stats: newStats,
+          recentActivity: activities,
+          timestamp: Date.now(),
+        }));
+
+        setStats(newStats);
         setRecentActivity(activities);
       } catch (error) {
         console.error('Error fetching stats:', error);
