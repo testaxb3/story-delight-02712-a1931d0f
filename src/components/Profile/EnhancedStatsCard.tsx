@@ -18,26 +18,20 @@ function StatItem({ icon: Icon, label, value, subtext, gradient, index }: StatIt
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="relative overflow-hidden rounded-xl p-6 bg-card border border-border hover:border-primary/50 transition-all group"
+      className="relative overflow-hidden rounded-lg p-4 bg-card border border-border/50 hover:border-primary/30 transition-all"
     >
-      {/* Background gradient on hover */}
-      <div className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity bg-gradient-to-br ${gradient}`} />
-      
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3">
-          <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg`}>
-            <Icon className="w-6 h-6 text-white" />
-          </div>
+      <div className="flex items-center gap-3 mb-2">
+        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md`}>
+          <Icon className="w-5 h-5 text-white" />
         </div>
-
-        <div>
-          <p className="text-sm font-medium text-muted-foreground mb-1">{label}</p>
-          <p className="text-3xl font-black text-foreground">{value}</p>
-          {subtext && (
-            <p className="text-xs text-muted-foreground mt-1">{subtext}</p>
-          )}
+        <div className="flex-1 min-w-0">
+          <p className="text-xs font-medium text-muted-foreground truncate">{label}</p>
+          <p className="text-2xl font-black text-foreground">{value}</p>
         </div>
       </div>
+      {subtext && (
+        <p className="text-xs text-muted-foreground/80">{subtext}</p>
+      )}
     </motion.div>
   );
 }
@@ -60,15 +54,15 @@ export function EnhancedStatsCard({
   const completionRate = Math.round((completedDays / totalDays) * 100);
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="p-4 space-y-4">
       <div>
-        <h3 className="text-2xl font-black text-foreground mb-2">Your Impact</h3>
-        <p className="text-sm text-muted-foreground font-medium">
-          Track your transformation journey
+        <h3 className="text-xl font-black text-foreground mb-1">Your Impact</h3>
+        <p className="text-xs text-muted-foreground">
+          Track your transformation
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <StatItem
           icon={Target}
           label="Days Completed"

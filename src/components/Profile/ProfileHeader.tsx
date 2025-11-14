@@ -17,24 +17,24 @@ export function ProfileHeader({
   onPhotoUpdate,
 }: ProfileHeaderProps) {
   return (
-    <Card className="p-8 border-border/50 bg-card/50 backdrop-blur-sm shadow-xl text-center animate-in fade-in slide-in-from-top-3 duration-500">
+    <Card className="p-4 md:p-6 border-border/30 bg-card/30 backdrop-blur-sm text-center">
       {user && (
         <UserPhotoUpload
           currentPhotoUrl={user.photo_url}
           userId={user.profileId || user.id}
           userInitials={userInitials}
           onUploadComplete={onPhotoUpdate}
-          className="mb-6"
+          className="mb-3"
         />
       )}
-      <h1 className="text-3xl font-black mb-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+      <h1 className="text-2xl md:text-3xl font-black mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
         {displayName}
       </h1>
-      <p className="text-muted-foreground text-base mb-4">{user?.email}</p>
+      <p className="text-muted-foreground text-sm mb-3">{user?.email}</p>
       {user?.premium && (
-        <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary to-accent text-white font-bold text-sm shadow-2xl animate-in zoom-in duration-300 delay-200 hover:scale-105 transition-transform">
-          <span className="text-xl">👑</span>
-          Premium Member
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-accent text-white font-bold text-xs shadow-lg">
+          <span className="text-base">👑</span>
+          Premium
         </div>
       )}
     </Card>
