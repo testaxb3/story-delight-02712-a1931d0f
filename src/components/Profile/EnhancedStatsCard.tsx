@@ -60,15 +60,15 @@ export function EnhancedStatsCard({
   const completionRate = Math.round((completedDays / totalDays) * 100);
 
   return (
-    <Card className="p-6 space-y-4">
+    <Card className="p-6 space-y-6">
       <div>
-        <h3 className="text-2xl font-bold text-foreground mb-2">Your Impact</h3>
-        <p className="text-sm text-muted-foreground">
+        <h3 className="text-2xl font-black text-foreground mb-2">Your Impact</h3>
+        <p className="text-sm text-muted-foreground font-medium">
           Track your transformation journey
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <StatItem
           icon={Target}
           label="Days Completed"
@@ -106,15 +106,6 @@ export function EnhancedStatsCard({
             index={3}
           />
         )}
-
-        <StatItem
-          icon={Calendar}
-          label="Active Days"
-          value={completedDays}
-          subtext="Days with recorded progress"
-          gradient="from-indigo-400 to-blue-500"
-          index={4}
-        />
       </div>
     </Card>
   );
