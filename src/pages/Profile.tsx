@@ -158,8 +158,8 @@ export default function Profile() {
     <MainLayout>
       <PWAInstallGuide open={showPWAGuide} onClose={() => setShowPWAGuide(false)} />
       
-      {/* Simplified Header - More breathing room */}
-      <div className="mb-6">
+      {/* Compact Header */}
+      <div className="mb-4">
         <ProfileHeader
           user={user}
           userInitials={initials}
@@ -168,22 +168,22 @@ export default function Profile() {
         />
       </div>
 
-      {/* Tabs Navigation - Clean mobile layout */}
+      {/* Tabs Navigation - Ultra compact */}
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-6 h-12 bg-muted/50 p-1 rounded-xl">
-          <TabsTrigger value="overview" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+        <TabsList className="grid w-full grid-cols-3 mb-4 h-10 bg-muted/30 p-0.5 rounded-lg">
+          <TabsTrigger value="overview" className="rounded-md text-xs font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
             Overview
           </TabsTrigger>
-          <TabsTrigger value="stats" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+          <TabsTrigger value="stats" className="rounded-md text-xs font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
             Stats
           </TabsTrigger>
-          <TabsTrigger value="settings" className="rounded-lg text-sm font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm">
+          <TabsTrigger value="settings" className="rounded-md text-xs font-semibold data-[state=active]:bg-background data-[state=active]:shadow-sm">
             Settings
           </TabsTrigger>
         </TabsList>
 
         {/* Overview Tab - Key info only */}
-        <TabsContent value="overview" className="space-y-6 mt-0">
+        <TabsContent value="overview" className="space-y-4 mt-0">
           {/* Quick Stats Grid - Simplified */}
           <QuickActionsGrid
             scriptsUsed={stats.scriptsUsed}
@@ -192,7 +192,7 @@ export default function Profile() {
           />
 
           {/* Level Badge - Gamification */}
-          <Card className="p-6 bg-gradient-to-br from-primary/10 via-accent/5 to-background border-primary/20">
+          <Card className="p-4 bg-gradient-to-br from-primary/5 via-accent/5 to-background border-primary/10">
             <LevelBadge 
               completedDays={stats.completedDays}
               scriptsUsed={stats.scriptsUsed}
@@ -212,7 +212,7 @@ export default function Profile() {
         </TabsContent>
 
         {/* Stats Tab - All statistics */}
-        <TabsContent value="stats" className="space-y-6 mt-0">
+        <TabsContent value="stats" className="space-y-4 mt-0">
           {/* Enhanced Stats with Real Data */}
           <EnhancedStatsCard 
             completedDays={stats.completedDays}
@@ -230,7 +230,7 @@ export default function Profile() {
         </TabsContent>
 
         {/* Settings Tab */}
-        <TabsContent value="settings" className="space-y-6 mt-0">
+        <TabsContent value="settings" className="space-y-4 mt-0">
           {/* Settings, Notifications, PWA, Refund */}
           <ProfileSettingsCard
             activeChild={activeChild}
