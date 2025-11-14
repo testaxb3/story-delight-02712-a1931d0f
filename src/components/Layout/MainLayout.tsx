@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { TopBar } from '@/components/Navigation/TopBar';
 import { BottomNav } from '@/components/Navigation/BottomNav';
+import { SideNav } from '@/components/Navigation/SideNav';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -12,8 +13,9 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-background pb-20 pt-16 transition-colors duration-300">
+    <div className="min-h-screen bg-background pb-20 md:pb-0 pt-16 md:pl-20 lg:pl-24 transition-colors duration-300">
       {!hideTopBar && <TopBar />}
+      <SideNav />
       <main className={
         fullWidth
           ? ''
