@@ -55,31 +55,65 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5" />
-      <div className="absolute top-0 left-0 w-full h-full">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      {/* Enhanced Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/5" />
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-accent/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }} />
       </div>
 
+      {/* Grid pattern */}
+      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+
       <div className="w-full max-w-md relative z-10">
+        {/* Social proof badge */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex items-center gap-2 bg-card/90 backdrop-blur-xl px-4 py-2 rounded-full border border-border/50 shadow-lg">
+            <div className="flex -space-x-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs">👤</div>
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-xs">👤</div>
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-xs">👤</div>
+            </div>
+            <span className="text-xs font-semibold text-muted-foreground">
+              Join <span className="text-primary font-bold">1,000+</span> parents
+            </span>
+          </div>
+        </div>
+
         <div className="bg-card/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-border/50">
           {/* Logo & Title */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative mb-4">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-xl opacity-40 animate-pulse" />
-              <div className="relative text-7xl animate-bounce-slow">🧠</div>
+          <div className="flex flex-col items-center mb-6">
+            <div className="relative mb-5">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full blur-2xl opacity-50 animate-pulse" />
+              <div className="relative text-7xl animate-bounce-slow filter drop-shadow-2xl">🧠</div>
             </div>
-            <h1 className="text-4xl font-black bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent mb-2">
+            <h1 className="text-5xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-3 tracking-tight">
               NEP SYSTEM
             </h1>
-            <p className="text-muted-foreground text-center text-sm font-medium">
+            <p className="text-muted-foreground text-center font-semibold text-base mb-4">
               Brain-Based Parenting That Works
             </p>
+            
+            {/* Value props - Quick bullets */}
+            <div className="flex flex-wrap justify-center gap-3 text-xs">
+              <div className="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
+                <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
+                <span className="font-semibold text-primary">Science-Backed</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">
+                <Zap className="w-3.5 h-3.5 text-accent" />
+                <span className="font-semibold text-accent">Instant Results</span>
+              </div>
+              <div className="flex items-center gap-1.5 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
+                <Shield className="w-3.5 h-3.5 text-secondary" />
+                <span className="font-semibold text-secondary">Proven Method</span>
+              </div>
+            </div>
           </div>
 
-          {/* Tab Toggle */}
-          <div className="flex bg-muted/50 rounded-2xl p-1.5 mb-8 backdrop-blur-sm">
+          {/* Tab Toggle - More modern */}
+          <div className="flex bg-muted/50 rounded-2xl p-1.5 mb-6 backdrop-blur-sm border border-border/30">
             <button
               type="button"
               onClick={() => {
@@ -88,7 +122,7 @@ export default function Auth() {
               }}
               className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                 !isSignUp
-                  ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg scale-105'
+                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg scale-[1.02]'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
@@ -102,7 +136,7 @@ export default function Auth() {
               }}
               className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                 isSignUp
-                  ? 'bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-lg scale-105'
+                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg scale-[1.02]'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >

@@ -21,74 +21,84 @@ export function HeroSection({
   const navigate = useNavigate();
 
   return (
-    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/90 via-primary/80 to-accent/70 p-8 text-white shadow-xl">
-      {/* Decorative SVG elements - More subtle */}
-      <svg className="absolute top-0 right-0 w-64 h-64 -mr-16 -mt-16 opacity-10" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="80" fill="currentColor" />
-      </svg>
-      <svg className="absolute bottom-0 left-0 w-48 h-48 -ml-12 -mb-12 opacity-10" viewBox="0 0 200 200">
-        <path d="M100,0 L200,100 L100,200 L0,100 Z" fill="currentColor" />
-      </svg>
+    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary via-accent to-primary/90 p-8 sm:p-10 text-white shadow-2xl">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-24 -left-24 w-80 h-80 bg-accent/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
 
       <div className="relative z-10">
-        <div className="flex items-start justify-between mb-6">
+        <div className="flex items-start justify-between mb-8">
           <div className="flex-1">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-semibold">Day {currentDay} of {totalDays}</span>
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-5 py-2.5 rounded-full mb-5 border border-white/20 shadow-lg">
+              <Sparkles className="w-4 h-4 animate-pulse" />
+              <span className="text-sm font-bold tracking-wide">DAY {currentDay} OF {totalDays}</span>
             </div>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-3 leading-tight">
-              Welcome back,<br />{userName}! 🎉
+            
+            <h1 className="text-4xl sm:text-5xl md:text-6xl font-black mb-4 leading-[1.1] tracking-tight">
+              Hey {userName}! 👋
             </h1>
-            <p className="text-base sm:text-lg text-purple-100 mb-6 max-w-2xl">
-              You're making real progress in transforming your parenting journey
+            <p className="text-lg sm:text-xl text-white/90 font-medium max-w-2xl leading-relaxed">
+              Ready to create <span className="font-black underline decoration-white/40 decoration-2 underline-offset-4">real change</span> today?
             </p>
           </div>
-          <div className="text-5xl sm:text-7xl ml-4 animate-pulse hidden sm:block">🧠</div>
+          
+          <div className="hidden sm:block ml-6">
+            <div className="text-7xl animate-bounce-slow filter drop-shadow-2xl">🧠</div>
+          </div>
         </div>
 
-        {/* Progress Section */}
-        <div className="glass rounded-2xl p-4 sm:p-6 border border-white/30">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm sm:text-base font-semibold">Your Transformation Progress</span>
-            <span className="text-xl sm:text-2xl font-black">{currentDay}/{totalDays}</span>
-          </div>
-          <div className="relative">
-            <Progress value={(currentDay / totalDays) * 100} className="h-3 bg-white/20" />
-            <div className="absolute -top-1 left-0 transition-all duration-500" style={{ left: `${(currentDay / totalDays) * 100}%` }}>
-              <div className="w-5 h-5 bg-white rounded-full shadow-xl -ml-2.5 flex items-center justify-center animate-pulse">
-                <div className="w-2 h-2 bg-primary rounded-full"></div>
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 col-span-2">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold text-white/80 uppercase tracking-wider">Progress</span>
+              <span className="text-3xl font-black tabular-nums">{Math.round((currentDay / totalDays) * 100)}%</span>
+            </div>
+            <div className="relative h-3 bg-white/20 rounded-full overflow-hidden">
+              <div 
+                className="absolute inset-y-0 left-0 bg-gradient-to-r from-white to-white/80 rounded-full transition-all duration-1000 ease-out shadow-lg"
+                style={{ width: `${(currentDay / totalDays) * 100}%` }}
+              >
+                <div className="absolute inset-0 bg-white/30 animate-pulse" />
               </div>
             </div>
           </div>
 
-          <div className="mt-6 glass p-4 rounded-xl border border-white/30">
-            <div className="flex items-center gap-2 mb-2">
-              <Target className="w-5 h-5 text-warning" />
-              <p className="font-bold text-warning text-sm sm:text-base">Today's Mission</p>
+          <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/20 col-span-2">
+            <div className="flex items-start gap-3">
+              <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <Target className="w-5 h-5" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-base mb-1">Today's Mission</p>
+                <p className="text-sm text-white/80 leading-relaxed">
+                  Watch one video & use a script with your child
+                </p>
+              </div>
             </div>
-            <p className="text-xs sm:text-sm opacity-90">
-              Watch one Foundation video and try your first NEP phrase with your child
-            </p>
           </div>
         </div>
 
-        {/* Quick Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mt-6">
+        <div className="grid grid-cols-2 gap-4">
           <Button
-            className="bg-white text-primary hover:bg-white/90 font-bold shadow-lg h-12 sm:h-14 text-sm sm:text-base touch-target"
-            onClick={() => navigate('/tracker')}
+            size="lg"
+            className="bg-white text-primary hover:bg-white/95 font-black shadow-2xl h-14 text-base rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-3xl"
+            onClick={() => navigate('/scripts')}
           >
             <Target className="w-5 h-5 mr-2" />
-            My Plan
+            Find Script
           </Button>
           <Button
+            size="lg"
             variant="outline"
-            className="glass hover:bg-white/20 text-white border-white/40 font-bold h-12 sm:h-14 text-sm sm:text-base touch-target"
+            className="bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 font-black h-14 text-base rounded-xl backdrop-blur-md transition-all duration-300 hover:scale-105"
             onClick={() => navigate('/videos')}
           >
             <Play className="w-5 h-5 mr-2" />
-            Watch Videos
+            Watch Now
           </Button>
         </div>
       </div>
