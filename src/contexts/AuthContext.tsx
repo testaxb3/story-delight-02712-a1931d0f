@@ -167,7 +167,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             id: data.user.id,  // ✅ CRITICAL: Use the auth user's id
             email,
             name: email.split('@')[0],
-            premium: true
+            premium: false
           })
           .select()
           .single();
