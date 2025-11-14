@@ -45,6 +45,15 @@ export default function Profile() {
   // Use custom hooks
   const { stats, recentActivity, loading: loadingStats } = useUserStats(user?.id);
 
+  // Early return if no user
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-6xl animate-brain-pulse">🧠</div>
+      </div>
+    );
+  }
+
   const nav = window.navigator as StandaloneNavigator;
   const isInstalled =
     window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
@@ -79,6 +88,20 @@ export default function Profile() {
   const initials = useMemo(() => getUserInitials(user), [user]);
   const displayName = useMemo(() => getDisplayName(user), [user]);
   const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
+
+  // Show loading state while fetching stats
+  if (loadingStats) {
+    return (
+      <MainLayout>
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-6xl animate-brain-pulse">🧠</div>
+            <p className="text-sm text-muted-foreground">Loading your profile...</p>
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
 
   useEffect(() => {
     setChildName(activeChild?.name ?? '');
