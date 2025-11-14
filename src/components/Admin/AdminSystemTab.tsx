@@ -20,7 +20,7 @@ import {
 
 export function AdminSystemTab() {
   const [updating, setUpdating] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState('Nova atualização disponível! Por favor, atualize o app.');
+  const [updateMessage, setUpdateMessage] = useState('New update available! Please update the app.');
 
   const handleForceUpdate = async () => {
     setUpdating(true);
@@ -35,22 +35,22 @@ export function AdminSystemTab() {
       }
 
       toast.success(
-        data.message || 'Atualização forçada com sucesso!',
+        data.message || 'Update forced successfully!',
         {
-          description: `Versão: ${data.new_version} (Build #${data.build})`,
+          description: `Version: ${data.new_version} (Build #${data.build})`,
           icon: <CheckCircle2 className="w-5 h-5" />,
           duration: 5000,
         }
       );
 
       // Reset message
-      setUpdateMessage('Nova atualização disponível! Por favor, atualize o app.');
+      setUpdateMessage('New update available! Please update the app.');
     } catch (error: any) {
       console.error('Error forcing update:', error);
       toast.error(
-        'Erro ao forçar atualização',
+        'Error forcing update',
         {
-          description: error.message || 'Tente novamente mais tarde',
+          description: error.message || 'Please try again later',
           icon: <AlertTriangle className="w-5 h-5" />,
         }
       );
@@ -63,7 +63,7 @@ export function AdminSystemTab() {
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Settings className="w-5 h-5" />
-        <h2 className="text-2xl font-bold">Configurações do Sistema</h2>
+        <h2 className="text-2xl font-bold">System Settings</h2>
       </div>
 
       {/* Force App Update Card */}
@@ -71,26 +71,26 @@ export function AdminSystemTab() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <RefreshCw className="w-5 h-5" />
-            Forçar Atualização do PWA
+            Force PWA Update
           </CardTitle>
           <CardDescription>
-            Force todos os usuários a atualizarem o aplicativo PWA, limpando o cache e carregando a versão mais recente.
+            Force all users to update the PWA app, clearing cache and loading the latest version.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="updateMessage">
-              Mensagem de Atualização
+              Update Message
             </Label>
             <Input
               id="updateMessage"
               value={updateMessage}
               onChange={(e) => setUpdateMessage(e.target.value)}
-              placeholder="Digite a mensagem que os usuários verão..."
+              placeholder="Enter the message users will see..."
               maxLength={200}
             />
             <p className="text-xs text-muted-foreground">
-              Esta mensagem será exibida no diálogo de atualização.
+              This message will be displayed in the update dialog.
             </p>
           </div>
 
@@ -99,16 +99,16 @@ export function AdminSystemTab() {
               <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
               <div className="space-y-1 text-sm">
                 <p className="font-semibold text-yellow-900 dark:text-yellow-100">
-                  Atenção!
+                  Warning!
                 </p>
                 <p className="text-yellow-800 dark:text-yellow-200">
-                  Esta ação irá:
+                  This action will:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-yellow-800 dark:text-yellow-200 ml-2">
-                  <li>Incrementar a versão do app</li>
-                  <li>Forçar todos os usuários a verem um diálogo de atualização</li>
-                  <li>Limpar o cache do PWA quando atualizarem</li>
-                  <li>Recarregar a página para a nova versão</li>
+                  <li>Increment the app version</li>
+                  <li>Force all users to see an update dialog</li>
+                  <li>Clear PWA cache when they update</li>
+                  <li>Reload the page to the new version</li>
                 </ul>
               </div>
             </div>
@@ -124,12 +124,12 @@ export function AdminSystemTab() {
                 {updating ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Processando...
+                    Processing...
                   </>
                 ) : (
                   <>
                     <RefreshCw className="w-4 h-4" />
-                    Forçar Atualização Global
+                    Force Global Update
                   </>
                 )}
               </Button>
@@ -138,27 +138,27 @@ export function AdminSystemTab() {
               <AlertDialogHeader>
                 <AlertDialogTitle className="flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  Confirmar Atualização Global
+                  Confirm Global Update
                 </AlertDialogTitle>
                 <AlertDialogDescription className="space-y-2">
                   <p>
-                    Você está prestes a forçar uma atualização para <strong>todos os usuários</strong> do aplicativo.
+                    You are about to force an update for <strong>all users</strong> of the app.
                   </p>
                   <p className="text-sm">
-                    Mensagem: "{updateMessage}"
+                    Message: "{updateMessage}"
                   </p>
                   <p className="font-semibold text-foreground">
-                    Deseja continuar?
+                    Do you want to continue?
                   </p>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={handleForceUpdate}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  Sim, Forçar Atualização
+                  Yes, Force Update
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -169,27 +169,27 @@ export function AdminSystemTab() {
       {/* System Information Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Informações do Sistema</CardTitle>
+          <CardTitle>System Information</CardTitle>
           <CardDescription>
-            Detalhes sobre a configuração atual do sistema
+            Details about the current system configuration
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-3 text-sm">
             <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Ambiente:</span>
+              <span className="text-muted-foreground">Environment:</span>
               <span className="font-semibold">
-                {import.meta.env.DEV ? 'Desenvolvimento' : 'Produção'}
+                {import.meta.env.DEV ? 'Development' : 'Production'}
               </span>
             </div>
             <div className="flex justify-between py-2 border-b">
-              <span className="text-muted-foreground">Modo:</span>
+              <span className="text-muted-foreground">Mode:</span>
               <span className="font-semibold">{import.meta.env.MODE}</span>
             </div>
             <div className="flex justify-between py-2">
               <span className="text-muted-foreground">PWA:</span>
               <span className="font-semibold">
-                {'serviceWorker' in navigator ? 'Ativado' : 'Desativado'}
+                {'serviceWorker' in navigator ? 'Enabled' : 'Disabled'}
               </span>
             </div>
           </div>
