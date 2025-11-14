@@ -9,11 +9,14 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useAppVersion } from '@/hooks/useAppVersion';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function UpdatePrompt() {
+  const { user } = useAuth();
   const { versionInfo, showUpdatePrompt, handleUpdate, dismissUpdate } = useAppVersion();
 
-  if (!showUpdatePrompt || !versionInfo) return null;
+  // Don't show update prompt for unauthenticated users (e.g., on login page)
+  if (!user || !showUpdatePrompt || !versionInfo) return null;
 
   return (
     <Dialog open={showUpdatePrompt} onOpenChange={(open) => !open && dismissUpdate()}>
