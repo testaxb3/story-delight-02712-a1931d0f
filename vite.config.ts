@@ -18,13 +18,10 @@ export default defineConfig(({ mode }) => ({
     // Configuração PWA
     VitePWA({
       registerType: "autoUpdate",
-      injectRegister: null, // Disable auto-registration - let OneSignal handle SW
+      injectRegister: 'auto',
       devOptions: {
         enabled: false
       },
-      // Disable service worker generation - only use manifest
-      disable: false,
-      workbox: false, // Disable workbox - OneSignal will manage push notifications
       includeAssets: [
         "favicon.ico",
         "robots.txt",
@@ -32,7 +29,7 @@ export default defineConfig(({ mode }) => ({
         "OneSignalSDKWorker.js", // Service Worker principal do OneSignal
         "OneSignalSDK.sw.js", // Service Worker alternativo do OneSignal
         "browser-polyfill-pwa.js" // Polyfill para compatibilidade com extensões
-      ], // Inclui assets estáticos importantes
+      ],
       manifest: {
         name: "NEP System",
         short_name: "NEP System",
@@ -56,6 +53,88 @@ export default defineConfig(({ mode }) => ({
             sizes: "512x512",
             type: "image/png",
             purpose: "any maskable"
+          }
+        ]
+      },
+      workbox: {
+        // Configuração para coexistir com OneSignal
+        cleanupOutdatedCaches: true,
+
+        // Não gerenciar navegação - deixar OneSignal fazer isso
+        navigateFallback: undefined,
+        navigateFallbackDenylist: [/^\/OneSignalSDK/],
+
+        // Excluir arquivos OneSignal do cache
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,json}"],
+        globIgnores: ['**/OneSignalSDK*.js', '**/OneSignal*.js'],
+
+        // Estratégias de cache otimizadas
+        runtimeCaching: [
+          // Supabase API
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "supabase-api",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 // 24 horas
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // YouTube player
+          {
+            urlPattern: ({ url }) => {
+              return (
+                (url.hostname === 'www.youtube.com' || url.hostname === 'www.youtube-nocookie.com') &&
+                !url.pathname.includes('iframe_api') &&
+                !url.pathname.includes('www-widgetapi')
+              );
+            },
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'youtube-player',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 dias
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // YouTube thumbnails
+          {
+            urlPattern: /^https:\/\/(i\.ytimg\.com|img\.youtube\.com)\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'youtube-thumbnails',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 dias
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // Google Fonts
+          {
+            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 ano
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }
