@@ -121,7 +121,14 @@ export default function Scripts() {
   useEffect(() => {
     if (locationState?.crisis) {
       setSelectedCategory(null);
-      setSearchQuery(locationState.crisis.replace(/[-_]/g, ' '));
+      // ✅ SECURITY: Sanitize crisis input to prevent XSS
+      const sanitizedCrisis = locationState.crisis
+        .replace(/[<>]/g, '') // Remove HTML tags
+        .replace(/[^\w\s\-']/g, '') // Only alphanumeric, spaces, hyphens, apostrophes
+        .replace(/[-_]/g, ' ')
+        .trim()
+        .substring(0, 100); // Max length
+      setSearchQuery(sanitizedCrisis);
     }
     if (locationState?.autoFocus && searchInputRef.current) {
       searchInputRef.current.focus();

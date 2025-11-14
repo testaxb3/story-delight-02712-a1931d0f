@@ -28,6 +28,7 @@ import {
   useDuplicateBonus,
   useBonusStats
 } from '@/hooks/useBonuses';
+import { useUpdateEbook } from '@/hooks/useEbooks';
 import {
   Plus,
   Search,
@@ -84,6 +85,7 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
   const deleteBulkMutation = useDeleteBonuses();
   const toggleLockMutation = useToggleBonusLock();
   const duplicateMutation = useDuplicateBonus();
+  const updateEbook = useUpdateEbook();
 
   // Stats
   const { data: stats } = useBonusStats();
@@ -116,18 +118,44 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
     setShowFormModal(true);
   };
 
-  const handleSave = async (bonusData: Omit<BonusData, 'id'> | BonusData) => {
+  const handleSave = async (bonusData: any) => {
     try {
+      const selectedEbookId = bonusData._selectedEbookId;
+
+      // Remove _selectedEbookId before saving to database
+      const { _selectedEbookId, ...cleanBonusData } = bonusData;
+
+      let savedBonusId: string;
+
       if (editingBonus) {
         // Update existing
         await updateMutation.mutateAsync({
           id: editingBonus.id,
-          updates: bonusData
+          updates: cleanBonusData
         });
+        savedBonusId = editingBonus.id;
       } else {
         // Create new
-        await createMutation.mutateAsync(bonusData as Omit<BonusData, 'id'>);
+        const result = await createMutation.mutateAsync(cleanBonusData as Omit<BonusData, 'id'>);
+        savedBonusId = result.id;
       }
+
+      // ✅ If ebook was selected, link it to the bonus
+      if (selectedEbookId && savedBonusId) {
+        try {
+          await updateEbook.mutateAsync({
+            id: selectedEbookId,
+            updates: {
+              bonus_id: savedBonusId,
+            },
+          });
+          toast.success('Bonus criado e ebook vinculado com sucesso! ✅');
+        } catch (linkError) {
+          console.error('Error linking ebook:', linkError);
+          toast.error('Bonus criado mas erro ao vincular ebook');
+        }
+      }
+
       setShowFormModal(false);
       setEditingBonus(null);
       onContentChanged?.();

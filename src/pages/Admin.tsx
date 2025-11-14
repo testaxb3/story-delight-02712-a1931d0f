@@ -8,6 +8,7 @@ import { AdminAnalyticsTab } from '@/components/Admin/AdminAnalyticsTab';
 import { AdminNotificationsTab } from '@/components/Admin/AdminNotificationsTab';
 import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
+import { AdminSystemTab } from '@/components/Admin/AdminSystemTab';
 import { BonusesManagement } from '@/components/Admin/BonusesManagement';
 import { ModerationPanel } from '@/components/Community/ModerationPanel';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +23,8 @@ import {
   DollarSign,
   Gift,
   Wand2,
-  Shield
+  Shield,
+  Settings
 } from 'lucide-react';
 
 export default function Admin() {
@@ -177,7 +179,7 @@ export default function Admin() {
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-7 w-full h-auto p-2 bg-muted/50">
+            <TabsList className="grid grid-cols-8 w-full h-auto p-2 bg-muted/50">
               <TabsTrigger
                 value="scripts"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
@@ -269,6 +271,19 @@ export default function Admin() {
                 </div>
               </TabsTrigger>
 
+              <TabsTrigger
+                value="system"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Settings className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">System</span>
+                  <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">
+                    PWA
+                  </span>
+                </div>
+              </TabsTrigger>
+
             </TabsList>
 
             <div className="p-6">
@@ -298,6 +313,10 @@ export default function Admin() {
 
               <TabsContent value="moderation" className="mt-0">
                 <ModerationPanel />
+              </TabsContent>
+
+              <TabsContent value="system" className="mt-0">
+                <AdminSystemTab />
               </TabsContent>
             </div>
           </Tabs>

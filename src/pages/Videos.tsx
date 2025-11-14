@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -18,7 +17,6 @@ import { useVideoProgress } from '@/hooks/useVideoProgress';
 import { EmptyState } from '@/components/common/EmptyState'; // Assumindo export nomeado
 import { useAuth } from '@/contexts/AuthContext'; // Importa useAuth
 import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
-import { ContinueWatching } from '@/components/Videos/ContinueWatching';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 type FilterType = 'all' | 'watched' | 'unwatched' | 'in-progress';
@@ -389,9 +387,6 @@ export default function Videos() {
 
         {/* Controls Section */}
         <div className="px-4 sm:px-6 lg:px-8 space-y-6 mt-6">
-          {/* Continue Watching Section */}
-          <ContinueWatching />
-
           {/* Simplified progress - just count */}
           <div className="flex items-center justify-between pb-3 border-b">
             <span className="text-sm font-medium text-foreground">
@@ -499,37 +494,6 @@ export default function Videos() {
             </div>
           </div>
         </div>
-
-        {/* Continue Watching Section */}
-        {!isLoading && inProgress.size > 0 && filter !== 'watched' && filter !== 'unwatched' && (
-          <div className="space-y-3 mt-6">
-            <div className="px-4 sm:px-6 lg:px-8 flex items-center gap-3">
-              <h2 className="text-2xl font-bold">Continue Watching</h2>
-            </div>
-            <VideoRow>
-              {videos
-                .filter(v => inProgress.has(v.id))
-                .sort((a,b) => {
-                  const aTime = progress.get(a.id)?.last_watched_at ? new Date(progress.get(a.id)!.last_watched_at).getTime() : 0;
-                  const bTime = progress.get(b.id)?.last_watched_at ? new Date(progress.get(b.id)!.last_watched_at).getTime() : 0;
-                  return bTime - aTime; // Most recent first
-                })
-                .map((video) => (
-                <VideoCard
-                  key={video.id}
-                  video={video}
-                  isWatched={watched.has(video.id)}
-                  isInProgress={inProgress.has(video.id)}
-                  isBookmarked={bookmarked.has(video.id)}
-                  progressPercent={getProgressPercentageForVideo(video.id)}
-                  onPlay={() => handleVideoClick(video)}
-                  onMarkWatched={() => handleMarkAsWatched(video.id)}
-                  onToggleBookmark={() => toggleBookmark(video.id)}
-                />
-              ))}
-            </VideoRow>
-          </div>
-        )}
 
         {/* Loading State */}
         {isLoading && (
@@ -1142,6 +1106,44 @@ function VideoCard({
               )}
             </Button>
           </div>
+
+          {/* Progress Indicator - Circular like bonuses */}
+          {isInProgress && !isWatched && progressPercent > 0 && progressPercent < 100 && (
+            <div className="flex items-center gap-3 pt-2">
+              <div className="relative w-10 h-10">
+                <svg className="transform -rotate-90 w-10 h-10">
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="16"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="none"
+                    className="text-muted"
+                  />
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="16"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeDasharray={`${2 * Math.PI * 16}`}
+                    strokeDashoffset={`${2 * Math.PI * 16 * (1 - progressPercent / 100)}`}
+                    className="text-primary transition-all duration-500"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <div className="absolute inset-0 flex items-center justify-center text-[10px] font-bold">
+                  {Math.round(progressPercent)}%
+                </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-foreground">In Progress</p>
+                <p className="text-[10px] text-muted-foreground">Continue watching</p>
+              </div>
+            </div>
+          )}
 
           {/* Badges - very subtle or removed */}
           <div className="flex items-center justify-between pt-1">

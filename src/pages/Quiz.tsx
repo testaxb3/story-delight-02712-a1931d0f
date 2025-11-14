@@ -12,14 +12,37 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
+import { logger } from '@/lib/logger';
 import { quizQuestions, calculateBrainProfile } from '@/lib/quizQuestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
 
 const questions = quizQuestions;
+
+// ✅ SECURITY: Sanitize child name input
+const MIN_NAME_LENGTH = 2;
+const MAX_NAME_LENGTH = 50;
+
+const sanitizeChildName = (name: string): string => {
+  return name
+    .trim()
+    .replace(/[<>]/g, '') // Remove HTML tags
+    .replace(/[^\w\s\-']/g, '') // Only letters, spaces, hyphens, apostrophes
+    .substring(0, MAX_NAME_LENGTH);
+};
+
+const isValidChildName = (name: string): boolean => {
+  const trimmed = name.trim();
+  return (
+    trimmed.length >= MIN_NAME_LENGTH &&
+    trimmed.length <= MAX_NAME_LENGTH &&
+    /^[\w\s\-']+$/.test(trimmed)
+  );
+};
 
 interface Option {
   value: string;
@@ -45,18 +68,35 @@ export default function Quiz() {
   const { user } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
 
+  // ✅ SECURITY: Sync quiz state to database instead of localStorage
   useEffect(() => {
+    const syncQuizState = async () => {
+      if (user?.profileId) {
+        try {
+          await supabase
+            .from('profiles')
+            .update({ quiz_in_progress: hasStarted })
+            .eq('id', user.profileId);
+        } catch (error) {
+          logger.error('Failed to sync quiz state:', error);
+        }
+      }
+    };
+
     if (hasStarted) {
-      localStorage.setItem('quiz_in_progress', 'true');
+      syncQuizState();
     }
-  }, [hasStarted]);
+  }, [hasStarted, user]);
 
   const handleAnswer = (value: string) => {
     setAnswers(prev => ({ ...prev, [currentQuestion]: value }));
   };
 
   const handleStartQuiz = () => {
-    if (!childName.trim()) return;
+    if (!isValidChildName(childName)) {
+      toast.error(`Child's name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters and contain only letters, spaces, hyphens, or apostrophes.`);
+      return;
+    }
     setAnswers({});
     setCurrentQuestion(0);
     setShowResult(false);
@@ -85,7 +125,16 @@ export default function Quiz() {
 
     setSavingProfile(true);
     setSaveError(null);
-    localStorage.removeItem('quiz_in_progress');
+
+    // ✅ SECURITY: Clear quiz_in_progress in database
+    try {
+      await supabase
+        .from('profiles')
+        .update({ quiz_in_progress: false })
+        .eq('id', user.profileId);
+    } catch (error) {
+      logger.error('Failed to clear quiz_in_progress:', error);
+    }
 
     try {
       const { data: existingProfile, error: profileCheckError } = await supabase
@@ -100,7 +149,7 @@ export default function Quiz() {
           .insert([{ id: user.profileId }]);
 
         if (createError) {
-          console.error('Profile creation error:', createError);
+          logger.error('Profile creation error:', createError);
           setSaveError('Unable to create profile. Please try again.');
           setSavingProfile(false);
           return false;
@@ -115,7 +164,7 @@ export default function Quiz() {
         .maybeSingle();
 
       if (childCheckError) {
-        console.error('Child profile check error:', childCheckError);
+        logger.error('Child profile check error:', childCheckError);
       }
 
       if (existingChild) {
@@ -125,7 +174,7 @@ export default function Quiz() {
           .eq('id', existingChild.id);
 
         if (updateError) {
-          console.error('Child profile update error:', updateError);
+          logger.error('Child profile update error:', updateError);
           setSaveError('Unable to update child profile. Please try again.');
           setSavingProfile(false);
           return false;
@@ -145,7 +194,7 @@ export default function Quiz() {
           .single();
 
         if (insertError) {
-          console.error('Child profile insert error:', insertError);
+          logger.error('Child profile insert error:', insertError);
           setSaveError('Unable to save child profile. Please try again.');
           setSavingProfile(false);
           return false;
@@ -160,7 +209,7 @@ export default function Quiz() {
       setSavingProfile(false);
       return true;
     } catch (error) {
-      console.error('Unexpected error:', error);
+      logger.error('Unexpected error:', error);
       setSaveError('An unexpected error occurred. Please try again.');
       setSavingProfile(false);
       return false;
@@ -184,7 +233,7 @@ export default function Quiz() {
     }
   };
 
-  const handleRetake = () => {
+  const handleRetake = async () => {
     setCurrentQuestion(0);
     setAnswers({});
     setShowResult(false);
@@ -192,14 +241,38 @@ export default function Quiz() {
     setChildName('');
     setHasStarted(false);
     setSaveError(null);
-    localStorage.removeItem('quiz_in_progress');
+
+    // ✅ SECURITY: Clear quiz_in_progress in database
+    if (user?.profileId) {
+      try {
+        await supabase
+          .from('profiles')
+          .update({ quiz_in_progress: false })
+          .eq('id', user.profileId);
+      } catch (error) {
+        logger.error('Failed to clear quiz_in_progress on retake:', error);
+      }
+    }
   };
 
-  const handleGoToDashboard = () => {
+  const handleGoToDashboard = async () => {
     if (savingProfile) return;
-    
-    localStorage.setItem('quiz_completed', 'true');
-    localStorage.removeItem('quiz_in_progress');
+
+    // ✅ SECURITY: Update quiz completion in database
+    if (user?.profileId) {
+      try {
+        await supabase
+          .from('profiles')
+          .update({
+            quiz_completed: true,
+            quiz_in_progress: false
+          })
+          .eq('id', user.profileId);
+      } catch (error) {
+        logger.error('Failed to update quiz completion:', error);
+      }
+    }
+
     navigate('/dashboard');
   };
 
@@ -226,7 +299,7 @@ export default function Quiz() {
   };
 
   return (
-    <MainLayout hideBottomNav={hasStarted}>
+    <MainLayout hideBottomNav={hasStarted} hideTopBar={hasStarted}>
       <div className="min-h-screen py-8 px-4">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence mode="wait">
@@ -297,9 +370,10 @@ export default function Quiz() {
                           type="text"
                           placeholder="e.g., Emma"
                           value={childName}
-                          onChange={(e) => setChildName(e.target.value)}
+                          onChange={(e) => setChildName(sanitizeChildName(e.target.value))}
                           className="text-lg bg-background border-border"
-                          onKeyDown={(e) => e.key === 'Enter' && childName.trim() && handleStartQuiz()}
+                          onKeyDown={(e) => e.key === 'Enter' && isValidChildName(childName) && handleStartQuiz()}
+                          maxLength={MAX_NAME_LENGTH}
                         />
                       </div>
                       <p className="text-sm text-muted-foreground">

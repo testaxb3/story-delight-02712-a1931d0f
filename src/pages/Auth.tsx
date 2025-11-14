@@ -6,6 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2 } from 'lucide-react';
+import { loginSchema } from '@/lib/validations';
+import { z } from 'zod';
+import { useRateLimit } from '@/hooks/useRateLimit';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -15,6 +18,9 @@ export default function Auth() {
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
+  // ✅ SECURITY: Rate limit login attempts (5 per minute)
+  const loginRateLimit = useRateLimit(5, 60000);
+
   useEffect(() => {
     if (user) {
       navigate('/', { replace: true });
@@ -23,9 +29,28 @@ export default function Auth() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ✅ SECURITY: Check rate limit before processing
+    if (!loginRateLimit.canMakeCall()) {
+      const remainingMs = loginRateLimit.getRemainingTime();
+      const secondsLeft = Math.ceil(remainingMs / 1000);
+      toast.error(`Too many attempts. Please wait ${secondsLeft} seconds before trying again.`);
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // ✅ SECURITY: Validate input with Zod before sending to backend
+      const validationResult = loginSchema.safeParse({ email, password });
+
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        toast.error(firstError.message);
+        setLoading(false);
+        return;
+      }
+
       const { error } = isSignUp
         ? await signUp(email, password)
         : await signIn(email, password);
@@ -213,14 +238,14 @@ export default function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  minLength={6}
+                  minLength={8}
                   className="pl-12 h-13 rounded-xl bg-background border-2 border-border focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-medium"
                   placeholder="••••••••"
                 />
               </div>
               {isSignUp && (
                 <p className="text-xs text-muted-foreground mt-1.5 font-medium">
-                  Minimum 6 characters
+                  Minimum 8 characters
                 </p>
               )}
             </div>

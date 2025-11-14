@@ -121,7 +121,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
 
           {/* Status badges */}
-          <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
+          <div className="absolute bottom-3 left-3 flex gap-2 flex-wrap">
             {bonus.isNew && (
               <Badge className="bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg">
                 <Star className="w-3 h-3 mr-1" />
@@ -149,7 +149,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
           </div>
 
           {/* Category badge */}
-          <div className="absolute top-3 right-3">
+          <div className="absolute bottom-3 right-3">
             <Badge className={cn(config.bgColor, config.textColor, "backdrop-blur-sm shadow-lg")}>
               <IconComponent className="w-3 h-3 mr-1" />
               {bonus.category.toUpperCase()}
@@ -158,7 +158,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
 
           {/* Quick actions - Enhanced */}
           {!bonus.locked && (
-            <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform -translate-y-2 group-hover:translate-y-0">
               <Button size="icon" variant="secondary" className="h-9 w-9 bg-background/95 hover:bg-background backdrop-blur-sm shadow-xl hover:scale-110 transition-transform touch-target">
                 <Bookmark className="w-4 h-4" />
               </Button>

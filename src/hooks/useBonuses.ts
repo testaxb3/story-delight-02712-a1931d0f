@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { BonusData } from "@/components/bonuses/BonusCard";
 import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Query keys
 export const bonusesKeys = {
@@ -54,46 +55,75 @@ function transformBonusToDb(bonus: Omit<BonusData, "id"> | BonusData) {
   };
 }
 
-// Hook to get all bonuses
+// Hook to get all bonuses with user-specific progress
 export function useBonuses(filters?: { category?: string; search?: string }) {
+  const { user } = useAuth();
+
   return useQuery({
     queryKey: bonusesKeys.list(filters),
     queryFn: async () => {
-      let query = supabase
+      // First, fetch all bonuses
+      let bonusQuery = supabase
         .from("bonuses")
         .select("*")
         .order("created_at", { ascending: false });
 
       // Apply category filter
       if (filters?.category && filters.category !== "all") {
-        query = query.eq("category", filters.category);
+        bonusQuery = bonusQuery.eq("category", filters.category);
       }
 
       // Apply search filter
       if (filters?.search && filters.search.trim()) {
         const searchTerm = `%${filters.search.toLowerCase()}%`;
-        query = query.or(
+        bonusQuery = bonusQuery.or(
           `title.ilike.${searchTerm},description.ilike.${searchTerm}`
         );
       }
 
-      const { data, error } = await query;
+      const { data: bonusesData, error: bonusesError } = await bonusQuery;
 
-      if (error) {
-        console.error("❌ Error fetching bonuses:", error);
-        console.error("Error details:", {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code
-        });
-        throw error;
+      if (bonusesError) {
+        console.error("❌ Error fetching bonuses:", bonusesError);
+        throw bonusesError;
       }
 
-      console.log("✅ Bonuses fetched successfully:", data?.length || 0, "items");
-      return data?.map(transformBonusRow) || [];
+      // If user is logged in, fetch their progress
+      let userProgressMap = new Map<string, { progress: number; completed: boolean }>();
+
+      if (user) {
+        const { data: userBonuses, error: userBonusesError } = await supabase
+          .from('user_bonuses')
+          .select('bonus_id, progress, completed_at')
+          .eq('user_id', user.id);
+
+        if (!userBonusesError && userBonuses) {
+          userBonuses.forEach(ub => {
+            userProgressMap.set(ub.bonus_id, {
+              progress: ub.progress || 0,
+              completed: !!ub.completed_at,
+            });
+          });
+        }
+      }
+
+      // Merge bonus data with user progress
+      const bonuses = bonusesData?.map(row => {
+        const baseBonus = transformBonusRow(row);
+        const userProgress = userProgressMap.get(row.id);
+
+        return {
+          ...baseBonus,
+          progress: userProgress?.progress || 0,
+          completed: userProgress?.completed || false,
+        };
+      }) || [];
+
+      console.log("✅ Bonuses fetched successfully:", bonuses.length, "items");
+      return bonuses;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // Always fresh data (no cache for bonuses)
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes when unused
   });
 }
 

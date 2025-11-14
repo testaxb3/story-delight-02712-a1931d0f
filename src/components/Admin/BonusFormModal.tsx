@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { BonusData } from '@/components/bonuses/BonusCard';
 import { BonusCard } from '@/components/bonuses/BonusCard';
-import { Loader2, X, CheckCircle2, AlertCircle, Upload } from 'lucide-react';
+import { Loader2, X, CheckCircle2, AlertCircle, Upload, BookOpen, Link2, BookX, FileText, Lightbulb, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ChaptersPreview } from './ChaptersPreview';
 import { TemplateGuideModal } from './TemplateGuideModal';
+import { useEbooks, useUpdateEbook } from '@/hooks/useEbooks';
 
 interface BonusFormModalProps {
   open: boolean;
@@ -48,6 +49,9 @@ function isYouTubeUrl(url: string): boolean {
 }
 
 export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: BonusFormModalProps) {
+  const { ebooks } = useEbooks();
+  const updateEbook = useUpdateEbook();
+
   const [formData, setFormData] = useState<Omit<BonusData, 'id'>>({
     title: '',
     description: '',
@@ -67,17 +71,29 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   });
 
   const [tagsInput, setTagsInput] = useState('');
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true); // Always show preview
   const [thumbnailLoading, setThumbnailLoading] = useState(false);
   const [thumbnailAutoLoaded, setThumbnailAutoLoaded] = useState(false);
   const [urlError, setUrlError] = useState<string | null>(null);
-  
+  const [selectedEbookId, setSelectedEbookId] = useState<string>('');
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
+
   // Ebook upload state
   const [markdownContent, setMarkdownContent] = useState('');
   const [ebookUploading, setEbookUploading] = useState(false);
   const [validationResult, setValidationResult] = useState<any>(null);
   const [parsedChapters, setParsedChapters] = useState<any[]>([]);
   const [showTemplateGuide, setShowTemplateGuide] = useState(false);
+
+  // Filter ebooks: unlinked OR the currently selected one (when editing)
+  const availableEbooks = ebooks?.filter(e => {
+    // If editing and this is the currently linked ebook, include it
+    if (bonus && selectedEbookId && e.id === selectedEbookId) {
+      return true;
+    }
+    // Otherwise, only include unlinked ebooks
+    return !e.bonus_id;
+  }) || [];
 
   // Load bonus data when editing
   useEffect(() => {
@@ -102,6 +118,16 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       setTagsInput(bonus.tags?.join(', ') || '');
       setThumbnailAutoLoaded(false);
       setUrlError(null);
+
+      // ✅ FIX: If editing an ebook bonus, extract the ebook ID from viewUrl
+      if (bonus.category === 'ebook' && bonus.viewUrl) {
+        const match = bonus.viewUrl.match(/\/ebook\/([a-f0-9-]+)/);
+        if (match && match[1]) {
+          setSelectedEbookId(match[1]);
+        }
+      } else {
+        setSelectedEbookId('');
+      }
     } else {
       // Reset form
       setFormData({
@@ -122,6 +148,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
         requirement: ''
       });
       setTagsInput('');
+      setSelectedEbookId('');
       setThumbnailAutoLoaded(false);
       setUrlError(null);
     }
@@ -366,12 +393,69 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
     setUrlError(null);
     setThumbnailAutoLoaded(false);
   };
-  const handleSubmit = (e: React.FormEvent) => {
+
+  // Handle thumbnail file upload
+  const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('Image must be less than 5MB');
+      return;
+    }
+
+    setUploadingThumbnail(true);
+
+    try {
+      // Create unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
+      const filePath = `bonus-thumbnails/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('public-assets')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('public-assets')
+        .getPublicUrl(filePath);
+
+      // Update form data with the URL
+      setFormData(prev => ({ ...prev, thumbnail: publicUrl }));
+      toast.success('Thumbnail uploaded successfully!');
+    } catch (error: any) {
+      console.error('Error uploading thumbnail:', error);
+      toast.error('Failed to upload thumbnail: ' + error.message);
+    } finally {
+      setUploadingThumbnail(false);
+    }
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate YouTube URL if category is video
     if (formData.category === 'video' && formData.viewUrl && !isYouTubeUrl(formData.viewUrl)) {
       setUrlError('Video URL must be from YouTube (youtube.com or youtu.be)');
+      return;
+    }
+
+    // Validate ebook selection if category is ebook
+    if (formData.category === 'ebook' && !selectedEbookId) {
+      toast.error('Selecione um ebook para vincular');
       return;
     }
 
@@ -381,7 +465,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       .map(tag => tag.trim())
       .filter(Boolean);
 
-    const dataToSave = {
+    const dataToSave: any = {
       ...formData,
       tags,
       // Progress should always be 0 for new items (will be updated automatically by user consumption)
@@ -391,11 +475,14 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       duration: formData.duration || undefined,
       size: formData.size || undefined,
       videoUrl: formData.videoUrl || undefined,
-      viewUrl: formData.viewUrl || undefined,
+      viewUrl: formData.category === 'ebook' && selectedEbookId ? `/ebook/${selectedEbookId}` : formData.viewUrl || undefined,
       downloadUrl: formData.downloadUrl || undefined,
       requirement: formData.requirement || undefined,
+      // ✅ Pass selectedEbookId to parent for linking
+      _selectedEbookId: formData.category === 'ebook' ? selectedEbookId : undefined,
     };
 
+    // Save the bonus
     if (bonus) {
       onSave({ ...(bonus as BonusData), ...dataToSave });
     } else {
@@ -432,27 +519,41 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
               <div className="grid md:grid-cols-2 gap-6">
             {/* Left Column - Form Fields */}
             <div className="space-y-4">
-              <div>
-                <Label htmlFor="title">Title *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="title" className="flex items-center gap-2">
+                  Title
+                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Required</Badge>
+                </Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Why Your Child Acts This Way - Complete Interactive Ebook"
+                  placeholder="Ex: Why Your Child Acts This Way - Complete Interactive Ebook"
                   required
+                  className={!formData.title ? "border-red-300 focus-visible:ring-red-500" : ""}
                 />
+                {!formData.title && (
+                  <p className="text-xs text-muted-foreground">Give your bonus a clear, descriptive title</p>
+                )}
               </div>
 
-              <div>
-                <Label htmlFor="description">Description *</Label>
+              <div className="space-y-2">
+                <Label htmlFor="description" className="flex items-center gap-2">
+                  Description
+                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0">Required</Badge>
+                </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="29 meta-analyzed studies, 3,500+ children in research samples..."
+                  placeholder="Ex: 29 meta-analyzed studies, 3,500+ children in research samples..."
                   rows={3}
                   required
+                  className={!formData.description ? "border-red-300 focus-visible:ring-red-500" : ""}
                 />
+                {!formData.description && (
+                  <p className="text-xs text-muted-foreground">Describe what users will get from this bonus</p>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -487,48 +588,204 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
               </div>
 
               {formData.category === 'ebook' && (
-                <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-                  <AlertCircle className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                  <AlertDescription className="text-blue-800 dark:text-blue-300">
-                    Categoria EBOOK selecionada! Vá para a aba "Upload Markdown" acima para fazer upload do arquivo .md
-                  </AlertDescription>
-                </Alert>
+                <div className="space-y-4 p-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-2 bg-blue-500 rounded-lg">
+                      <BookOpen className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold">Ebook Configuration</h4>
+                      <p className="text-xs text-muted-foreground">Choose one option below</p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    {/* Option 1: Link Existing */}
+                    <div className={`p-4 rounded-lg border-2 transition-all ${
+                      selectedEbookId
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/30 shadow-md'
+                        : 'border-muted hover:border-blue-300 cursor-pointer'
+                    }`}>
+                      <div className="flex items-start gap-2 mb-3">
+                        <Link2 className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+                        <div className="min-w-0">
+                          <h5 className="text-sm font-medium">Link Existing</h5>
+                          <p className="text-xs text-muted-foreground">Connect to an ebook</p>
+                        </div>
+                      </div>
+
+                      {selectedEbookId ? (
+                        <div className="space-y-2">
+                          {/* Show selected ebook info */}
+                          <div className="p-3 bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg">
+                            <div className="flex items-start gap-2 mb-2">
+                              <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-semibold text-green-900 dark:text-green-100 truncate">
+                                  {availableEbooks.find(e => e.id === selectedEbookId)?.title}
+                                </p>
+                                <p className="text-xs text-green-700 dark:text-green-300">
+                                  {availableEbooks.find(e => e.id === selectedEbookId)?.total_chapters} chapters • {availableEbooks.find(e => e.id === selectedEbookId)?.estimated_reading_time || '~30'}min
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Change button */}
+                          <Select value={selectedEbookId} onValueChange={setSelectedEbookId}>
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue placeholder="Change ebook..." />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {availableEbooks.map((ebook) => (
+                                <SelectItem key={ebook.id} value={ebook.id}>
+                                  <div className="flex flex-col py-1">
+                                    <span className="font-medium text-sm">{ebook.title}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {ebook.total_chapters} chapters • {ebook.estimated_reading_time || '~30'}min
+                                    </span>
+                                  </div>
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ) : (
+                        <Select value={selectedEbookId} onValueChange={setSelectedEbookId}>
+                          <SelectTrigger className="h-9">
+                            <SelectValue placeholder="Select ebook..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableEbooks.length === 0 ? (
+                              <div className="px-3 py-8 text-center text-sm text-muted-foreground">
+                                <BookX className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                                <p className="font-medium">No ebooks available</p>
+                                <p className="text-xs">All linked or create new</p>
+                              </div>
+                            ) : (
+                              availableEbooks.map((ebook) => (
+                                <SelectItem key={ebook.id} value={ebook.id}>
+                                  <div className="flex flex-col py-1">
+                                    <span className="font-medium text-sm">{ebook.title}</span>
+                                    <span className="text-xs text-muted-foreground">
+                                      {ebook.total_chapters} chapters • {ebook.estimated_reading_time || '~30'}min
+                                    </span>
+                                  </div>
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+
+                    {/* Option 2: Upload New */}
+                    <div className="p-4 rounded-lg border-2 border-muted hover:border-purple-300 transition-all cursor-pointer">
+                      <div className="flex items-start gap-2 mb-3">
+                        <Upload className="w-4 h-4 text-purple-500 mt-0.5" />
+                        <div>
+                          <h5 className="text-sm font-medium">Upload New</h5>
+                          <p className="text-xs text-muted-foreground">Create from markdown</p>
+                        </div>
+                      </div>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const tabsList = document.querySelector('[role="tablist"]');
+                          const uploadTab = tabsList?.querySelector('[value="upload"]') as HTMLElement;
+                          uploadTab?.click();
+                        }}
+                        className="w-full h-9 text-xs"
+                      >
+                        <FileText className="w-3 h-3 mr-2" />
+                        Go to Upload Tab
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               )}
 
-              <div>
-                <Label htmlFor="thumbnail">
-                  Thumbnail URL {formData.category === 'video' && '(Auto-filled from YouTube)'}
+              <div className="space-y-2">
+                <Label htmlFor="thumbnail" className="flex items-center justify-between">
+                  <span>Thumbnail</span>
+                  {formData.category === 'video' && (
+                    <Badge variant="secondary" className="text-[10px]">Auto-filled</Badge>
+                  )}
                 </Label>
-                <Input
-                  id="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={(e) => {
-                    setFormData({ ...formData, thumbnail: e.target.value });
-                    setThumbnailAutoLoaded(false);
-                  }}
-                  placeholder={
-                    formData.category === 'video'
-                      ? 'Auto-extracted from YouTube URL'
-                      : formData.category === 'ebook'
-                      ? 'Auto-filled from markdown upload'
-                      : 'https://images.unsplash.com/photo-... or /assets/image.jpg'
-                  }
-                  disabled={formData.category === 'video' && thumbnailLoading}
-                />
+
+                {/* Upload or URL input */}
+                <div className="flex gap-2">
+                  <Input
+                    id="thumbnail"
+                    value={formData.thumbnail}
+                    onChange={(e) => {
+                      setFormData({ ...formData, thumbnail: e.target.value });
+                      setThumbnailAutoLoaded(false);
+                    }}
+                    placeholder={
+                      formData.category === 'video'
+                        ? 'Will auto-extract from YouTube...'
+                        : 'https://... or upload image →'
+                    }
+                    disabled={formData.category === 'video' && thumbnailLoading}
+                    className="text-sm"
+                  />
+
+                  {/* Upload button for non-video categories */}
+                  {formData.category !== 'video' && (
+                    <label htmlFor="thumbnail-file">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        className="shrink-0"
+                        disabled={uploadingThumbnail}
+                        onClick={() => document.getElementById('thumbnail-file')?.click()}
+                      >
+                        {uploadingThumbnail ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Upload className="w-4 h-4" />
+                        )}
+                      </Button>
+                      <input
+                        id="thumbnail-file"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleThumbnailUpload}
+                      />
+                    </label>
+                  )}
+                </div>
+
+                {/* Status messages */}
                 {thumbnailLoading && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    <span>Loading thumbnail from YouTube...</span>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+                    <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300">Extracting from YouTube...</span>
                   </div>
                 )}
+
+                {uploadingThumbnail && (
+                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-950/30 rounded-md">
+                    <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300">Uploading thumbnail...</span>
+                  </div>
+                )}
+
                 {thumbnailAutoLoaded && (
-                  <div className="flex items-center gap-2 mt-2 text-sm text-green-600 dark:text-green-500">
-                    <CheckCircle2 className="w-3 h-3" />
-                    <span>Thumbnail loaded from YouTube</span>
+                  <div className="flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-950/30 rounded-md">
+                    <CheckCircle2 className="w-3 h-3 text-green-600" />
+                    <span className="text-xs text-green-700 dark:text-green-300">Thumbnail loaded successfully</span>
                   </div>
                 )}
-                {formData.thumbnail && (
-                  <div className="mt-2 border rounded-lg overflow-hidden">
+
+                {/* Preview with better styling */}
+                {formData.thumbnail && !uploadingThumbnail && (
+                  <div className="relative group rounded-lg overflow-hidden border-2 border-muted">
                     <img
                       src={formData.thumbnail}
                       alt="Thumbnail preview"
@@ -537,8 +794,15 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                         (e.target as HTMLImageElement).style.display = 'none';
                       }}
                     />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                   </div>
                 )}
+
+                <p className="text-xs text-muted-foreground">
+                  {formData.category === 'video'
+                    ? 'Paste YouTube URL above to auto-generate thumbnail'
+                    : 'Upload image (max 5MB) or paste URL. Recommended: 1280x720px'}
+                </p>
               </div>
 
               <div>
@@ -551,13 +815,13 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                 />
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="tags">Tags (comma-separated)</Label>
                 <Input
                   id="tags"
                   value={tagsInput}
                   onChange={(e) => setTagsInput(e.target.value)}
-                  placeholder="Neuroscience, All Profiles, Research-Based"
+                  placeholder="Ex: Neuroscience, Research-Based, Interactive"
                 />
                 {tagsInput && (
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -571,6 +835,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
                     })}
                   </div>
                 )}
+                <p className="text-xs text-muted-foreground">Separate multiple tags with commas</p>
               </div>
 
               {/* Document/View URL - Hidden for ebooks as it's auto-generated */}
@@ -676,30 +941,14 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-lg">Live Preview</Label>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowPreview(!showPreview)}
-                >
-                  {showPreview ? 'Hide' : 'Show'}
-                </Button>
+                <Badge variant="outline" className="text-xs">
+                  Real-time
+                </Badge>
               </div>
 
-              {showPreview && (
-                <div className="border-2 border-dashed border-primary/30 rounded-lg p-4 bg-muted/30">
-                  <BonusCard bonus={previewBonus} />
-                </div>
-              )}
-
-              {!showPreview && (
-                <div className="border-2 border-dashed border-muted rounded-lg p-8 flex items-center justify-center text-center text-muted-foreground">
-                  <div>
-                    <p className="text-sm mb-2">Preview disabled</p>
-                    <p className="text-xs">Click "Show" to see live preview</p>
-                  </div>
-                </div>
-              )}
+              <div className="border-2 border-dashed border-primary/30 rounded-lg p-4 bg-muted/30">
+                <BonusCard bonus={previewBonus} />
+              </div>
 
               {/* Validation Info */}
               <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4 space-y-2">

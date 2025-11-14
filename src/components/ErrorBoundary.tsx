@@ -1,7 +1,8 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { logger } from '@/lib/logger';
 
 interface Props {
   children: ReactNode;
@@ -34,8 +35,13 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Log error using logger (conditional logging)
+    logger.error('ErrorBoundary caught an error:', {
+      error: error.toString(),
+      stack: error.stack,
+      componentStack: errorInfo.componentStack,
+      timestamp: new Date().toISOString(),
+    });
 
     // Update state with error details
     this.setState({
@@ -43,8 +49,7 @@ export class ErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // In production, you could send this to an error reporting service
-    // Example: Sentry.captureException(error, { extra: errorInfo });
+    // TODO: Send to error tracking service (Sentry already configured in logger)
   }
 
   handleReset = () => {
@@ -85,7 +90,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </div>
 
               {/* Error Details (only in development) */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <div className="bg-gray-100 rounded-lg p-4 text-left">
                   <p className="font-mono text-sm text-red-600 mb-2">
                     <strong>Error:</strong> {this.state.error.toString()}
@@ -117,7 +122,9 @@ export class ErrorBoundary extends Component<Props, State> {
                   onClick={() => window.location.href = '/'}
                   variant="outline"
                   size="lg"
+                  className="gap-2"
                 >
+                  <Home className="w-4 h-4" />
                   Go to Home
                 </Button>
               </div>

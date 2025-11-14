@@ -80,8 +80,12 @@ export default function Bonuses() {
 
   // Filter and sort bonuses with ebook progress merged
   const filteredAndSortedBonuses = useMemo(() => {
-    // Merge ebook progress into bonuses
+    // Merge ebook progress into bonuses (use HIGHEST progress from any source)
     let filtered = allBonuses.map((bonus) => {
+      // Start with progress from user_bonuses (already in bonus object from useBonuses hook)
+      let maxProgress = bonus.progress || 0;
+      let isCompleted = bonus.completed || false;
+
       if (bonus.category === 'ebook') {
         let ebookId: string | undefined;
 
@@ -96,28 +100,31 @@ export default function Bonuses() {
           ebookId = ebookByBonusId.get(bonus.id);
         }
 
+        // Check ebook reading progress and use if higher
+        if (ebookId) {
+          const ebookProgress = progressMap.get(ebookId);
+          if (ebookProgress && ebookProgress.progress_percentage > maxProgress) {
+            maxProgress = ebookProgress.progress_percentage;
+          }
+        }
+
         // Priority 3: Match by normalized title using user's progress data
         if (!ebookId) {
           const key = bonus.title?.toLowerCase().trim();
           if (key) {
             const pct = titleProgressMap.get(key);
-            if (pct && pct > 0) {
-              return { ...bonus, progress: pct };
+            if (pct && pct > maxProgress) {
+              maxProgress = pct;
             }
           }
         }
-
-        if (ebookId) {
-          const ebookProgress = progressMap.get(ebookId);
-          if (ebookProgress && ebookProgress.progress_percentage > 0) {
-            return {
-              ...bonus,
-              progress: ebookProgress.progress_percentage,
-            };
-          }
-        }
       }
-      return bonus;
+
+      return {
+        ...bonus,
+        progress: maxProgress,
+        completed: isCompleted || maxProgress >= 100,
+      };
     });
 
     // Filter by category
@@ -383,6 +390,8 @@ export default function Bonuses() {
           )}
 
           {/* Unlock More CTA */}
+          {/* REMOVED: "Want to Unlock More Bonuses?" card */}
+          {/*
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -423,6 +432,7 @@ export default function Bonuses() {
               </CardContent>
             </Card>
           </motion.div>
+          */}
         </main>
 
         {/* Video Player Modal */}

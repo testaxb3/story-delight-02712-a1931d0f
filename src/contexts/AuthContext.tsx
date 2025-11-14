@@ -2,6 +2,9 @@ import { createContext, useContext, useEffect, useState, ReactNode, useCallback 
 import { supabase } from '@/integrations/supabase/client';
 import { setUserContext, clearUserContext } from '@/lib/sentry';
 
+// ✅ SECURITY: Password requirements
+const MIN_PASSWORD_LENGTH = 8;
+
 interface User {
   id: string;
   email: string;
@@ -11,6 +14,8 @@ interface User {
   premium: boolean;
   profileId?: string;
   photo_url?: string | null;
+  quiz_completed?: boolean;
+  quiz_in_progress?: boolean;
 }
 
 interface AuthContextType {
@@ -50,9 +55,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user_metadata: {
           full_name: profile?.name || email.split('@')[0]
         },
-        premium: profile?.premium ?? true,
+        premium: profile?.premium ?? false, // ✅ SECURITY FIX: Default to free tier
         profileId: profile?.id || userId,
-        photo_url: profile?.photo_url || null
+        photo_url: profile?.photo_url || null,
+        quiz_completed: profile?.quiz_completed ?? false,
+        quiz_in_progress: profile?.quiz_in_progress ?? false
       };
 
       setUser(userData);
@@ -115,8 +122,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchUserProfile]);
 
   const signIn = async (email: string, password: string) => {
-    if (password.length < 6) {
-      return { error: { message: 'Password must be at least 6 characters' } };
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` } };
     }
 
     try {
@@ -136,8 +143,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signUp = async (email: string, password: string) => {
-    if (password.length < 6) {
-      return { error: { message: 'Password must be at least 6 characters' } };
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` } };
     }
 
     try {

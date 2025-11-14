@@ -65,21 +65,16 @@ export default function Dashboard() {
   const { progress, loading: loadingProgress } = useVideoProgress();
 
   useEffect(() => {
-    // Only show onboarding if truly required AND quiz is not in progress
-    const quizInProgress = localStorage.getItem('quiz_in_progress');
-    const quizCompleted = localStorage.getItem('quiz_completed');
+    // ✅ SECURITY: Check quiz state from database instead of localStorage
+    const quizInProgress = user?.quiz_in_progress;
+    const quizCompleted = user?.quiz_completed;
 
     if (onboardingRequired && !quizInProgress && !quizCompleted) {
       setShowOnboardingModal(true);
     } else {
       setShowOnboardingModal(false);
     }
-
-    // Clear quiz_completed flag after checking (one-time use)
-    if (quizCompleted) {
-      localStorage.removeItem('quiz_completed');
-    }
-  }, [onboardingRequired]);
+  }, [onboardingRequired, user]);
 
   const meltdownValueMap = useMemo(() => ({
     '0': 0,
@@ -858,21 +853,83 @@ export default function Dashboard() {
       </div>
 
       <Dialog open={showOnboardingModal} onOpenChange={() => {}}>
-        <DialogContent 
-          className="max-w-md border border-border/50 bg-card"
+        <DialogContent
+          className="max-w-lg border-none bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 dark:from-purple-950/40 dark:via-pink-950/40 dark:to-orange-950/40 p-0 overflow-hidden"
           onInteractOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
         >
-          <DialogHeader>
-            <DialogTitle className="text-foreground">Let's discover your child's profile!</DialogTitle>
-            <DialogDescription>
-              Take the NEP quiz to create your first child profile and unlock a personalized My Plan experience.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-col gap-3">
-            <Button onClick={() => navigate('/quiz')} size="lg" className="w-full">
-              Start the quiz
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-purple-400/20 to-pink-400/20 dark:from-purple-600/10 dark:to-pink-600/10 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-orange-400/20 to-yellow-400/20 dark:from-orange-600/10 dark:to-yellow-600/10 rounded-full -ml-16 -mb-16 blur-3xl"></div>
+
+          <div className="relative z-10 p-8">
+            {/* Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 dark:from-purple-500 dark:to-pink-600 rounded-full blur-lg opacity-50 animate-pulse"></div>
+                <div className="relative bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 dark:from-purple-600 dark:via-pink-600 dark:to-orange-600 p-5 rounded-full shadow-xl">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+              </div>
+            </div>
+
+            {/* Header */}
+            <DialogHeader className="text-center space-y-3 mb-6">
+              <DialogTitle className="text-3xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 dark:from-purple-400 dark:via-pink-400 dark:to-orange-400 bg-clip-text text-transparent leading-tight">
+                Discover Your Child's Unique Profile!
+              </DialogTitle>
+              <DialogDescription className="text-base text-foreground/80 dark:text-foreground/70 leading-relaxed">
+                Take our personalized NEP quiz to unlock a customized plan designed specifically for your child's needs and temperament.
+              </DialogDescription>
+            </DialogHeader>
+
+            {/* Benefits */}
+            <div className="space-y-3 mb-6 bg-white/50 dark:bg-black/20 rounded-2xl p-5 backdrop-blur-sm border border-purple-200/50 dark:border-purple-800/30">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 rounded-lg flex-shrink-0">
+                  <Target className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">Personalized Strategies</p>
+                  <p className="text-xs text-muted-foreground">Get custom scripts tailored to your child</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gradient-to-br from-pink-100 to-orange-100 dark:from-pink-900/50 dark:to-orange-900/50 rounded-lg flex-shrink-0">
+                  <BookOpen className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">Brain Profile Match</p>
+                  <p className="text-xs text-muted-foreground">Understand your child's unique wiring</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-orange-900/50 dark:to-yellow-900/50 rounded-lg flex-shrink-0">
+                  <ThumbsUp className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-foreground">Step-by-Step Guidance</p>
+                  <p className="text-xs text-muted-foreground">Clear, actionable daily plan</p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA Button */}
+            <Button
+              onClick={() => navigate('/quiz')}
+              size="lg"
+              className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 hover:from-purple-700 hover:via-pink-700 hover:to-orange-700 text-white font-bold text-lg h-14 rounded-xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+            >
+              <Sparkles className="w-5 h-5 mr-2" />
+              Start the Quiz
+              <span className="ml-2">→</span>
             </Button>
+
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              ⏱️ Takes only 5 minutes
+            </p>
           </div>
         </DialogContent>
       </Dialog>
