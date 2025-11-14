@@ -20,14 +20,17 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const getSystemTheme = (): "light" | "dark" => {
   if (typeof window === "undefined") {
-    return "light";
+    return "dark";
   }
 
-  if (typeof window.matchMedia === "function") {
-    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  // Check if user has a stored preference in localStorage
+  const storedTheme = localStorage.getItem("theme-preference");
+  if (storedTheme === "light" || storedTheme === "dark") {
+    return storedTheme;
   }
 
-  return "light";
+  // Default to dark theme for first-time users
+  return "dark";
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
@@ -67,6 +70,9 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
 
   const persistTheme = useCallback(
     async (value: "light" | "dark") => {
+      // Always save to localStorage first (for non-authenticated users)
+      localStorage.setItem("theme-preference", value);
+
       const userId = session?.user?.id;
       if (!userId) {
         return;
