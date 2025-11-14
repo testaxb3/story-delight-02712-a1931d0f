@@ -51,7 +51,8 @@
       "Bash(move story-delight-02712 story-delight-02712-backup)",
       "Bash(git rm -rf .)",
       "Bash(git log:*)",
-      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\TESTE APP NOOVOOOO\\story-delight-02712\\supabase\\migrations\\20251114160000_fix_app_version_tracking.sql\")"
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\TESTE APP NOOVOOOO\\story-delight-02712\\supabase\\migrations\\20251114160000_fix_app_version_tracking.sql\")",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []

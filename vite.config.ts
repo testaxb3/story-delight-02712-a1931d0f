@@ -57,15 +57,14 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
-        // Force service worker to take control immediately
-        skipWaiting: true,
-        clientsClaim: true,
         // Arquivos a serem incluídos no cache do service worker
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,json}"],
         // Exclude OneSignal files from being cached by Workbox
-        globIgnores: ['**/OneSignalSDK*.js'],
+        globIgnores: ['**/OneSignalSDK*.js', '**/OneSignal*.js'],
         // Don't try to cache YouTube API scripts or OneSignal - they should be loaded fresh
         navigateFallbackDenylist: [/^\/OneSignalSDK/, /youtube\.com\/iframe_api/, /youtube\.com\/s\/player/],
+        // Let OneSignal manage its own service worker lifecycle
+        navigateFallback: null,
         // Estratégia de cache para chamadas à API do Supabase
         runtimeCaching: [
           {
