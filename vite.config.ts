@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => ({
         name: "NEP System",
         short_name: "NEP System",
         description: "Neurological Emotional Personalization - Neuroscience-based parenting app",
+        version: "2.0.0",
         theme_color: "#8B5CF6",
         background_color: "#8B5CF6",
         display: "standalone",
@@ -57,7 +58,7 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         // Arquivos a serem incluídos no cache do service worker
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,json}"],
         // Exclude OneSignal files from being cached by Workbox
         globIgnores: ['**/OneSignalSDK*.js'],
         // Don't try to cache YouTube API scripts or OneSignal - they should be loaded fresh
