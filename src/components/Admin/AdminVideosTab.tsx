@@ -24,7 +24,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Edit, Trash2, Image as ImageIcon } from 'lucide-react';
+import { Edit, Trash2, Image as ImageIcon, Video, Plus, List, Sparkles, Crown, Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Table,
@@ -261,304 +261,475 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Add Video</h2>
-        <form onSubmit={handleAddVideo} className="space-y-4">
-          <div>
-            <Label htmlFor="video-title">Title</Label>
-            <Input
-              id="video-title"
-              placeholder="Video title"
-              className="mt-1"
-              value={form.title}
-              onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
-            />
-          </div>
-          <div>
-            <Label htmlFor="video-description">Description</Label>
-            <Textarea
-              id="video-description"
-              placeholder="Brief description"
-              className="mt-1"
-              rows={3}
-              value={form.description}
-              onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="video-section">Section</Label>
-              <Select
-                value={form.section}
-                onValueChange={(value) => setForm((prev) => ({ ...prev, section: value }))}
-              >
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Select section" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="foundation">💡 Foundations</SelectItem>
-                  <SelectItem value="practice">🎯 Daily Situations</SelectItem>
-                  <SelectItem value="mastery">⚡ Masterclass</SelectItem>
-                  <SelectItem value="ages-1-2">🎯 Ages 1-2</SelectItem>
-                  <SelectItem value="ages-3-4">⚡ Ages 3-4</SelectItem>
-                  <SelectItem value="ages-5-plus">💡 Ages 5+</SelectItem>
-                </SelectContent>
-              </Select>
+    <div className="space-y-8 pb-8">
+      {/* Header with Gradient Background */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 dark:from-purple-950/30 dark:via-blue-950/30 dark:to-pink-950/30 border border-purple-100 dark:border-purple-900/50 shadow-lg">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative p-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold flex items-center gap-3 bg-gradient-to-r from-purple-600 to-blue-600 dark:from-purple-400 dark:to-blue-400 bg-clip-text text-transparent">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
+                  <Video className="w-7 h-7 text-white" />
+                </div>
+                Video Management
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                Manage your educational video library with ease
+              </p>
             </div>
-            <div>
-              <Label htmlFor="video-duration">Duration (MM:SS)</Label>
-              <Input
-                id="video-duration"
-                placeholder="12:30"
-                className="mt-1"
-                value={form.duration}
-                onChange={(event) => setForm((prev) => ({ ...prev, duration: event.target.value }))}
-              />
-            </div>
-          </div>
-          <div>
-            <Label htmlFor="video-url">Video URL</Label>
-            <Input
-              id="video-url"
-              placeholder="https://..."
-              className="mt-1"
-              value={form.videoUrl}
-              onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
-            />
-          </div>
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <Label htmlFor="thumbnail-url">Thumbnail URL</Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleAutoFetchThumbnail}
-                disabled={fetchingThumbnail || !form.videoUrl.trim()}
-                className="h-7 text-xs"
-              >
-                <ImageIcon className="w-3 h-3 mr-1" />
-                {fetchingThumbnail ? 'Fetching...' : 'Auto-fetch from YouTube'}
-              </Button>
-            </div>
-            <Input
-              id="thumbnail-url"
-              placeholder="https://... (or click Auto-fetch)"
-              className="mt-1"
-              value={form.thumbnailUrl}
-              onChange={(event) => setForm((prev) => ({ ...prev, thumbnailUrl: event.target.value }))}
-            />
-            {form.thumbnailUrl && (
-              <div className="mt-2">
-                <img
-                  src={form.thumbnailUrl}
-                  alt="Thumbnail preview"
-                  className="w-full max-w-xs rounded border"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = 'none';
-                  }}
-                />
+            <div className="flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 shadow-sm">
+              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                <List className="w-5 h-5 text-purple-600 dark:text-purple-400" />
               </div>
-            )}
+              <div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{videos.length}</div>
+                <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Videos</div>
+              </div>
+            </div>
           </div>
-          <div>
-            <Label htmlFor="video-order">Order Index</Label>
-            <Input
-              id="video-order"
-              type="number"
-              placeholder="0"
-              className="mt-1"
-              value={form.orderIndex}
-              onChange={(event) => setForm((prev) => ({ ...prev, orderIndex: event.target.value }))}
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <Label htmlFor="video-locked">Premium Only</Label>
-            <Switch
-              id="video-locked"
-              checked={form.premiumOnly}
-              onCheckedChange={(checked) => setForm((prev) => ({ ...prev, premiumOnly: checked }))}
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? 'Adding…' : 'Add Video'}
-          </Button>
-        </form>
-      </Card>
-
-      <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Existing Videos ({videos.length})</h2>
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Title</TableHead>
-                <TableHead>Section</TableHead>
-                <TableHead>Duration</TableHead>
-                <TableHead>Order</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-24">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {videos.map((video) => (
-                <TableRow key={video.id}>
-                  <TableCell className="font-medium">{video.title}</TableCell>
-                  <TableCell>{getSectionDisplay(video.section)}</TableCell>
-                  <TableCell>{video.duration}</TableCell>
-                  <TableCell>{video.order_index ?? 0}</TableCell>
-                  <TableCell>
-                    {video.premium_only ? (
-                      <Badge variant="secondary">Premium</Badge>
-                    ) : (
-                      <Badge variant="outline">Free</Badge>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => handleEditClick(video)}>
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" onClick={() => setDeleteVideoId(video.id)}>
-                        <Trash2 className="w-4 h-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
         </div>
-      </Card>
+      </div>
 
-      {/* Edit Video Dialog */}
-      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Edit Video</DialogTitle>
-            <DialogDescription>
-              Update the video details below
-            </DialogDescription>
-          </DialogHeader>
-          <form onSubmit={handleUpdateVideo} className="space-y-4">
-            <div>
-              <Label htmlFor="edit-video-title">Title</Label>
+      {/* Add Video Form - Glass Morphism Card */}
+      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-transparent dark:from-purple-500/10 dark:via-blue-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="relative p-7">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
+              <Plus className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Add New Video</h3>
+          </div>
+
+          <form onSubmit={handleAddVideo} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="video-title" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Video Title
+              </Label>
               <Input
-                id="edit-video-title"
-                placeholder="Video title"
-                className="mt-1"
+                id="video-title"
+                placeholder="Enter video title"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
                 value={form.title}
                 onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
               />
             </div>
-            <div>
-              <Label htmlFor="edit-video-description">Description</Label>
+
+            <div className="space-y-2">
+              <Label htmlFor="video-description" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Description
+              </Label>
               <Textarea
-                id="edit-video-description"
-                placeholder="Brief description"
-                className="mt-1"
+                id="video-description"
+                placeholder="Brief description of the video content"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200 resize-none"
                 rows={3}
                 value={form.description}
                 onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="edit-video-section">Section</Label>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="video-section" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Section
+                </Label>
                 <Select
                   value={form.section}
                   onValueChange={(value) => setForm((prev) => ({ ...prev, section: value }))}
                 >
-                  <SelectTrigger className="mt-1">
+                  <SelectTrigger className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20">
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="foundation">💡 Foundations</SelectItem>
-                    <SelectItem value="practice">🎯 Daily Situations</SelectItem>
-                    <SelectItem value="mastery">⚡ Masterclass</SelectItem>
-                    <SelectItem value="ages-1-2">🎯 Ages 1-2</SelectItem>
-                    <SelectItem value="ages-3-4">⚡ Ages 3-4</SelectItem>
-                    <SelectItem value="ages-5-plus">💡 Ages 5+</SelectItem>
+                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                    <SelectItem value="foundation" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Foundations</SelectItem>
+                    <SelectItem value="practice" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Daily Situations</SelectItem>
+                    <SelectItem value="mastery" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Masterclass</SelectItem>
+                    <SelectItem value="ages-1-2" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 1-2</SelectItem>
+                    <SelectItem value="ages-3-4" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 3-4</SelectItem>
+                    <SelectItem value="ages-5-plus" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 5+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="edit-video-duration">Duration (MM:SS)</Label>
+              <div className="space-y-2">
+                <Label htmlFor="video-duration" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Duration (MM:SS)
+                </Label>
                 <Input
-                  id="edit-video-duration"
-                  placeholder="12:30"
-                  className="mt-1"
+                  id="video-duration"
+                  placeholder="e.g., 12:30"
+                  className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
                   value={form.duration}
                   onChange={(event) => setForm((prev) => ({ ...prev, duration: event.target.value }))}
                 />
               </div>
             </div>
-            <div>
-              <Label htmlFor="edit-video-url">Video URL</Label>
+
+            <div className="space-y-2">
+              <Label htmlFor="video-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Video URL
+              </Label>
               <Input
-                id="edit-video-url"
-                placeholder="https://..."
-                className="mt-1"
+                id="video-url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
                 value={form.videoUrl}
                 onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
               />
             </div>
-            <div>
+
+            <div className="space-y-2">
               <div className="flex items-center justify-between mb-1">
-                <Label htmlFor="edit-thumbnail-url">Thumbnail URL</Label>
+                <Label htmlFor="thumbnail-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Thumbnail URL
+                </Label>
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleAutoFetchThumbnail}
                   disabled={fetchingThumbnail || !form.videoUrl.trim()}
-                  className="h-7 text-xs"
+                  className="h-8 text-xs bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
                 >
-                  <ImageIcon className="w-3 h-3 mr-1" />
+                  <ImageIcon className="w-3 h-3 mr-1.5" />
+                  {fetchingThumbnail ? 'Fetching...' : 'Auto-fetch from YouTube'}
+                </Button>
+              </div>
+              <Input
+                id="thumbnail-url"
+                placeholder="https://... (or click Auto-fetch)"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                value={form.thumbnailUrl}
+                onChange={(event) => setForm((prev) => ({ ...prev, thumbnailUrl: event.target.value }))}
+              />
+              {form.thumbnailUrl && (
+                <div className="mt-3 group/thumb">
+                  <div className="relative w-full max-w-xs overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md group-hover/thumb:shadow-xl transition-all duration-300">
+                    <img
+                      src={form.thumbnailUrl}
+                      alt="Thumbnail preview"
+                      className="w-full h-auto group-hover/thumb:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="video-order" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Order Index
+              </Label>
+              <Input
+                id="video-order"
+                type="number"
+                placeholder="0"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                value={form.orderIndex}
+                onChange={(event) => setForm((prev) => ({ ...prev, orderIndex: event.target.value }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-md">
+                  <Crown className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <Label htmlFor="video-locked" className="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer">
+                    Premium Only
+                  </Label>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Require premium subscription to access</p>
+                </div>
+              </div>
+              <Switch
+                id="video-locked"
+                checked={form.premiumOnly}
+                onCheckedChange={(checked) => setForm((prev) => ({ ...prev, premiumOnly: checked }))}
+                className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-blue-600"
+              />
+            </div>
+
+            <Button
+              type="submit"
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 animate-spin" />
+                  Adding Video...
+                </span>
+              ) : (
+                <span className="flex items-center gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add Video
+                </span>
+              )}
+            </Button>
+          </form>
+        </div>
+      </div>
+
+      {/* Existing Videos Table - Glass Morphism Card */}
+      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent dark:from-blue-500/10 dark:via-purple-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="relative p-7">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+              <List className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Existing Videos
+            </h3>
+            <span className="ml-auto px-3 py-1.5 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+              {videos.length} videos
+            </span>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white/50 dark:bg-gray-950/50">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:from-gray-100 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-800 border-b border-gray-200 dark:border-gray-700">
+                  <TableHead className="font-bold text-gray-900 dark:text-white">Title</TableHead>
+                  <TableHead className="font-bold text-gray-900 dark:text-white">Section</TableHead>
+                  <TableHead className="font-bold text-gray-900 dark:text-white">Duration</TableHead>
+                  <TableHead className="font-bold text-gray-900 dark:text-white">Order</TableHead>
+                  <TableHead className="font-bold text-gray-900 dark:text-white">Status</TableHead>
+                  <TableHead className="w-24 font-bold text-gray-900 dark:text-white">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {videos.map((video) => (
+                  <TableRow
+                    key={video.id}
+                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 transition-all duration-200"
+                  >
+                    <TableCell className="font-semibold text-gray-900 dark:text-white">{video.title}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                        {getSectionDisplay(video.section)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="text-gray-700 dark:text-gray-300 font-medium">{video.duration}</TableCell>
+                    <TableCell>
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-sm font-bold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        {video.order_index ?? 0}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      {video.premium_only ? (
+                        <Badge className="bg-gradient-to-r from-purple-500 to-blue-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                          <Crown className="w-3 h-3 mr-1" />
+                          Premium
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20">
+                          Free
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEditClick(video)}
+                          className="hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 hover:scale-110"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setDeleteVideoId(video.id)}
+                          className="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 hover:scale-110"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      </div>
+
+      {/* Edit Video Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+          <DialogHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
+                <Edit className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">Edit Video</DialogTitle>
+                <DialogDescription className="text-gray-600 dark:text-gray-400">
+                  Update the video details below
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+          <form onSubmit={handleUpdateVideo} className="space-y-6 mt-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-video-title" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Video Title
+              </Label>
+              <Input
+                id="edit-video-title"
+                placeholder="Enter video title"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                value={form.title}
+                onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-video-description" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Description
+              </Label>
+              <Textarea
+                id="edit-video-description"
+                placeholder="Brief description of the video content"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200 resize-none"
+                rows={3}
+                value={form.description}
+                onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="edit-video-section" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Section
+                </Label>
+                <Select
+                  value={form.section}
+                  onValueChange={(value) => setForm((prev) => ({ ...prev, section: value }))}
+                >
+                  <SelectTrigger className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20">
+                    <SelectValue placeholder="Select section" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+                    <SelectItem value="foundation" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Foundations</SelectItem>
+                    <SelectItem value="practice" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Daily Situations</SelectItem>
+                    <SelectItem value="mastery" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Masterclass</SelectItem>
+                    <SelectItem value="ages-1-2" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 1-2</SelectItem>
+                    <SelectItem value="ages-3-4" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 3-4</SelectItem>
+                    <SelectItem value="ages-5-plus" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 5+</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-video-duration" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Duration (MM:SS)
+                </Label>
+                <Input
+                  id="edit-video-duration"
+                  placeholder="e.g., 12:30"
+                  className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                  value={form.duration}
+                  onChange={(event) => setForm((prev) => ({ ...prev, duration: event.target.value }))}
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-video-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Video URL
+              </Label>
+              <Input
+                id="edit-video-url"
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                value={form.videoUrl}
+                onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex items-center justify-between mb-1">
+                <Label htmlFor="edit-thumbnail-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Thumbnail URL
+                </Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAutoFetchThumbnail}
+                  disabled={fetchingThumbnail || !form.videoUrl.trim()}
+                  className="h-8 text-xs bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                >
+                  <ImageIcon className="w-3 h-3 mr-1.5" />
                   {fetchingThumbnail ? 'Fetching...' : 'Auto-fetch from YouTube'}
                 </Button>
               </div>
               <Input
                 id="edit-thumbnail-url"
                 placeholder="https://... (or click Auto-fetch)"
-                className="mt-1"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
                 value={form.thumbnailUrl}
                 onChange={(event) => setForm((prev) => ({ ...prev, thumbnailUrl: event.target.value }))}
               />
               {form.thumbnailUrl && (
-                <div className="mt-2">
-                  <img
-                    src={form.thumbnailUrl}
-                    alt="Thumbnail preview"
-                    className="w-full max-w-xs rounded border"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
+                <div className="mt-3 group/thumb">
+                  <div className="relative w-full max-w-xs overflow-hidden rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-md group-hover/thumb:shadow-xl transition-all duration-300">
+                    <img
+                      src={form.thumbnailUrl}
+                      alt="Thumbnail preview"
+                      className="w-full h-auto group-hover/thumb:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover/thumb:opacity-100 transition-opacity duration-300"></div>
+                  </div>
                 </div>
               )}
             </div>
-            <div>
-              <Label htmlFor="edit-video-order">Order Index</Label>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-video-order" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Order Index
+              </Label>
               <Input
                 id="edit-video-order"
                 type="number"
                 placeholder="0"
-                className="mt-1"
+                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
                 value={form.orderIndex}
                 onChange={(event) => setForm((prev) => ({ ...prev, orderIndex: event.target.value }))}
               />
             </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="edit-video-locked">Premium Only</Label>
+
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-md">
+                  <Crown className="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <Label htmlFor="edit-video-locked" className="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer">
+                    Premium Only
+                  </Label>
+                  <p className="text-xs text-gray-600 dark:text-gray-400">Require premium subscription to access</p>
+                </div>
+              </div>
               <Switch
                 id="edit-video-locked"
                 checked={form.premiumOnly}
                 onCheckedChange={(checked) => setForm((prev) => ({ ...prev, premiumOnly: checked }))}
+                className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-blue-600"
               />
             </div>
-            <DialogFooter>
+
+            <DialogFooter className="gap-3">
               <Button
                 type="button"
                 variant="outline"
@@ -567,11 +738,23 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
                   setEditingVideo(null);
                   resetForm();
                 }}
+                className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? 'Updating…' : 'Update Video'}
+              <Button
+                type="submit"
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                {loading ? (
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 animate-spin" />
+                    Updating...
+                  </span>
+                ) : (
+                  'Update Video'
+                )}
               </Button>
             </DialogFooter>
           </form>
@@ -580,20 +763,30 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteVideoId !== null} onOpenChange={() => setDeleteVideoId(null)}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the video.
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-red-500 to-red-600 shadow-lg">
+                <Trash2 className="w-5 h-5 text-white" />
+              </div>
+              <AlertDialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+                Delete Video?
+              </AlertDialogTitle>
+            </div>
+            <AlertDialogDescription className="text-gray-600 dark:text-gray-400 text-base">
+              This action cannot be undone. This will permanently delete the video from your library.
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogFooter className="gap-3">
+            <AlertDialogCancel className="border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteVideoId && handleDelete(deleteVideoId)}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
             >
-              Delete
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete Video
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

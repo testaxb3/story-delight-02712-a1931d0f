@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
+import { toast } from 'sonner';
 
 interface AppVersionInfo {
   version: string;
@@ -11,7 +12,9 @@ interface AppVersionInfo {
 }
 
 const STORAGE_KEY = 'app_version_acknowledged';
-const CHECK_INTERVAL = 5 * 60 * 1000; // Check every 5 minutes
+const UPDATE_ATTEMPT_KEY = 'app_update_attempt_count';
+const MAX_UPDATE_ATTEMPTS = 3;
+const CHECK_INTERVAL = 15 * 60 * 1000; // Check every 15 minutes (reduced from 5)
 
 export function useAppVersion() {
   const [versionInfo, setVersionInfo] = useState<AppVersionInfo | null>(null);
@@ -52,32 +55,81 @@ export function useAppVersion() {
   const handleUpdate = async () => {
     if (!versionInfo) return;
 
+    // Check for infinite loop protection
+    const attemptCount = parseInt(localStorage.getItem(UPDATE_ATTEMPT_KEY) || '0', 10);
+
+    if (attemptCount >= MAX_UPDATE_ATTEMPTS) {
+      logger.error('Max update attempts reached. Preventing infinite loop.');
+      toast.error('Update failed after multiple attempts', {
+        description: 'Please clear your browser cache manually or contact support.',
+        duration: 10000,
+      });
+      // Clear the attempt counter after showing error
+      localStorage.removeItem(UPDATE_ATTEMPT_KEY);
+      return;
+    }
+
+    // Increment attempt counter
+    localStorage.setItem(UPDATE_ATTEMPT_KEY, String(attemptCount + 1));
+
     try {
-      // Clear all caches
-      if ('caches' in window) {
-        const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
-      }
+      // Show initial progress
+      const toastId = toast.loading('Preparing update...', {
+        description: 'Please wait while we update the app',
+      });
 
-      // Unregister service workers
-      if ('serviceWorker' in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(registrations.map(reg => reg.unregister()));
-      }
-
-      // Mark version as acknowledged
+      // Mark version as acknowledged FIRST (before any cache operations)
       const currentVersion = `${versionInfo.version}-${versionInfo.build}`;
       localStorage.setItem(STORAGE_KEY, currentVersion);
 
       // Acknowledge update in backend
+      toast.loading('Saving update status...', {
+        id: toastId,
+        description: 'Recording your update',
+      });
+
       await supabase.rpc('acknowledge_app_update');
 
-      // Force reload
-      window.location.reload();
+      // Clear attempt counter on success
+      localStorage.removeItem(UPDATE_ATTEMPT_KEY);
+
+      // Show success message
+      toast.success('Update ready!', {
+        id: toastId,
+        description: 'Reloading application...',
+        duration: 1500,
+      });
+
+      // Force a hard reload to bypass all caches
+      // This is safer than manually clearing caches in PWA context
+      setTimeout(() => {
+        // Use location.href assignment for hard reload that works in PWA
+        window.location.href = window.location.href;
+      }, 1500);
+
     } catch (error) {
       logger.error('Error during app update:', error);
-      // Even if there's an error, reload anyway
-      window.location.reload();
+
+      // Check if we've exceeded max attempts
+      const newAttemptCount = parseInt(localStorage.getItem(UPDATE_ATTEMPT_KEY) || '0', 10);
+
+      if (newAttemptCount >= MAX_UPDATE_ATTEMPTS) {
+        toast.error('Update failed', {
+          description: 'Max retry attempts reached. Please refresh manually.',
+          duration: 10000,
+        });
+        localStorage.removeItem(UPDATE_ATTEMPT_KEY);
+        return; // Don't reload if max attempts reached
+      }
+
+      // Show error but don't reload automatically
+      toast.error('Update failed', {
+        description: 'Please try again or refresh the page manually.',
+        duration: 5000,
+      });
+
+      // Don't reload on error - let user retry manually
+      return;
     }
   };
 

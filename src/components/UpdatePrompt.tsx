@@ -21,16 +21,16 @@ export function UpdatePrompt() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <RefreshCw className="w-5 h-5 text-primary" />
-            Nova Atualização Disponível
+            New Update Available
           </DialogTitle>
           <DialogDescription className="text-base pt-2">
-            {versionInfo.update_message || 'Uma nova versão do app está disponível com melhorias e correções.'}
+            {versionInfo.update_message || 'A new version of the app is available with improvements and fixes.'}
           </DialogDescription>
         </DialogHeader>
 
         <div className="bg-muted/50 rounded-lg p-4 space-y-2">
           <div className="flex justify-between text-sm">
-            <span className="text-muted-foreground">Versão:</span>
+            <span className="text-muted-foreground">Version:</span>
             <span className="font-semibold">{versionInfo.version}</span>
           </div>
           <div className="flex justify-between text-sm">
@@ -46,19 +46,19 @@ export function UpdatePrompt() {
             className="gap-2"
           >
             <X className="w-4 h-4" />
-            Mais Tarde
+            Later
           </Button>
           <Button
             onClick={handleUpdate}
             className="gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
           >
             <RefreshCw className="w-4 h-4" />
-            Atualizar Agora
+            Update Now
           </Button>
         </DialogFooter>
 
         <p className="text-xs text-muted-foreground text-center">
-          A atualização levará apenas alguns segundos.
+          The update will only take a few seconds.
         </p>
       </DialogContent>
     </Dialog>

@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { RefreshCw, Loader2, AlertTriangle, CheckCircle2, Settings } from 'lucide-react';
+import { RefreshCw, Loader2, AlertTriangle, CheckCircle2, Settings, Users, TrendingUp } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,21 +18,94 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
+interface UpdateStats {
+  current_version: string;
+  current_build: number;
+  force_update_enabled: boolean;
+  total_users: number;
+  updated_users: number;
+  pending_users: number;
+  update_percentage: number;
+  last_updated: string;
+}
+
 export function AdminSystemTab() {
   const [updating, setUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('New update available! Please update the app.');
+  const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
+  const [stats, setStats] = useState<UpdateStats | null>(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  const MIN_UPDATE_INTERVAL = 60000; // 1 minute
+  const remainingCooldown = Math.max(0, MIN_UPDATE_INTERVAL - (Date.now() - lastUpdateTime));
+  const canUpdate = remainingCooldown === 0;
+
+  // Load update statistics
+  const loadStatistics = async () => {
+    setLoadingStats(true);
+    try {
+      const { data, error } = await supabase.rpc('get_update_statistics');
+
+      if (error) throw error;
+
+      setStats(data);
+    } catch (error: any) {
+      console.error('Error loading statistics:', error);
+      // Don't show error toast for stats, just log it
+    } finally {
+      setLoadingStats(false);
+    }
+  };
+
+  // Load stats on mount and after updates
+  useEffect(() => {
+    loadStatistics();
+  }, []);
+
+  // Sanitize message to prevent XSS
+  const sanitizeMessage = (message: string): string => {
+    return message
+      .replace(/<[^>]*>/g, '') // Remove HTML tags
+      .replace(/[<>'"]/g, '') // Remove dangerous characters
+      .trim();
+  };
 
   const handleForceUpdate = async () => {
+    // Validate message is not empty
+    if (!updateMessage.trim()) {
+      toast.error('Update message cannot be empty', {
+        description: 'Please enter a message for users',
+        icon: <AlertTriangle className="w-5 h-5" />,
+      });
+      return;
+    }
+
+    // Check rate limiting
+    if (!canUpdate) {
+      const secondsLeft = Math.ceil(remainingCooldown / 1000);
+      toast.error('Please wait before forcing another update', {
+        description: `You can update again in ${secondsLeft} seconds`,
+        icon: <AlertTriangle className="w-5 h-5" />,
+      });
+      return;
+    }
+
     setUpdating(true);
 
     try {
+      // Sanitize message before sending
+      const sanitizedMessage = sanitizeMessage(updateMessage);
+
       const { data, error } = await supabase.rpc('force_app_update', {
-        update_message: updateMessage
+        update_message: sanitizedMessage
       });
 
       if (error) {
         throw error;
       }
+
+      // Update last update time
+      setLastUpdateTime(Date.now());
 
       toast.success(
         data.message || 'Update forced successfully!',
@@ -45,6 +118,9 @@ export function AdminSystemTab() {
 
       // Reset message
       setUpdateMessage('New update available! Please update the app.');
+
+      // Reload statistics after successful update
+      setTimeout(() => loadStatistics(), 1000);
     } catch (error: any) {
       console.error('Error forcing update:', error);
       toast.error(
@@ -65,6 +141,97 @@ export function AdminSystemTab() {
         <Settings className="w-5 h-5" />
         <h2 className="text-2xl font-bold">System Settings</h2>
       </div>
+
+      {/* Update Statistics Card */}
+      {stats && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="w-5 h-5" />
+              Update Adoption Statistics
+            </CardTitle>
+            <CardDescription>
+              Real-time metrics of users who have updated to the latest version
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  <span className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Total Users
+                  </span>
+                </div>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {stats.total_users}
+                </p>
+              </div>
+
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400" />
+                  <span className="text-sm font-medium text-green-900 dark:text-green-100">
+                    Updated
+                  </span>
+                </div>
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {stats.updated_users}
+                </p>
+              </div>
+
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertTriangle className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                  <span className="text-sm font-medium text-orange-900 dark:text-orange-100">
+                    Pending
+                  </span>
+                </div>
+                <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">
+                  {stats.pending_users}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm mb-1">
+                <span className="text-muted-foreground">Update Progress</span>
+                <span className="font-semibold">{stats.update_percentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-green-500 to-green-600 h-full transition-all duration-500"
+                  style={{ width: `${stats.update_percentage}%` }}
+                />
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground mt-2">
+                <span>Current Version: {stats.current_version}</span>
+                <span>Build #{stats.current_build}</span>
+              </div>
+            </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={loadStatistics}
+              disabled={loadingStats}
+              className="w-full mt-4"
+            >
+              {loadingStats ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  Refreshing...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Refresh Statistics
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Force App Update Card */}
       <Card>
@@ -114,17 +281,30 @@ export function AdminSystemTab() {
             </div>
           </div>
 
+          {!canUpdate && (
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-sm">
+              <p className="text-blue-800 dark:text-blue-200">
+                ⏱️ Rate limit cooldown: {Math.ceil(remainingCooldown / 1000)} seconds remaining
+              </p>
+            </div>
+          )}
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 className="w-full gap-2"
                 size="lg"
-                disabled={updating}
+                disabled={updating || !canUpdate}
               >
                 {updating ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
                     Processing...
+                  </>
+                ) : !canUpdate ? (
+                  <>
+                    <AlertTriangle className="w-4 h-4" />
+                    Cooldown Active ({Math.ceil(remainingCooldown / 1000)}s)
                   </>
                 ) : (
                   <>
@@ -140,16 +320,18 @@ export function AdminSystemTab() {
                   <AlertTriangle className="w-5 h-5 text-yellow-600" />
                   Confirm Global Update
                 </AlertDialogTitle>
-                <AlertDialogDescription className="space-y-2">
-                  <p>
-                    You are about to force an update for <strong>all users</strong> of the app.
-                  </p>
-                  <p className="text-sm">
-                    Message: "{updateMessage}"
-                  </p>
-                  <p className="font-semibold text-foreground">
-                    Do you want to continue?
-                  </p>
+                <AlertDialogDescription asChild>
+                  <div className="space-y-2">
+                    <div>
+                      You are about to force an update for <strong>all users</strong> of the app.
+                    </div>
+                    <div className="text-sm">
+                      Message: "{updateMessage}"
+                    </div>
+                    <div className="font-semibold text-foreground">
+                      Do you want to continue?
+                    </div>
+                  </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

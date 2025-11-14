@@ -57,6 +57,9 @@ export default defineConfig(({ mode }) => ({
         ]
       },
       workbox: {
+        // Force service worker to take control immediately
+        skipWaiting: true,
+        clientsClaim: true,
         // Arquivos a serem incluídos no cache do service worker
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2,json}"],
         // Exclude OneSignal files from being cached by Workbox

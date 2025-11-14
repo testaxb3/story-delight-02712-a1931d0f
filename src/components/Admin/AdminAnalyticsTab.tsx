@@ -67,6 +67,28 @@ const COLORS = {
   warning: '#f59e0b',
 };
 
+// Custom tooltip component for dark mode support
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3">
+        <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-1">
+          {label}
+        </p>
+        {payload.map((entry: any, index: number) => (
+          <p key={index} className="text-sm text-gray-700 dark:text-gray-300">
+            <span style={{ color: entry.color }} className="font-semibold">
+              {entry.name}:
+            </span>{' '}
+            {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function AdminAnalyticsTab() {
   const [dateRange, setDateRange] = useState<DateRange>('30d');
   const [loading, setLoading] = useState(true);
@@ -331,263 +353,446 @@ export function AdminAnalyticsTab() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Activity className="w-7 h-7 text-primary" />
-            Analytics Dashboard
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1">Real-time insights into your NEP System</p>
+    <div className="space-y-8 pb-8">
+      {/* Header with Gradient Background */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-blue-950/30 dark:via-purple-950/30 dark:to-pink-950/30 border border-blue-100 dark:border-blue-900/50 shadow-lg">
+        <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+        <div className="relative p-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold flex items-center gap-3 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                  <Activity className="w-7 h-7 text-white" />
+                </div>
+                Analytics Dashboard
+              </h2>
+              <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+                Real-time insights into your NEP System performance
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <Tabs value={dateRange} onValueChange={(v) => setDateRange(v as DateRange)}>
+                <TabsList className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 shadow-sm">
+                  <TabsTrigger value="7d" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                    7 Days
+                  </TabsTrigger>
+                  <TabsTrigger value="30d" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                    30 Days
+                  </TabsTrigger>
+                  <TabsTrigger value="90d" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                    90 Days
+                  </TabsTrigger>
+                  <TabsTrigger value="all" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white">
+                    All Time
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <Button
+                onClick={handleExportData}
+                variant="outline"
+                className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-gray-200 dark:border-gray-700 hover:bg-white dark:hover:bg-gray-900 shadow-sm transition-all duration-200 hover:shadow-md"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Tabs value={dateRange} onValueChange={(v) => setDateRange(v as DateRange)}>
-            <TabsList>
-              <TabsTrigger value="7d">7 Days</TabsTrigger>
-              <TabsTrigger value="30d">30 Days</TabsTrigger>
-              <TabsTrigger value="90d">90 Days</TabsTrigger>
-              <TabsTrigger value="all">All Time</TabsTrigger>
-            </TabsList>
-          </Tabs>
-          <Button onClick={handleExportData} variant="outline">
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
+      </div>
+
+      {/* Key Metrics - Glass Morphism Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Users Card */}
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent dark:from-blue-500/20 dark:via-blue-500/10 dark:to-transparent border border-blue-200/50 dark:border-blue-500/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent dark:from-blue-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg shadow-blue-500/30">
+                <Users className="w-7 h-7 text-white" />
+              </div>
+              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                {data.totalUsers.toLocaleString()}
+              </div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Total Users
+              </div>
+              <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 font-medium bg-blue-50 dark:bg-blue-900/20 px-2.5 py-1.5 rounded-lg w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></div>
+                {data.activeUsers7d} active (7d)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Scripts Used Card */}
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-green-500/10 via-green-500/5 to-transparent dark:from-green-500/20 dark:via-green-500/10 dark:to-transparent border border-green-200/50 dark:border-green-500/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent dark:from-green-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-green-600 shadow-lg shadow-green-500/30">
+                <BookOpen className="w-7 h-7 text-white" />
+              </div>
+              <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+                <Zap className="w-4 h-4 text-green-600 dark:text-green-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                {data.scriptsUsedTotal.toLocaleString()}
+              </div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Scripts Used
+              </div>
+              <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 font-medium bg-green-50 dark:bg-green-900/20 px-2.5 py-1.5 rounded-lg w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400 animate-pulse"></div>
+                {data.scriptsUsedToday} today
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Video Watches Card */}
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-500/10 via-purple-500/5 to-transparent dark:from-purple-500/20 dark:via-purple-500/10 dark:to-transparent border border-purple-200/50 dark:border-purple-500/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent dark:from-purple-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg shadow-purple-500/30">
+                <Video className="w-7 h-7 text-white" />
+              </div>
+              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+                <Eye className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                {data.videoWatchesTotal.toLocaleString()}
+              </div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Video Watches
+              </div>
+              <div className="flex items-center gap-2 text-xs text-purple-600 dark:text-purple-400 font-medium bg-purple-50 dark:bg-purple-900/20 px-2.5 py-1.5 rounded-lg w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-purple-600 dark:bg-purple-400 animate-pulse"></div>
+                {data.avgVideosPerUser.toFixed(1)} avg/user
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Days Tracked Card */}
+        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-orange-500/10 via-orange-500/5 to-transparent dark:from-orange-500/20 dark:via-orange-500/10 dark:to-transparent border border-orange-200/50 dark:border-orange-500/30 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]">
+          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent dark:from-orange-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-6">
+            <div className="flex items-start justify-between mb-4">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg shadow-orange-500/30">
+                <Target className="w-7 h-7 text-white" />
+              </div>
+              <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                <CheckCircle2 className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                {data.trackerDaysCompleted.toLocaleString()}
+              </div>
+              <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Days Tracked
+              </div>
+              <div className="flex items-center gap-2 text-xs text-orange-600 dark:text-orange-400 font-medium bg-orange-50 dark:bg-orange-900/20 px-2.5 py-1.5 rounded-lg w-fit">
+                <div className="w-1.5 h-1.5 rounded-full bg-orange-600 dark:bg-orange-400 animate-pulse"></div>
+                {data.retentionRate.toFixed(0)}% retention
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Key Metrics */}
+      {/* Secondary Metrics - Compact Glass Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <div className="flex items-center justify-between mb-3">
-            <Users className="w-8 h-8 text-blue-600" />
-            <TrendingUp className="w-4 h-4 text-blue-500" />
+        <div className="group relative rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
+              <Brain className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Quiz Completion
+            </div>
           </div>
-          <div className="text-3xl font-bold text-blue-900">{data.totalUsers}</div>
-          <div className="text-sm font-semibold text-blue-700">Total Users</div>
-          <div className="text-xs text-blue-600 mt-1">{data.activeUsers7d} active (7d)</div>
-        </Card>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">
+            {data.quizCompletionRate.toFixed(0)}%
+          </div>
+        </div>
 
-        <Card className="p-5 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <div className="flex items-center justify-between mb-3">
-            <BookOpen className="w-8 h-8 text-green-600" />
-            <Zap className="w-4 h-4 text-green-500" />
+        <div className="group relative rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-lg bg-green-100 dark:bg-green-900/30">
+              <BookOpen className="w-5 h-5 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Scripts/User
+            </div>
           </div>
-          <div className="text-3xl font-bold text-green-900">{data.scriptsUsedTotal}</div>
-          <div className="text-sm font-semibold text-green-700">Scripts Used</div>
-          <div className="text-xs text-green-600 mt-1">{data.scriptsUsedToday} today</div>
-        </Card>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">
+            {data.avgScriptsPerUser.toFixed(1)}
+          </div>
+        </div>
 
-        <Card className="p-5 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-          <div className="flex items-center justify-between mb-3">
-            <Video className="w-8 h-8 text-purple-600" />
-            <Eye className="w-4 h-4 text-purple-500" />
+        <div className="group relative rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+              <Users className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Community Posts
+            </div>
           </div>
-          <div className="text-3xl font-bold text-purple-900">{data.videoWatchesTotal}</div>
-          <div className="text-sm font-semibold text-purple-700">Video Watches</div>
-          <div className="text-xs text-purple-600 mt-1">{data.avgVideosPerUser.toFixed(1)} avg/user</div>
-        </Card>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">
+            {data.communityPosts.toLocaleString()}
+          </div>
+        </div>
 
-        <Card className="p-5 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <div className="flex items-center justify-between mb-3">
-            <Target className="w-8 h-8 text-orange-600" />
-            <CheckCircle2 className="w-4 h-4 text-orange-500" />
+        <div className="group relative rounded-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200 dark:border-gray-700 p-5 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+              <AlertCircle className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            </div>
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">
+              Available Scripts
+            </div>
           </div>
-          <div className="text-3xl font-bold text-orange-900">{data.trackerDaysCompleted}</div>
-          <div className="text-sm font-semibold text-orange-700">Days Tracked</div>
-          <div className="text-xs text-orange-600 mt-1">{data.retentionRate.toFixed(0)}% retention</div>
-        </Card>
+          <div className="text-3xl font-bold text-gray-900 dark:text-white">
+            {data.totalScripts.toLocaleString()}
+          </div>
+        </div>
       </div>
 
-      {/* Secondary Metrics */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="p-4 bg-white/90 border-slate-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Brain className="w-5 h-5 text-primary" />
-            <div className="text-xs font-medium text-muted-foreground">Quiz Completion</div>
-          </div>
-          <div className="text-2xl font-bold">{data.quizCompletionRate.toFixed(0)}%</div>
-        </Card>
-
-        <Card className="p-4 bg-white/90 border-slate-200">
-          <div className="flex items-center gap-2 mb-2">
-            <BookOpen className="w-5 h-5 text-success" />
-            <div className="text-xs font-medium text-muted-foreground">Avg Scripts/User</div>
-          </div>
-          <div className="text-2xl font-bold">{data.avgScriptsPerUser.toFixed(1)}</div>
-        </Card>
-
-        <Card className="p-4 bg-white/90 border-slate-200">
-          <div className="flex items-center gap-2 mb-2">
-            <Users className="w-5 h-5 text-blue-500" />
-            <div className="text-xs font-medium text-muted-foreground">Community Posts</div>
-          </div>
-          <div className="text-2xl font-bold">{data.communityPosts}</div>
-        </Card>
-
-        <Card className="p-4 bg-white/90 border-slate-200">
-          <div className="flex items-center gap-2 mb-2">
-            <AlertCircle className="w-5 h-5 text-orange-500" />
-            <div className="text-xs font-medium text-muted-foreground">Available Scripts</div>
-          </div>
-          <div className="text-2xl font-bold">{data.totalScripts}</div>
-        </Card>
-      </div>
-
-      {/* Charts Row 1 */}
+      {/* Charts Row 1 - New Users & Brain Profiles */}
       <div className="grid lg:grid-cols-2 gap-6">
         {/* New Users by Week */}
-        <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-primary" />
-            New Users (Last 8 Weeks)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={data.newUsersByWeek}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+        <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent dark:from-blue-500/10 dark:via-purple-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-7">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                <Calendar className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                New Users Growth
+              </h3>
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={data.newUsersByWeek}>
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="currentColor"
+                  className="text-gray-200 dark:text-gray-700"
+                  strokeOpacity={0.3}
+                />
+                <XAxis
+                  dataKey="week"
+                  tick={{ fontSize: 12, fill: 'currentColor' }}
+                  className="text-gray-600 dark:text-gray-400"
+                  stroke="currentColor"
+                  strokeOpacity={0.3}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: 'currentColor' }}
+                  className="text-gray-600 dark:text-gray-400"
+                  stroke="currentColor"
+                  strokeOpacity={0.3}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Line
+                  type="monotone"
+                  dataKey="users"
+                  stroke="url(#colorUsers)"
+                  strokeWidth={3}
+                  dot={{ fill: COLORS.primary, r: 5, strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 7, strokeWidth: 2 }}
+                  name="Users"
+                />
+                <defs>
+                  <linearGradient id="colorUsers" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Brain Profile Distribution */}
+        <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-pink-500/5 to-transparent dark:from-purple-500/10 dark:via-pink-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div className="relative p-7">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg">
+                <Brain className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Brain Profile Distribution
+              </h3>
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <PieChart>
+                <Pie
+                  data={data.brainProfileDistribution}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  outerRadius={100}
+                  fill="#8884d8"
+                  dataKey="value"
+                  className="text-sm font-semibold"
+                >
+                  {data.brainProfileDistribution.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
+
+      {/* Engagement Over Time - Full Width */}
+      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 via-blue-500/5 to-purple-500/5 dark:from-green-500/10 dark:via-blue-500/10 dark:to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="relative p-7">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-green-500 via-blue-500 to-purple-600 shadow-lg">
+              <Activity className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Daily Engagement Trends
+            </h3>
+            <span className="ml-auto text-sm text-gray-500 dark:text-gray-400 font-medium">
+              Last 30 Days
+            </span>
+          </div>
+          <ResponsiveContainer width="100%" height={320}>
+            <LineChart data={data.engagementOverTime}>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="currentColor"
+                className="text-gray-200 dark:text-gray-700"
+                strokeOpacity={0.3}
+              />
               <XAxis
-                dataKey="week"
-                tick={{ fontSize: 12 }}
-                stroke="#6b7280"
+                dataKey="date"
+                tick={{ fontSize: 11, fill: 'currentColor' }}
+                className="text-gray-600 dark:text-gray-400"
+                stroke="currentColor"
+                strokeOpacity={0.3}
               />
               <YAxis
-                tick={{ fontSize: 12 }}
-                stroke="#6b7280"
+                tick={{ fontSize: 12, fill: 'currentColor' }}
+                className="text-gray-600 dark:text-gray-400"
+                stroke="currentColor"
+                strokeOpacity={0.3}
               />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px',
-                  fontSize: '14px'
+              <Tooltip content={<CustomTooltip />} />
+              <Legend
+                wrapperStyle={{
+                  paddingTop: '20px',
+                  fontSize: '14px',
+                  fontWeight: '500'
                 }}
+                iconType="circle"
               />
               <Line
                 type="monotone"
-                dataKey="users"
+                dataKey="scripts"
+                stroke={COLORS.success}
+                strokeWidth={2.5}
+                name="Scripts Used"
+                dot={{ fill: COLORS.success, r: 3 }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
+              />
+              <Line
+                type="monotone"
+                dataKey="videos"
                 stroke={COLORS.primary}
-                strokeWidth={3}
-                dot={{ fill: COLORS.primary, r: 4 }}
-                activeDot={{ r: 6 }}
+                strokeWidth={2.5}
+                name="Videos Watched"
+                dot={{ fill: COLORS.primary, r: 3 }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
+              />
+              <Line
+                type="monotone"
+                dataKey="posts"
+                stroke={COLORS.warning}
+                strokeWidth={2.5}
+                name="Posts Created"
+                dot={{ fill: COLORS.warning, r: 3 }}
+                activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }}
               />
             </LineChart>
           </ResponsiveContainer>
-        </Card>
-
-        {/* Brain Profile Distribution */}
-        <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-          <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-            <Brain className="w-5 h-5 text-primary" />
-            Brain Profile Distribution
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={data.brainProfileDistribution}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={100}
-                fill="#8884d8"
-                dataKey="value"
-              >
-                {data.brainProfileDistribution.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '8px'
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-        </Card>
+        </div>
       </div>
 
-      {/* Engagement Over Time */}
-      <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <Activity className="w-5 h-5 text-primary" />
-          Daily Engagement (Last 30 Days)
-        </h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data.engagementOverTime}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis
-              dataKey="date"
-              tick={{ fontSize: 11 }}
-              stroke="#6b7280"
-            />
-            <YAxis
-              tick={{ fontSize: 12 }}
-              stroke="#6b7280"
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px'
-              }}
-            />
-            <Legend />
-            <Line
-              type="monotone"
-              dataKey="scripts"
-              stroke={COLORS.success}
-              strokeWidth={2}
-              name="Scripts Used"
-            />
-            <Line
-              type="monotone"
-              dataKey="videos"
-              stroke={COLORS.primary}
-              strokeWidth={2}
-              name="Videos Watched"
-            />
-            <Line
-              type="monotone"
-              dataKey="posts"
-              stroke={COLORS.warning}
-              strokeWidth={2}
-              name="Posts Created"
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </Card>
-
-      {/* Top Scripts */}
-      <Card className="p-6 bg-white/90 backdrop-blur-glass border-none shadow-lg">
-        <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-primary" />
-          Top 10 Most Used Scripts
-        </h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={data.topScripts} layout="horizontal">
-            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis type="number" tick={{ fontSize: 12 }} stroke="#6b7280" />
-            <YAxis
-              dataKey="title"
-              type="category"
-              width={150}
-              tick={{ fontSize: 11 }}
-              stroke="#6b7280"
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: 'white',
-                border: '1px solid #e5e7eb',
-                borderRadius: '8px'
-              }}
-            />
-            <Bar dataKey="uses" fill={COLORS.primary} radius={[0, 8, 8, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      </Card>
+      {/* Top Scripts - Full Width */}
+      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-purple-500/5 to-pink-500/5 dark:from-indigo-500/10 dark:via-purple-500/10 dark:to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="relative p-7">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-600 shadow-lg">
+              <TrendingUp className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+              Top 10 Most Popular Scripts
+            </h3>
+          </div>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={data.topScripts} layout="horizontal">
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="currentColor"
+                className="text-gray-200 dark:text-gray-700"
+                strokeOpacity={0.3}
+              />
+              <XAxis
+                type="number"
+                tick={{ fontSize: 12, fill: 'currentColor' }}
+                className="text-gray-600 dark:text-gray-400"
+                stroke="currentColor"
+                strokeOpacity={0.3}
+              />
+              <YAxis
+                dataKey="title"
+                type="category"
+                width={180}
+                tick={{ fontSize: 11, fill: 'currentColor' }}
+                className="text-gray-600 dark:text-gray-400"
+                stroke="currentColor"
+                strokeOpacity={0.3}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar
+                dataKey="uses"
+                fill="url(#colorBar)"
+                radius={[0, 8, 8, 0]}
+                name="Uses"
+              />
+              <defs>
+                <linearGradient id="colorBar" x1="0" y1="0" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#6366f1" />
+                  <stop offset="50%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#ec4899" />
+                </linearGradient>
+              </defs>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
     </div>
   );
 }
