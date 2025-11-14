@@ -45,18 +45,12 @@ export default function Profile() {
   // Use custom hooks
   const { stats, recentActivity, loading: loadingStats } = useUserStats(user?.id);
 
-  // Early return if no user
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-6xl animate-brain-pulse">🧠</div>
-      </div>
-    );
-  }
-
-  const nav = window.navigator as StandaloneNavigator;
-  const isInstalled =
-    window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
+  // Sync child data with local state
+  useEffect(() => {
+    setChildName(activeChild?.name ?? '');
+    setChildAge(activeChild?.age ?? '');
+    setChildChallenges(activeChild?.primary_challenges ?? '');
+  }, [activeChild?.id, activeChild?.name, activeChild?.age, activeChild?.primary_challenges]);
 
   // Fetch refund status
   useEffect(() => {
@@ -79,15 +73,22 @@ export default function Profile() {
     fetchRefundStatus();
   }, [user]);
 
-  const handleLogout = async () => {
-    await signOut();
-    toast.success(t.auth.success.loggedOut);
-    navigate('/auth');
-  };
-
   const initials = useMemo(() => getUserInitials(user), [user]);
   const displayName = useMemo(() => getDisplayName(user), [user]);
   const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
+
+  const nav = window.navigator as StandaloneNavigator;
+  const isInstalled =
+    window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true;
+
+  // Early return if no user
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-6xl animate-brain-pulse">🧠</div>
+      </div>
+    );
+  }
 
   // Show loading state while fetching stats
   if (loadingStats) {
@@ -103,11 +104,11 @@ export default function Profile() {
     );
   }
 
-  useEffect(() => {
-    setChildName(activeChild?.name ?? '');
-    setChildAge(activeChild?.age ?? '');
-    setChildChallenges(activeChild?.primary_challenges ?? '');
-  }, [activeChild?.id, activeChild?.name, activeChild?.age, activeChild?.primary_challenges]);
+  const handleLogout = async () => {
+    await signOut();
+    toast.success(t.auth.success.loggedOut);
+    navigate('/auth');
+  };
 
   const handleChildNameUpdate = async () => {
     if (!activeChild?.id) return;
