@@ -12,7 +12,6 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
-import { PWAInstallGuide } from '@/components/PWAInstallGuide';
 import { quizQuestions, calculateBrainProfile } from '@/lib/quizQuestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
@@ -42,7 +41,6 @@ export default function Quiz() {
   const [hasStarted, setHasStarted] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [showPWAGuide, setShowPWAGuide] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
@@ -160,7 +158,6 @@ export default function Quiz() {
       }
 
       setSavingProfile(false);
-      setShowPWAGuide(true);
       return true;
     } catch (error) {
       console.error('Unexpected error:', error);
@@ -229,7 +226,7 @@ export default function Quiz() {
   };
 
   return (
-    <MainLayout>
+    <MainLayout hideBottomNav={hasStarted}>
       <div className="min-h-screen py-8 px-4">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence mode="wait">
@@ -409,12 +406,6 @@ export default function Quiz() {
                     >
                       Add another child profile
                     </Button>
-
-                    {showPWAGuide && (
-                      <div className="mt-6">
-                        <PWAInstallGuide open={showPWAGuide} onClose={() => setShowPWAGuide(false)} />
-                      </div>
-                    )}
                   </div>
                 </Card>
               </motion.div>

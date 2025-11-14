@@ -116,7 +116,7 @@ export default function Profile() {
 
     setSavingChild(true);
     const { error } = await supabase
-      .from('children_profiles')
+      .from('child_profiles')
       .update({ name: trimmed })
       .eq('id', activeChild.id);
 
@@ -152,7 +152,7 @@ export default function Profile() {
 
     setSavingChild(true);
     const { error } = await supabase
-      .from('children_profiles')
+      .from('child_profiles')
       .update(updates)
       .eq('id', activeChild.id);
 
