@@ -41,10 +41,15 @@ const EnhancedScriptCardComponent = ({
 
   return (
     <Card
-      className="group relative p-5 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-primary/50 touch-target"
+      className="group relative p-5 cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 hover:border-primary/50 touch-target bg-card/50 backdrop-blur-sm"
       onClick={onClick}
     >
-      {/* Quick Actions - Show on hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      
+      {script.emergency_suitable && (
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-orange-500 to-red-500 animate-pulse" />
+      )}
+
       <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-200 z-20">
         <button
           onClick={onToggleFavorite}
@@ -59,16 +64,14 @@ const EnhancedScriptCardComponent = ({
         </button>
       </div>
 
-      {/* Priority Badges - Simplified */}
       <div className="absolute top-4 left-4 flex gap-2 z-10">
         {script.emergency_suitable && (
-          <Badge className="bg-destructive/90 text-destructive-foreground shadow-lg animate-pulse">
-            <Zap className="w-3 h-3 mr-1" />
-            SOS
+          <Badge className="bg-red-500/90 text-white border-0 shadow-lg animate-pulse font-bold text-xs">
+            🚨 SOS
           </Badge>
         )}
         <Badge
-          className={`${getBrainTypeBadgeColor(script.profile)} font-bold shadow-md`}
+          className={`${getBrainTypeBadgeColor(script.profile)} font-bold shadow-md border-2 px-3 py-1 text-xs`}
           variant="outline"
         >
           {script.profile}
