@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info } from 'lucide-react';
+import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2 } from 'lucide-react';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -228,13 +228,24 @@ export default function Auth() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-14 text-base font-bold bg-gradient-to-r from-primary via-accent to-secondary hover:opacity-90 text-white rounded-xl shadow-xl transition-all hover:shadow-2xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-14 text-base font-black bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 text-white rounded-xl shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading
-                ? 'Processing...'
-                : isSignUp
-                  ? '✨ Create Account'
-                  : '🚀 Sign In'}
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <span className="flex items-center justify-center gap-2">
+                  {isSignUp ? (
+                    <>
+                      <Zap className="w-5 h-5" />
+                      Start Free Now
+                    </>
+                  ) : (
+                    <>
+                      🚀 Welcome Back
+                    </>
+                  )}
+                </span>
+              )}
             </Button>
           </form>
 

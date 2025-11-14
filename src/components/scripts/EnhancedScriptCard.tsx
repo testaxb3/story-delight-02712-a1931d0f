@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Heart, MapPin, User, Zap, AlertTriangle, Calendar } from 'lucide-react';
+import { Clock, Heart, User } from 'lucide-react';
 import type { Database } from '@/integrations/supabase/types';
 
 type ScriptRow = Database['public']['Tables']['scripts']['Row'];
@@ -29,13 +29,13 @@ const EnhancedScriptCardComponent = ({
   const getBrainTypeBadgeColor = (brainType: string) => {
     switch (brainType) {
       case 'INTENSE':
-        return 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20';
+        return 'bg-intense/10 text-intense border-intense/20';
       case 'DISTRACTED':
-        return 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20';
+        return 'bg-distracted/10 text-distracted border-distracted/20';
       case 'DEFIANT':
-        return 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20';
+        return 'bg-defiant/10 text-defiant border-defiant/20';
       default:
-        return 'bg-muted text-muted-foreground';
+        return 'bg-muted/50 text-muted-foreground border-border/30';
     }
   };
 
@@ -78,111 +78,55 @@ const EnhancedScriptCardComponent = ({
         </Badge>
       </div>
 
-      {/* Main Content */}
-      <div className="flex items-start gap-4 mt-12">
-        <div className="text-5xl flex-shrink-0 group-hover:scale-110 transition-transform">
+      <div className="flex items-start gap-4 mt-12 relative z-10">
+        <div className="text-5xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
           {emoji}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-xl mb-1 group-hover:text-primary transition-colors line-clamp-2">
+          <h3 className="font-bold text-xl mb-1 group-hover:text-primary transition-colors duration-200 line-clamp-2 leading-tight">
             {script.title}
           </h3>
-          <p className="text-sm text-muted-foreground mb-3">{displayCategory}</p>
+          <p className="text-sm text-muted-foreground mb-3 font-medium">{displayCategory}</p>
 
-          {/* Situation Trigger - Compact */}
           {script.situation_trigger && (
-            <div className="mt-2 p-3 bg-warning/10 border border-warning/20 rounded-lg">
-              <p className="text-xs font-semibold text-warning-foreground mb-1">
-                WHEN TO USE:
-              </p>
-              <p className="text-xs text-muted-foreground line-clamp-2">
-                {script.situation_trigger}
+            <div className="mt-3 p-4 bg-gradient-to-br from-muted/70 to-muted/40 rounded-xl border border-border/30">
+              <p className="text-sm font-medium text-foreground/90 line-clamp-2 leading-relaxed">
+                💬 {script.situation_trigger}
               </p>
             </div>
           )}
 
-          {/* Key Badges - Most Important Only */}
-          <div className="flex flex-wrap gap-1.5 mt-3">
+          <div className="flex items-center gap-3 mt-4 text-xs text-muted-foreground">
             {script.expected_time_seconds && (
-              <Badge variant="outline" className="text-xs">
-                <Clock className="w-3 h-3 mr-1" />
-                {script.expected_time_seconds}s
-              </Badge>
+              <div className="flex items-center gap-1.5 font-medium">
+                <Clock className="w-3.5 h-3.5" />
+                <span>{Math.ceil(script.expected_time_seconds / 60)}min</span>
+              </div>
             )}
-
-            {script.success_speed && (
-              <Badge variant="outline" className="text-xs">
-                <Zap className="w-3 h-3 mr-1" />
-                {script.success_speed}
-              </Badge>
+            {(script.age_min && script.age_max) && (
+              <div className="flex items-center gap-1.5 font-medium">
+                <User className="w-3.5 h-3.5" />
+                <span>{script.age_min}-{script.age_max}y</span>
+              </div>
             )}
-
-            {script.intensity_level === 'moderate' && (
-              <Badge className="text-[10px] bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20">
-                ⚠️ Moderate
-              </Badge>
-            )}
-
-            {script.intensity_level === 'mild' && (
-              <Badge className="text-[10px] bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20">
-                ✨ Mild situations
-              </Badge>
-            )}
-
-            {script.age_min && script.age_max && (
-              <Badge className="text-[10px] bg-violet-500/10 text-violet-700 dark:text-violet-400 border-violet-500/20">
-                <User className="w-3 h-3 mr-1" />
-                Ages {script.age_min}-{script.age_max}
-              </Badge>
-            )}
-
             {script.difficulty && (
-              <Badge
-                className={`text-[10px] ${
-                  script.difficulty === 'Easy'
-                    ? 'bg-green-500/10 text-green-700 border-green-500/20'
-                    : script.difficulty === 'Moderate'
-                    ? 'bg-yellow-500/10 text-yellow-700 border-yellow-500/20'
-                    : 'bg-red-500/10 text-red-700 border-red-500/20'
-                }`}
-              >
-                {script.difficulty_level}
-              </Badge>
-            )}
-
-            {script.requires_preparation && (
-              <Badge className="text-[10px] bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20">
-                <AlertTriangle className="w-3 h-3 mr-1" />
-                Needs prep
-              </Badge>
+              <div className="flex items-center gap-1.5 font-medium capitalize">
+                <span>• {script.difficulty}</span>
+              </div>
             )}
           </div>
 
-          {/* Original Tags */}
-          <div className="flex flex-wrap items-center gap-2 mt-3 text-xs">
-            <Badge variant="outline" className="border-blue-500/30 text-blue-700 dark:text-blue-400 bg-blue-500/5 font-semibold">
-              <Clock className="w-3 h-3 mr-1" />
-              {script.estimated_time_minutes ?? 5} min
-            </Badge>
-            {script.tags?.slice(0, 2).map((tag) => (
-              <Badge key={tag} variant="outline" className="border-primary/30 text-primary font-medium">
-                #{tag}
-              </Badge>
-            ))}
-          </div>
-
-          {/* Collections */}
           {collectionsNames.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
-              {collectionsNames.map((name) => (
-                <Badge key={name} className="bg-purple-500/10 text-purple-700 border-purple-500/20">
-                  📂 {name}
-                </Badge>
-              ))}
+            <div className="mt-3">
+              <Badge variant="secondary" className="text-xs bg-muted/50 border-0">
+                📚 {collectionsNames.length} collection{collectionsNames.length !== 1 ? 's' : ''}
+              </Badge>
             </div>
           )}
         </div>
       </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary via-accent to-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
     </Card>
   );
 };
