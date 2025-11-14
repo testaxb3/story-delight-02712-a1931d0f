@@ -44,7 +44,6 @@ export default function Dashboard() {
     return sectionMap[section.toLowerCase()] || { name: section, icon: '📚' };
   };
   const [showBanner, setShowBanner] = useState(true);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showPWAPrompt, setShowPWAPrompt] = useState(false);
   const [showPWAGuide, setShowPWAGuide] = useState(false);
   const { activeChild, onboardingRequired } = useChildProfiles();
@@ -227,45 +226,7 @@ export default function Dashboard() {
     loadVideos();
   }, [loadContentCounts, loadVideos]);
 
-  // Check if we should show the welcome modal
-  useEffect(() => {
-    const checkWelcomeModal = async () => {
-      if (!user?.profileId) return;
-
-      // First check database
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('welcome_modal_shown')
-        .eq('id', user.profileId)
-        .single();
-
-      if (error) {
-        console.error('Error checking welcome_modal_shown:', error);
-        // Fallback to localStorage if database check fails
-        const welcomeShown = localStorage.getItem('welcome_gift_shown');
-        if (!welcomeShown) {
-          setTimeout(() => {
-            setShowWelcomeModal(true);
-          }, 1000);
-        }
-        return;
-      }
-
-      // If database field exists and is true, don't show modal
-      if (data?.welcome_modal_shown === true) {
-        return;
-      }
-
-      // Show modal if not shown yet
-      setTimeout(() => {
-        setShowWelcomeModal(true);
-      }, 1000);
-    };
-
-    if (user) {
-      checkWelcomeModal();
-    }
-  }, [user]);
+  // Welcome modal disabled - premium system being refactored
 
   // Rotate success story every 30 seconds
   useEffect(() => {
@@ -283,11 +244,8 @@ export default function Dashboard() {
   };
 
   const handleWelcomeModalClose = () => {
-    setShowWelcomeModal(false);
-    // Small delay to let modal animation finish
-    setTimeout(() => {
-      checkPWAInstall();
-    }, 600);
+    // Welcome modal disabled - premium system being refactored
+    checkPWAInstall();
   };
 
   const totalDays = 30;
@@ -410,10 +368,6 @@ export default function Dashboard() {
 
   return (
     <MainLayout>
-      <WelcomeGiftModal
-        open={showWelcomeModal}
-        onClose={handleWelcomeModalClose}
-      />
       <PWAInstallPrompt
         open={showPWAPrompt}
         onOpenGuide={() => {
