@@ -22,7 +22,7 @@ export function EbooksList() {
   const handleDelete = async (id: string) => {
     try {
       await deleteEbook.mutateAsync(id);
-      toast.success('Ebook deletado com sucesso');
+      toast.success('Ebook deleted successfully');
       refetch();
     } finally {
       setDeletingId(null);
@@ -30,7 +30,7 @@ export function EbooksList() {
   };
 
   if (isLoading) return <div className="flex items-center justify-center py-12"><Loader2 className="w-8 h-8 animate-spin" /></div>;
-  if (!ebooks?.length) return <Card className="p-12 text-center"><BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" /><h3 className="text-lg font-semibold mb-2">Nenhum ebook criado</h3></Card>;
+  if (!ebooks?.length) return <Card className="p-12 text-center"><BookOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground" /><h3 className="text-lg font-semibold mb-2">No ebooks created</h3></Card>;
 
   return (
     <>
@@ -47,7 +47,7 @@ export function EbooksList() {
                 {ebook.estimated_reading_time && <Badge variant="secondary" className="text-xs"><Clock className="w-3 h-3 mr-1" />{ebook.estimated_reading_time} min</Badge>}
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="sm" className="flex-1" asChild><Link to={`/ebook/${ebook.id}`} target="_blank"><ExternalLink className="w-4 h-4 mr-1" />Ver</Link></Button>
+                <Button variant="outline" size="sm" className="flex-1" asChild><Link to={`/ebook/${ebook.id}`} target="_blank"><ExternalLink className="w-4 h-4 mr-1" />View</Link></Button>
                 <Button variant="outline" size="sm" onClick={() => setEditingEbook(ebook)}><Edit className="w-4 h-4" /></Button>
                 <Button variant="outline" size="sm" onClick={() => setAnalyticsEbookId(ebook.id)}><BarChart3 className="w-4 h-4" /></Button>
                 <Button variant="outline" size="sm" onClick={() => setDeletingId(ebook.id)} className="text-destructive"><Trash2 className="w-4 h-4" /></Button>
@@ -58,7 +58,7 @@ export function EbooksList() {
       </div>
       {editingEbook && <EbookEditModal open={!!editingEbook} onOpenChange={(open) => !open && setEditingEbook(null)} ebook={editingEbook} onSuccess={() => { refetch(); setEditingEbook(null); }} />}
       <Dialog open={!!analyticsEbookId} onOpenChange={(open) => !open && setAnalyticsEbookId(null)}><DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto"><DialogHeader><DialogTitle>Analytics</DialogTitle></DialogHeader>{analyticsEbookId && <EbookAnalytics ebookId={analyticsEbookId} />}</DialogContent></Dialog>
-      <AlertDialog open={!!deletingId} onOpenChange={() => setDeletingId(null)}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Deletar?</AlertDialogTitle><AlertDialogDescription>Ação irreversível</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancelar</AlertDialogCancel><AlertDialogAction onClick={() => deletingId && handleDelete(deletingId)} className="bg-destructive">Deletar</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
+      <AlertDialog open={!!deletingId} onOpenChange={() => setDeletingId(null)}><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Delete Ebook?</AlertDialogTitle><AlertDialogDescription>This action is irreversible</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={() => deletingId && handleDelete(deletingId)} className="bg-destructive">Delete</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>
     </>
   );
 }
