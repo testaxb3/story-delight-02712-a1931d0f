@@ -666,10 +666,10 @@ const handleForceUpdate = async () => {
   - ✅ Sentry Error Tracking configurado (src/lib/sentry.ts)
   - ✅ Secret adicionado: VITE_SENTRY_DSN
   - ✅ ErrorBoundary global em main.tsx
-- [ ] P1: Revisar Security Definer Views - Próximo
+- [x] P1: Revisar Security Definer Views (ANÁLISE COMPLETA - 15/11/2025) ✅
 
-### Sprint 3 (Semana 5-6)
-- [ ] P1: Security Definer Views (conclusão)
+### Sprint 3 (Semana 5-6) 🚧 EM PROGRESSO
+- [ ] P1: Security Definer Views (conclusão - testar 4 funções) - Próximo
 - [ ] P1: Testes (continuação - 50% coverage)
 - [ ] P2: Performance audit
 
