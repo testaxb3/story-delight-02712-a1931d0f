@@ -28,6 +28,7 @@ import { StreakCard } from '@/components/Dashboard/StreakCard';
 import { ContinueWatching } from '@/components/Dashboard/ContinueWatching';
 import { QuickActions } from '@/components/Dashboard/QuickActions';
 import { CompactSuccessStory } from '@/components/Dashboard/CompactSuccessStory';
+import { ThisWeeksWins } from '@/components/Dashboard/ThisWeeksWins';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -414,38 +415,34 @@ export default function Dashboard() {
           videosCount={contentCounts.videos}
         />
 
-        {/* This Week's Wins Section */}
-        <div>
-          <h3 className="text-lg font-bold mb-4">✨ This Week's Wins</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Scripts Used */}
-            <div className="card-elevated p-6 rounded-2xl">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-3 rounded-xl bg-gradient-primary">
-                  <BookOpen className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <div className="text-3xl font-black">{scriptsUsedCount}</div>
-                  <div className="text-sm text-muted-foreground">Scripts Used</div>
-                </div>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                {getStatsMessage('scripts')}
-              </p>
-            </div>
+        {/* This Week's Wins - Granular Metrics */}
+        <ThisWeeksWins userId={user?.id} />
 
-            {/* Progress Metrics */}
-            <div className="card-elevated p-6 rounded-2xl">
-              <div className="flex items-center gap-4 mb-3">
-                <div className="p-3 rounded-xl bg-gradient-success">
-                  <TrendingDown className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1">
-                  <div className="text-sm text-muted-foreground mb-1">Nervous System Check-in</div>
-                  <div className="text-lg font-bold">{meltdownCopy}</div>
-                </div>
+        {/* Quick Metrics Overview */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Scripts Used */}
+          <div className="card-elevated p-4 rounded-xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-gradient-primary">
+                <BookOpen className="w-5 h-5 text-white" />
               </div>
-              <p className="text-xs text-muted-foreground">{stressCopy}</p>
+              <div>
+                <div className="text-2xl font-black">{scriptsUsedCount}</div>
+                <div className="text-xs text-muted-foreground">Scripts Total</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Stress Check */}
+          <div className="card-elevated p-4 rounded-xl">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 rounded-lg bg-gradient-success">
+                <TrendingDown className="w-5 h-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <div className="text-xs text-muted-foreground mb-1">Check-in</div>
+                <div className="text-sm font-bold">{meltdownCopy}</div>
+              </div>
             </div>
           </div>
         </div>
