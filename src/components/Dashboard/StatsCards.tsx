@@ -78,7 +78,7 @@ export function StatsCards({
           </div>
           <div className="text-xs sm:text-sm font-bold text-green-700 dark:text-green-300 mb-1 sm:mb-2">Total Parents</div>
           <p className="text-xs text-green-600 dark:text-green-400 font-medium leading-tight line-clamp-2">
-            👥 {loadingLiveStats ? 'Loading...' : `${activeUsersThisWeek} active`}
+            👥 {loadingLiveStats ? 'Loading...' : `${activeUsersThisWeek} online agora`}
           </p>
         </div>
       </div>

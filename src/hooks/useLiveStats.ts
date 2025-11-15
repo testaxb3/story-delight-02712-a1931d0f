@@ -40,18 +40,47 @@ function getSimulatedUserCount(): number {
 }
 
 /**
- * Calculate simulated active users (proportional to total)
+ * Calculate simulated active users based on time of day
+ * Returns realistic numbers considering user behavior patterns
  */
 function getSimulatedActiveUsers(totalMembers: number): number {
-  // Typically 8-15% of total users are active weekly
-  const activeRate = 0.12;
-  const baseActive = Math.floor(totalMembers * activeRate);
+  const now = new Date();
+  const hour = now.getHours();
+  
+  // Define activity rates based on time of day (more realistic)
+  let activityMultiplier: number;
+  
+  if (hour >= 0 && hour < 6) {
+    // Madrugada (0h-6h): muito baixo - 1-3% dos usuários "ativos"
+    activityMultiplier = 0.015 + Math.random() * 0.015;
+  } else if (hour >= 6 && hour < 9) {
+    // Manhã cedo (6h-9h): médio-baixo - 5-8%
+    activityMultiplier = 0.05 + Math.random() * 0.03;
+  } else if (hour >= 9 && hour < 12) {
+    // Manhã (9h-12h): médio - 8-12%
+    activityMultiplier = 0.08 + Math.random() * 0.04;
+  } else if (hour >= 12 && hour < 17) {
+    // Tarde (12h-17h): médio-alto - 10-15%
+    activityMultiplier = 0.10 + Math.random() * 0.05;
+  } else if (hour >= 17 && hour < 21) {
+    // Início da noite (17h-21h): PICO - 12-18%
+    activityMultiplier = 0.12 + Math.random() * 0.06;
+  } else if (hour >= 21 && hour < 23) {
+    // Noite (21h-23h): alto - 8-12%
+    activityMultiplier = 0.08 + Math.random() * 0.04;
+  } else {
+    // Final da noite (23h-0h): médio-baixo - 4-7%
+    activityMultiplier = 0.04 + Math.random() * 0.03;
+  }
 
-  // Add small daily variation
+  // Calculate base active users
+  const baseActive = Math.floor(totalMembers * activityMultiplier);
+
+  // Add small variation based on day to keep consistency within same hour
   const dayOfYear = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
-  const variation = Math.floor(Math.sin(dayOfYear * 1.5) * 5);
+  const hourVariation = Math.floor(Math.sin(dayOfYear * 1.5 + hour) * 3);
 
-  return Math.max(1, baseActive + variation);
+  return Math.max(1, baseActive + hourVariation);
 }
 
 /**
