@@ -123,7 +123,7 @@ type SortOption = 'recent' | 'popular' | 'discussed' | 'trending';
 
 const POSTS_PER_PAGE = 20;
 
-export default function CommunityContent() {
+function CommunityContent() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
