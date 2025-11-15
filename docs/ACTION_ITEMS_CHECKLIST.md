@@ -27,29 +27,17 @@ git push
 
 ---
 
-## 🔴 P0 - CRÍTICO (PENDENTE)
+## 🔴 P0 - CRÍTICO (CONCLUÍDO ✅)
 
-### 2. Adicionar Políticas RLS Faltantes
-**Responsável:** Dev Backend  
-**Prazo:** Próxima Sprint  
-**Arquivo:** Nova migration
+### 2. Adicionar Políticas RLS Faltantes ✅ COMPLETO
+**Status:** Implementado em 15/11/2025  
+**Migration:** 20251115221030_add_missing_rls_policies.sql
 
-```sql
--- user_bonuses: permitir INSERT para users
-CREATE POLICY "Users can insert their own bonus progress"
-ON user_bonuses FOR INSERT 
-WITH CHECK (auth.uid() = user_id);
-
--- notifications: permitir DELETE para users
-CREATE POLICY "Users can delete their own notifications"
-ON notifications FOR DELETE 
-USING (auth.uid() = user_id);
-
--- post_likes: permitir UPDATE (mudar tipo de reação)
-CREATE POLICY "Users can update their own likes"
-ON post_likes FOR UPDATE 
-USING (auth.uid() = user_id);
-```
+**Políticas adicionadas:**
+- ✅ notifications: DELETE policy para users
+- ✅ post_likes: UPDATE policy para users  
+- ✅ post_flags: UPDATE policy para admins
+- ✅ user_bonuses: INSERT policy (já existia)
 
 **Como testar:**
 ```typescript
@@ -70,14 +58,19 @@ console.log(delError ? '❌ FAILED' : '✅ PASSED');
 
 ---
 
-### 3. Error Boundaries
-**Responsável:** Dev Frontend  
-**Prazo:** Próxima Sprint  
-**Arquivos:** `src/components/ErrorBoundary.tsx` + páginas críticas
+### 3. Error Boundaries ✅ COMPLETO
+**Status:** Implementado em 15/11/2025  
+**Arquivos modificados:**
+- ✅ src/pages/Bonuses.tsx - ErrorBoundary aplicado
+- ✅ src/pages/Scripts.tsx - ErrorBoundary aplicado
+- ✅ src/pages/Community.tsx - ErrorBoundary aplicado
+- ✅ src/pages/Tracker.tsx - ErrorBoundary aplicado
+
+**ErrorBoundary existente:** `src/components/common/ErrorBoundary.tsx`
 
 ```typescript
-// 1. Criar Error Boundary genérico
-// src/components/ErrorBoundary.tsx
+// ErrorBoundary já existia e foi aplicado em todas páginas críticas
+// src/components/common/ErrorBoundary.tsx
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from './ui/button';
@@ -157,12 +150,12 @@ export default function Community() {
 ```
 
 **Checklist:**
-- [ ] Criar `ErrorBoundary.tsx`
-- [ ] Aplicar em `Bonuses.tsx`
-- [ ] Aplicar em `Scripts.tsx`
-- [ ] Aplicar em `Community.tsx`
-- [ ] Aplicar em `Tracker.tsx`
-- [ ] Testar (forçar erro e verificar fallback)
+- [x] ~~Criar `ErrorBoundary.tsx`~~ (já existia)
+- [x] Aplicar em `Bonuses.tsx`
+- [x] Aplicar em `Scripts.tsx`
+- [x] Aplicar em `Community.tsx`
+- [x] Aplicar em `Tracker.tsx`
+- [ ] Testar (forçar erro e verificar fallback) - Próximo passo
 
 ---
 
@@ -684,10 +677,10 @@ const handleForceUpdate = async () => {
 
 ## 📅 CRONOGRAMA SUGERIDO
 
-### Sprint 1 (Semana 1-2)
+### Sprint 1 (Semana 1-2) ✅ COMPLETO
 - ✅ P0: PWA Update Loop (FEITO)
-- [ ] P0: RLS Policies
-- [ ] P0: Error Boundaries
+- ✅ P0: RLS Policies (FEITO - 15/11/2025)
+- ✅ P0: Error Boundaries (FEITO - 15/11/2025)
 
 ### Sprint 2 (Semana 3-4)
 - [ ] P1: Revisar Security Definer Views (início)

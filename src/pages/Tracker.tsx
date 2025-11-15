@@ -27,6 +27,7 @@ import { getStreakDays } from '@/lib/celebrationStats';
 import { VisualCalendar } from '@/components/Tracker/VisualCalendar';
 import { ProgressDashboard } from '@/components/Tracker/ProgressDashboard';
 import { InsightsCard } from '@/components/Tracker/InsightsCard';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 interface TrackerDayRow {
   id: string;
@@ -42,7 +43,7 @@ const TOTAL_DAYS = 30;
 const MELTDOWN_OPTIONS = ['0', '1-2', '3-5', '5+'] as const;
 type MeltdownOption = (typeof MELTDOWN_OPTIONS)[number];
 
-export default function MyPlan() {
+function TrackerContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -500,5 +501,13 @@ export default function MyPlan() {
         celebrationData={celebrationData}
       />
     </MainLayout>
+  );
+}
+
+export default function MyPlan() {
+  return (
+    <ErrorBoundary>
+      <TrackerContent />
+    </ErrorBoundary>
   );
 }

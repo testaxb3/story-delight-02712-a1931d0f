@@ -16,10 +16,10 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { OptimizedYouTubePlayer } from "@/components/VideoPlayer/OptimizedYouTubePlayer";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { BonusData, BonusCategory } from "@/types/bonus";
 
-function Bonuses() {
+function BonusesContent() {
   const { user } = useAuth();
   const navigate = useNavigate();
   
@@ -542,11 +542,10 @@ function Bonuses() {
   );
 }
 
-// Wrap in ErrorBoundary for additional safety
-export default function BonusesWithErrorBoundary() {
+export default function Bonuses() {
   return (
     <ErrorBoundary>
-      <Bonuses />
+      <BonusesContent />
     </ErrorBoundary>
   );
 }

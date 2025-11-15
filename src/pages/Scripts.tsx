@@ -43,6 +43,7 @@ import { intelligentSearch, detectEmergency } from '@/lib/intelligentSearch';
 import { convertToScriptItem, formatCategory, CATEGORY_EMOJIS, type ScriptItem } from '@/lib/scriptUtils';
 import { ScriptsHeader } from '@/components/scripts/ScriptsHeader';
 import { EmptyState } from '@/components/scripts/EmptyState';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 type ScriptRow = Database['public']['Tables']['scripts']['Row'];
 type ScriptFeedbackRow = Database['public']['Tables']['script_feedback']['Row'];
@@ -54,7 +55,7 @@ const SEARCH_PLACEHOLDERS = [
   'Explore: transitions, hygiene, mealtime...'
 ];
 
-export default function Scripts() {
+function ScriptsContent() {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -765,5 +766,13 @@ export default function Scripts() {
         />
       </div>
     </MainLayout>
+  );
+}
+
+export default function Scripts() {
+  return (
+    <ErrorBoundary>
+      <ScriptsContent />
+    </ErrorBoundary>
   );
 }
