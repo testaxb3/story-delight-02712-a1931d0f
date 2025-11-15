@@ -87,7 +87,7 @@ export function useEbookProgress(ebookId: string | undefined) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
-      toast.success('Capítulo marcado como completo! 🎉');
+      toast.success('Chapter marked as complete! 🎉');
     },
   });
 

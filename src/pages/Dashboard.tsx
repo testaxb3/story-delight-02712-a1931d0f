@@ -475,7 +475,7 @@ export default function Dashboard() {
             <div>
               <div className="text-2xl font-black text-success">{liveStats.totalMembers.toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Total Parents</div>
-              <div className="text-xs text-success mt-1">👥 {liveStats.activeUsersThisWeek} online agora</div>
+              <div className="text-xs text-success mt-1">👥 {liveStats.activeUsersThisWeek} online now</div>
             </div>
             <div>
               <div className="text-2xl font-black text-primary">{liveStats.scriptsUsedToday}</div>

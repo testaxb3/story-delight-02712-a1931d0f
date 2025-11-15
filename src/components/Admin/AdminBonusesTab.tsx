@@ -149,10 +149,10 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
               bonus_id: savedBonusId,
             },
           });
-          toast.success('Bonus criado e ebook vinculado com sucesso! ✅');
+          toast.success('Bonus created and ebook linked successfully! ✅');
         } catch (linkError) {
           console.error('Error linking ebook:', linkError);
-          toast.error('Bonus criado mas erro ao vincular ebook');
+          toast.error('Bonus created but error linking ebook');
         }
       }
 

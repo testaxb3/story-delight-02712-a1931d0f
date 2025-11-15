@@ -249,10 +249,10 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
           setTagsInput(foundTags.join(', '));
         }
         
-        toast.success(`Markdown processado! ${chapters.length} capítulos, ~${estimatedReadingTime}min de leitura`);
+        toast.success(`Markdown processed! ${chapters.length} chapters, ~${estimatedReadingTime}min reading time`);
       } else {
         setParsedChapters([]);
-        toast.error('Markdown inválido. Verifique os erros.');
+        toast.error('Invalid markdown. Check errors.');
       }
     };
     reader.readAsText(file);
@@ -260,7 +260,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
 
   const handleCreateEbook = async () => {
     if (!markdownContent || !formData.title) {
-      toast.error('Título e conteúdo markdown são obrigatórios');
+      toast.error('Title and markdown content are required');
       return;
     }
 

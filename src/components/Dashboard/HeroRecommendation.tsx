@@ -54,7 +54,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
 
       if (error) {
         console.error('Database error:', error);
-        toast.error('Erro ao buscar script');
+        toast.error('Error fetching script');
         return;
       }
 
@@ -67,7 +67,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
           .maybeSingle();
 
         if (anyError || !anyScript) {
-          toast.error('Não foi possível carregar o script recomendado');
+          toast.error('Could not load recommended script');
           return;
         }
 
@@ -77,7 +77,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
       }
     } catch (err) {
       console.error('Error loading script:', err);
-      toast.error('Erro ao carregar script');
+      toast.error('Error loading script');
     } finally {
       setLoadingScript(false);
     }
@@ -171,7 +171,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
             onClick={handleTryScript}
             disabled={loadingScript}
           >
-            {loadingScript ? 'Carregando...' : 'Try This Script Now'}
+            {loadingScript ? 'Loading...' : 'Try This Script Now'}
             <motion.div
               animate={{ x: [0, 5, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}

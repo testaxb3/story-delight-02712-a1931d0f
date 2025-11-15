@@ -34,7 +34,7 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
     try {
       const ebook = ebooks?.find(e => e.id === selectedEbookId);
       if (!ebook) {
-        toast.error('Ebook não encontrado');
+        toast.error('Ebook not found');
         return;
       }
 
