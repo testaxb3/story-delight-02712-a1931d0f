@@ -44,7 +44,18 @@ const PageLoader = () => (
   </div>
 );
 
-const queryClient = new QueryClient();
+// PERFORMANCE: Optimized React Query configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000, // 1 minute - data stays fresh
+      gcTime: 5 * 60 * 1000, // 5 minutes cache (renamed from cacheTime)
+      refetchOnWindowFocus: false, // Only refetch when explicitly needed
+      refetchOnReconnect: true, // Refetch on network reconnect
+      retry: 1, // Only retry once on failure
+    },
+  },
+});
 
 function AppContent() {
   useEffect(() => {

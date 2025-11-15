@@ -148,6 +148,10 @@ export default defineConfig(({ mode }) => ({
   optimizeDeps: {
     include: ['react-player/youtube'],
   },
+  // PERFORMANCE: Remove console.logs in production
+  esbuild: {
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+  },
   build: {
     commonjsOptions: {
       include: [/react-player/, /node_modules/],

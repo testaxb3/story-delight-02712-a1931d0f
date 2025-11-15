@@ -686,6 +686,12 @@ const handleForceUpdate = async () => {
   - ✅ 4 issues alta prioridade
   - ✅ Plano de ação definido (3 fases)
   - ✅ Métricas de performance estabelecidas
+- [x] P2: Performance Quick Wins - Fase 1 (COMPLETO - 15/11/2025) ✅
+  - ✅ React Query defaults otimizados (staleTime: 1min, refetchOnWindowFocus: false)
+  - ✅ Console.logs removidos em produção (vite.config.ts esbuild drop)
+  - ✅ Preconnect adicionado para Supabase (index.html)
+  - ✅ Auth logs removidos (src/contexts/AuthContext.tsx)
+  - ⏱️ Melhoria esperada: ~200ms mais rápido, 70% menos DB calls
 
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
