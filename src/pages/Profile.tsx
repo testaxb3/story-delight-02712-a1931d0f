@@ -34,7 +34,6 @@ export default function Profile() {
   const { isAdmin } = useAdminStatus();
   const [childName, setChildName] = useState(activeChild?.name ?? '');
   const [childAge, setChildAge] = useState<number | ''>(activeChild?.age ?? '');
-  const [childChallenges, setChildChallenges] = useState(activeChild?.primary_challenges ?? '');
   const [savingChild, setSavingChild] = useState(false);
   const [refundStatus, setRefundStatus] = useState<{
     status: string;
@@ -48,8 +47,7 @@ export default function Profile() {
   useEffect(() => {
     setChildName(activeChild?.name ?? '');
     setChildAge(activeChild?.age ?? '');
-    setChildChallenges(activeChild?.primary_challenges ?? '');
-  }, [activeChild?.id, activeChild?.name, activeChild?.age, activeChild?.primary_challenges]);
+  }, [activeChild?.id, activeChild?.name, activeChild?.age]);
 
   // Fetch refund status
   useEffect(() => {
@@ -138,13 +136,7 @@ export default function Profile() {
     let hasChanges = false;
 
     if (childAge && childAge !== activeChild.age) {
-      updates.age = typeof childAge === 'number' ? childAge : parseInt(childAge.toString());
-      hasChanges = true;
-    }
-
-    const trimmedChallenges = childChallenges.trim();
-    if (trimmedChallenges !== activeChild.primary_challenges) {
-      updates.primary_challenges = trimmedChallenges || null;
+      updates.age = typeof childAge === 'number' ? childAge : parseInt(String(childAge), 10);
       hasChanges = true;
     }
 
@@ -259,11 +251,9 @@ export default function Profile() {
             activeChild={activeChild}
             childName={childName}
             childAge={childAge}
-            childChallenges={childChallenges}
             savingChild={savingChild}
             onChildNameChange={setChildName}
             onChildAgeChange={setChildAge}
-            onChildChallengesChange={setChildChallenges}
             onChildNameUpdate={handleChildNameUpdate}
             onChildInfoUpdate={handleChildInfoUpdate}
             onPhotoUpdate={handlePhotoUpdate}
