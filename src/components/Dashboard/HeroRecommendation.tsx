@@ -35,44 +35,43 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
   const handleTryScript = async () => {
     setLoadingScript(true);
     try {
+      console.log('🔍 Searching for script:', { brainProfile, scriptCategory: rec.scriptCategory });
+
+      // Try to get a script matching the brain profile
       let query = supabase
         .from('scripts')
-        .select('*')
-        .limit(1);
+        .select('*');
 
-      // Filter by category if available
-      if (rec.scriptCategory) {
-        query = query.eq('category', rec.scriptCategory);
-      }
-
-      // Filter by brain profile if available
+      // Always filter by brain profile if available
       if (brainProfile) {
         query = query.eq('profile', brainProfile.toUpperCase());
       }
 
-      const { data, error } = await query.single();
+      // Get the first matching script
+      const { data, error } = await query.limit(1).maybeSingle();
 
-      if (error || !data) {
-        // Fallback: get any script matching profile or category
-        const fallbackQuery = supabase
+      console.log('📊 Query result:', { data, error });
+
+      if (error) {
+        console.error('Database error:', error);
+        toast.error('Erro ao buscar script');
+        return;
+      }
+
+      if (!data) {
+        // If no script found for profile, get any script
+        const { data: anyScript, error: anyError } = await supabase
           .from('scripts')
           .select('*')
-          .limit(1);
-        
-        if (rec.scriptCategory) {
-          fallbackQuery.eq('category', rec.scriptCategory);
-        } else if (brainProfile) {
-          fallbackQuery.eq('profile', brainProfile.toUpperCase());
-        }
+          .limit(1)
+          .maybeSingle();
 
-        const { data: fallbackData, error: fallbackError } = await fallbackQuery.single();
-        
-        if (fallbackError || !fallbackData) {
+        if (anyError || !anyScript) {
           toast.error('Não foi possível carregar o script recomendado');
           return;
         }
-        
-        setSelectedScript(fallbackData);
+
+        setSelectedScript(anyScript);
       } else {
         setSelectedScript(data);
       }
