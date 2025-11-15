@@ -96,9 +96,21 @@ export default function Auth() {
         <div className="flex justify-center mb-6">
           <div className="inline-flex items-center gap-2 bg-card/90 backdrop-blur-xl px-4 py-2 rounded-full border border-border/50 shadow-lg">
             <div className="flex -space-x-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-xs">👤</div>
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-accent to-secondary flex items-center justify-center text-xs">👤</div>
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center text-xs">👤</div>
+              <img
+                src="/avatar-1.webp"
+                alt="Parent avatar"
+                className="w-6 h-6 rounded-full border-2 border-background object-cover"
+              />
+              <img
+                src="/avatar-2.webp"
+                alt="Parent avatar"
+                className="w-6 h-6 rounded-full border-2 border-background object-cover"
+              />
+              <img
+                src="/avatar-3.webp"
+                alt="Parent avatar"
+                className="w-6 h-6 rounded-full border-2 border-background object-cover"
+              />
             </div>
             <span className="text-xs font-semibold text-muted-foreground">
               Join <span className="text-primary font-bold">1,000+</span> parents
