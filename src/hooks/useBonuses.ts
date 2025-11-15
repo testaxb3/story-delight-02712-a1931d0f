@@ -169,14 +169,8 @@ export function useBonuses(filters?: {
         totalPages: Math.ceil((count || 0) / pageSize),
       };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: bonusesKeys.lists() });
-      toast.success("Marked as complete!");
-    },
-    onError: (error) => {
-      console.error("Failed to mark bonus as complete:", error);
-      toast.error("Failed to mark as complete");
-    },
+    staleTime: 0, // Always fresh data
+    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
   });
 }
 
@@ -262,30 +256,14 @@ export function useMarkBonusComplete() {
       if (error) throw error;
       return data;
     },
-    staleTime: 0, // Always fresh data (no cache for bonuses)
-    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes when unused
-  });
-}
-
-// Hook to get a single bonus
-export function useBonus(id: string) {
-  return useQuery({
-    queryKey: bonusesKeys.detail(id),
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("bonuses")
-        .select("*")
-        .eq("id", id)
-        .single();
-
-      if (error) {
-        console.error("Error fetching bonus:", error);
-        throw error;
-      }
-
-      return transformBonusRow(data);
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bonusesKeys.lists() });
+      toast.success("Marked as complete!");
     },
-    enabled: !!id,
+    onError: (error) => {
+      console.error("Failed to mark bonus as complete:", error);
+      toast.error("Failed to mark as complete");
+    },
   });
 }
 

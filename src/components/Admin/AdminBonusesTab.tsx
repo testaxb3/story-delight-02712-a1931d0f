@@ -72,11 +72,12 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [importJson, setImportJson] = useState('');
 
-  // Fetch bonuses from Supabase
-  const { data: bonuses = [], isLoading, error } = useBonuses({
+  // Fetch bonuses from Supabase with filters
+  const { data: bonusesData, isLoading, error } = useBonuses({
     category: filterCategory !== 'all' ? filterCategory : undefined,
     search: searchQuery
   });
+  const bonuses = bonusesData?.data || [];
 
   // Mutations
   const createMutation = useCreateBonus();

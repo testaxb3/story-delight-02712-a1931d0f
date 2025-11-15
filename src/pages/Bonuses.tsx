@@ -53,9 +53,9 @@ function Bonuses() {
     pageSize: PAGE_SIZE,
   });
 
-  const allBonuses = bonusesResponse?.data || [];
-  const totalBonuses = bonusesResponse?.total || 0;
-  const totalPages = bonusesResponse?.totalPages || 0;
+  const allBonuses = (bonusesResponse as any)?.data || [];
+  const totalBonuses = (bonusesResponse as any)?.total || 0;
+  const totalPages = (bonusesResponse as any)?.totalPages || 0;
 
   // Reset to page 0 when filters change
   useEffect(() => {
