@@ -299,7 +299,7 @@ export default function Quiz() {
   };
 
   return (
-    <MainLayout hideBottomNav={hasStarted} hideTopBar={hasStarted}>
+    <MainLayout hideBottomNav hideSideNav hideTopBar>
       <div className="min-h-screen py-8 px-4">
         <div className="max-w-3xl mx-auto">
           <AnimatePresence mode="wait">

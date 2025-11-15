@@ -9,13 +9,14 @@ interface MainLayoutProps {
   noPaddingTop?: boolean;
   fullWidth?: boolean;
   hideBottomNav?: boolean;
+  hideSideNav?: boolean;
 }
 
-export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false }: MainLayoutProps) {
+export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false, hideSideNav = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0 pt-16 md:pl-20 lg:pl-24 transition-colors duration-300">
+    <div className={`min-h-screen bg-background transition-colors duration-300 ${!hideSideNav ? 'pb-20 md:pb-0 pt-16 md:pl-20 lg:pl-24' : 'pt-16'}`}>
       {!hideTopBar && <TopBar />}
-      <SideNav />
+      {!hideSideNav && <SideNav />}
       <main className={
         fullWidth
           ? ''
