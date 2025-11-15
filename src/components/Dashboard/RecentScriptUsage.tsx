@@ -3,6 +3,7 @@ import { GradientText } from '@/components/common/GradientText';
 import { useRecentScriptUsage } from '@/hooks/useRecentScriptUsage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 interface RecentScriptUsageProps {
   userId: string | undefined;
@@ -45,7 +46,12 @@ export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
   };
 
   return (
-    <div className="card-elevated p-6 rounded-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.6 }}
+      className="card-elevated p-6 rounded-2xl"
+    >
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-5 h-5 text-primary" />
@@ -56,15 +62,23 @@ export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
 
       {/* Scripts List */}
       <div className="space-y-2">
-        {recentScripts.map((script) => (
-          <div
+        {recentScripts.map((script, index) => (
+          <motion.div
             key={script.id}
-            className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors border border-border/50"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.7 + index * 0.05 }}
+            whileHover={{ scale: 1.01, x: 5 }}
+            className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors border border-border/50 cursor-pointer"
           >
             {/* Icon */}
-            <div className="p-2 rounded-lg bg-gradient-primary">
+            <motion.div
+              className="p-2 rounded-lg bg-gradient-primary"
+              whileHover={{ rotate: [0, -10, 10, 0] }}
+              transition={{ duration: 0.4 }}
+            >
               <BookOpen className="w-4 h-4 text-white" />
-            </div>
+            </motion.div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
@@ -83,9 +97,9 @@ export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
             >
               {script.scriptCategory}
             </Badge>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };
