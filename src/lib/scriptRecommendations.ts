@@ -148,14 +148,19 @@ const fallbackRecommendations: Record<TimeOfDay, ScriptRecommendation> = {
  * Get intelligent script recommendation based on brain profile and time of day
  */
 export function getSmartRecommendation(
-  brainProfile: BrainProfile | null,
+  brainProfile: string | null,
   timeOfDay?: TimeOfDay
 ): ScriptRecommendation {
   const currentTime = timeOfDay || getTimeOfDay();
   
-  if (brainProfile && recommendations[brainProfile]) {
-    return recommendations[brainProfile][currentTime];
+  // Normalize brain profile to match our types
+  const normalizedProfile = brainProfile?.toUpperCase() as BrainProfile;
+  
+  // Check if we have recommendations for this profile
+  if (normalizedProfile && recommendations[normalizedProfile]) {
+    return recommendations[normalizedProfile][currentTime];
   }
   
+  // Fallback to generic recommendations
   return fallbackRecommendations[currentTime];
 }
