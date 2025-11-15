@@ -149,18 +149,18 @@ function BonusesContent() {
     }
   }, [allBonuses, activeCategory, searchQuery, sortBy]);
 
-  // Get in-progress bonuses
-  const inProgressBonuses = allBonuses.filter(
-    b => b.progress && b.progress > 0 && b.progress < 100 && !b.locked
+  // PERFORMANCE: Memoize filtered lists to prevent recalculation
+  const inProgressBonuses = useMemo(() => 
+    allBonuses.filter(b => b.progress && b.progress > 0 && b.progress < 100 && !b.locked),
+    [allBonuses]
   );
 
-  // Calculate stats
-  const stats = {
+  const stats = useMemo(() => ({
     totalBonuses: allBonuses.length,
     unlockedBonuses: allBonuses.filter(b => !b.locked).length,
     completedBonuses: allBonuses.filter(b => b.completed).length,
     totalTimeSpent: "2.5h"
-  };
+  }), [allBonuses]);
 
   // Helper to check if URL is YouTube
   const isYouTubeUrl = (url: string) => {
@@ -206,9 +206,16 @@ function BonusesContent() {
     }
   };
 
-  // Get unlocked bonuses
-  const unlockedBonuses = filteredAndSortedBonuses.filter(b => !b.locked);
-  const lockedBonuses = filteredAndSortedBonuses.filter(b => b.locked);
+  // PERFORMANCE: Memoize split bonus lists
+  const unlockedBonuses = useMemo(() => 
+    filteredAndSortedBonuses.filter(b => !b.locked),
+    [filteredAndSortedBonuses]
+  );
+  
+  const lockedBonuses = useMemo(() => 
+    filteredAndSortedBonuses.filter(b => b.locked),
+    [filteredAndSortedBonuses]
+  );
 
   // Loading state
   if (isLoading) {

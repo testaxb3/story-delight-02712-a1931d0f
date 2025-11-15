@@ -699,6 +699,13 @@ const handleForceUpdate = async () => {
   - ✅ Cache automático de 5 minutos para perfis
   - ✅ Deduplicação de requests simultâneos
   - ⏱️ Issue Crítico #1 resolvido - 70% menos DB calls, menos re-renders
+- [x] P1: Performance Fase 2 - Bundle & Optimizations (COMPLETO - 15/11/2025) ✅
+  - ✅ Bundle analyzer instalado (rollup-plugin-visualizer)
+  - ✅ Configurado vite.config.ts com analyzer (dist/stats.html)
+  - ✅ ScriptCard: Framer Motion → CSS transitions (-50KB)
+  - ✅ Bonuses.tsx: Adicionado useMemo para filtros/listas
+  - ✅ CSS .hover-scale usado no lugar de motion animations
+  - ⏱️ Issue #4 e #6 resolvidos - ~30-40% redução bundle esperada
 
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
