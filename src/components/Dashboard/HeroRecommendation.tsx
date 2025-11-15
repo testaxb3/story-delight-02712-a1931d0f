@@ -2,38 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GradientText } from '@/components/common/GradientText';
-import { PremiumCard } from '@/components/common/PremiumCard';
+import { getSmartRecommendation } from '@/lib/scriptRecommendations';
 
 interface HeroRecommendationProps {
   brainProfile: 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | null;
   childName: string;
 }
 
-const recommendations = {
-  INTENSE: {
-    title: "When Emotions Overflow",
-    description: "Your child feels deeply. Try this calming technique during emotional moments.",
-    icon: "🌊",
-    tag: "Most Used by INTENSE Parents"
-  },
-  DISTRACTED: {
-    title: "Focus Builder Technique",
-    description: "Help your child stay engaged without frustration. Works in 2 minutes.",
-    icon: "🎯",
-    tag: "Proven for DISTRACTED Kids"
-  },
-  DEFIANT: {
-    title: "Power Struggles Solution",
-    description: "Transform resistance into cooperation. Tested by 1,200+ parents.",
-    icon: "🔥",
-    tag: "Breakthrough for DEFIANT"
-  }
-};
-
 export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendationProps) => {
   const navigate = useNavigate();
   
-  const rec = brainProfile ? recommendations[brainProfile] : recommendations.DISTRACTED;
+  // Get intelligent recommendation based on profile and time
+  const rec = getSmartRecommendation(brainProfile);
 
   return (
     <div className="card-glass p-8 rounded-3xl relative overflow-hidden">
