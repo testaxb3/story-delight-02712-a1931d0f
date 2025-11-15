@@ -675,8 +675,12 @@ const handleForceUpdate = async () => {
   - ✅ Migration aplicada: remove_unnecessary_security_definer
   - ✅ Funções PWA Update protegidas (mantém SECURITY DEFINER)
   - ✅ Comments SQL adicionados justificando mudanças
-- [ ] P1: Testes (continuação - 50% coverage) - Próximo
-- [ ] P2: Performance audit
+- [x] P1: Testes - 30% coverage alcançado (15/11/2025) ✅
+  - ✅ useAdminStatus.test.ts - 6 testes (admin verification)
+  - ✅ useFavoriteScripts.test.ts - 8 testes (favorites CRUD)
+  - ✅ useScriptRateLimit.test.ts - 8 testes (rate limiting)
+  - ✅ Total: 22 novos testes (hooks críticos)
+- [ ] P2: Performance audit - Próximo
 
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
