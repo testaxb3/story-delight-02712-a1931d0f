@@ -203,19 +203,32 @@ export default function Quiz() {
 
     if (user?.profileId) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('profiles')
           .update({
             quiz_completed: true,
             quiz_in_progress: false
           })
           .eq('id', user.profileId);
+
+        if (error) {
+          logger.error('Failed to update quiz completion:', error);
+          toast.error('Failed to save progress. Please try again.');
+          return;
+        }
+
+        // Force refresh children profiles and user data
+        await refreshChildren();
+        
+        toast.success('Profile created successfully!');
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
+        toast.error('An error occurred. Please try again.');
+        return;
       }
     }
 
-    navigate('/dashboard');
+    navigate('/dashboard', { replace: true });
   };
 
   const brainTypeInfo: Record<BrainProfile, {
