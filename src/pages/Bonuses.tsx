@@ -1,13 +1,14 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { BonusesHeader } from "@/components/bonuses/BonusesHeader";
 import { BonusesCategoryTabs } from "@/components/bonuses/BonusesCategoryTabs";
-import { BonusCard, BonusData } from "@/components/bonuses/BonusCard";
+import { BonusCard } from "@/components/bonuses/BonusCard";
+import { BonusesPagination } from "@/components/bonuses/BonusesPagination";
 import { ContinueLearning } from "@/components/bonuses/ContinueLearning";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X, AlertCircle } from "lucide-react";
-import { useBonuses } from "@/hooks/useBonuses";
+import { useBonuses, useUpdateBonusProgress } from "@/hooks/useBonuses";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -15,6 +16,7 @@ import { OptimizedYouTubePlayer } from "@/components/VideoPlayer/OptimizedYouTub
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { BonusData, BonusCategory } from "@/types/bonus";
 
 function Bonuses() {
   const { user } = useAuth();
@@ -25,28 +27,53 @@ function Bonuses() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [currentPage, setCurrentPage] = useState(0);
+  const PAGE_SIZE = 12;
 
   // Video player state
   const [playingBonus, setPlayingBonus] = useState<BonusData | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [videoDuration, setVideoDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
+  
+  // Video progress tracking
+  const updateProgress = useUpdateBonusProgress();
+  const lastProgressUpdate = useRef<number>(0);
+  const progressUpdateInterval = useRef<NodeJS.Timeout>();
 
-  // Fetch bonuses from Supabase (progress is now handled by database)
-  const { data: allBonuses = [], isLoading, error } = useBonuses();
+  // Fetch bonuses from Supabase with pagination
+  const { 
+    data: bonusesResponse, 
+    isLoading, 
+    error 
+  } = useBonuses({
+    category: activeCategory !== "all" ? activeCategory : undefined,
+    search: searchQuery.trim() || undefined,
+    page: currentPage,
+    pageSize: PAGE_SIZE,
+  });
 
-  // Calculate category counts
+  const allBonuses = bonusesResponse?.data || [];
+  const totalBonuses = bonusesResponse?.total || 0;
+  const totalPages = bonusesResponse?.totalPages || 0;
+
+  // Reset to page 0 when filters change
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [activeCategory, searchQuery]);
+
+  // Calculate category counts (from total, not just current page)
   const categoryCounts = useMemo(() => {
     return {
-      all: allBonuses.length,
-      video: allBonuses.filter(b => b.category === 'video').length,
-      ebook: allBonuses.filter(b => b.category === 'ebook').length,
-      pdf: allBonuses.filter(b => b.category === 'pdf').length,
-      tool: allBonuses.filter(b => b.category === 'tool').length,
-      template: allBonuses.filter(b => b.category === 'template').length,
-      session: allBonuses.filter(b => b.category === 'session').length,
+      all: totalBonuses,
+      video: allBonuses.filter(b => b.category === BonusCategory.VIDEO).length,
+      ebook: allBonuses.filter(b => b.category === BonusCategory.EBOOK).length,
+      pdf: allBonuses.filter(b => b.category === BonusCategory.PDF).length,
+      tool: allBonuses.filter(b => b.category === BonusCategory.TOOL).length,
+      template: allBonuses.filter(b => b.category === BonusCategory.TEMPLATE).length,
+      session: allBonuses.filter(b => b.category === BonusCategory.SESSION).length,
     };
-  }, [allBonuses]);
+  }, [allBonuses, totalBonuses]);
 
   // Categories configuration
   const categories = [
