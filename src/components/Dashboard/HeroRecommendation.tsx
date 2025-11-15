@@ -6,7 +6,7 @@ import { getSmartRecommendation } from '@/lib/scriptRecommendations';
 import { motion } from 'framer-motion';
 
 interface HeroRecommendationProps {
-  brainProfile: 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | null;
+  brainProfile: string | null;
   childName: string;
 }
 
@@ -15,6 +15,13 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
   
   // Get intelligent recommendation based on profile and time
   const rec = getSmartRecommendation(brainProfile);
+  
+  console.log('🎯 Hero Recommendation:', {
+    brainProfile,
+    childName,
+    recommendation: rec.title,
+    time: new Date().getHours()
+  });
 
   return (
     <motion.div
