@@ -201,63 +201,37 @@ CREATE VIEW view_name AS
 
 ---
 
-### 5. Setup de Testes Automatizados
-**Responsável:** Tech Lead + Devs  
-**Prazo:** Sprint 2-3
+### 5. Setup de Testes Automatizados ✅ COMPLETO
+**Status:** Implementado em 15/11/2025  
+**Responsável:** Dev Frontend  
 
-**Fase 1: Unit Tests (Vitest)**
+**Fase 1: Unit Tests (Vitest) - COMPLETO ✅**
+
+Arquivos criados:
+- ✅ `vitest.config.ts` - Configuração do Vitest
+- ✅ `src/test/setup.ts` - Setup global de testes
+- ✅ `src/test/quizQuestions.test.ts` - Testes do cálculo de perfil cerebral
+- ✅ `src/hooks/useRateLimit.test.ts` - Testes de rate limiting
+- ✅ `src/test/validations.test.ts` - Testes de validação de schemas
+
+**Pacotes instalados:**
+- vitest@latest
+- @vitest/ui@latest
+- @testing-library/react@latest
+- @testing-library/jest-dom@latest
+- jsdom@latest
+
+**Scripts disponíveis:**
 ```bash
-# 1. Instalar Vitest
-npm install -D vitest @vitest/ui @testing-library/react @testing-library/jest-dom
-
-# 2. Configurar vitest.config.ts
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-  },
-});
-
-# 3. Criar src/test/setup.ts
-import '@testing-library/jest-dom';
-
-# 4. Adicionar script em package.json
-"scripts": {
-  "test": "vitest",
-  "test:ui": "vitest --ui",
-  "test:coverage": "vitest --coverage"
-}
+npm run test          # Rodar testes
+npm run test:ui       # UI interativa dos testes
+npm run test:coverage # Gerar relatório de cobertura
 ```
 
-**Testes Iniciais:**
-- [ ] `src/lib/quizQuestions.test.ts` - Cálculo de perfil cerebral
-- [ ] `src/lib/validations.test.ts` - Validações de email/password
-- [ ] `src/hooks/useRateLimit.test.ts` - Rate limiting
-- [ ] `src/components/Quiz.test.tsx` - Validação de nome
-
-**Fase 2: Integration Tests**
-- [ ] `src/pages/Auth.test.tsx` - Fluxo de login/signup
-- [ ] `src/pages/Quiz.test.tsx` - Fluxo completo do quiz
-- [ ] `src/contexts/AuthContext.test.tsx` - Autenticação
-
-**Fase 3: E2E Tests (Playwright)**
-```bash
-# 1. Instalar Playwright
-npm install -D @playwright/test
-
-# 2. Criar e2e/signup-quiz-flow.spec.ts
-test('complete user journey', async ({ page }) => {
-  // Signup → Onboarding → Quiz → Dashboard
-});
-```
-
-**Target Coverage:**
-- Crítico (auth, quiz): 80%+
-- Utils: 70%+
-- Components: 50%+
+**Próximos passos:**
+- [ ] Adicionar testes de integração (Auth, Quiz, Contexts)
+- [ ] Aumentar cobertura para 70%+
+- [ ] Setup de E2E tests com Playwright
 
 ---
 
@@ -682,10 +656,15 @@ const handleForceUpdate = async () => {
 - ✅ P0: RLS Policies (FEITO - 15/11/2025)
 - ✅ P0: Error Boundaries (FEITO - 15/11/2025)
 
-### Sprint 2 (Semana 3-4)
-- [ ] P1: Revisar Security Definer Views (início)
-- [ ] P1: Setup Vitest + primeiros testes
-- [ ] P1: Integrar Analytics
+### Sprint 2 (Semana 3-4) 🚧 EM PROGRESSO
+- [x] P1: Setup Vitest + primeiros testes (FEITO - 15/11/2025)
+  - ✅ Vitest configurado (vitest.config.ts)
+  - ✅ Setup de testes criado (src/test/setup.ts)
+  - ✅ Testes para quizQuestions (src/test/quizQuestions.test.ts)
+  - ✅ Testes para useRateLimit (src/hooks/useRateLimit.test.ts)
+  - ✅ Testes para validations (src/test/validations.test.ts)
+- [ ] P1: Integrar Analytics - Próximo
+- [ ] P1: Revisar Security Definer Views
 
 ### Sprint 3 (Semana 5-6)
 - [ ] P1: Security Definer Views (conclusão)
