@@ -137,15 +137,18 @@ Classificação:
 - Não acessa dados sensíveis de usuários
 **Recomendação:** Remover SECURITY DEFINER - pode ser view pública
 
-#### `get_app_version()`, `acknowledge_app_update()`, `check_user_needs_update()`
-**Status:** ⚠️ REVISAR  
-**Análise:**
-- `get_app_version()`: Apenas lê app_config (público)
-- `acknowledge_app_update()`: Atualiza apenas próprio user_id
-- `check_user_needs_update()`: Lê próprio user_id
-**Recomendação:** Testar sem SECURITY DEFINER
+### 2. Funções PWA Update - MANTER SECURITY DEFINER ✅
 
-### 2. Funções de Busca/Query
+#### `get_app_version()`, `acknowledge_app_update()`, `check_user_needs_update()`
+**Status:** ✅ KEEP  
+**Justificativa:**
+- **Parte crítica do sistema de PWA Update**
+- `get_app_version()`: Todos usuários precisam ler app_config (pode ter RLS)
+- `acknowledge_app_update()`: Upsert em user_app_versions precisa ser transacional
+- `check_user_needs_update()`: Compara versão global vs usuário
+**Risco:** Baixo - sistema testado e funcionando
+
+### 3. Funções de Busca/Query
 
 #### `search_scripts_natural()`
 **Status:** ⚠️ REVISAR  
@@ -171,13 +174,18 @@ Classificação:
    ```sql
    -- Funções que APENAS leem dados do próprio user
    - get_user_collection_counts()
-   - acknowledge_app_update()
-   - check_user_needs_update()
    
    -- Funções que leem dados públicos
-   - get_app_version()
    - search_scripts_natural()
    - verify_schema_fixes()
+   
+   -- Funções que usam apenas dados próprios com RLS
+   - get_sos_script()
+   
+   ⚠️ REMOVIDAS DA LISTA (Sistema PWA Update - crítico):
+   - get_app_version() ✅ KEEP
+   - acknowledge_app_update() ✅ KEEP
+   - check_user_needs_update() ✅ KEEP
    ```
 
 2. **Processo de teste para cada função:**
@@ -219,20 +227,23 @@ Classificação:
 
 ### 🚀 Prioridade Alta (Testar Esta Semana)
 - [ ] `get_user_collection_counts()` - Provavelmente não precisa
-- [ ] `get_app_version()` - Lê config público
 - [ ] `verify_schema_fixes()` - Apenas metadados
 
 ### 🔄 Prioridade Média (Próximas 2 Semanas)  
 - [ ] `search_scripts_natural()` - Busca em tabela pública
 - [ ] `get_sos_script()` - Usa apenas dados próprios
-- [ ] `acknowledge_app_update()` - Atualiza apenas próprio registro
-- [ ] `check_user_needs_update()` - Lê apenas próprios dados
+
+### ✅ Reclassificado como NECESSÁRIO (Sistema PWA Update)
+- ✅ `get_app_version()` - Sistema crítico de PWA update
+- ✅ `acknowledge_app_update()` - Sistema crítico de PWA update
+- ✅ `check_user_needs_update()` - Sistema crítico de PWA update
 
 ### ⏳ Prioridade Baixa (Manter monitoramento)
 - Funções de notificação (KEEP)
 - Funções de stats/counters (KEEP)
 - Funções admin (KEEP)
 - Funções de access control (KEEP)
+- Funções PWA Update (KEEP)
 
 ---
 
@@ -274,14 +285,15 @@ Classificação:
 
 1. **Todas as tabelas têm RLS habilitado ✅** - Excelente fundação de segurança
 2. **Maioria das funções SECURITY DEFINER é justificada** - Cross-user operations
-3. **~7 funções candidatas à remoção** - Funções que podem não precisar
+3. **~4 funções candidatas à remoção** - Após reclassificar funções PWA Update
 4. **Zero high-risk findings** - Nenhuma função obviamente insegura encontrada
+5. **Sistema PWA Update protegido ✅** - Funções críticas identificadas e mantidas
 
 ---
 
 ## ✅ PRÓXIMOS PASSOS
 
-1. [ ] Testar remoção de SECURITY DEFINER das 7 funções candidatas
+1. [ ] Testar remoção de SECURITY DEFINER das 4 funções candidatas
 2. [ ] Documentar resultados dos testes
 3. [ ] Criar migration para remover SECURITY DEFINER onde não é necessário
 4. [ ] Adicionar comments SQL justificando SECURITY DEFINER nas funções que precisam

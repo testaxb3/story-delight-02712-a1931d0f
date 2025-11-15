@@ -171,7 +171,7 @@ export default function Community() {
 - ✅ Análise detalhada de ~40+ funções SECURITY DEFINER
 - ✅ Documento criado: `docs/SECURITY_DEFINER_ANALYSIS.md`
 - ✅ Classificação: Necessário (Keep) vs Revisar vs Remover
-- ✅ 7 funções candidatas para remoção de SECURITY DEFINER identificadas
+- ✅ 4 funções candidatas para remoção de SECURITY DEFINER identificadas (após correção)
 
 **Funções que PRECISAM SECURITY DEFINER (Justificadas):**
 - ✅ Admin/Auth: `is_admin()`, `has_role()`, `require_admin()`
@@ -179,18 +179,16 @@ export default function Community() {
 - ✅ Triggers de Stats: `update_user_stats()`, `update_follower_counts()`
 - ✅ Admin Functions: `force_app_update()`, `archive_bonus()`, etc
 - ✅ Access Control: `can_access_script()`, `get_remaining_script_accesses()`
+- ✅ **PWA Update System**: `get_app_version()`, `acknowledge_app_update()`, `check_user_needs_update()` 🎯
 
-**Funções para REVISAR (Candidatas à remoção):**
+**Funções para REVISAR (Candidatas à remoção - 4 total):**
 - [ ] `get_user_collection_counts()` - Apenas dados próprios
-- [ ] `get_app_version()` - Config público
 - [ ] `verify_schema_fixes()` - Apenas metadados
 - [ ] `search_scripts_natural()` - Tabela pública
 - [ ] `get_sos_script()` - RLS pode bastar
-- [ ] `acknowledge_app_update()` - Apenas próprio user
-- [ ] `check_user_needs_update()` - Apenas próprios dados
 
 **Próximos Passos:**
-- [ ] Fase 1: Testar remoção SECURITY DEFINER das 7 funções candidatas
+- [ ] Fase 1: Testar remoção SECURITY DEFINER das 4 funções candidatas
 - [ ] Fase 2: Criar migration se testes passarem
 - [ ] Fase 3: Setup monitoring para novas funções SECURITY DEFINER
 
