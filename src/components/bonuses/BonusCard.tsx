@@ -18,25 +18,11 @@ import {
   Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BonusData, BonusCategory } from "@/types/bonus";
+import { useState } from "react";
 
-export interface BonusData {
-  id: string;
-  title: string;
-  description: string;
-  category: "video" | "ebook" | "tool" | "pdf" | "session" | "template";
-  thumbnail?: string;
-  duration?: string;
-  size?: string;
-  locked: boolean;
-  completed?: boolean;
-  progress?: number;
-  isNew?: boolean;
-  requirement?: string;
-  tags?: string[];
-  videoUrl?: string;
-  downloadUrl?: string;
-  viewUrl?: string;
-}
+// Re-export for backward compatibility
+export type { BonusData };
 
 interface BonusCardProps {
   bonus: BonusData;
@@ -44,38 +30,43 @@ interface BonusCardProps {
   index?: number;
 }
 
-const categoryConfig = {
-  video: {
+const categoryConfig: Record<BonusCategory, {
+  icon: typeof Play;
+  color: string;
+  bgColor: string;
+  textColor: string;
+}> = {
+  [BonusCategory.VIDEO]: {
     icon: Play,
     color: "from-red-500 to-pink-500",
     bgColor: "bg-red-500/10",
     textColor: "text-red-500"
   },
-  ebook: {
+  [BonusCategory.EBOOK]: {
     icon: BookOpen,
     color: "from-blue-500 to-cyan-500",
     bgColor: "bg-blue-500/10",
     textColor: "text-blue-500"
   },
-  tool: {
+  [BonusCategory.TOOL]: {
     icon: Wrench,
     color: "from-purple-500 to-indigo-500",
     bgColor: "bg-purple-500/10",
     textColor: "text-purple-500"
   },
-  pdf: {
+  [BonusCategory.PDF]: {
     icon: FileText,
     color: "from-emerald-500 to-teal-500",
     bgColor: "bg-emerald-500/10",
     textColor: "text-emerald-500"
   },
-  session: {
+  [BonusCategory.SESSION]: {
     icon: Clock,
     color: "from-orange-500 to-amber-500",
     bgColor: "bg-orange-500/10",
     textColor: "text-orange-500"
   },
-  template: {
+  [BonusCategory.TEMPLATE]: {
     icon: FileText,
     color: "from-violet-500 to-purple-500",
     bgColor: "bg-violet-500/10",
@@ -86,6 +77,8 @@ const categoryConfig = {
 export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
   const config = categoryConfig[bonus.category];
   const IconComponent = config.icon;
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <motion.div
@@ -102,15 +95,25 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
       )}>
         {/* Thumbnail Section */}
         <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
-          {bonus.thumbnail ? (
-            <img
-              src={bonus.thumbnail}
-              alt={bonus.title}
-              className={cn(
-                "w-full h-full transition-transform duration-300 group-hover:scale-110",
-                bonus.category === 'ebook' ? "object-contain" : "object-cover"
+          {bonus.thumbnail && !imageError ? (
+            <>
+              {/* Blur placeholder */}
+              {!imageLoaded && (
+                <div className="absolute inset-0 animate-pulse bg-muted" />
               )}
-            />
+              <img
+                src={bonus.thumbnail}
+                alt={bonus.title}
+                loading="lazy"
+                onLoad={() => setImageLoaded(true)}
+                onError={() => setImageError(true)}
+                className={cn(
+                  "w-full h-full transition-all duration-300 group-hover:scale-110",
+                  bonus.category === BonusCategory.EBOOK ? "object-contain" : "object-cover",
+                  !imageLoaded && "opacity-0"
+                )}
+              />
+            </>
           ) : (
             <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${config.color} opacity-80`}>
               <IconComponent className="w-20 h-20 text-white/90" />

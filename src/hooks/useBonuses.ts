@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { BonusData } from "@/components/bonuses/BonusCard";
+import { BonusData, BonusCategory } from "@/types/bonus";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 export const bonusesKeys = {
   all: ["bonuses"] as const,
   lists: () => [...bonusesKeys.all, "list"] as const,
-  list: (filters?: { category?: string; search?: string }) =>
+  list: (filters?: { category?: string; search?: string; page?: number; pageSize?: number }) =>
     [...bonusesKeys.lists(), filters] as const,
   details: () => [...bonusesKeys.all, "detail"] as const,
   detail: (id: string) => [...bonusesKeys.details(), id] as const,
@@ -55,18 +55,59 @@ function transformBonusToDb(bonus: Omit<BonusData, "id"> | BonusData) {
   };
 }
 
-// Hook to get all bonuses with user-specific progress
-export function useBonuses(filters?: { category?: string; search?: string }) {
-  const { user } = useAuth();
+export interface BonusesResponse {
+  data: BonusData[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
 
-  return useQuery({
+// Hook to get all bonuses with user-specific progress and pagination
+export function useBonuses(filters?: { 
+  category?: string; 
+  search?: string; 
+  page?: number; 
+  pageSize?: number;
+}) {
+  const { user } = useAuth();
+  const page = filters?.page ?? 0;
+  const pageSize = filters?.pageSize ?? 50;
+
+  return useQuery<BonusesResponse>({
     queryKey: bonusesKeys.list(filters),
     queryFn: async () => {
-      // First, fetch all bonuses
+      // Count total bonuses first
+      let countQuery = supabase
+        .from("bonuses")
+        .select("*", { count: "exact", head: true });
+
+      // Apply category filter to count
+      if (filters?.category && filters.category !== "all") {
+        countQuery = countQuery.eq("category", filters.category);
+      }
+
+      // Apply search filter to count
+      if (filters?.search && filters.search.trim()) {
+        const searchTerm = `%${filters.search.toLowerCase()}%`;
+        countQuery = countQuery.or(
+          `title.ilike.${searchTerm},description.ilike.${searchTerm}`
+        );
+      }
+
+      const { count, error: countError } = await countQuery;
+      
+      if (countError) {
+        console.error("❌ Error counting bonuses:", countError);
+        throw countError;
+      }
+
+      // Fetch paginated bonuses
       let bonusQuery = supabase
         .from("bonuses")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .range(page * pageSize, (page + 1) * pageSize - 1);
 
       // Apply category filter
       if (filters?.category && filters.category !== "all") {
@@ -120,7 +161,106 @@ export function useBonuses(filters?: { category?: string; search?: string }) {
       }) || [];
 
       console.log("✅ Bonuses fetched successfully:", bonuses.length, "items");
-      return bonuses;
+      return {
+        data: bonuses,
+        total: count || 0,
+        page,
+        pageSize,
+        totalPages: Math.ceil((count || 0) / pageSize),
+      };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bonusesKeys.lists() });
+      toast.success("Marked as complete!");
+    },
+    onError: (error) => {
+      console.error("Failed to mark bonus as complete:", error);
+      toast.error("Failed to mark as complete");
+    },
+  });
+}
+
+// Hook to get a single bonus
+export function useBonus(id: string) {
+  return useQuery({
+    queryKey: bonusesKeys.detail(id),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("bonuses")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching bonus:", error);
+        throw error;
+      }
+
+      return transformBonusRow(data);
+    },
+    enabled: !!id,
+  });
+}
+
+// Hook to update video progress
+export function useUpdateBonusProgress() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({ bonusId, progress }: { bonusId: string; progress: number }) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("user_bonuses")
+        .upsert({
+          user_id: user.id,
+          bonus_id: bonusId,
+          progress: Math.round(progress),
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "user_id,bonus_id"
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: bonusesKeys.lists() });
+    },
+    onError: (error) => {
+      console.error("Failed to update bonus progress:", error);
+    },
+  });
+}
+
+// Hook to mark bonus as complete
+export function useMarkBonusComplete() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (bonusId: string) => {
+      if (!user) throw new Error("User not authenticated");
+
+      const { data, error } = await supabase
+        .from("user_bonuses")
+        .upsert({
+          user_id: user.id,
+          bonus_id: bonusId,
+          progress: 100,
+          completed_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: "user_id,bonus_id"
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     staleTime: 0, // Always fresh data (no cache for bonuses)
     gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes when unused

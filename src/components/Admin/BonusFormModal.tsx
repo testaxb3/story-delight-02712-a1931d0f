@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-import { BonusData } from '@/components/bonuses/BonusCard';
+import { BonusData, BonusCategory } from '@/types/bonus';
 import { BonusCard } from '@/components/bonuses/BonusCard';
 import { Loader2, X, CheckCircle2, AlertCircle, Upload, BookOpen, Link2, BookX, FileText, Lightbulb, Save } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -28,7 +28,14 @@ interface BonusFormModalProps {
   saving?: boolean;
 }
 
-const CATEGORIES: BonusData['category'][] = ['video', 'ebook', 'tool', 'pdf', 'session', 'template'];
+const CATEGORIES: BonusCategory[] = [
+  BonusCategory.VIDEO,
+  BonusCategory.EBOOK,
+  BonusCategory.TOOL,
+  BonusCategory.PDF,
+  BonusCategory.SESSION,
+  BonusCategory.TEMPLATE,
+];
 
 // Helper function to extract YouTube video ID and generate thumbnail URL
 function getYouTubeThumbnail(url: string): string | null {
@@ -55,7 +62,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
   const [formData, setFormData] = useState<Omit<BonusData, 'id'>>({
     title: '',
     description: '',
-    category: 'video',
+    category: BonusCategory.VIDEO,
     thumbnail: '',
     duration: '',
     size: '',
