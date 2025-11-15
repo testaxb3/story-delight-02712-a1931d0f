@@ -669,8 +669,13 @@ const handleForceUpdate = async () => {
 - [x] P1: Revisar Security Definer Views (ANÁLISE COMPLETA - 15/11/2025) ✅
 
 ### Sprint 3 (Semana 5-6) 🚧 EM PROGRESSO
-- [ ] P1: Security Definer Views (conclusão - testar 4 funções) - Próximo
-- [ ] P1: Testes (continuação - 50% coverage)
+- [x] P1: Security Definer Views (COMPLETO - 15/11/2025) ✅
+  - ✅ Análise de ~40+ funções
+  - ✅ 4 funções com SECURITY DEFINER removido
+  - ✅ Migration aplicada: remove_unnecessary_security_definer
+  - ✅ Funções PWA Update protegidas (mantém SECURITY DEFINER)
+  - ✅ Comments SQL adicionados justificando mudanças
+- [ ] P1: Testes (continuação - 50% coverage) - Próximo
 - [ ] P2: Performance audit
 
 ### Sprint 4 (Semana 7-8)
