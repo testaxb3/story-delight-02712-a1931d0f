@@ -34,6 +34,7 @@ export default {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
+          glow: "hsl(var(--primary-glow))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -79,12 +80,29 @@ export default {
           DEFAULT: "hsl(var(--distracted))",
           foreground: "hsl(var(--distracted-foreground))",
         },
+        surface: {
+          base: "hsl(var(--surface-base))",
+          raised: "hsl(var(--surface-raised))",
+          overlay: "hsl(var(--surface-overlay))",
+          glass: "hsl(var(--surface-glass))",
+        },
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-accent': 'var(--gradient-accent)',
         'gradient-success': 'var(--gradient-success)',
         'gradient-warning': 'var(--gradient-warning)',
+        'gradient-hero': 'var(--gradient-hero)',
+        'gradient-mesh': 'var(--gradient-mesh)',
+      },
+      boxShadow: {
+        'sm': 'var(--shadow-sm)',
+        'md': 'var(--shadow-md)',
+        'lg': 'var(--shadow-lg)',
+        'xl': 'var(--shadow-xl)',
+        'colored': 'var(--shadow-colored)',
+        'glow': '0 0 40px -10px hsl(var(--primary) / 0.5)',
+        'glow-lg': '0 0 60px -15px hsl(var(--primary) / 0.6)',
       },
       backdropBlur: {
         'glass': '12px',
