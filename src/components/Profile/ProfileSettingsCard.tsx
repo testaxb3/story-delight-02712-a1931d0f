@@ -14,11 +14,9 @@ interface ProfileSettingsCardProps {
   activeChild: ChildProfile | null;
   childName: string;
   childAge: number | '';
-  childChallenges: string;
   savingChild: boolean;
   onChildNameChange: (name: string) => void;
   onChildAgeChange: (age: number | '') => void;
-  onChildChallengesChange: (challenges: string) => void;
   onChildNameUpdate: () => Promise<void>;
   onChildInfoUpdate: () => Promise<void>;
   onPhotoUpdate: () => Promise<void>;
@@ -30,11 +28,9 @@ export function ProfileSettingsCard({
   activeChild,
   childName,
   childAge,
-  childChallenges,
   savingChild,
   onChildNameChange,
   onChildAgeChange,
-  onChildChallengesChange,
   onChildNameUpdate,
   onChildInfoUpdate,
   onPhotoUpdate,
@@ -102,19 +98,6 @@ export function ProfileSettingsCard({
                   onBlur={onChildInfoUpdate}
                   min="1"
                   max="18"
-                />
-              </div>
-              <div>
-                <Label htmlFor="challenges" className="text-sm">
-                  Primary challenges
-                </Label>
-                <Input
-                  id="challenges"
-                  placeholder="Bedtime, Screens, etc."
-                  className="mt-1"
-                  value={childChallenges}
-                  onChange={(e) => onChildChallengesChange(e.target.value)}
-                  onBlur={onChildInfoUpdate}
                 />
               </div>
             </>

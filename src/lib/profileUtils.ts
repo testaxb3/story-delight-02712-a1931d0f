@@ -1,4 +1,9 @@
-import type { User } from '@supabase/supabase-js';
+import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+type User = Partial<SupabaseUser> & {
+  email?: string;
+  user_metadata?: { full_name?: string };
+};
 
 /**
  * Gets user initials from full name or email

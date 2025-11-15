@@ -34,7 +34,6 @@ export default defineConfig(({ mode }) => ({
         name: "NEP System",
         short_name: "NEP System",
         description: "Neurological Emotional Personalization - Neuroscience-based parenting app",
-        version: "2.0.0",
         theme_color: "#8B5CF6",
         background_color: "#8B5CF6",
         display: "standalone",

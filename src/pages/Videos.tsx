@@ -92,10 +92,14 @@ export default function Videos() {
     queryKey: ['videos'],
     queryFn: fetchVideos,
     staleTime: 5 * 60 * 1000, // Cache por 5 minutos
-    onError: () => {
+  });
+
+  // Handle error separately
+  useEffect(() => {
+    if (error) {
       toast.error("Failed to load videos");
     }
-  });
+  }, [error]);
 
   // --- Hook de Progresso ---
   const {
@@ -133,19 +137,19 @@ export default function Videos() {
   const featuredVideo = useMemo(() => {
     if (!videos || videos.length === 0) return null;
     // Tenta encontrar o primeiro vídeo em progresso
-    const firstInProgress = videos.find(v => inProgress.has(v.id));
+    const firstInProgress = videos.find((v: VideoRow) => inProgress.has(v.id));
     if (firstInProgress) return firstInProgress;
     // Senão, tenta encontrar o primeiro não assistido
-    const firstUnwatched = videos.find(v => !watched.has(v.id) && !inProgress.has(v.id));
+    const firstUnwatched = videos.find((v: VideoRow) => !watched.has(v.id) && !inProgress.has(v.id));
     if (firstUnwatched) return firstUnwatched;
     // Senão, pega o primeiro vídeo da lista
     return videos[0];
   }, [videos, watched, inProgress]);
 
   // --- Lógica de Filtragem ---
-  const sections = useMemo(() => Array.from(new Set(videos.map((video) => video.section || 'Geral'))), [videos]);
+  const sections = useMemo(() => Array.from(new Set(videos.map((video: VideoRow) => video.section || 'Geral'))), [videos]);
 
-  const filteredVideos = useMemo(() => videos.filter((video) => {
+  const filteredVideos = useMemo(() => videos.filter((video: VideoRow) => {
     const isWatched = watched.has(video.id);
     const isInProg = inProgress.has(video.id);
 
@@ -507,7 +511,7 @@ export default function Videos() {
             <div className="px-4 sm:px-6 lg:px-8 mt-10">
                <EmptyState
                     title={"No videos available"}
-                    message={"Check back later or contact support if you think this is an error."}
+                    description={"Check back later or contact support if you think this is an error."}
                     icon={VideoIcon}
                />
             </div>
@@ -516,7 +520,7 @@ export default function Videos() {
              <div className="px-4 sm:px-6 lg:px-8 mt-10">
                  <EmptyState
                      title={"No videos found"}
-                     message={"Try adjusting your filters or search term."}
+                     description={"Try adjusting your filters or search term."}
                      icon={Search}
                  />
              </div>

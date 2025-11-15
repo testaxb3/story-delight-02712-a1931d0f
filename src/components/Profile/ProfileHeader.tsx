@@ -1,7 +1,14 @@
 // @ts-nocheck
 import { Card } from '@/components/ui/card';
 import { UserPhotoUpload } from '@/components/UserPhotoUpload';
-import type { User } from '@supabase/supabase-js';
+
+type User = {
+  id: string;
+  email?: string;
+  profileId?: string;
+  photo_url?: string | null;
+  premium?: boolean;
+};
 
 interface ProfileHeaderProps {
   user: User | null;
