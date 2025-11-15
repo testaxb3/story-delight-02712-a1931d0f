@@ -1,4 +1,5 @@
 import { RefreshCw, X } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -13,10 +14,14 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export function UpdatePrompt() {
   const { user } = useAuth();
+  const location = useLocation();
   const { versionInfo, showUpdatePrompt, handleUpdate, dismissUpdate } = useAppVersion();
 
-  // Don't show update prompt for unauthenticated users (e.g., on login page)
-  if (!user || !showUpdatePrompt || !versionInfo) return null;
+  // Don't show update prompt in specific routes or for unauthenticated users
+  const excludedRoutes = ['/auth', '/quiz', '/onboarding'];
+  const isExcludedRoute = excludedRoutes.some(route => location.pathname.startsWith(route));
+
+  if (!user || !showUpdatePrompt || !versionInfo || isExcludedRoute) return null;
 
   return (
     <Dialog open={showUpdatePrompt} onOpenChange={(open) => !open && dismissUpdate()}>

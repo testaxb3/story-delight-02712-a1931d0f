@@ -16,6 +16,9 @@ const UPDATE_ATTEMPT_KEY = 'app_update_attempt_count';
 const MAX_UPDATE_ATTEMPTS = 3;
 const CHECK_INTERVAL = 15 * 60 * 1000; // Check every 15 minutes (reduced from 5)
 
+const SESSION_START_KEY = 'app_session_start';
+const MIN_SESSION_TIME = 60000; // 1 minuto antes de mostrar update
+
 export function useAppVersion() {
   const [versionInfo, setVersionInfo] = useState<AppVersionInfo | null>(null);
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
@@ -23,6 +26,23 @@ export function useAppVersion() {
 
   const checkVersion = async () => {
     try {
+      // Não mostrar update em páginas específicas
+      const currentPath = window.location.pathname;
+      const excludedPaths = ['/auth', '/quiz', '/onboarding'];
+      
+      if (excludedPaths.some(path => currentPath.startsWith(path))) {
+        return;
+      }
+
+      // Verificar se já passou tempo mínimo desde o início da sessão
+      const sessionStart = localStorage.getItem(SESSION_START_KEY);
+      if (sessionStart) {
+        const elapsed = Date.now() - parseInt(sessionStart, 10);
+        if (elapsed < MIN_SESSION_TIME) {
+          return; // Muito cedo para mostrar update
+        }
+      }
+
       setChecking(true);
       const { data, error } = await supabase.rpc('get_app_version');
 
@@ -143,13 +163,23 @@ export function useAppVersion() {
   };
 
   useEffect(() => {
-    // Check version on mount
-    checkVersion();
+    // Registrar início da sessão se não existir
+    if (!localStorage.getItem(SESSION_START_KEY)) {
+      localStorage.setItem(SESSION_START_KEY, String(Date.now()));
+    }
 
-    // Set up periodic version check
+    // Delay inicial antes da primeira verificação (2 minutos)
+    const initialDelay = setTimeout(() => {
+      checkVersion();
+    }, 2 * 60 * 1000);
+
+    // Set up periodic version check (a cada 15 minutos)
     const interval = setInterval(checkVersion, CHECK_INTERVAL);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(interval);
+    };
   }, []);
 
   return {
