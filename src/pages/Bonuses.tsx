@@ -5,8 +5,9 @@ import { BonusesCategoryTabs } from "@/components/bonuses/BonusesCategoryTabs";
 import { BonusCard } from "@/components/bonuses/BonusCard";
 import { BonusesPagination } from "@/components/bonuses/BonusesPagination";
 import { ContinueLearning } from "@/components/bonuses/ContinueLearning";
+import { BonusEmptyState } from "@/components/bonuses/BonusEmptyState";
 import { useAuth } from "@/contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X, AlertCircle } from "lucide-react";
 import { useBonuses, useUpdateBonusProgress } from "@/hooks/useBonuses";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,13 +22,19 @@ import { BonusData, BonusCategory } from "@/types/bonus";
 function Bonuses() {
   const { user } = useAuth();
   const navigate = useNavigate();
-
-  // State management
-  const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("newest");
+  
+  // URL state management
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // State management with URL persistence
+  const [activeCategory, setActiveCategory] = useState(() => searchParams.get("category") || "all");
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get("search") || "");
+  const [sortBy, setSortBy] = useState(() => searchParams.get("sort") || "newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(() => {
+    const page = searchParams.get("page");
+    return page ? parseInt(page) : 0;
+  });
   const PAGE_SIZE = 12;
 
   // Video player state
@@ -57,6 +64,17 @@ function Bonuses() {
   const totalBonuses = (bonusesResponse as any)?.total || 0;
   const totalPages = (bonusesResponse as any)?.totalPages || 0;
 
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (currentPage > 0) params.set("page", currentPage.toString());
+    if (searchQuery) params.set("search", searchQuery);
+    if (activeCategory !== "all") params.set("category", activeCategory);
+    if (sortBy !== "newest") params.set("sort", sortBy);
+    
+    setSearchParams(params, { replace: true });
+  }, [currentPage, searchQuery, activeCategory, sortBy, setSearchParams]);
+  
   // Reset to page 0 when filters change
   useEffect(() => {
     setCurrentPage(0);
@@ -84,6 +102,14 @@ function Bonuses() {
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
   ];
 
+  // Clear all filters helper
+  const handleClearFilters = () => {
+    setSearchQuery("");
+    setActiveCategory("all");
+    setSortBy("newest");
+    setCurrentPage(0);
+  };
+  
   // Filter and sort bonuses (progress is now automatically synced by database)
   const filteredAndSortedBonuses = useMemo(() => {
     // Start with all bonuses (progress already included from database)
