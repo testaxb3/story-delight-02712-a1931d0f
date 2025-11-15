@@ -69,7 +69,9 @@ export default function Dashboard() {
     const quizInProgress = user?.quiz_in_progress;
     const quizCompleted = user?.quiz_completed;
 
-    if (onboardingRequired && !quizInProgress && !quizCompleted) {
+    // Only show onboarding if quiz is NOT completed and NOT in progress
+    // If quiz is completed but no children exist, that's a data issue we'll handle elsewhere
+    if (!quizCompleted && !quizInProgress && onboardingRequired) {
       setShowOnboardingModal(true);
     } else {
       setShowOnboardingModal(false);
