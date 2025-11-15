@@ -10,7 +10,8 @@ import { PostImageUpload } from '@/components/Community/PostImageUpload';
 import { CommentThread } from '@/components/Community/CommentThread';
 import { UserProfileModal } from '@/components/Community/UserProfileModal';
 import { SearchBar, SearchFilters } from '@/components/Community/SearchBar';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary as LegacyErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Badge } from '@/components/ui/badge';
@@ -122,7 +123,7 @@ type SortOption = 'recent' | 'popular' | 'discussed' | 'trending';
 
 const POSTS_PER_PAGE = 20;
 
-export default function Community() {
+export default function CommunityContent() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -1109,7 +1110,7 @@ export default function Community() {
 
   return (
     <MainLayout>
-      <ErrorBoundary>
+      <LegacyErrorBoundary>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Content Column */}
           <div className="lg:col-span-2 space-y-4">
@@ -1372,7 +1373,15 @@ export default function Community() {
             currentUserId={user?.id ?? null}
           />
         )}
-      </ErrorBoundary>
+      </LegacyErrorBoundary>
     </MainLayout>
+  );
+}
+
+export default function Community() {
+  return (
+    <ErrorBoundary>
+      <CommunityContent />
+    </ErrorBoundary>
   );
 }
