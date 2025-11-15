@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Lightbulb, TrendingDown, Calendar, Zap } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface DayData {
   dayNumber: number;
@@ -111,13 +112,17 @@ export function InsightsCard({ days }: InsightsCardProps) {
   }
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center gap-2 mb-4">
-        <Lightbulb className="w-5 h-5 text-warning" />
-        <h3 className="font-bold text-lg text-foreground">Smart Insights</h3>
+    <Card className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl shadow-primary/10">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="p-2.5 rounded-xl bg-gradient-to-br from-warning/20 to-warning/10">
+          <Lightbulb className="w-6 h-6 text-warning" />
+        </div>
+        <h3 className="font-bold text-xl bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+          Smart Insights
+        </h3>
       </div>
-
-      <div className="space-y-3">
+      
+      <div className="space-y-4">
         {insights.map((insight, index) => {
           const Icon = insight.icon;
           return (
@@ -126,14 +131,22 @@ export function InsightsCard({ days }: InsightsCardProps) {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="flex items-start gap-3 p-3 rounded-lg bg-muted/50"
+              className="flex items-start gap-4 p-5 rounded-2xl backdrop-blur-sm bg-muted/20 border border-border/30"
             >
-              <Icon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                insight.type === 'success' ? 'text-success' :
-                insight.type === 'warning' ? 'text-warning' :
-                'text-primary'
-              }`} />
-              <p className="text-sm text-foreground leading-relaxed">{insight.message}</p>
+              <div className={cn(
+                "p-2.5 rounded-xl flex-shrink-0",
+                insight.type === 'success' ? 'bg-success/20' :
+                insight.type === 'warning' ? 'bg-warning/20' :
+                'bg-primary/20'
+              )}>
+                <Icon className={cn(
+                  "w-5 h-5",
+                  insight.type === 'success' ? 'text-success' :
+                  insight.type === 'warning' ? 'text-warning' :
+                  'text-primary'
+                )} />
+              </div>
+              <p className="text-sm text-foreground leading-relaxed font-medium">{insight.message}</p>
             </motion.div>
           );
         })}

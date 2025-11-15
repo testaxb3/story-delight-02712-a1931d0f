@@ -77,29 +77,47 @@ export function ProgressDashboard({ days, totalDays }: ProgressDashboardProps) {
   };
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl shadow-primary/10">
       {/* Main Progress */}
-      <div>
-        <div className="flex items-center justify-between mb-3">
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold text-foreground">Your Transformation Journey</h3>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              Your Transformation Journey
+            </h3>
+            <p className="text-muted-foreground mt-2">
               {stats.completedDays}/{totalDays} days complete
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-black text-primary">{stats.percentage}%</div>
-            <p className="text-xs text-muted-foreground">Progress</p>
+            <motion.div 
+              className="text-5xl font-black bg-gradient-to-br from-primary to-primary/70 bg-clip-text text-transparent"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 15 }}
+            >
+              {stats.percentage}%
+            </motion.div>
+            <p className="text-sm text-muted-foreground font-medium mt-1">Progress</p>
           </div>
         </div>
-        <Progress value={stats.percentage} className="h-3" />
+        <div className="relative h-4 bg-muted/30 rounded-full overflow-hidden backdrop-blur-sm">
+          <motion.div
+            className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-primary/70 rounded-full shadow-lg shadow-primary/20"
+            initial={{ width: 0 }}
+            animate={{ width: `${stats.percentage}%` }}
+            transition={{ duration: 1, ease: "easeOut" }}
+          />
+        </div>
       </div>
 
       {/* Weekly Comparison */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <Zap className="w-5 h-5 text-primary" />
-          <h4 className="font-bold text-foreground">This Week vs Last Week</h4>
+        <div className="flex items-center gap-2 mb-6">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10">
+            <Zap className="w-5 h-5 text-primary" />
+          </div>
+          <h4 className="font-bold text-foreground text-lg">This Week vs Last Week</h4>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -108,10 +126,10 @@ export function ProgressDashboard({ days, totalDays }: ProgressDashboardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-muted/50 rounded-xl p-4 space-y-2"
+            className="backdrop-blur-sm bg-muted/20 border border-border/30 rounded-2xl p-5 space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-muted-foreground">Stress</span>
+              <span className="text-sm font-bold text-muted-foreground">Stress</span>
               {stats.stressDiff !== null && (
                 <div className={cn('flex items-center gap-1 text-sm font-bold', getTrendColor(stats.stressDiff, true))}>
                   {(() => {
@@ -136,10 +154,10 @@ export function ProgressDashboard({ days, totalDays }: ProgressDashboardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-muted/50 rounded-xl p-4 space-y-2"
+            className="backdrop-blur-sm bg-muted/20 border border-border/30 rounded-2xl p-5 space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-muted-foreground">Meltdowns</span>
+              <span className="text-sm font-bold text-muted-foreground">Meltdowns</span>
               {stats.meltdownDiff !== null && (
                 <div className={cn('flex items-center gap-1 text-sm font-bold', getTrendColor(stats.meltdownDiff, true))}>
                   {(() => {
@@ -160,7 +178,7 @@ export function ProgressDashboard({ days, totalDays }: ProgressDashboardProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-muted/50 rounded-xl p-4 space-y-2"
+            className="backdrop-blur-sm bg-muted/20 border border-border/30 rounded-2xl p-5 space-y-3"
           >
             <div className="flex items-center justify-between">
               <span className="text-sm font-semibold text-muted-foreground">Completion</span>
@@ -186,13 +204,16 @@ export function ProgressDashboard({ days, totalDays }: ProgressDashboardProps) {
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-4 border border-primary/20"
+          transition={{ delay: 0.5 }}
+          className="backdrop-blur-sm bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 rounded-2xl p-6"
         >
-          <div className="flex items-start gap-3">
-            <Target className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+          <div className="flex items-start gap-4">
+            <div className="p-2.5 rounded-xl bg-primary/20">
+              <Target className="w-5 h-5 text-primary flex-shrink-0" />
+            </div>
             <div>
-              <p className="font-semibold text-foreground">You're more than halfway there! 🎉</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="font-bold text-lg text-foreground">You're more than halfway there! 🎉</p>
+              <p className="text-muted-foreground mt-2 leading-relaxed">
                 Keep going! You're building lasting changes in your parenting approach.
               </p>
             </div>
