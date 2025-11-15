@@ -161,43 +161,40 @@ export default function Community() {
 
 ## ⚠️ P1 - ALTO (2 Semanas)
 
-### 4. Revisar Security Definer Views
+### 4. Revisar Security Definer Views ✅ ANÁLISE COMPLETA
 **Responsável:** Dev Backend + Security Review  
-**Prazo:** Sprint 2
+**Prazo:** Sprint 2  
+**Status:** Análise completa - 15/11/2025
 
-**Processo:**
-```sql
--- 1. Listar todas as views com SECURITY DEFINER
-SELECT 
-  viewname,
-  definition
-FROM pg_views
-WHERE schemaname = 'public'
-  AND definition LIKE '%SECURITY DEFINER%';
+**Resultados:**
+- ✅ Todas as tabelas têm RLS habilitado (37 tabelas)
+- ✅ Análise detalhada de ~40+ funções SECURITY DEFINER
+- ✅ Documento criado: `docs/SECURITY_DEFINER_ANALYSIS.md`
+- ✅ Classificação: Necessário (Keep) vs Revisar vs Remover
+- ✅ 7 funções candidatas para remoção de SECURITY DEFINER identificadas
 
--- 2. Para cada view, perguntar:
--- a) Ela PRECISA de SECURITY DEFINER? (bypass RLS)
--- b) Ou pode ser view normal?
+**Funções que PRECISAM SECURITY DEFINER (Justificadas):**
+- ✅ Admin/Auth: `is_admin()`, `has_role()`, `require_admin()`
+- ✅ Notificações: `send_notification()` (cross-user operations)
+- ✅ Triggers de Stats: `update_user_stats()`, `update_follower_counts()`
+- ✅ Admin Functions: `force_app_update()`, `archive_bonus()`, etc
+- ✅ Access Control: `can_access_script()`, `get_remaining_script_accesses()`
 
--- 3. Converter views que NÃO precisam:
-DROP VIEW IF EXISTS view_name;
-CREATE VIEW view_name AS
-  SELECT ... -- mesma query
-;
--- (sem SECURITY DEFINER)
+**Funções para REVISAR (Candidatas à remoção):**
+- [ ] `get_user_collection_counts()` - Apenas dados próprios
+- [ ] `get_app_version()` - Config público
+- [ ] `verify_schema_fixes()` - Apenas metadados
+- [ ] `search_scripts_natural()` - Tabela pública
+- [ ] `get_sos_script()` - RLS pode bastar
+- [ ] `acknowledge_app_update()` - Apenas próprio user
+- [ ] `check_user_needs_update()` - Apenas próprios dados
 
--- 4. Documentar views que PRECISAM:
--- Criar docs/SECURITY_DEFINER_JUSTIFICATIONS.md
-```
+**Próximos Passos:**
+- [ ] Fase 1: Testar remoção SECURITY DEFINER das 7 funções candidatas
+- [ ] Fase 2: Criar migration se testes passarem
+- [ ] Fase 3: Setup monitoring para novas funções SECURITY DEFINER
 
-**Views Prioritárias para Revisar:**
-- [ ] `bonuses_with_user_progress` - Alto uso
-- [ ] `community_posts_with_stats` - Alto uso
-- [ ] `scripts_with_full_stats` - Alto uso
-- [ ] `leaderboard` - Público
-- [ ] `public_profiles` - Público
-
-**Prazo:** 2 semanas
+**Prazo para Fase 1:** Esta semana
 
 ---
 
@@ -663,8 +660,15 @@ const handleForceUpdate = async () => {
   - ✅ Testes para quizQuestions (src/test/quizQuestions.test.ts)
   - ✅ Testes para useRateLimit (src/hooks/useRateLimit.test.ts)
   - ✅ Testes para validations (src/test/validations.test.ts)
-- [ ] P1: Integrar Analytics - Próximo
-- [ ] P1: Revisar Security Definer Views
+- [x] P1: Integrar Analytics (FEITO - 15/11/2025) ✅
+  - ✅ Posthog Analytics configurado (src/lib/analytics.ts)
+  - ✅ Secrets adicionados: VITE_POSTHOG_KEY, VITE_POSTHOG_HOST
+  - ✅ Integrado em App.tsx (initAnalytics)
+  - ✅ User identification em AuthContext
+  - ✅ Sentry Error Tracking configurado (src/lib/sentry.ts)
+  - ✅ Secret adicionado: VITE_SENTRY_DSN
+  - ✅ ErrorBoundary global em main.tsx
+- [ ] P1: Revisar Security Definer Views - Próximo
 
 ### Sprint 3 (Semana 5-6)
 - [ ] P1: Security Definer Views (conclusão)
