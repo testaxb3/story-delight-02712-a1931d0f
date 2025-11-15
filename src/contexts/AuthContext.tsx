@@ -1,7 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+// PERFORMANCE OPTIMIZATION: Refactored to use React Query
+// Benefits: Automatic caching, deduplication, reduced re-renders
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { setUserContext, clearUserContext } from '@/lib/sentry';
-import { identifyUser, resetUser } from '@/lib/analytics';
+import { clearUserContext } from '@/lib/sentry';
+import { resetUser } from '@/lib/analytics';
+import { useUserProfile, useRefreshProfile } from '@/hooks/useUserProfile';
 
 // ✅ SECURITY: Password requirements
 const MIN_PASSWORD_LENGTH = 8;
@@ -32,86 +35,43 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  const fetchUserProfile = useCallback(async (userId: string, email: string) => {
-    try {
-      // ✅ FIXED: Search by userId (id column) instead of email to avoid 406 error
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', userId)
-        .single();
+  // PERFORMANCE: Use React Query hook for profile data
+  // This replaces manual state management and provides automatic caching
+  const { 
+    data: user, 
+    isLoading: profileLoading,
+    refetch: refetchProfile 
+  } = useUserProfile(session?.user?.id, session?.user?.email);
+  
+  const refreshProfile = useRefreshProfile();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('Profile fetch error:', error);
-        // Silently fail - user will be prompted to complete profile
-      }
-
-      const userData = {
-        id: userId,
-        email: email,
-        user_metadata: {
-          full_name: profile?.name || email.split('@')[0]
-        },
-        premium: profile?.premium ?? false, // ✅ SECURITY FIX: Default to free tier
-        profileId: profile?.id || userId,
-        photo_url: profile?.photo_url || null,
-        quiz_completed: profile?.quiz_completed ?? false,
-        quiz_in_progress: profile?.quiz_in_progress ?? false
-      };
-
-      setUser(userData);
-
-      // Set Sentry user context for error tracking
-      setUserContext({
-        id: userId,
-        email: email,
-        username: profile?.name || email.split('@')[0]
-      });
-
-      // Identify user in analytics
-      identifyUser(userId, {
-        email: email,
-        name: profile?.name || email.split('@')[0],
-        premium: profile?.premium ?? false,
-        quiz_completed: profile?.quiz_completed ?? false
-      });
-    } catch (error) {
-      console.error('Failed to fetch user profile:', error);
-      // Silently fail
-    } finally {
-      setLoading(false);
-    }
-  }, []); // Empty dependency array since function only uses state setters (which are stable)
+  // Combined loading state: auth loading OR profile loading
+  const loading = authLoading || (!!session && profileLoading);
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // PERFORMANCE: Removed console.log in production
-
         // Handle token refresh errors gracefully
         if (event === 'TOKEN_REFRESHED') {
           // PERFORMANCE: Token refresh handled silently
         }
 
         if (event === 'SIGNED_OUT') {
-          setUser(null);
           setSession(null);
+          setAuthLoading(false);
           return;
         }
 
         setSession(session);
-        if (session?.user) {
-          // Fetch user profile to get premium status
-          setTimeout(() => {
-            fetchUserProfile(session.user.id, session.user.email || '');
-          }, 0);
-        } else {
-          setUser(null);
+        
+        // PERFORMANCE: Profile will be fetched automatically by useUserProfile hook
+        // No need for manual fetchUserProfile call here
+        if (!session?.user) {
+          setAuthLoading(false);
         }
       }
     );
@@ -119,15 +79,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      if (session?.user) {
-        fetchUserProfile(session.user.id, session.user.email || '');
-      } else {
-        setLoading(false);
-      }
+      setAuthLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchUserProfile]);
+  }, []);
 
   const signIn = async (email: string, password: string) => {
     if (password.length < MIN_PASSWORD_LENGTH) {
@@ -204,7 +160,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut();
-    setUser(null);
     setSession(null);
     // Clear Sentry user context
     clearUserContext();
@@ -217,13 +172,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const refreshUser = async () => {
-    if (!user?.id || !user?.email) return;
-    await fetchUserProfile(user.id, user.email);
+    if (!session?.user?.id) return;
+    
+    // PERFORMANCE: Use React Query's refresh mechanism
+    await refreshProfile(session.user.id);
+    await refetchProfile();
   };
 
   return (
     <AuthContext.Provider value={{
-      user,
+      user: user ?? null,
       session,
       loading,
       signIn,
