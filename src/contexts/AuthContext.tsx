@@ -91,15 +91,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[Auth] State change:', event, session ? 'Session exists' : 'No session');
+        // PERFORMANCE: Removed console.log in production
 
         // Handle token refresh errors gracefully
         if (event === 'TOKEN_REFRESHED') {
-          console.log('[Auth] Token refreshed successfully');
+          // PERFORMANCE: Token refresh handled silently
         }
 
         if (event === 'SIGNED_OUT') {
-          console.log('[Auth] User signed out');
           setUser(null);
           setSession(null);
           return;
