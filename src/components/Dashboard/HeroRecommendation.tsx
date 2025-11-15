@@ -1,9 +1,15 @@
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { GradientText } from '@/components/common/GradientText';
 import { getSmartRecommendation } from '@/lib/scriptRecommendations';
 import { motion } from 'framer-motion';
+import { ScriptModal } from '@/components/scripts/ScriptModal';
+import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
+import { toast } from 'sonner';
+
+type Script = Database['public']['Tables']['scripts']['Row'];
 
 interface HeroRecommendationProps {
   brainProfile: string | null;
@@ -11,7 +17,8 @@ interface HeroRecommendationProps {
 }
 
 export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendationProps) => {
-  const navigate = useNavigate();
+  const [selectedScript, setSelectedScript] = useState<Script | null>(null);
+  const [loadingScript, setLoadingScript] = useState(false);
   
   // Get intelligent recommendation based on profile and time
   const rec = getSmartRecommendation(brainProfile);
@@ -20,8 +27,62 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
     brainProfile,
     childName,
     recommendation: rec.title,
+    scriptCategory: rec.scriptCategory,
     time: new Date().getHours()
   });
+
+  // Function to load and open recommended script
+  const handleTryScript = async () => {
+    setLoadingScript(true);
+    try {
+      let query = supabase
+        .from('scripts')
+        .select('*')
+        .limit(1);
+
+      // Filter by category if available
+      if (rec.scriptCategory) {
+        query = query.eq('category', rec.scriptCategory);
+      }
+
+      // Filter by brain profile if available
+      if (brainProfile) {
+        query = query.eq('profile', brainProfile.toUpperCase());
+      }
+
+      const { data, error } = await query.single();
+
+      if (error || !data) {
+        // Fallback: get any script matching profile or category
+        const fallbackQuery = supabase
+          .from('scripts')
+          .select('*')
+          .limit(1);
+        
+        if (rec.scriptCategory) {
+          fallbackQuery.eq('category', rec.scriptCategory);
+        } else if (brainProfile) {
+          fallbackQuery.eq('profile', brainProfile.toUpperCase());
+        }
+
+        const { data: fallbackData, error: fallbackError } = await fallbackQuery.single();
+        
+        if (fallbackError || !fallbackData) {
+          toast.error('Não foi possível carregar o script recomendado');
+          return;
+        }
+        
+        setSelectedScript(fallbackData);
+      } else {
+        setSelectedScript(data);
+      }
+    } catch (err) {
+      console.error('Error loading script:', err);
+      toast.error('Erro ao carregar script');
+    } finally {
+      setLoadingScript(false);
+    }
+  };
 
   return (
     <motion.div
@@ -108,9 +169,10 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
           <Button 
             size="lg" 
             className="w-full sm:w-auto gradient-primary hover-glow font-bold text-lg group"
-            onClick={() => navigate('/scripts')}
+            onClick={handleTryScript}
+            disabled={loadingScript}
           >
-            Try This Script Now
+            {loadingScript ? 'Carregando...' : 'Try This Script Now'}
             <motion.div
               animate={{ x: [0, 5, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -120,6 +182,16 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
           </Button>
         </motion.div>
       </div>
+
+      {/* Script Modal */}
+      <ScriptModal
+        open={!!selectedScript}
+        onOpenChange={(open) => !open && setSelectedScript(null)}
+        script={selectedScript}
+        isFavorite={false}
+        onToggleFavorite={() => {}}
+        onMarkUsed={() => setSelectedScript(null)}
+      />
     </motion.div>
   );
 };
