@@ -2,6 +2,7 @@ import { TrendingUp } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
 import { useWeeklyWins } from '@/hooks/useWeeklyWins';
 import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 interface ThisWeeksWinsProps {
   userId: string | undefined;
@@ -30,7 +31,12 @@ export const ThisWeeksWins = ({ userId }: ThisWeeksWinsProps) => {
   }
 
   return (
-    <div className="card-elevated p-6 rounded-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.4 }}
+      className="card-elevated p-6 rounded-2xl"
+    >
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <TrendingUp className="w-5 h-5 text-success" />
@@ -42,12 +48,29 @@ export const ThisWeeksWins = ({ userId }: ThisWeeksWinsProps) => {
       {/* Wins Grid */}
       <div className="space-y-3">
         {wins.map((win, index) => (
-          <div 
+          <motion.div
             key={index}
-            className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-muted/30 to-transparent border border-border/50 hover-lift"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 + index * 0.1 }}
+            whileHover={{ scale: 1.02, x: 5 }}
+            className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-muted/30 to-transparent border border-border/50 hover-lift cursor-pointer"
           >
             {/* Icon */}
-            <div className="text-3xl">{win.icon}</div>
+            <motion.div
+              className="text-3xl"
+              animate={{
+                rotate: [0, -10, 10, 0]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: index * 0.3
+              }}
+            >
+              {win.icon}
+            </motion.div>
 
             {/* Content */}
             <div className="flex-1">
@@ -58,9 +81,9 @@ export const ThisWeeksWins = ({ userId }: ThisWeeksWinsProps) => {
                 {win.metric}
               </p>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 };

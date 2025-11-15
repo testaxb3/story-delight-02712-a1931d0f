@@ -31,6 +31,8 @@ import { CompactSuccessStory } from '@/components/Dashboard/CompactSuccessStory'
 import { ThisWeeksWins } from '@/components/Dashboard/ThisWeeksWins';
 import { RecentScriptUsage } from '@/components/Dashboard/RecentScriptUsage';
 import { PersonalizedInsights } from '@/components/Dashboard/PersonalizedInsights';
+import { AnimatedMetricCard } from '@/components/Dashboard/AnimatedMetricCard';
+import { LoadingDashboard } from '@/components/Dashboard/LoadingDashboard';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -72,6 +74,9 @@ export default function Dashboard() {
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
   const { stats: liveStats, loading: loadingLiveStats } = useLiveStats();
   const { progress, loading: loadingProgress } = useVideoProgress();
+
+  // Track initial loading state
+  const isInitialLoading = loadingScriptsUsed || loadingVideos || summaryLoading;
 
   useEffect(() => {
     // ✅ SECURITY: Check quiz state from database instead of localStorage
@@ -387,7 +392,11 @@ export default function Dashboard() {
         onClose={() => setShowPWAGuide(false)}
       />
       
-      <div className="space-y-8 pb-8">
+      {/* Show premium loading state on initial load */}
+      {isInitialLoading ? (
+        <LoadingDashboard />
+      ) : (
+        <div className="space-y-8 pb-8">
         {/* Hero Recommendation - Your Next Win */}
         <HeroRecommendation 
           brainProfile={activeChild?.brain_profile || null}
@@ -423,30 +432,25 @@ export default function Dashboard() {
         {/* Quick Metrics Overview */}
         <div className="grid grid-cols-2 gap-4">
           {/* Scripts Used */}
-          <div className="card-elevated p-4 rounded-xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-lg bg-gradient-primary">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="text-2xl font-black">{scriptsUsedCount}</div>
-                <div className="text-xs text-muted-foreground">Scripts Total</div>
-              </div>
-            </div>
-          </div>
+          <AnimatedMetricCard
+            icon={BookOpen}
+            value={scriptsUsedCount}
+            label="Scripts Total"
+            gradient="bg-gradient-primary"
+            delay={0.5}
+            onClick={() => navigate('/scripts')}
+          />
 
           {/* Stress Check */}
-          <div className="card-elevated p-4 rounded-xl">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-lg bg-gradient-success">
-                <TrendingDown className="w-5 h-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <div className="text-xs text-muted-foreground mb-1">Check-in</div>
-                <div className="text-sm font-bold">{meltdownCopy}</div>
-              </div>
-            </div>
-          </div>
+          <AnimatedMetricCard
+            icon={TrendingDown}
+            value={trackerSummary.totalEntries > 0 ? '📉' : '—'}
+            label="Check-in"
+            subtitle={meltdownCopy}
+            gradient="bg-gradient-success"
+            delay={0.6}
+            onClick={() => navigate('/tracker')}
+          />
         </div>
 
         {/* Personalized Insights */}
@@ -481,6 +485,7 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Onboarding Modal */}
       <Dialog open={showOnboardingModal} onOpenChange={setShowOnboardingModal}>
