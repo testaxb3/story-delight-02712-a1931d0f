@@ -37,57 +37,71 @@ export function VisualCalendar({ days, onDayClick }: VisualCalendarProps) {
   }, [days]);
 
   const getStressColor = (level: number | null, completed: boolean) => {
-    if (!completed || level === null) return 'bg-muted';
-    if (level <= 2) return 'bg-success/20 border-success/40';
-    if (level <= 3) return 'bg-warning/20 border-warning/40';
-    return 'bg-destructive/20 border-destructive/40';
+    if (!completed || level === null) return 'bg-muted/30 border-border/50';
+    if (level <= 2) return 'bg-success/20 border-success';
+    if (level <= 3) return 'bg-warning/20 border-warning';
+    return 'bg-destructive/20 border-destructive';
   };
 
   return (
-    <Card className="p-6 space-y-6">
+    <Card className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl shadow-primary/10">
       {/* Header with Streak */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h3 className="text-2xl font-bold text-foreground">Your 30-Day Journey</h3>
-          <p className="text-sm text-muted-foreground mt-1">Track your transformation progress</p>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+            Your 30-Day Journey
+          </h3>
+          <p className="text-muted-foreground mt-2">Track your transformation progress</p>
         </div>
         {currentStreak > 0 && (
-          <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 text-base">
-            <Flame className="w-4 h-4 mr-2" />
-            {currentStreak} Day Streak
-          </Badge>
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          >
+            <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 text-base rounded-2xl shadow-lg shadow-orange-500/20">
+              <Flame className="w-5 h-5 mr-2" />
+              {currentStreak} Day Streak
+            </Badge>
+          </motion.div>
         )}
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap gap-4 text-xs">
+      <div className="flex flex-wrap gap-6 mb-8 p-4 bg-muted/20 backdrop-blur-sm rounded-2xl border border-border/30">
         <div className="flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 text-success" />
-          <span className="text-muted-foreground">Completed</span>
+          <CheckCircle2 className="w-5 h-5 text-success" />
+          <span className="text-muted-foreground font-medium">Completed</span>
         </div>
         <div className="flex items-center gap-2">
-          <Circle className="w-4 h-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Not Started</span>
+          <Circle className="w-5 h-5 text-muted-foreground" />
+          <span className="text-muted-foreground font-medium">Not Started</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-success/20 border-2 border-success/40" />
-          <span className="text-muted-foreground">Low Stress</span>
+          <div className="w-5 h-5 rounded-full bg-success/20 border-2 border-success/40" />
+          <span className="text-muted-foreground font-medium">Low Stress</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full bg-destructive/20 border-2 border-destructive/40" />
-          <span className="text-muted-foreground">High Stress</span>
+          <div className="w-5 h-5 rounded-full bg-destructive/20 border-2 border-destructive/40" />
+          <span className="text-muted-foreground font-medium">High Stress</span>
         </div>
       </div>
 
       {/* Calendar Grid */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {weeks.map((week, weekIndex) => (
-          <div key={weekIndex} className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-semibold text-muted-foreground w-16">
+          <motion.div 
+            key={weekIndex} 
+            className="space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: weekIndex * 0.05 }}
+          >
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-bold text-muted-foreground w-20 px-3 py-1 bg-muted/30 rounded-full text-center">
                 Week {weekIndex + 1}
               </span>
-              <div className="grid grid-cols-7 gap-2 flex-1">
+              <div className="grid grid-cols-7 gap-3 flex-1">
                 {week.map((day) => (
                   <motion.button
                     key={day.dayNumber}
@@ -95,12 +109,13 @@ export function VisualCalendar({ days, onDayClick }: VisualCalendarProps) {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className={cn(
-                      'relative aspect-square rounded-xl border-2 transition-all touch-target',
-                      'flex flex-col items-center justify-center p-2',
+                      'relative aspect-square rounded-2xl border-2 transition-all duration-300',
+                      'flex flex-col items-center justify-center p-3',
+                      'backdrop-blur-sm',
                       getStressColor(day.stressLevel, day.completed),
                       day.completed
-                        ? 'hover:border-primary/60 cursor-pointer'
-                        : 'hover:border-border cursor-pointer'
+                        ? 'hover:border-primary/60 cursor-pointer shadow-lg'
+                        : 'hover:border-border/50 cursor-pointer'
                     )}
                   >
                     {/* Day Number */}
@@ -129,7 +144,7 @@ export function VisualCalendar({ days, onDayClick }: VisualCalendarProps) {
                 ))}
               </div>
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </Card>

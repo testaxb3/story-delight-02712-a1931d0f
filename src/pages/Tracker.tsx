@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Dialog,
   DialogContent,
@@ -319,16 +320,52 @@ export default function MyPlan() {
 
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold">My Plan for {activeChild.name}</h1>
-            <p className="text-muted-foreground">Brain profile: {activeChild.brain_profile}</p>
-          </div>
-          <Badge className="bg-primary text-white">Day {planCompleted ? TOTAL_DAYS : nextDay} of {TOTAL_DAYS}</Badge>
+      <div className="relative min-h-screen -mt-8 -mx-4 px-4 pt-8 pb-16">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div 
+            className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
+            animate={{ 
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3] 
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-20 right-10 w-96 h-96 bg-accent/10 rounded-full blur-3xl"
+            animate={{ 
+              scale: [1, 1.3, 1],
+              opacity: [0.2, 0.4, 0.2] 
+            }}
+            transition={{ 
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1
+            }}
+          />
         </div>
 
-        <Card className="p-6 bg-gradient-to-br from-purple-500/10 via-primary/10 to-amber-100 border-none shadow-lg">
+        <div className="relative z-10 space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+                My Plan for {activeChild.name}
+              </h1>
+              <p className="text-muted-foreground mt-1">
+                Brain profile: <span className="font-semibold text-foreground">{activeChild.brain_profile}</span>
+              </p>
+            </div>
+            <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-2 rounded-xl shadow-lg shadow-primary/20">
+              Day {planCompleted ? TOTAL_DAYS : nextDay} of {TOTAL_DAYS}
+            </Badge>
+          </div>
+
+          <Card className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl shadow-primary/10">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <div className="flex items-center gap-2 text-primary font-semibold">
@@ -414,6 +451,7 @@ export default function MyPlan() {
           </Card>
         </div>
       </div>
+    </div>
 
       <Dialog open={selectedDay !== null} onOpenChange={(open) => !open && setSelectedDay(null)}>
         <DialogContent>
