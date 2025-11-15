@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { setUserContext, clearUserContext } from '@/lib/sentry';
+import { identifyUser, resetUser } from '@/lib/analytics';
 
 // ✅ SECURITY: Password requirements
 const MIN_PASSWORD_LENGTH = 8;
@@ -69,6 +70,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: userId,
         email: email,
         username: profile?.name || email.split('@')[0]
+      });
+
+      // Identify user in analytics
+      identifyUser(userId, {
+        email: email,
+        name: profile?.name || email.split('@')[0],
+        premium: profile?.premium ?? false,
+        quiz_completed: profile?.quiz_completed ?? false
       });
     } catch (error) {
       console.error('Failed to fetch user profile:', error);
@@ -200,6 +209,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     // Clear Sentry user context
     clearUserContext();
+    // Reset analytics user identification
+    resetUser();
     
     // Limpar marcadores de sessão e update
     localStorage.removeItem('app_session_start');

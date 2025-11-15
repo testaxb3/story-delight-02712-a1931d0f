@@ -10,6 +10,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChildProfilesProvider } from "./contexts/ChildProfilesContext";
 import { initOneSignal } from "./lib/onesignal";
+import { initAnalytics } from "./lib/analytics";
 
 // PERFORMANCE OPTIMIZATION: Eager load critical pages
 import Auth from "./pages/Auth";
@@ -47,6 +48,9 @@ const queryClient = new QueryClient();
 
 function AppContent() {
   useEffect(() => {
+    // Initialize analytics immediately on app load
+    initAnalytics();
+    
     // Delay OneSignal initialization to prevent it from overlapping with modals
     // This gives the WelcomeGiftModal and other onboarding modals time to appear first
     const timer = setTimeout(() => {
