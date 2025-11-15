@@ -9,105 +9,156 @@
 
 @layer base {
   :root {
-    /* Light Mode - Primary Colors */
-    --background: 250 100% 97%;
-    --foreground: 222 47% 11%;
+    /* ============================================
+       UNIQUE PREMIUM DESIGN SYSTEM
+       Sophisticated, memorable, professional
+       ============================================ */
 
-    /* Light Mode - Surface Colors */
+    /* Light Mode - Premium Base Colors */
+    --background: 220 25% 98%;        /* Soft off-white with subtle warmth */
+    --foreground: 220 40% 12%;        /* Deep charcoal for excellent contrast */
+
+    /* Light Mode - Elevated Surfaces */
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 220 40% 12%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 220 40% 12%;
 
-    /* Light Mode - UI States */
-    --primary: 250 92% 64%;
+    /* Light Mode - Distinctive Brand Colors */
+    --primary: 262 83% 58%;           /* Rich vibrant purple - memorable */
+    --primary-glow: 262 83% 68%;      /* Lighter variant for effects */
     --primary-foreground: 0 0% 100%;
-    --secondary: 280 70% 75%;
+    
+    --secondary: 195 65% 55%;         /* Sophisticated teal - unique pairing */
     --secondary-foreground: 0 0% 100%;
-    --muted: 250 40% 96%;
-    --muted-foreground: 215 20% 40%;  /* Increased contrast from 47% to 40% */
-    --accent: 340 75% 65%;
+    
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 15% 42%;
+    
+    --accent: 338 78% 62%;            /* Vibrant coral-pink - attention grabbing */
     --accent-foreground: 0 0% 100%;
-    --success: 150 60% 55%;
+    
+    --success: 158 64% 52%;
     --success-foreground: 0 0% 100%;
-    --warning: 35 90% 60%;
+    
+    --warning: 38 92% 58%;
     --warning-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    
+    --destructive: 0 72% 58%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Light Mode - Borders & Inputs */
-    --border: 250 30% 88%;
-    --input: 250 30% 92%;
-    --ring: 250 92% 64%;
+    /* Light Mode - Refined Borders & Inputs */
+    --border: 220 20% 90%;
+    --input: 220 20% 94%;
+    --ring: 262 83% 58%;
     --radius: 1rem;
 
-    /* Surface Elevation System */
-    --surface-base: 250 100% 97%;
+    /* Premium Surface Elevation System */
+    --surface-base: 220 25% 98%;
     --surface-raised: 0 0% 100%;
-    --surface-overlay: 250 40% 98%;
+    --surface-overlay: 220 15% 97%;
+    --surface-glass: 220 20% 99%;     /* For glassmorphism effects */
 
-    /* Profile Colors (consistent across themes) */
-    --defiant: 6 93% 71%;
+    /* Profile Colors - Enhanced for uniqueness */
+    --defiant: 6 85% 65%;
     --defiant-foreground: 0 0% 100%;
-    --intense: 282 39% 55%;
+    --intense: 282 70% 58%;
     --intense-foreground: 0 0% 100%;
-    --distracted: 168 100% 41%;
+    --distracted: 168 75% 48%;
     --distracted-foreground: 0 0% 100%;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(250 92% 64%), hsl(280 85% 70%));
-    --gradient-accent: linear-gradient(135deg, hsl(340 75% 65%), hsl(320 80% 70%));
-    --gradient-success: linear-gradient(135deg, hsl(150 60% 55%), hsl(170 55% 60%));
-    --gradient-warning: linear-gradient(135deg, hsl(35 90% 60%), hsl(45 85% 65%));
+    /* Premium Multi-Stop Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(262 83% 68%) 50%, hsl(280 70% 65%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(338 78% 62%) 0%, hsl(320 75% 65%) 50%, hsl(300 70% 68%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(170 60% 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(262 70% 50%) 30%, hsl(280 65% 55%) 70%, hsl(338 78% 62%) 100%);
+    --gradient-mesh: radial-gradient(at 0% 0%, hsl(262 83% 58% / 0.15) 0px, transparent 50%),
+                     radial-gradient(at 100% 100%, hsl(338 78% 62% / 0.15) 0px, transparent 50%),
+                     radial-gradient(at 50% 50%, hsl(195 65% 55% / 0.1) 0px, transparent 50%);
+    
+    /* Premium Shadow System with Color */
+    --shadow-sm: 0 2px 8px -2px hsl(262 83% 58% / 0.08);
+    --shadow-md: 0 4px 16px -4px hsl(262 83% 58% / 0.12);
+    --shadow-lg: 0 8px 32px -8px hsl(262 83% 58% / 0.16);
+    --shadow-xl: 0 16px 48px -12px hsl(262 83% 58% / 0.2);
+    --shadow-colored: 0 8px 24px -6px hsl(262 83% 58% / 0.25);
+    
+    /* Glassmorphism Variables */
+    --glass-bg: hsl(0 0% 100% / 0.7);
+    --glass-border: hsl(220 20% 90% / 0.5);
+    --glass-blur: 12px;
   }
 
   .dark {
     /* ============================================
-       PROFESSIONAL DARK MODE
-       Deep blue-slate theme with excellent contrast
+       PREMIUM DARK MODE
+       Rich, sophisticated darkness with colored shadows
        ============================================ */
 
-    /* Dark Mode - Base Colors (Deep Blue-Slate) */
-    --background: 222 47% 7%;         /* #0a0e1a - Deep blue-black */
-    --foreground: 210 40% 98%;        /* #f1f5f9 - Near white */
+    /* Dark Mode - Premium Base Colors */
+    --background: 222 47% 8%;         /* Rich deep blue-black */
+    --foreground: 220 20% 98%;        /* Soft white with warmth */
 
-    /* Dark Mode - Surface Colors (Layered approach for depth) */
-    --card: 217 33% 12%;              /* #1e293b - Slate-800 with opacity */
-    --card-foreground: 210 40% 98%;   /* #f1f5f9 - Near white */
-    --popover: 217 33% 10%;           /* #111827 - Darker slate */
-    --popover-foreground: 210 40% 98%;
+    /* Dark Mode - Elevated Surfaces with Depth */
+    --card: 220 35% 14%;              /* Deeper slate with blue tint */
+    --card-foreground: 220 20% 98%;
+    --popover: 220 40% 12%;           /* Even darker for popovers */
+    --popover-foreground: 220 20% 98%;
 
-    /* Dark Mode - UI States (Adjusted for dark bg) */
-    --primary: 250 92% 64%;           /* Mantém primary vibrante */
+    /* Dark Mode - Vibrant Brand Colors */
+    --primary: 262 83% 65%;           /* Brighter purple for dark bg */
+    --primary-glow: 262 83% 75%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 20%;         /* #2d3748 - Subtle gray-blue */
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 16%;             /* #1f2937 - Muted surface */
-    --muted-foreground: 215 25% 75%;  /* Increased contrast from 65% to 75% */
-    --accent: 340 75% 65%;            /* Mantém accent vibrante */
+    
+    --secondary: 195 65% 60%;         /* Brighter teal */
+    --secondary-foreground: 0 0% 100%;
+    
+    --muted: 220 25% 18%;
+    --muted-foreground: 220 15% 72%;
+    
+    --accent: 338 78% 68%;            /* Vibrant coral-pink */
     --accent-foreground: 0 0% 100%;
-    --success: 150 60% 55%;
+    
+    --success: 158 64% 58%;
     --success-foreground: 0 0% 100%;
-    --warning: 35 90% 60%;
+    
+    --warning: 38 92% 62%;
     --warning-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
+    
+    --destructive: 0 72% 62%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Dark Mode - Borders & Inputs (Subtle but visible) */
-    --border: 217 33% 24%;            /* #334155 - Slate-700 */
-    --input: 222 47% 11%;             /* #111827 - Darker input bg */
-    --ring: 250 92% 64%;              /* Primary color for focus ring */
+    /* Dark Mode - Refined Borders & Inputs */
+    --border: 220 25% 24%;
+    --input: 220 30% 11%;
+    --ring: 262 83% 65%;
 
     /* Dark Mode - Surface Elevation System */
-    --surface-base: 222 47% 7%;
-    --surface-raised: 217 33% 12%;
-    --surface-overlay: 217 33% 16%;
+    --surface-base: 222 47% 8%;
+    --surface-raised: 220 35% 14%;
+    --surface-overlay: 220 30% 18%;
+    --surface-glass: 220 35% 16%;
 
-    /* Dark Mode - Gradients (Darker variants) */
-    --gradient-primary: linear-gradient(135deg, hsl(250 92% 50%), hsl(280 85% 55%));
-    --gradient-accent: linear-gradient(135deg, hsl(340 75% 55%), hsl(320 80% 60%));
-    --gradient-success: linear-gradient(135deg, hsl(150 60% 45%), hsl(170 55% 50%));
-    --gradient-warning: linear-gradient(135deg, hsl(35 90% 50%), hsl(45 85% 55%));
+    /* Dark Mode - Premium Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 55%) 0%, hsl(262 83% 65%) 50%, hsl(280 70% 60%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(338 78% 58%) 0%, hsl(320 75% 62%) 50%, hsl(300 70% 65%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(158 64% 48%) 0%, hsl(170 60% 52%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(262 83% 45%) 0%, hsl(262 70% 40%) 30%, hsl(280 65% 45%) 70%, hsl(338 78% 50%) 100%);
+    --gradient-mesh: radial-gradient(at 0% 0%, hsl(262 83% 58% / 0.2) 0px, transparent 50%),
+                     radial-gradient(at 100% 100%, hsl(338 78% 62% / 0.2) 0px, transparent 50%),
+                     radial-gradient(at 50% 50%, hsl(195 65% 55% / 0.15) 0px, transparent 50%);
+    
+    /* Dark Mode - Enhanced Shadows with Color */
+    --shadow-sm: 0 2px 12px -2px hsl(262 83% 58% / 0.15);
+    --shadow-md: 0 4px 20px -4px hsl(262 83% 58% / 0.2);
+    --shadow-lg: 0 8px 40px -8px hsl(262 83% 58% / 0.25);
+    --shadow-xl: 0 16px 60px -12px hsl(262 83% 58% / 0.3);
+    --shadow-colored: 0 8px 32px -6px hsl(262 83% 58% / 0.35);
+    
+    /* Dark Glassmorphism */
+    --glass-bg: hsl(220 35% 16% / 0.7);
+    --glass-border: hsl(220 25% 30% / 0.5);
+    --glass-blur: 16px;
   }
 }
 
@@ -177,21 +228,47 @@
   }
 
   /* ============================================
-     ELEVATED CARD SYSTEM - Dark Mode Optimized
+     PREMIUM CARD SYSTEM - With colored shadows
      ============================================ */
 
   .card-elevated {
-    @apply bg-card border border-border shadow-lg dark:shadow-xl;
+    @apply bg-card border border-border;
+    box-shadow: var(--shadow-md);
   }
 
   .card-elevated-hover {
-    @apply bg-card border border-border shadow-lg dark:shadow-xl
-           hover:shadow-xl dark:hover:shadow-2xl hover:border-border/80
-           transition-all duration-200;
+    @apply bg-card border border-border transition-all duration-300;
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-elevated-hover:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    @apply border-primary/20;
   }
 
   .card-overlay {
-    @apply bg-secondary/50 border border-border shadow-md dark:shadow-lg;
+    @apply bg-secondary/10 backdrop-blur-lg border border-border/50;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur));
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-gradient {
+    @apply bg-card border border-border/50 relative overflow-hidden;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-gradient::before {
+    content: '';
+    @apply absolute inset-0 opacity-5;
+    background: var(--gradient-mesh);
+    pointer-events: none;
   }
 
   /* ============================================
@@ -211,24 +288,56 @@
   }
 
   /* ============================================
-     GRADIENTS - Dark Mode Optimized
+     PREMIUM GRADIENTS & EFFECTS
      ============================================ */
 
-  .gradient-primary-dark {
+  .gradient-primary {
     background: var(--gradient-primary);
   }
 
-  .gradient-accent-dark {
+  .gradient-accent {
     background: var(--gradient-accent);
   }
 
-  .gradient-card-dark {
-    @apply bg-gradient-to-br from-card via-card to-muted/20;
+  .gradient-hero {
+    background: var(--gradient-hero);
   }
 
-  /* Hero Section Gradient - Dark Mode */
-  .hero-gradient-dark {
-    @apply bg-gradient-to-br from-purple-900/90 via-purple-800/80 to-pink-900/90;
+  .gradient-mesh {
+    background: var(--gradient-mesh);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: var(--gradient-primary);
+  }
+
+  .gradient-border {
+    position: relative;
+    background: var(--gradient-primary);
+    @apply p-[1px] rounded-lg;
+  }
+
+  .gradient-border > * {
+    @apply bg-card rounded-[calc(1rem-1px)];
+  }
+
+  /* Animated Gradient Background */
+  .gradient-animated {
+    background: linear-gradient(
+      -45deg,
+      hsl(262 83% 58%),
+      hsl(280 70% 60%),
+      hsl(338 78% 62%),
+      hsl(195 65% 55%)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
 
   /* ============================================
@@ -288,31 +397,77 @@
   }
 
   /* ============================================
-     DARK MODE SPECIFIC UTILITIES
+     PREMIUM UTILITIES & EFFECTS
      ============================================ */
 
-  /* Shadow utilities for dark mode */
-  .dark .shadow-lg {
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  /* Colored Shadow Utilities */
+  .shadow-primary {
+    box-shadow: var(--shadow-colored);
   }
 
-  .dark .shadow-xl {
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  .shadow-glow {
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.5);
   }
 
-  .dark .shadow-2xl {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  /* Premium Hover Effects */
+  .hover-lift {
+    @apply transition-all duration-300;
   }
 
-  /* Text shadows for dark mode readability */
-  .dark .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
   }
 
-  /* Hover effects for dark mode */
-  .dark .hover-lift:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  .hover-glow {
+    @apply transition-all duration-300;
+  }
+
+  .hover-glow:hover {
+    box-shadow: 0 0 40px -10px hsl(var(--primary) / 0.6);
+  }
+
+  /* Text Effects */
+  .text-shadow {
+    text-shadow: 0 2px 8px hsl(var(--foreground) / 0.1);
+  }
+
+  .text-glow {
+    text-shadow: 0 0 30px hsl(var(--primary) / 0.5);
+  }
+
+  /* Premium Backdrop Effects */
+  .backdrop-premium {
+    @apply backdrop-blur-xl bg-card/80 border border-border/50;
+    box-shadow: var(--shadow-xl);
+  }
+
+  /* Shine Effect for Interactive Elements */
+  .shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .shine::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+      to bottom right,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+  }
+
+  @keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
   }
 
   /* ============================================
