@@ -604,13 +604,13 @@ export default function Dashboard() {
 
         {/* Enhanced Video Card - Dark Mode Optimized */}
         {(loadingVideos || loadingProgress) ? (
-          <Card className="p-6 glass border-none shadow-lg">
+          <Card className="p-6 card-elevated border-none shadow-lg">
             <div className="flex items-center justify-center py-8">
               <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
           </Card>
         ) : lastWatchedVideo ? (
-          <Card className="p-6 glass border-none shadow-lg">
+          <Card className="p-6 card-elevated border-none shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-warning">
                 <span className="text-xl">⭐</span>
@@ -684,7 +684,7 @@ export default function Dashboard() {
             </Button>
           </Card>
         ) : (
-          <Card className="p-6 glass border-none shadow-lg">
+          <Card className="p-6 card-elevated border-none shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2 text-warning">
                 <span className="text-xl">⭐</span>
@@ -814,7 +814,7 @@ export default function Dashboard() {
                 key={item.label}
                 to={item.path}
                 className={cn(
-                  'group relative rounded-2xl p-4 glass shadow-lg transition-transform transition-shadow hover:-translate-y-1 hover:shadow-xl hover-lift focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+                  'group relative rounded-2xl p-4 card-elevated-hover shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background',
                   item.isNew
                     ? 'border-2 border-warning shadow-warning/20 animate-pulse'
                     : item.isRecommended
