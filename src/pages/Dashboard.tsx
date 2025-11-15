@@ -29,6 +29,8 @@ import { ContinueWatching } from '@/components/Dashboard/ContinueWatching';
 import { QuickActions } from '@/components/Dashboard/QuickActions';
 import { CompactSuccessStory } from '@/components/Dashboard/CompactSuccessStory';
 import { ThisWeeksWins } from '@/components/Dashboard/ThisWeeksWins';
+import { RecentScriptUsage } from '@/components/Dashboard/RecentScriptUsage';
+import { PersonalizedInsights } from '@/components/Dashboard/PersonalizedInsights';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -446,6 +448,15 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Personalized Insights */}
+        <PersonalizedInsights 
+          userId={user?.id} 
+          brainProfile={activeChild?.brain_profile || null}
+        />
+
+        {/* Recent Script Usage */}
+        <RecentScriptUsage userId={user?.id} />
 
         {/* Compact Success Story at bottom */}
         <CompactSuccessStory story={currentStory} />
