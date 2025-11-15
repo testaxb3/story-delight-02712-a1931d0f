@@ -200,6 +200,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(null);
     // Clear Sentry user context
     clearUserContext();
+    
+    // Limpar marcadores de sessão e update
+    localStorage.removeItem('app_session_start');
+    localStorage.removeItem('app_version_acknowledged');
   };
 
   const refreshUser = async () => {
