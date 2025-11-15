@@ -25,7 +25,7 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
 
   const handleLink = async () => {
     if (!selectedEbookId || !selectedBonusId) {
-      toast.error('Selecione um ebook e um bonus');
+      toast.error('Select an ebook and a bonus');
       return;
     }
 
@@ -46,14 +46,14 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
         },
       });
 
-      toast.success('Ebook vinculado ao bonus com sucesso!');
+      toast.success('Ebook linked to bonus successfully!');
       onSuccess?.();
       onOpenChange(false);
       setSelectedEbookId('');
       setSelectedBonusId('');
     } catch (error) {
       console.error('Error linking ebook to bonus:', error);
-      toast.error('Erro ao vincular ebook ao bonus');
+      toast.error('Error linking ebook to bonus');
     } finally {
       setLinking(false);
     }
@@ -73,25 +73,25 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="w-5 h-5" />
-            Vincular Ebook a Bonus
+            Link Ebook to Bonus
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label>Selecione o Ebook</Label>
+            <Label>Select Ebook</Label>
             {loadingEbooks ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
             ) : unlinkedEbooks.length === 0 ? (
               <p className="text-sm text-muted-foreground py-2">
-                Todos os ebooks já estão vinculados a um bonus
+                All ebooks are already linked to a bonus
               </p>
             ) : (
               <Select value={selectedEbookId} onValueChange={setSelectedEbookId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Escolha um ebook" />
+                  <SelectValue placeholder="Choose an ebook" />
                 </SelectTrigger>
                 <SelectContent>
                   {unlinkedEbooks.map((ebook) => (
@@ -99,7 +99,7 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
                       <div className="flex flex-col">
                         <span className="font-medium">{ebook.title}</span>
                         <span className="text-xs text-muted-foreground">
-                          {ebook.total_chapters} capítulos
+                          {ebook.total_chapters} chapters
                         </span>
                       </div>
                     </SelectItem>
@@ -110,19 +110,19 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
           </div>
 
           <div className="space-y-2">
-            <Label>Selecione o Bonus</Label>
+            <Label>Select Bonus</Label>
             {loadingBonuses ? (
               <div className="flex items-center justify-center py-4">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
               </div>
             ) : availableBonuses.length === 0 ? (
               <p className="text-sm text-muted-foreground py-2">
-                Nenhum bonus disponível. Crie um novo bonus primeiro.
+                No bonuses available. Create a new bonus first.
               </p>
             ) : (
               <Select value={selectedBonusId} onValueChange={setSelectedBonusId}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Escolha um bonus" />
+                  <SelectValue placeholder="Choose a bonus" />
                 </SelectTrigger>
                 <SelectContent>
                   {availableBonuses.map((bonus) => (
@@ -142,8 +142,8 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
 
           <div className="bg-muted/50 p-3 rounded-lg text-sm">
             <p className="text-muted-foreground">
-              Ao vincular, o bonus será convertido para categoria "ebook" e 
-              o viewUrl será atualizado para apontar ao ebook selecionado.
+              When linking, the bonus will be converted to "ebook" category and 
+              the viewUrl will be updated to point to the selected ebook.
             </p>
           </div>
         </div>

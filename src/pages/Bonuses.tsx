@@ -6,18 +6,17 @@ import { BonusCard, BonusData } from "@/components/bonuses/BonusCard";
 import { ContinueLearning } from "@/components/bonuses/ContinueLearning";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X } from "lucide-react";
+import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X, AlertCircle } from "lucide-react";
 import { useBonuses } from "@/hooks/useBonuses";
-import { useUserEbooksProgress } from "@/hooks/useUserEbooksProgress";
-import { useEbooks } from "@/hooks/useEbooks";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { OptimizedYouTubePlayer } from "@/components/VideoPlayer/OptimizedYouTubePlayer";
 import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-export default function Bonuses() {
+function Bonuses() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -33,10 +32,8 @@ export default function Bonuses() {
   const [videoDuration, setVideoDuration] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
 
-  // Fetch bonuses and ebook progress from Supabase
+  // Fetch bonuses from Supabase (progress is now handled by database)
   const { data: allBonuses = [], isLoading, error } = useBonuses();
-  const { progressMap, titleProgressMap, isLoading: isLoadingProgress } = useUserEbooksProgress();
-  const { ebooks } = useEbooks();
 
   // Calculate category counts
   const categoryCounts = useMemo(() => {
@@ -60,72 +57,10 @@ export default function Bonuses() {
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
   ];
 
-  // Map bonus_id -> ebook_id from ebooks table
-  const ebookByBonusId = useMemo(() => {
-    const map = new Map<string, string>();
-    (ebooks || []).forEach(e => {
-      if (e.bonus_id) map.set(e.bonus_id, e.id);
-    });
-    return map;
-  }, [ebooks]);
-
-  // Map normalized title -> ebook_id (fallback for legacy bonuses without links)
-  const ebookByTitle = useMemo(() => {
-    const map = new Map<string, string>();
-    (ebooks || []).forEach(e => {
-      if (e.title) map.set(e.title.toLowerCase().trim(), e.id);
-    });
-    return map;
-  }, [ebooks]);
-
-  // Filter and sort bonuses with ebook progress merged
+  // Filter and sort bonuses (progress is now automatically synced by database)
   const filteredAndSortedBonuses = useMemo(() => {
-    // Merge ebook progress into bonuses (use HIGHEST progress from any source)
-    let filtered = allBonuses.map((bonus) => {
-      // Start with progress from user_bonuses (already in bonus object from useBonuses hook)
-      let maxProgress = bonus.progress || 0;
-      let isCompleted = bonus.completed || false;
-
-      if (bonus.category === 'ebook') {
-        let ebookId: string | undefined;
-
-        // Priority 1: Extract from viewUrl if present
-        if (bonus.viewUrl) {
-          const match = bonus.viewUrl.match(/\/ebook\/([a-f0-9-]+)/);
-          if (match) ebookId = match[1];
-        }
-
-        // Priority 2: Map bonus.id -> ebook.id
-        if (!ebookId) {
-          ebookId = ebookByBonusId.get(bonus.id);
-        }
-
-        // Check ebook reading progress and use if higher
-        if (ebookId) {
-          const ebookProgress = progressMap.get(ebookId);
-          if (ebookProgress && ebookProgress.progress_percentage > maxProgress) {
-            maxProgress = ebookProgress.progress_percentage;
-          }
-        }
-
-        // Priority 3: Match by normalized title using user's progress data
-        if (!ebookId) {
-          const key = bonus.title?.toLowerCase().trim();
-          if (key) {
-            const pct = titleProgressMap.get(key);
-            if (pct && pct > maxProgress) {
-              maxProgress = pct;
-            }
-          }
-        }
-      }
-
-      return {
-        ...bonus,
-        progress: maxProgress,
-        completed: isCompleted || maxProgress >= 100,
-      };
-    });
+    // Start with all bonuses (progress already included from database)
+    let filtered = [...allBonuses];
 
     // Filter by category
     if (activeCategory !== 'all') {
@@ -159,7 +94,7 @@ export default function Bonuses() {
       default:
         return sorted;
     }
-  }, [allBonuses, activeCategory, searchQuery, sortBy, progressMap, ebookByBonusId, ebookByTitle]);
+  }, [allBonuses, activeCategory, searchQuery, sortBy]);
 
   // Get in-progress bonuses
   const inProgressBonuses = allBonuses.filter(
@@ -237,14 +172,32 @@ export default function Bonuses() {
   }
 
   // Error state
+  // Show better error state
   if (error) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-12 md:pb-6">
-          <div className="text-center py-20">
-            <p className="text-destructive mb-4">Error loading bonuses</p>
-            <Button onClick={() => window.location.reload()}>Retry</Button>
-          </div>
+        <div className="min-h-screen flex items-center justify-center p-4">
+          <Card className="max-w-md w-full p-8">
+            <div className="flex flex-col items-center text-center space-y-4">
+              <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+                <AlertCircle className="w-8 h-8 text-destructive" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold mb-2">Failed to Load Bonuses</h2>
+                <p className="text-muted-foreground mb-4">
+                  We encountered an error loading your bonuses. Please try again.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button onClick={() => window.location.reload()} variant="default">
+                  Retry
+                </Button>
+                <Button onClick={() => navigate('/dashboard')} variant="outline">
+                  Go to Dashboard
+                </Button>
+              </div>
+            </div>
+          </Card>
         </div>
       </MainLayout>
     );
@@ -533,5 +486,14 @@ export default function Bonuses() {
         </Dialog>
       </div>
     </MainLayout>
+  );
+}
+
+// Wrap in ErrorBoundary for additional safety
+export default function BonusesWithErrorBoundary() {
+  return (
+    <ErrorBoundary>
+      <Bonuses />
+    </ErrorBoundary>
   );
 }
