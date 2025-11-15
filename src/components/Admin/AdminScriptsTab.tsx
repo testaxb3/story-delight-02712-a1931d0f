@@ -911,16 +911,16 @@ export function AdminScriptsTab({ onContentChanged }: AdminScriptsTabProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <p className="font-semibold text-amber-900 dark:text-amber-100">✅ Campos Obrigatórios:</p>
+                  <p className="font-semibold text-amber-900 dark:text-amber-100">✅ Required Fields:</p>
                   <ul className="list-disc list-inside text-xs space-y-1 text-amber-800 dark:text-amber-200 ml-4">
-                    <li><code>title</code> - Título específico (ex: "Toothbrush feels scratchy - clamps mouth shut")</li>
+                    <li><code>title</code> - Specific title (ex: "Toothbrush feels scratchy - clamps mouth shut")</li>
                     <li><code>category</code> - Bedtime, Hygiene, Screens, Mealtime, etc.</li>
-                    <li><code>profile</code> - INTENSE, DISTRACTED ou DEFIANT (MAIÚSCULAS)</li>
-                    <li><code>the_situation</code> - 2-3 parágrafos descrevendo cenário específico</li>
-                    <li><code>what_doesnt_work</code> - Lista de frases que não funcionam com "•" e "→"</li>
-                    <li><code>strategy_steps</code> - JSON array com 3 passos (ver template)</li>
-                    <li><code>why_this_works</code> - 3-4 parágrafos de neurociência acessível</li>
-                    <li><code>what_to_expect</code> - JSON object com timeline (first_30_seconds, by_90_seconds, etc.)</li>
+                    <li><code>profile</code> - INTENSE, DISTRACTED or DEFIANT (UPPERCASE)</li>
+                    <li><code>the_situation</code> - 2-3 paragraphs describing specific scenario</li>
+                    <li><code>what_doesnt_work</code> - List of phrases that don't work with "•" and "→"</li>
+                    <li><code>strategy_steps</code> - JSON array with 3 steps (see template)</li>
+                    <li><code>why_this_works</code> - 3-4 paragraphs of accessible neuroscience</li>
+                    <li><code>what_to_expect</code> - JSON object with timeline (first_30_seconds, by_90_seconds, etc.)</li>
                     <li><code>common_variations</code> - JSON array com variações situacionais</li>
                   </ul>
                 </div>

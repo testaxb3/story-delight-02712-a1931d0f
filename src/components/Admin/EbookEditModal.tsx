@@ -77,14 +77,14 @@ export function EbookEditModal({ open, onOpenChange, ebook, onSuccess }: EbookEd
       if (validation.isValid) {
         const chapters = parseMarkdownToChapters(text);
         setParsedChapters(chapters);
-        toast.success('Arquivo validado com sucesso!');
+        toast.success('File validated successfully!');
       } else {
         setParsedChapters([]);
-        toast.error('Markdown inválido. Verifique os erros abaixo.');
+        toast.error('Invalid markdown. Check errors below.');
       }
     } catch (error) {
       console.error('Error reading file:', error);
-      toast.error('Erro ao ler o arquivo');
+      toast.error('Error reading file');
       setValidationResult(null);
       setParsedChapters([]);
     }
@@ -139,7 +139,7 @@ export function EbookEditModal({ open, onOpenChange, ebook, onSuccess }: EbookEd
     e.preventDefault();
     
     if (!formData.title.trim()) {
-      toast.error('Título é obrigatório');
+      toast.error('Title is required');
       return;
     }
 
@@ -165,7 +165,7 @@ export function EbookEditModal({ open, onOpenChange, ebook, onSuccess }: EbookEd
         const validation = validateMarkdown(markdownContent);
         
         if (!validation.isValid) {
-          toast.error('Markdown inválido. Corrija os erros antes de salvar.');
+          toast.error('Invalid markdown. Fix errors before saving.');
           setUploading(false);
           return;
         }
@@ -215,23 +215,23 @@ export function EbookEditModal({ open, onOpenChange, ebook, onSuccess }: EbookEd
             {/* Metadata Tab */}
             <TabsContent value="metadata" className="space-y-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Título *</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="Título do ebook"
+                  placeholder="Ebook title"
                   required
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="subtitle">Subtítulo</Label>
+                <Label htmlFor="subtitle">Subtitle</Label>
                 <Input
                   id="subtitle"
                   value={formData.subtitle}
                   onChange={(e) => setFormData(prev => ({ ...prev, subtitle: e.target.value }))}
-                  placeholder="Subtítulo do ebook"
+                  placeholder="Ebook subtitle"
                 />
               </div>
 

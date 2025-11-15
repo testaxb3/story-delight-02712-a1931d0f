@@ -113,50 +113,50 @@ export function TemplateGuideModal({ open, onOpenChange }: TemplateGuideModalPro
           <TabsContent value="structure" className="space-y-4 mt-4">
             <div className="space-y-4">
               <div>
-                <h4 className="font-semibold mb-2">Formato de Capítulos</h4>
+                <h4 className="font-semibold mb-2">Chapter Format</h4>
                 <div className="bg-muted/50 rounded-lg p-4 font-mono text-sm">
                   <div className="space-y-2">
                     <div>
-                      <span className="text-primary">## CHAPTER 1:</span> Título do Capítulo
+                      <span className="text-primary">## CHAPTER 1:</span> Chapter Title
                     </div>
                     <div className="text-muted-foreground">
-                      Subtítulo opcional (linha seguinte)
+                      Optional subtitle (next line)
                     </div>
                   </div>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
-                  ✅ Use exatamente este formato para capítulos serem detectados
+                  ✅ Use exactly this format for chapters to be detected
                 </p>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Hierarquia de Títulos</h4>
+                <h4 className="font-semibold mb-2">Title Hierarchy</h4>
                 <div className="bg-muted/50 rounded-lg p-4 space-y-2 text-sm">
-                  <div><Badge variant="outline">H2</Badge> <span className="font-mono">## CHAPTER</span> - Capítulos principais</div>
-                  <div><Badge variant="outline">H3</Badge> <span className="font-mono">###</span> - Seções do capítulo</div>
-                  <div><Badge variant="outline">H4</Badge> <span className="font-mono">####</span> - Subseções</div>
-                  <div><Badge variant="outline">H5</Badge> <span className="font-mono">#####</span> - Detalhes específicos</div>
+                  <div><Badge variant="outline">H2</Badge> <span className="font-mono">## CHAPTER</span> - Main chapters</div>
+                  <div><Badge variant="outline">H3</Badge> <span className="font-mono">###</span> - Chapter sections</div>
+                  <div><Badge variant="outline">H4</Badge> <span className="font-mono">####</span> - Subsections</div>
+                  <div><Badge variant="outline">H5</Badge> <span className="font-mono">#####</span> - Specific details</div>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold mb-2">Blocos Especiais (Callouts)</h4>
+                <h4 className="font-semibold mb-2">Special Blocks (Callouts)</h4>
                 <div className="space-y-3">
                   <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                    <p className="font-mono text-sm mb-1">&gt; [!NOTE] Título</p>
-                    <p className="text-xs text-muted-foreground">Para informações importantes e conceitos-chave</p>
+                    <p className="font-mono text-sm mb-1">&gt; [!NOTE] Title</p>
+                    <p className="text-xs text-muted-foreground">For important information and key concepts</p>
                   </div>
                   <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-3">
-                    <p className="font-mono text-sm mb-1">&gt; [!TIP] Título</p>
-                    <p className="text-xs text-muted-foreground">Para dicas práticas e sugestões úteis</p>
+                    <p className="font-mono text-sm mb-1">&gt; [!TIP] Title</p>
+                    <p className="text-xs text-muted-foreground">For practical tips and useful suggestions</p>
                   </div>
                   <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-                    <p className="font-mono text-sm mb-1">&gt; [!WARNING] Título</p>
-                    <p className="text-xs text-muted-foreground">Para avisos e erros a evitar</p>
+                    <p className="font-mono text-sm mb-1">&gt; [!WARNING] Title</p>
+                    <p className="text-xs text-muted-foreground">For warnings and mistakes to avoid</p>
                   </div>
                   <div className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg p-3">
-                    <p className="font-mono text-sm mb-1">&gt; [!SCIENCE] Título</p>
-                    <p className="text-xs text-muted-foreground">Para explicações científicas e estudos</p>
+                    <p className="font-mono text-sm mb-1">&gt; [!SCIENCE] Title</p>
+                    <p className="text-xs text-muted-foreground">For scientific explanations and studies</p>
                   </div>
                 </div>
               </div>
