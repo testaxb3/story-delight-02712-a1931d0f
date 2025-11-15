@@ -52,7 +52,7 @@ export function HeroSection({
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20 col-span-2">
+          <div className="bg-white/20 rounded-2xl p-5 border border-white/30 col-span-2 shadow-lg">
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold text-white/80 uppercase tracking-wider">Progress</span>
               <span className="text-3xl font-black tabular-nums">{Math.round((currentDay / totalDays) * 100)}%</span>
@@ -67,7 +67,7 @@ export function HeroSection({
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-white/15 to-white/5 backdrop-blur-md rounded-2xl p-5 border border-white/20 col-span-2">
+          <div className="bg-white/20 rounded-2xl p-5 border border-white/30 col-span-2 shadow-lg">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                 <Target className="w-5 h-5" />
@@ -94,7 +94,7 @@ export function HeroSection({
           <Button
             size="lg"
             variant="outline"
-            className="bg-white/10 hover:bg-white/20 text-white border-2 border-white/30 font-black h-14 text-base rounded-xl backdrop-blur-md transition-all duration-300 hover:scale-105"
+            className="bg-white/20 hover:bg-white/30 text-white border-2 border-white/30 font-black h-14 text-base rounded-xl shadow-lg transition-all duration-300 hover:scale-105"
             onClick={() => navigate('/videos')}
           >
             <Play className="w-5 h-5 mr-2" />
@@ -105,7 +105,7 @@ export function HeroSection({
 
       {/* Urgency Strip */}
       {showBanner && (
-        <div className="relative z-10 mt-6 bg-gradient-to-r from-yellow-400/90 to-orange-400/90 backdrop-blur-sm rounded-xl p-4 border border-yellow-300/50">
+        <div className="relative z-10 mt-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-4 border border-yellow-300/50 shadow-lg">
           <Button
             variant="ghost"
             size="icon"

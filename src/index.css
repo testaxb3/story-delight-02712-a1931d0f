@@ -41,10 +41,10 @@
     --ring: 250 92% 64%;
     --radius: 1rem;
 
-    /* Light Mode - Glass Effects */
-    --glass-bg: rgba(255, 255, 255, 0.85);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: rgba(0, 0, 0, 0.05);
+    /* Surface Elevation System */
+    --surface-base: 250 100% 97%;
+    --surface-raised: 0 0% 100%;
+    --surface-overlay: 250 40% 98%;
 
     /* Profile Colors (consistent across themes) */
     --defiant: 6 93% 71%;
@@ -98,10 +98,10 @@
     --input: 222 47% 11%;             /* #111827 - Darker input bg */
     --ring: 250 92% 64%;              /* Primary color for focus ring */
 
-    /* Dark Mode - Glass Effects (Darker with blue tint) */
-    --glass-bg: rgba(30, 41, 59, 0.8);      /* Slate-800 with 80% opacity */
-    --glass-border: rgba(148, 163, 184, 0.1); /* Slate-400 with 10% opacity */
-    --glass-shadow: rgba(0, 0, 0, 0.3);
+    /* Dark Mode - Surface Elevation System */
+    --surface-base: 222 47% 7%;
+    --surface-raised: 217 33% 12%;
+    --surface-overlay: 217 33% 16%;
 
     /* Dark Mode - Gradients (Darker variants) */
     --gradient-primary: linear-gradient(135deg, hsl(250 92% 50%), hsl(280 85% 55%));
@@ -177,20 +177,21 @@
   }
 
   /* ============================================
-     GLASS EFFECTS - Dark Mode Optimized
+     ELEVATED CARD SYSTEM - Dark Mode Optimized
      ============================================ */
 
-  .glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 8px 32px var(--glass-shadow);
+  .card-elevated {
+    @apply bg-card border border-border shadow-lg dark:shadow-xl;
   }
 
-  .backdrop-blur-glass {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+  .card-elevated-hover {
+    @apply bg-card border border-border shadow-lg dark:shadow-xl
+           hover:shadow-xl dark:hover:shadow-2xl hover:border-border/80
+           transition-all duration-200;
+  }
+
+  .card-overlay {
+    @apply bg-secondary/50 border border-border shadow-md dark:shadow-lg;
   }
 
   /* ============================================
@@ -199,10 +200,6 @@
 
   .card-dark {
     @apply bg-card text-card-foreground border border-border shadow-sm;
-  }
-
-  .card-glass {
-    @apply glass;
   }
 
   /* ============================================

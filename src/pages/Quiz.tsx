@@ -287,7 +287,7 @@ export default function Quiz() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-10 shadow-2xl shadow-primary/10">
+                <div className="bg-card/80 border border-border/50 rounded-3xl p-10 shadow-2xl">
                   <div className="text-center space-y-8">
                     <motion.div 
                       className="w-24 h-24 bg-gradient-to-br from-primary to-primary/70 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20"
@@ -394,7 +394,7 @@ export default function Quiz() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl shadow-primary/10">
+                <div className="bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl">
                   <div className="space-y-8">
                     <div className="space-y-3">
                       <div className="flex justify-between items-center text-sm">
