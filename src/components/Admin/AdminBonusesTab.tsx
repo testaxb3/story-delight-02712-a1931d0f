@@ -425,35 +425,49 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
         )}
       </Card>
 
-      {/* Bonuses Table */}
-      <Card className="p-6">
-        <div className="mb-4">
-          <h2 className="text-xl font-bold">
-            Bonuses ({filteredAndSortedBonuses.length})
-          </h2>
-        </div>
-        <BonusesTable
-          bonuses={filteredAndSortedBonuses}
-          selectedIds={selectedIds}
-          onSelectionChange={setSelectedIds}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onToggleLock={handleToggleLock}
-          onDuplicate={handleDuplicate}
-          onPreview={handlePreview}
-        />
-      </Card>
-      
-      </TabsContent>
+      {/* Tabs for different management views */}
+      <Tabs defaultValue="bonuses" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="bonuses">Bonuses</TabsTrigger>
+          <TabsTrigger value="orphaned">
+            <Archive className="h-4 w-4 mr-2" />
+            Orphaned Ebooks
+          </TabsTrigger>
+          <TabsTrigger value="audit">
+            <Shield className="h-4 w-4 mr-2" />
+            Audit Log
+          </TabsTrigger>
+        </TabsList>
 
-      <TabsContent value="orphaned" className="space-y-6 mt-6">
-        <OrphanedEbooksManager />
-      </TabsContent>
+        <TabsContent value="bonuses" className="space-y-6 mt-6">
+          {/* Bonuses Table */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold">
+                Bonuses ({filteredAndSortedBonuses.length})
+              </h2>
+            </div>
+            <BonusesTable
+              bonuses={filteredAndSortedBonuses}
+              selectedIds={selectedIds}
+              onSelectionChange={setSelectedIds}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleLock={handleToggleLock}
+              onDuplicate={handleDuplicate}
+              onPreview={handlePreview}
+            />
+          </Card>
+        </TabsContent>
 
-      <TabsContent value="audit" className="space-y-6 mt-6">
-        <AdminAuditLog />
-      </TabsContent>
-    </Tabs>
+        <TabsContent value="orphaned" className="space-y-6 mt-6">
+          <OrphanedEbooksManager />
+        </TabsContent>
+
+        <TabsContent value="audit" className="space-y-6 mt-6">
+          <AdminAuditLog />
+        </TabsContent>
+      </Tabs>
 
       {/* Form Modal */}
       <BonusFormModal
