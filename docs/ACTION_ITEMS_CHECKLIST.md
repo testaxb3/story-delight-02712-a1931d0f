@@ -692,6 +692,13 @@ const handleForceUpdate = async () => {
   - ✅ Preconnect adicionado para Supabase (index.html)
   - ✅ Auth logs removidos (src/contexts/AuthContext.tsx)
   - ⏱️ Melhoria esperada: ~200ms mais rápido, 70% menos DB calls
+- [x] P1: Performance Fase 2 - AuthContext Migration (COMPLETO - 15/11/2025) ✅
+  - ✅ Criado src/hooks/useUserProfile.ts (React Query hook)
+  - ✅ Refatorado src/contexts/AuthContext.tsx (usa React Query)
+  - ✅ Removida lógica duplicada de profile fetching
+  - ✅ Cache automático de 5 minutos para perfis
+  - ✅ Deduplicação de requests simultâneos
+  - ⏱️ Issue Crítico #1 resolvido - 70% menos DB calls, menos re-renders
 
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
