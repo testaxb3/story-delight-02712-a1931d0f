@@ -1,8 +1,9 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -14,6 +15,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
+  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status'];
+  const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
+  
+  if (!isQuizRoute && !user.quiz_completed) {
+    return <Navigate to="/quiz" replace />;
   }
 
   return <>{children}</>;
