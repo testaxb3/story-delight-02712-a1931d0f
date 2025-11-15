@@ -140,7 +140,7 @@ export function BonusFormModal({ open, onOpenChange, bonus, onSave, saving }: Bo
       setFormData({
         title: '',
         description: '',
-        category: 'video',
+        category: BonusCategory.VIDEO,
         thumbnail: '',
         duration: '',
         size: '',

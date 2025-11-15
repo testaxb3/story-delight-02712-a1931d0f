@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useEbooks } from '@/hooks/useEbooks';
 import { useBonuses, useUpdateBonus } from '@/hooks/useBonuses';
-import { Loader2, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { Loader2, Link2 } from 'lucide-react';
+import { BonusCategory } from '@/types/bonus';
 
 interface LinkEbookToBonusProps {
   open: boolean;
@@ -42,7 +43,7 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
         id: selectedBonusId,
         updates: {
           viewUrl: `/ebook/${selectedEbookId}`,
-          category: 'ebook',
+          category: BonusCategory.EBOOK,
         },
       });
 
@@ -63,19 +64,19 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
   const unlinkedEbooks = ebooks?.filter(e => !e.bonus_id) || [];
   
   // Filter bonuses that are not already ebooks or don't have viewUrl pointing to ebook
-  const availableBonuses = bonuses?.filter(b => 
-    b.category !== 'ebook' || !b.viewUrl?.includes('/ebook/')
-  ) || [];
+  const availableBonuses = (bonuses?.data || []).filter(b => 
+    b.category !== BonusCategory.EBOOK || !b.viewUrl?.includes('/ebook/')
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Link2 className="w-5 h-5" />
-            Link Ebook to Bonus
-          </DialogTitle>
-        </DialogHeader>
+      <DialogHeader>
+        <DialogTitle className="flex items-center gap-2">
+          <Link2 className="w-5 h-5" />
+          Link Ebook to Bonus
+        </DialogTitle>
+      </DialogHeader>
 
         <div className="space-y-4 py-4">
           <div className="space-y-2">
@@ -163,16 +164,16 @@ export function LinkEbookToBonus({ open, onOpenChange, onSuccess }: LinkEbookToB
           >
             {linking ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Vinculando...
-              </>
-            ) : (
-              <>
-                <Link2 className="w-4 h-4 mr-2" />
-                Vincular
-              </>
-            )}
-          </Button>
+              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              Linking...
+            </>
+          ) : (
+            <>
+              <Link2 className="w-4 h-4 mr-2" />
+              Link
+            </>
+          )}
+        </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
