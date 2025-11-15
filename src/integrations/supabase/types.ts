@@ -14,6 +14,51 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string
+          changes: Json | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+        }
+        Insert: {
+          action: string
+          admin_id: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string
+          changes?: Json | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       app_config: {
         Row: {
           config_key: string
@@ -70,6 +115,8 @@ export type Database = {
       }
       bonuses: {
         Row: {
+          archived_at: string | null
+          archived_by: string | null
           category: string
           completed: boolean | null
           created_at: string
@@ -89,6 +136,8 @@ export type Database = {
           view_url: string | null
         }
         Insert: {
+          archived_at?: string | null
+          archived_by?: string | null
           category: string
           completed?: boolean | null
           created_at?: string
@@ -108,6 +157,8 @@ export type Database = {
           view_url?: string | null
         }
         Update: {
+          archived_at?: string | null
+          archived_by?: string | null
           category?: string
           completed?: boolean | null
           created_at?: string
@@ -126,7 +177,22 @@ export type Database = {
           updated_at?: string
           view_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       child_profiles: {
         Row: {
@@ -458,6 +524,13 @@ export type Database = {
             columns: ["bonus_id"]
             isOneToOne: false
             referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
             referencedColumns: ["id"]
           },
         ]
@@ -1622,6 +1695,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "user_bonuses_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "user_bonuses_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
@@ -1687,6 +1767,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
+            columns: ["ebook_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
+            referencedColumns: ["ebook_id"]
+          },
           {
             foreignKeyName: "user_ebook_progress_ebook_id_fkey"
             columns: ["ebook_id"]
@@ -1958,6 +2045,53 @@ export type Database = {
       }
     }
     Views: {
+      bonuses_with_user_progress: {
+        Row: {
+          archived_at: string | null
+          archived_by: string | null
+          category: string | null
+          completed: boolean | null
+          created_at: string | null
+          description: string | null
+          download_url: string | null
+          duration: string | null
+          ebook_completed_chapters: number[] | null
+          ebook_current_chapter: number | null
+          ebook_id: string | null
+          ebook_slug: string | null
+          ebook_total_chapters: number | null
+          file_size: string | null
+          id: string | null
+          is_new: boolean | null
+          locked: boolean | null
+          progress: number | null
+          tags: string[] | null
+          thumbnail: string | null
+          title: string | null
+          unlock_requirement: string | null
+          updated_at: string | null
+          user_completed_at: string | null
+          user_progress: number | null
+          user_unlocked_at: string | null
+          view_url: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children_profiles: {
         Row: {
           age: number | null
@@ -2144,6 +2278,13 @@ export type Database = {
             columns: ["bonus_id"]
             isOneToOne: false
             referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
             referencedColumns: ["id"]
           },
         ]
@@ -2374,6 +2515,13 @@ export type Database = {
             referencedRelation: "bonuses"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_script_stats: {
@@ -2460,6 +2608,7 @@ export type Database = {
         Args: { script_id_param: string }
         Returns: undefined
       }
+      archive_bonus: { Args: { p_bonus_id: string }; Returns: Json }
       calculate_streak: {
         Args: { p_child_profile_id: string; p_user_id: string }
         Returns: number
@@ -2477,6 +2626,16 @@ export type Database = {
       }
       force_app_update: { Args: { update_message?: string }; Returns: Json }
       get_app_version: { Args: never; Returns: Json }
+      get_orphaned_ebooks: {
+        Args: never
+        Returns: {
+          created_at: string
+          id: string
+          slug: string
+          title: string
+          total_chapters: number
+        }[]
+      }
       get_profile_data: {
         Args: { profile_user_id: string }
         Returns: {
@@ -2538,6 +2697,7 @@ export type Database = {
         Returns: undefined
       }
       require_admin: { Args: never; Returns: undefined }
+      restore_bonus: { Args: { p_bonus_id: string }; Returns: Json }
       save_child_profile: {
         Args: {
           child_name?: string

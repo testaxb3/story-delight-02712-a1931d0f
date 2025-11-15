@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +19,8 @@ import { BonusData } from '@/components/bonuses/BonusCard';
 import { BonusCard } from '@/components/bonuses/BonusCard';
 import { BonusesTable } from './BonusesTable';
 import { BonusFormModal } from './BonusFormModal';
+import { OrphanedEbooksManager } from './OrphanedEbooksManager';
+import { AdminAuditLog } from './AdminAuditLog';
 import {
   useBonuses,
   useCreateBonus,
@@ -40,7 +43,9 @@ import {
   FileJson,
   ChevronDown,
   ChevronUp,
-  Loader2
+  Loader2,
+  Archive,
+  Shield
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Badge } from '@/components/ui/badge';
@@ -438,6 +443,17 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
           onPreview={handlePreview}
         />
       </Card>
+      
+      </TabsContent>
+
+      <TabsContent value="orphaned" className="space-y-6 mt-6">
+        <OrphanedEbooksManager />
+      </TabsContent>
+
+      <TabsContent value="audit" className="space-y-6 mt-6">
+        <AdminAuditLog />
+      </TabsContent>
+    </Tabs>
 
       {/* Form Modal */}
       <BonusFormModal
