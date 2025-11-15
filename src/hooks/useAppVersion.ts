@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
+import { getCurrentAppVersion } from '@/config/version';
 
 interface AppVersionInfo {
   version: string;
@@ -58,12 +59,22 @@ export function useAppVersion() {
       const versionData = data as AppVersionInfo;
       setVersionInfo(versionData);
 
-      // Check if we need to show update prompt
-      const acknowledgedVersion = localStorage.getItem(STORAGE_KEY);
-      const currentVersion = `${versionData.version}-${versionData.build}`;
-
-      if (versionData.force_update && acknowledgedVersion !== currentVersion) {
-        setShowUpdatePrompt(true);
+      // Get current app version that's actually running
+      const currentAppVersion = getCurrentAppVersion();
+      const backendVersion = `${versionData.version}-${versionData.build}`;
+      
+      // Only show update prompt if:
+      // 1. Backend has force_update enabled AND
+      // 2. Backend version is different from current app version
+      // This prevents showing update prompts when already on the latest version
+      if (versionData.force_update && backendVersion !== currentAppVersion) {
+        const acknowledgedVersion = localStorage.getItem(STORAGE_KEY);
+        
+        // Also check if user hasn't already acknowledged this version
+        if (acknowledgedVersion !== backendVersion) {
+          logger.log(`Update available: ${backendVersion} (current: ${currentAppVersion})`);
+          setShowUpdatePrompt(true);
+        }
       }
     } catch (error) {
       logger.error('Error checking app version:', error);
