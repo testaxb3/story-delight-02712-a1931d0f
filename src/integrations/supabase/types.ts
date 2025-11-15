@@ -14,55 +14,334 @@ export type Database = {
   }
   public: {
     Tables: {
-      children_profiles: {
+      app_config: {
         Row: {
-          brain_profile: string
+          config_key: string
+          config_value: Json
+          id: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          config_key: string
+          config_value: Json
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          config_key?: string
+          config_value?: Json
+          id?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      badges: {
+        Row: {
+          category: string | null
           created_at: string | null
+          description: string
+          icon: string | null
           id: string
           name: string
+          requirement: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description: string
+          icon?: string | null
+          id?: string
+          name: string
+          requirement?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          requirement?: string | null
+        }
+        Relationships: []
+      }
+      bonuses: {
+        Row: {
+          category: string
+          completed: boolean | null
+          created_at: string
+          description: string
+          download_url: string | null
+          duration: string | null
+          file_size: string | null
+          id: string
+          is_new: boolean | null
+          locked: boolean | null
+          progress: number | null
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          unlock_requirement: string | null
+          updated_at: string
+          view_url: string | null
+        }
+        Insert: {
+          category: string
+          completed?: boolean | null
+          created_at?: string
+          description: string
+          download_url?: string | null
+          duration?: string | null
+          file_size?: string | null
+          id?: string
+          is_new?: boolean | null
+          locked?: boolean | null
+          progress?: number | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          unlock_requirement?: string | null
+          updated_at?: string
+          view_url?: string | null
+        }
+        Update: {
+          category?: string
+          completed?: boolean | null
+          created_at?: string
+          description?: string
+          download_url?: string | null
+          duration?: string | null
+          file_size?: string | null
+          id?: string
+          is_new?: boolean | null
+          locked?: boolean | null
+          progress?: number | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          unlock_requirement?: string | null
+          updated_at?: string
+          view_url?: string | null
+        }
+        Relationships: []
+      }
+      child_profiles: {
+        Row: {
+          age: number | null
+          brain_profile: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          notes: string | null
+          parent_id: string
+          photo_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          age?: number | null
+          brain_profile: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          notes?: string | null
+          parent_id: string
+          photo_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          age?: number | null
+          brain_profile?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          notes?: string | null
+          parent_id?: string
+          photo_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collection_scripts: {
+        Row: {
+          collection_id: string
+          created_at: string
+          id: string
+          position: number
+          script_id: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string
+          id?: string
+          position?: number
+          script_id: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string
+          id?: string
+          position?: number
+          script_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_scripts_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "script_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_scripts_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_scripts_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_scripts_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_scripts_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments: {
+        Row: {
+          author_name: string | null
+          content: string
+          created_at: string
+          id: string
+          post_id: string
           user_id: string
         }
         Insert: {
-          brain_profile: string
-          created_at?: string | null
+          author_name?: string | null
+          content: string
+          created_at?: string
           id?: string
-          name: string
+          post_id: string
           user_id: string
         }
         Update: {
-          brain_profile?: string
-          created_at?: string | null
+          author_name?: string | null
+          content?: string
+          created_at?: string
           id?: string
-          name?: string
+          post_id?: string
           user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "children_profiles_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
             referencedColumns: ["id"]
           },
         ]
       }
       community_posts: {
         Row: {
+          author_brain_type: string | null
+          author_name: string | null
+          author_photo_url: string | null
           content: string
-          created_at: string | null
+          created_at: string
           id: string
+          image_thumbnail_url: string | null
+          image_url: string | null
+          is_seed_post: boolean | null
+          post_type: string | null
+          search_vector: unknown
+          updated_at: string
           user_id: string | null
         }
         Insert: {
+          author_brain_type?: string | null
+          author_name?: string | null
+          author_photo_url?: string | null
           content: string
-          created_at?: string | null
+          created_at?: string
           id?: string
+          image_thumbnail_url?: string | null
+          image_url?: string | null
+          is_seed_post?: boolean | null
+          post_type?: string | null
+          search_vector?: unknown
+          updated_at?: string
           user_id?: string | null
         }
         Update: {
+          author_brain_type?: string | null
+          author_name?: string | null
+          author_photo_url?: string | null
           content?: string
-          created_at?: string | null
+          created_at?: string
           id?: string
+          image_thumbnail_url?: string | null
+          image_url?: string | null
+          is_seed_post?: boolean | null
+          post_type?: string | null
+          search_vector?: unknown
+          updated_at?: string
           user_id?: string | null
         }
         Relationships: [
@@ -73,324 +352,14 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
-        ]
-      }
-      feed_posts: {
-        Row: {
-          content: string
-          created_at: string | null
-          cta_link: string | null
-          cta_text: string | null
-          id: string
-          image_url: string | null
-          published: boolean | null
-          title: string
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          cta_link?: string | null
-          cta_text?: string | null
-          id?: string
-          image_url?: string | null
-          published?: boolean | null
-          title: string
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          cta_link?: string | null
-          cta_text?: string | null
-          id?: string
-          image_url?: string | null
-          published?: boolean | null
-          title?: string
-        }
-        Relationships: []
-      }
-      pdfs: {
-        Row: {
-          category: string
-          created_at: string | null
-          description: string | null
-          file_size: string | null
-          file_url: string
-          id: string
-          page_count: number | null
-          premium_only: boolean | null
-          title: string
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          description?: string | null
-          file_size?: string | null
-          file_url: string
-          id?: string
-          page_count?: number | null
-          premium_only?: boolean | null
-          title: string
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          description?: string | null
-          file_size?: string | null
-          file_url?: string
-          id?: string
-          page_count?: number | null
-          premium_only?: boolean | null
-          title?: string
-        }
-        Relationships: []
-      }
-      post_comments: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          post_id: string
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id?: string
-          post_id: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          post_id?: string
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
           {
-            foreignKeyName: "post_comments_user_id_fkey"
+            foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
-      }
-      post_likes: {
-        Row: {
-          created_at: string | null
-          id: string
-          post_id: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          post_id: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          post_id?: string
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "post_likes_post_id_fkey"
-            columns: ["post_id"]
-            isOneToOne: false
-            referencedRelation: "community_posts"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "post_likes_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          brain_profile: string | null
-          created_at: string | null
-          email: string
-          id: string
-          name: string | null
-          premium: boolean | null
-          quiz_completed: boolean | null
-          welcome_modal_shown: boolean | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          brain_profile?: string | null
-          created_at?: string | null
-          email: string
-          id?: string
-          name?: string | null
-          premium?: boolean | null
-          quiz_completed?: boolean | null
-          welcome_modal_shown?: boolean | null
-        }
-        Update: {
-          avatar_url?: string | null
-          brain_profile?: string | null
-          created_at?: string | null
-          email?: string
-          id?: string
-          name?: string | null
-          premium?: boolean | null
-          quiz_completed?: boolean | null
-          welcome_modal_shown?: boolean | null
-        }
-        Relationships: []
-      }
-      scripts: {
-        Row: {
-          category: string
-          created_at: string | null
-          estimated_time_minutes: number | null
-          id: string
-          neurological_tip: string
-          phrase_1: string
-          phrase_1_action: string
-          phrase_2: string
-          phrase_2_action: string
-          phrase_3: string
-          phrase_3_action: string
-          profile: string
-          tags: string[] | null
-          title: string
-          wrong_way: string
-          // Enhanced context fields
-          situation_trigger: string | null
-          location_type: string[] | null
-          time_optimal: string[] | null
-          intensity_level: string | null
-          success_speed: string | null
-          parent_state: string[] | null
-          age_min: number | null
-          age_max: number | null
-          backup_plan: string | null
-          common_mistakes: string[] | null
-          pause_after_phrase_1: number | null
-          pause_after_phrase_2: number | null
-          expected_time_seconds: number | null
-          related_script_ids: string[] | null
-          difficulty_level: string | null
-          requires_preparation: boolean | null
-          works_in_public: boolean | null
-          emergency_suitable: boolean | null
-          // NEW HYPER-SPECIFIC STRUCTURE
-          the_situation: string | null
-          what_doesnt_work: string | null
-          strategy_steps: Json | null
-          why_this_works: string | null
-          what_to_expect: Json | null
-          common_variations: Json | null
-          parent_state_needed: string | null
-          difficulty: string | null
-          duration_minutes: number | null
-        }
-        Insert: {
-          category: string
-          created_at?: string | null
-          estimated_time_minutes?: number | null
-          id?: string
-          neurological_tip: string
-          phrase_1: string
-          phrase_1_action: string
-          phrase_2: string
-          phrase_2_action: string
-          phrase_3: string
-          phrase_3_action: string
-          profile: string
-          tags?: string[] | null
-          title: string
-          wrong_way: string
-          // Enhanced context fields
-          situation_trigger?: string | null
-          location_type?: string[] | null
-          time_optimal?: string[] | null
-          intensity_level?: string | null
-          success_speed?: string | null
-          parent_state?: string[] | null
-          age_min?: number | null
-          age_max?: number | null
-          backup_plan?: string | null
-          common_mistakes?: string[] | null
-          pause_after_phrase_1?: number | null
-          pause_after_phrase_2?: number | null
-          expected_time_seconds?: number | null
-          related_script_ids?: string[] | null
-          difficulty_level?: string | null
-          requires_preparation?: boolean | null
-          works_in_public?: boolean | null
-          emergency_suitable?: boolean | null
-          // NEW HYPER-SPECIFIC STRUCTURE
-          the_situation?: string | null
-          what_doesnt_work?: string | null
-          strategy_steps?: Json | null
-          why_this_works?: string | null
-          what_to_expect?: Json | null
-          common_variations?: Json | null
-          parent_state_needed?: string | null
-          difficulty?: string | null
-          duration_minutes?: number | null
-        }
-        Update: {
-          category?: string
-          created_at?: string | null
-          estimated_time_minutes?: number | null
-          id?: string
-          neurological_tip?: string
-          phrase_1?: string
-          phrase_1_action?: string
-          phrase_2?: string
-          phrase_2_action?: string
-          phrase_3?: string
-          phrase_3_action?: string
-          profile?: string
-          tags?: string[] | null
-          title?: string
-          wrong_way?: string
-          // Enhanced context fields
-          situation_trigger?: string | null
-          location_type?: string[] | null
-          time_optimal?: string[] | null
-          intensity_level?: string | null
-          success_speed?: string | null
-          parent_state?: string[] | null
-          age_min?: number | null
-          age_max?: number | null
-          backup_plan?: string | null
-          common_mistakes?: string[] | null
-          pause_after_phrase_1?: number | null
-          pause_after_phrase_2?: number | null
-          expected_time_seconds?: number | null
-          related_script_ids?: string[] | null
-          difficulty_level?: string | null
-          requires_preparation?: boolean | null
-          works_in_public?: boolean | null
-          emergency_suitable?: boolean | null
-          // NEW HYPER-SPECIFIC STRUCTURE
-          the_situation?: string | null
-          what_doesnt_work?: string | null
-          strategy_steps?: Json | null
-          why_this_works?: string | null
-          what_to_expect?: Json | null
-          common_variations?: Json | null
-          parent_state_needed?: string | null
-          difficulty?: string | null
-          duration_minutes?: number | null
-        }
-        Relationships: []
       }
       development_milestones: {
         Row: {
@@ -402,6 +371,7 @@ export type Database = {
           milestone_title: string
           recommended_script_ids: string[] | null
           recommended_video_ids: string[] | null
+          updated_at: string | null
         }
         Insert: {
           age_range: string
@@ -412,6 +382,7 @@ export type Database = {
           milestone_title: string
           recommended_script_ids?: string[] | null
           recommended_video_ids?: string[] | null
+          updated_at?: string | null
         }
         Update: {
           age_range?: string
@@ -422,91 +393,673 @@ export type Database = {
           milestone_title?: string
           recommended_script_ids?: string[] | null
           recommended_video_ids?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      ebooks: {
+        Row: {
+          bonus_id: string | null
+          content: Json
+          cover_color: string | null
+          created_at: string | null
+          deleted_at: string | null
+          estimated_reading_time: number | null
+          id: string
+          markdown_source: string | null
+          metadata: Json | null
+          slug: string
+          subtitle: string | null
+          thumbnail_url: string | null
+          title: string
+          total_chapters: number
+          total_words: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          bonus_id?: string | null
+          content: Json
+          cover_color?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          estimated_reading_time?: number | null
+          id?: string
+          markdown_source?: string | null
+          metadata?: Json | null
+          slug: string
+          subtitle?: string | null
+          thumbnail_url?: string | null
+          title: string
+          total_chapters?: number
+          total_words?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          bonus_id?: string | null
+          content?: Json
+          cover_color?: string | null
+          created_at?: string | null
+          deleted_at?: string | null
+          estimated_reading_time?: number | null
+          id?: string
+          markdown_source?: string | null
+          metadata?: Json | null
+          slug?: string
+          subtitle?: string | null
+          thumbnail_url?: string | null
+          title?: string
+          total_chapters?: number
+          total_words?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorite_scripts: {
+        Row: {
+          created_at: string | null
+          id: string
+          script_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          script_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          script_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      feed_posts: {
+        Row: {
+          author_id: string
+          content: string
+          created_at: string
+          cta_link: string | null
+          cta_text: string | null
+          id: string
+          image_url: string | null
+          published: boolean
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          content: string
+          created_at?: string
+          cta_link?: string | null
+          cta_text?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          content?: string
+          created_at?: string
+          cta_link?: string | null
+          cta_text?: string | null
+          id?: string
+          image_url?: string | null
+          published?: boolean
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          actor_id: string | null
+          created_at: string
+          id: string
+          link: string | null
+          message: string
+          read: boolean
+          related_comment_id: string | null
+          related_post_id: string | null
+          title: string
+          type: string
+          type_enum: Database["public"]["Enums"]["notification_type"] | null
+          user_id: string
+        }
+        Insert: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          message: string
+          read?: boolean
+          related_comment_id?: string | null
+          related_post_id?: string | null
+          title: string
+          type: string
+          type_enum?: Database["public"]["Enums"]["notification_type"] | null
+          user_id: string
+        }
+        Update: {
+          actor_id?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          message?: string
+          read?: boolean
+          related_comment_id?: string | null
+          related_post_id?: string | null
+          title?: string
+          type?: string
+          type_enum?: Database["public"]["Enums"]["notification_type"] | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_comment_id_fkey"
+            columns: ["related_comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_related_post_id_fkey"
+            columns: ["related_post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pdfs: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          file_size: string | null
+          file_url: string
+          id: string
+          page_count: number | null
+          premium_only: boolean
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          file_size?: string | null
+          file_url: string
+          id?: string
+          page_count?: number | null
+          premium_only?: boolean
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          file_size?: string | null
+          file_url?: string
+          id?: string
+          page_count?: number | null
+          premium_only?: boolean
+          title?: string
+        }
+        Relationships: []
+      }
+      post_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          parent_comment_id: string | null
+          post_id: string
+          replies_count: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          post_id: string
+          replies_count?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          parent_comment_id?: string | null
+          post_id?: string
+          replies_count?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_comments_parent_comment_id_fkey"
+            columns: ["parent_comment_id"]
+            isOneToOne: false
+            referencedRelation: "post_comments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_flags: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          reason: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          reason: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          reason?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_flags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_flags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_flags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_flags_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_likes: {
+        Row: {
+          created_at: string
+          id: string
+          post_id: string
+          reaction_type: Database["public"]["Enums"]["reaction_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          post_id: string
+          reaction_type?: Database["public"]["Enums"]["reaction_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          post_id?: string
+          reaction_type?: Database["public"]["Enums"]["reaction_type"]
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          badges: string[] | null
+          bio: string | null
+          brain_profile: string | null
+          child_name: string | null
+          comments_count: number
+          created_at: string
+          email: string | null
+          followers_count: number
+          following_count: number
+          id: string
+          is_admin: boolean
+          likes_received_count: number
+          name: string | null
+          photo_url: string | null
+          posts_count: number
+          premium: boolean
+          quiz_completed: boolean
+          quiz_in_progress: boolean
+          role: string | null
+          updated_at: string | null
+          welcome_modal_shown: boolean | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          badges?: string[] | null
+          bio?: string | null
+          brain_profile?: string | null
+          child_name?: string | null
+          comments_count?: number
+          created_at?: string
+          email?: string | null
+          followers_count?: number
+          following_count?: number
+          id: string
+          is_admin?: boolean
+          likes_received_count?: number
+          name?: string | null
+          photo_url?: string | null
+          posts_count?: number
+          premium?: boolean
+          quiz_completed?: boolean
+          quiz_in_progress?: boolean
+          role?: string | null
+          updated_at?: string | null
+          welcome_modal_shown?: boolean | null
+        }
+        Update: {
+          avatar_url?: string | null
+          badges?: string[] | null
+          bio?: string | null
+          brain_profile?: string | null
+          child_name?: string | null
+          comments_count?: number
+          created_at?: string
+          email?: string | null
+          followers_count?: number
+          following_count?: number
+          id?: string
+          is_admin?: boolean
+          likes_received_count?: number
+          name?: string | null
+          photo_url?: string | null
+          posts_count?: number
+          premium?: boolean
+          quiz_completed?: boolean
+          quiz_in_progress?: boolean
+          role?: string | null
+          updated_at?: string | null
+          welcome_modal_shown?: boolean | null
+        }
+        Relationships: []
+      }
+      reactions: {
+        Row: {
+          created_at: string
+          emoji: string
+          id: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          emoji: string
+          id?: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          emoji?: string
+          id?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reactions_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      refund_requests: {
+        Row: {
+          accepted_partial_refund: string | null
+          created_at: string | null
+          customer_name: string
+          email: string
+          id: string
+          notes: string | null
+          processed_at: string | null
+          reason_details: string | null
+          reason_type: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_partial_refund?: string | null
+          created_at?: string | null
+          customer_name: string
+          email: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          reason_details?: string | null
+          reason_type: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_partial_refund?: string | null
+          created_at?: string | null
+          customer_name?: string
+          email?: string
+          id?: string
+          notes?: string | null
+          processed_at?: string | null
+          reason_details?: string | null
+          reason_type?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
       script_collections: {
         Row: {
-          child_profile_id: string | null
           created_at: string
+          description: string | null
           id: string
           name: string
           updated_at: string
           user_id: string
         }
         Insert: {
-          child_profile_id?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           name: string
           updated_at?: string
           user_id: string
         }
         Update: {
-          child_profile_id?: string | null
           created_at?: string
+          description?: string | null
           id?: string
           name?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "script_collections_child_profile_id_fkey"
-            columns: ["child_profile_id"]
-            isOneToOne: false
-            referencedRelation: "children_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "script_collections_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      script_collection_items: {
-        Row: {
-          collection_id: string
-          created_at: string
-          id: string
-          script_id: string
-        }
-        Insert: {
-          collection_id: string
-          created_at?: string
-          id?: string
-          script_id: string
-        }
-        Update: {
-          collection_id?: string
-          created_at?: string
-          id?: string
-          script_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "script_collection_items_collection_id_fkey"
-            columns: ["collection_id"]
-            isOneToOne: false
-            referencedRelation: "script_collections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "script_collection_items_script_id_fkey"
-            columns: ["script_id"]
-            isOneToOne: false
-            referencedRelation: "scripts"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       script_feedback: {
         Row: {
           child_id: string | null
-          created_at: string
+          created_at: string | null
           id: string
           notes: string | null
           outcome: string
@@ -515,7 +1068,7 @@ export type Database = {
         }
         Insert: {
           child_id?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           notes?: string | null
           outcome: string
@@ -524,7 +1077,7 @@ export type Database = {
         }
         Update: {
           child_id?: string | null
-          created_at?: string
+          created_at?: string | null
           id?: string
           notes?: string | null
           outcome?: string
@@ -540,10 +1093,38 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "script_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_feedback_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "script_feedback_script_id_fkey"
             columns: ["script_id"]
             isOneToOne: false
             referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_feedback_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_feedback_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
             referencedColumns: ["id"]
           },
           {
@@ -553,43 +1134,351 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "script_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      script_usage: {
+        Row: {
+          id: string
+          script_id: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          script_id: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          script_id?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scripts: {
+        Row: {
+          age_max: number | null
+          age_min: number | null
+          age_range: string | null
+          avoid_step1: string | null
+          avoid_step2: string | null
+          avoid_step3: string | null
+          backup_plan: string | null
+          category: string
+          common_mistakes: string[] | null
+          common_variations: Json | null
+          created_at: string
+          difficulty: string | null
+          difficulty_level:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes: number | null
+          emergency_suitable: boolean | null
+          estimated_time_minutes: number | null
+          expected_time_seconds: number | null
+          id: string
+          intensity_level: string | null
+          location_type: string[] | null
+          neurological_tip: string | null
+          parent_state: string[] | null
+          parent_state_needed: string | null
+          pause_after_phrase_1: number | null
+          pause_after_phrase_2: number | null
+          phrase_1: string | null
+          phrase_1_action: string | null
+          phrase_2: string | null
+          phrase_2_action: string | null
+          phrase_3: string | null
+          phrase_3_action: string | null
+          profile: string | null
+          related_script_ids: string[] | null
+          requires_preparation: boolean | null
+          say_it_like_this_step1: string | null
+          say_it_like_this_step2: string | null
+          say_it_like_this_step3: string | null
+          situation_trigger: string | null
+          strategy_steps: Json | null
+          success_speed: string | null
+          tags: string[] | null
+          the_situation: string | null
+          time_optimal: string[] | null
+          title: string
+          what_doesnt_work: string | null
+          what_to_expect: Json | null
+          why_this_works: string | null
+          works_in_public: boolean | null
+          wrong_way: string | null
+        }
+        Insert: {
+          age_max?: number | null
+          age_min?: number | null
+          age_range?: string | null
+          avoid_step1?: string | null
+          avoid_step2?: string | null
+          avoid_step3?: string | null
+          backup_plan?: string | null
+          category: string
+          common_mistakes?: string[] | null
+          common_variations?: Json | null
+          created_at?: string
+          difficulty?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes?: number | null
+          emergency_suitable?: boolean | null
+          estimated_time_minutes?: number | null
+          expected_time_seconds?: number | null
+          id?: string
+          intensity_level?: string | null
+          location_type?: string[] | null
+          neurological_tip?: string | null
+          parent_state?: string[] | null
+          parent_state_needed?: string | null
+          pause_after_phrase_1?: number | null
+          pause_after_phrase_2?: number | null
+          phrase_1?: string | null
+          phrase_1_action?: string | null
+          phrase_2?: string | null
+          phrase_2_action?: string | null
+          phrase_3?: string | null
+          phrase_3_action?: string | null
+          profile?: string | null
+          related_script_ids?: string[] | null
+          requires_preparation?: boolean | null
+          say_it_like_this_step1?: string | null
+          say_it_like_this_step2?: string | null
+          say_it_like_this_step3?: string | null
+          situation_trigger?: string | null
+          strategy_steps?: Json | null
+          success_speed?: string | null
+          tags?: string[] | null
+          the_situation?: string | null
+          time_optimal?: string[] | null
+          title: string
+          what_doesnt_work?: string | null
+          what_to_expect?: Json | null
+          why_this_works?: string | null
+          works_in_public?: boolean | null
+          wrong_way?: string | null
+        }
+        Update: {
+          age_max?: number | null
+          age_min?: number | null
+          age_range?: string | null
+          avoid_step1?: string | null
+          avoid_step2?: string | null
+          avoid_step3?: string | null
+          backup_plan?: string | null
+          category?: string
+          common_mistakes?: string[] | null
+          common_variations?: Json | null
+          created_at?: string
+          difficulty?: string | null
+          difficulty_level?:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes?: number | null
+          emergency_suitable?: boolean | null
+          estimated_time_minutes?: number | null
+          expected_time_seconds?: number | null
+          id?: string
+          intensity_level?: string | null
+          location_type?: string[] | null
+          neurological_tip?: string | null
+          parent_state?: string[] | null
+          parent_state_needed?: string | null
+          pause_after_phrase_1?: number | null
+          pause_after_phrase_2?: number | null
+          phrase_1?: string | null
+          phrase_1_action?: string | null
+          phrase_2?: string | null
+          phrase_2_action?: string | null
+          phrase_3?: string | null
+          phrase_3_action?: string | null
+          profile?: string | null
+          related_script_ids?: string[] | null
+          requires_preparation?: boolean | null
+          say_it_like_this_step1?: string | null
+          say_it_like_this_step2?: string | null
+          say_it_like_this_step3?: string | null
+          situation_trigger?: string | null
+          strategy_steps?: Json | null
+          success_speed?: string | null
+          tags?: string[] | null
+          the_situation?: string | null
+          time_optimal?: string[] | null
+          title?: string
+          what_doesnt_work?: string | null
+          what_to_expect?: Json | null
+          why_this_works?: string | null
+          works_in_public?: boolean | null
+          wrong_way?: string | null
+        }
+        Relationships: []
+      }
+      scripts_usage: {
+        Row: {
+          created_at: string | null
+          id: string
+          script_id: string
+          used_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          script_id: string
+          used_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          script_id?: string
+          used_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scripts_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scripts_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scripts_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scripts_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tracker_days: {
         Row: {
+          child_id: string | null
           child_profile_id: string | null
-          completed: boolean | null
+          completed: boolean
           completed_at: string | null
-          created_at: string | null
+          created_at: string
+          date: string | null
           day_number: number
           id: string
           meltdown_count: string | null
+          notes: string | null
+          streak_freeze_used: boolean
           stress_level: number | null
-          user_id: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
+          child_id?: string | null
           child_profile_id?: string | null
-          completed?: boolean | null
+          completed?: boolean
           completed_at?: string | null
-          created_at?: string | null
+          created_at?: string
+          date?: string | null
           day_number: number
           id?: string
           meltdown_count?: string | null
+          notes?: string | null
+          streak_freeze_used?: boolean
           stress_level?: number | null
-          user_id?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
+          child_id?: string | null
           child_profile_id?: string | null
-          completed?: boolean | null
+          completed?: boolean
           completed_at?: string | null
-          created_at?: string | null
+          created_at?: string
+          date?: string | null
           day_number?: number
           id?: string
           meltdown_count?: string | null
+          notes?: string | null
+          streak_freeze_used?: boolean
           stress_level?: number | null
-          user_id?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tracker_days_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracker_days_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracker_days_child_profile_id_fkey"
+            columns: ["child_profile_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tracker_days_child_profile_id_fkey"
             columns: ["child_profile_id"]
@@ -597,213 +1486,1156 @@ export type Database = {
             referencedRelation: "children_profiles"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      user_achievements: {
+        Row: {
+          achievement_type: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_type: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_type?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_app_versions: {
+        Row: {
+          acknowledged_at: string | null
+          created_at: string | null
+          current_build: number
+          current_version: string
+          id: string
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          acknowledged_at?: string | null
+          created_at?: string | null
+          current_build: number
+          current_version: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          acknowledged_at?: string | null
+          created_at?: string | null
+          current_build?: number
+          current_version?: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_badges: {
+        Row: {
+          badge_id: string
+          earned_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          earned_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          earned_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
           {
-            foreignKeyName: "tracker_days_user_id_fkey"
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_bonuses: {
+        Row: {
+          bonus_id: string
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          progress: number | null
+          unlocked_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bonus_id: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          progress?: number | null
+          unlocked_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bonus_id?: string
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          progress?: number | null
+          unlocked_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bonuses_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bonuses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bonuses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_ebook_progress: {
+        Row: {
+          bookmarks: Json | null
+          completed_chapters: number[] | null
+          current_chapter: number
+          ebook_id: string
+          first_read_at: string | null
+          highlights: Json | null
+          id: string
+          last_read_at: string | null
+          notes: Json | null
+          reading_preferences: Json | null
+          reading_time_minutes: number | null
+          scroll_position: number | null
+          sessions_count: number | null
+          user_id: string
+        }
+        Insert: {
+          bookmarks?: Json | null
+          completed_chapters?: number[] | null
+          current_chapter?: number
+          ebook_id: string
+          first_read_at?: string | null
+          highlights?: Json | null
+          id?: string
+          last_read_at?: string | null
+          notes?: Json | null
+          reading_preferences?: Json | null
+          reading_time_minutes?: number | null
+          scroll_position?: number | null
+          sessions_count?: number | null
+          user_id: string
+        }
+        Update: {
+          bookmarks?: Json | null
+          completed_chapters?: number[] | null
+          current_chapter?: number
+          ebook_id?: string
+          first_read_at?: string | null
+          highlights?: Json | null
+          id?: string
+          last_read_at?: string | null
+          notes?: Json | null
+          reading_preferences?: Json | null
+          reading_time_minutes?: number | null
+          scroll_position?: number | null
+          sessions_count?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
+            columns: ["ebook_id"]
+            isOneToOne: false
+            referencedRelation: "ebooks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
+            columns: ["ebook_id"]
+            isOneToOne: false
+            referencedRelation: "ebooks_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
+            columns: ["ebook_id"]
+            isOneToOne: false
+            referencedRelation: "user_recent_ebooks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_favorites: {
+        Row: {
+          created_at: string
+          id: string
+          script_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          script_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          script_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorites_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_followers: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_followers_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_followers_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
             referencedColumns: ["id"]
           },
         ]
       }
       user_progress: {
         Row: {
-          created_at: string | null
+          child_profile: string | null
+          created_at: string
           id: string
           last_check_in: string | null
-          pdfs_downloaded: number[] | null
-          scripts_used: number | null
-          streak: number | null
-          user_id: string | null
-          videos_watched: number[] | null
+          quiz_completed: boolean
+          scripts_used: number
+          streak: number
+          updated_at: string
+          user_id: string
+          videos_watched: string[] | null
         }
         Insert: {
-          created_at?: string | null
+          child_profile?: string | null
+          created_at?: string
           id?: string
           last_check_in?: string | null
-          pdfs_downloaded?: number[] | null
-          scripts_used?: number | null
-          streak?: number | null
-          user_id?: string | null
-          videos_watched?: number[] | null
+          quiz_completed?: boolean
+          scripts_used?: number
+          streak?: number
+          updated_at?: string
+          user_id: string
+          videos_watched?: string[] | null
         }
         Update: {
-          created_at?: string | null
+          child_profile?: string | null
+          created_at?: string
           id?: string
           last_check_in?: string | null
-          pdfs_downloaded?: number[] | null
-          scripts_used?: number | null
-          streak?: number | null
-          user_id?: string | null
-          videos_watched?: number[] | null
+          quiz_completed?: boolean
+          scripts_used?: number
+          streak?: number
+          updated_at?: string
+          user_id?: string
+          videos_watched?: string[] | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_progress_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_roles: {
         Row: {
-          created_at: string | null
+          created_at: string
           id: string
-          role: string | null
-          user_id: string | null
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          role?: string | null
-          user_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           id?: string
-          role?: string | null
-          user_id?: string | null
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      video_progress: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          last_watched_at: string
+          progress_seconds: number
+          total_duration_seconds: number
+          updated_at: string
+          user_id: string
+          video_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          last_watched_at?: string
+          progress_seconds?: number
+          total_duration_seconds?: number
+          updated_at?: string
+          user_id: string
+          video_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          last_watched_at?: string
+          progress_seconds?: number
+          total_duration_seconds?: number
+          updated_at?: string
+          user_id?: string
+          video_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: true
-            referencedRelation: "profiles"
+            foreignKeyName: "video_progress_video_id_fkey"
+            columns: ["video_id"]
+            isOneToOne: false
+            referencedRelation: "videos"
             referencedColumns: ["id"]
           },
         ]
       }
       videos: {
         Row: {
-          created_at: string | null
+          created_at: string
           description: string | null
-          duration: string
+          duration: string | null
           id: string
-          order_index: number | null
-          premium_only: boolean | null
+          locked: boolean
+          order_index: number
+          premium_only: boolean
           section: string
           thumbnail_url: string | null
           title: string
-          video_url: string | null
+          video_url: string
         }
         Insert: {
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          duration: string
+          duration?: string | null
           id?: string
-          order_index?: number | null
-          premium_only?: boolean | null
+          locked?: boolean
+          order_index?: number
+          premium_only?: boolean
           section: string
           thumbnail_url?: string | null
           title: string
-          video_url?: string | null
+          video_url: string
         }
         Update: {
-          created_at?: string | null
+          created_at?: string
           description?: string | null
-          duration?: string
+          duration?: string | null
           id?: string
-          order_index?: number | null
-          premium_only?: boolean | null
+          locked?: boolean
+          order_index?: number
+          premium_only?: boolean
           section?: string
           thumbnail_url?: string | null
           title?: string
-          video_url?: string | null
-        }
-        Relationships: []
-      }
-      bonuses: {
-        Row: {
-          id: string
-          title: string
-          description: string
-          category: string
-          thumbnail: string | null
-          duration: string | null
-          file_size: string | null
-          locked: boolean
-          completed: boolean
-          progress: number
-          is_new: boolean
-          tags: string[] | null
-          view_url: string | null
-          download_url: string | null
-          unlock_requirement: string | null
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          title: string
-          description: string
-          category: string
-          thumbnail?: string | null
-          duration?: string | null
-          file_size?: string | null
-          locked?: boolean
-          completed?: boolean
-          progress?: number
-          is_new?: boolean
-          tags?: string[] | null
-          view_url?: string | null
-          download_url?: string | null
-          unlock_requirement?: string | null
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          title?: string
-          description?: string
-          category?: string
-          thumbnail?: string | null
-          duration?: string | null
-          file_size?: string | null
-          locked?: boolean
-          completed?: boolean
-          progress?: number
-          is_new?: boolean
-          tags?: string[] | null
-          view_url?: string | null
-          download_url?: string | null
-          unlock_requirement?: string | null
-          created_at?: string
-          updated_at?: string
+          video_url?: string
         }
         Relationships: []
       }
     }
     Views: {
-      child_script_recommendations: {
+      children_profiles: {
+        Row: {
+          age: number | null
+          brain_profile: string | null
+          created_at: string | null
+          id: string | null
+          is_active: boolean | null
+          name: string | null
+          notes: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          age?: number | null
+          brain_profile?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          age?: number | null
+          brain_profile?: string | null
+          created_at?: string | null
+          id?: string | null
+          is_active?: boolean | null
+          name?: string | null
+          notes?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comments_with_profiles: {
+        Row: {
+          author_name: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          post_id: string | null
+          profile_name: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_posts_with_stats"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "comments_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "posts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts_with_profiles: {
+        Row: {
+          author_name: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          image_url: string | null
+          profile_name: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      community_posts_with_stats: {
+        Row: {
+          author_brain_type: string | null
+          author_name: string | null
+          author_photo_url: string | null
+          comments_count: number | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          image_thumbnail_url: string | null
+          image_url: string | null
+          is_seed_post: boolean | null
+          likes_count: number | null
+          post_type: string | null
+          profile_email: string | null
+          profile_name: string | null
+          profile_photo: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ebooks_with_stats: {
+        Row: {
+          avg_reading_time: number | null
+          bonus_id: string | null
+          completed_count: number | null
+          completion_rate: number | null
+          content: Json | null
+          cover_color: string | null
+          created_at: string | null
+          deleted_at: string | null
+          estimated_reading_time: number | null
+          id: string | null
+          markdown_source: string | null
+          metadata: Json | null
+          slug: string | null
+          subtitle: string | null
+          thumbnail_url: string | null
+          title: string | null
+          total_chapters: number | null
+          total_readers: number | null
+          total_words: number | null
+          updated_at: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      emergency_scripts_new: {
         Row: {
           category: string | null
-          child_profile_id: string | null
-          estimated_time_minutes: number | null
-          feedback_count: number | null
-          last_used_at: string | null
+          difficulty: string | null
+          duration_minutes: number | null
+          id: string | null
           profile: string | null
-          script_id: string | null
-          success_score: number | null
+          situation: string | null
+          strategy_steps: Json | null
+          success_rate_percent: number | null
+          title: string | null
+          total_uses: number | null
+          what_to_expect: Json | null
+          worked_count: number | null
+        }
+        Relationships: []
+      }
+      leaderboard: {
+        Row: {
+          anonymous_name: string | null
+          brain_profile: string | null
+          completed_days: number | null
+          current_streak: number | null
+          last_active_date: string | null
+          rank: number | null
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          author_id: string | null
+          content: string | null
+          created_at: string | null
+          id: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          author_id?: string | null
+          content?: string | null
+          created_at?: string | null
+          id?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      public_profiles: {
+        Row: {
+          badges: string[] | null
+          bio: string | null
+          comments_count: number | null
+          created_at: string | null
+          followers_count: number | null
+          following_count: number | null
+          id: string | null
+          likes_received_count: number | null
+          name: string | null
+          photo_url: string | null
+          posts_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          badges?: string[] | null
+          bio?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string | null
+          likes_received_count?: number | null
+          name?: string | null
+          photo_url?: string | null
+          posts_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          badges?: string[] | null
+          bio?: string | null
+          comments_count?: number | null
+          created_at?: string | null
+          followers_count?: number | null
+          following_count?: number | null
+          id?: string | null
+          likes_received_count?: number | null
+          name?: string | null
+          photo_url?: string | null
+          posts_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      scripts_card_view: {
+        Row: {
+          age_max: number | null
+          age_min: number | null
+          category: string | null
+          difficulty: string | null
+          duration_minutes: number | null
+          emergency_suitable: boolean | null
+          id: string | null
+          preview_text: string | null
+          profile: string | null
+          progress_count: number | null
+          success_rate_percent: number | null
           tags: string[] | null
           title: string | null
+          total_feedback_count: number | null
+          worked_count: number | null
         }
+        Relationships: []
+      }
+      scripts_with_full_stats: {
+        Row: {
+          age_max: number | null
+          age_min: number | null
+          age_range: string | null
+          avoid_step1: string | null
+          avoid_step2: string | null
+          avoid_step3: string | null
+          backup_plan: string | null
+          category: string | null
+          common_mistakes: string[] | null
+          common_variations: Json | null
+          created_at: string | null
+          difficulty: string | null
+          difficulty_level:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
+          duration_minutes: number | null
+          emergency_suitable: boolean | null
+          estimated_time_minutes: number | null
+          expected_time_seconds: number | null
+          feedback_count: number | null
+          id: string | null
+          intensity_level: string | null
+          location_type: string[] | null
+          neurological_tip: string | null
+          not_yet_count: number | null
+          parent_state: string[] | null
+          parent_state_needed: string | null
+          pause_after_phrase_1: number | null
+          pause_after_phrase_2: number | null
+          phrase_1: string | null
+          phrase_1_action: string | null
+          phrase_2: string | null
+          phrase_2_action: string | null
+          phrase_3: string | null
+          phrase_3_action: string | null
+          profile: string | null
+          progress_count: number | null
+          related_script_ids: string[] | null
+          requires_preparation: boolean | null
+          say_it_like_this_step1: string | null
+          say_it_like_this_step2: string | null
+          say_it_like_this_step3: string | null
+          situation_trigger: string | null
+          strategy_steps: Json | null
+          success_rate: number | null
+          success_speed: string | null
+          tags: string[] | null
+          the_situation: string | null
+          time_optimal: string[] | null
+          title: string | null
+          usage_count: number | null
+          what_doesnt_work: string | null
+          what_to_expect: Json | null
+          why_this_works: string | null
+          worked_count: number | null
+          works_in_public: boolean | null
+          wrong_way: string | null
+        }
+        Relationships: []
+      }
+      user_recent_ebooks: {
+        Row: {
+          bonus_id: string | null
+          content: Json | null
+          cover_color: string | null
+          created_at: string | null
+          current_chapter: number | null
+          deleted_at: string | null
+          estimated_reading_time: number | null
+          id: string | null
+          last_read_at: string | null
+          markdown_source: string | null
+          metadata: Json | null
+          progress_percentage: number | null
+          reading_time_minutes: number | null
+          slug: string | null
+          subtitle: string | null
+          thumbnail_url: string | null
+          title: string | null
+          total_chapters: number | null
+          total_words: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ebooks_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_script_stats: {
+        Row: {
+          feedback_count: number | null
+          last_used: string | null
+          personal_success_rate: number | null
+          script_id: string | null
+          times_used: number | null
+          times_worked: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_usage_script_id_fkey"
+            columns: ["script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_stats: {
+        Row: {
+          anonymous_name: string | null
+          brain_profile: string | null
+          child_profile_id: string | null
+          completed_days: number | null
+          current_streak: number | null
+          last_active_date: string | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracker_days_child_profile_id_fkey"
+            columns: ["child_profile_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracker_days_child_profile_id_fkey"
+            columns: ["child_profile_id"]
+            isOneToOne: false
+            referencedRelation: "children_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
+      acknowledge_app_update: { Args: never; Returns: Json }
+      add_bookmark: {
+        Args: {
+          p_chapter: number
+          p_ebook_id: string
+          p_label?: string
+          p_position: number
+        }
+        Returns: undefined
+      }
+      admin_delete_script: {
+        Args: { script_id_param: string }
+        Returns: undefined
+      }
+      calculate_streak: {
+        Args: { p_child_profile_id: string; p_user_id: string }
+        Returns: number
+      }
+      can_access_script: { Args: never; Returns: boolean }
+      check_streak_milestone: {
+        Args: { p_child_profile_id: string; p_user_id: string }
+        Returns: Json
+      }
+      check_user_needs_update: { Args: never; Returns: Json }
+      clear_force_update_flag: { Args: never; Returns: Json }
+      decrement_comment_replies: {
+        Args: { comment_id: string }
+        Returns: undefined
+      }
+      force_app_update: { Args: { update_message?: string }; Returns: Json }
+      get_app_version: { Args: never; Returns: Json }
+      get_profile_data: {
+        Args: { profile_user_id: string }
+        Returns: {
+          badges: string[]
+          bio: string
+          comments_count: number
+          created_at: string
+          email: string
+          followers_count: number
+          following_count: number
+          id: string
+          is_admin: boolean
+          is_premium: boolean
+          likes_received_count: number
+          name: string
+          photo_url: string
+          posts_count: number
+          updated_at: string
+        }[]
+      }
+      get_remaining_script_accesses: { Args: never; Returns: Json }
+      get_sos_script: {
+        Args: {
+          p_child_id?: string
+          p_location?: string
+          p_situation?: string
+          p_user_id: string
+        }
+        Returns: {
+          personal_success_rate: number
+          relevance_score: number
+          script_id: string
+          situation_trigger: string
+          success_rate: number
+          title: string
+          usage_count: number
+        }[]
+      }
+      get_update_statistics: { Args: never; Returns: Json }
+      get_user_collection_counts: { Args: never; Returns: Json }
+      get_user_likes_count: {
+        Args: { target_user_id: string }
+        Returns: number
+      }
       has_role: {
-        Args: { _role: string; _user_id: string }
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
         Returns: boolean
       }
-      is_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
+      increment_comment_replies: {
+        Args: { comment_id: string }
+        Returns: undefined
+      }
+      is_admin: { Args: never; Returns: boolean }
+      mark_chapter_complete: {
+        Args: { p_chapter_index: number; p_ebook_id: string }
+        Returns: undefined
+      }
+      require_admin: { Args: never; Returns: undefined }
+      save_child_profile: {
+        Args: {
+          child_name?: string
+          child_profile?: string
+          email?: string
+          parent_name?: string
+          quiz_completed?: boolean
+        }
+        Returns: {
+          avatar_url: string | null
+          badges: string[] | null
+          bio: string | null
+          brain_profile: string | null
+          child_name: string | null
+          comments_count: number
+          created_at: string
+          email: string | null
+          followers_count: number
+          following_count: number
+          id: string
+          is_admin: boolean
+          likes_received_count: number
+          name: string | null
+          photo_url: string | null
+          posts_count: number
+          premium: boolean
+          quiz_completed: boolean
+          quiz_in_progress: boolean
+          role: string | null
+          updated_at: string | null
+          welcome_modal_shown: boolean | null
+        }
+        SetofOptions: {
+          from: "*"
+          to: "profiles"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      search_scripts_natural: {
+        Args: {
+          search_query: string
+          user_age_max?: number
+          user_age_min?: number
+          user_brain_profile?: string
+        }
+        Returns: {
+          category: string
+          difficulty: string
+          match_context: string
+          profile: string
+          relevance_score: number
+          script_id: string
+          title: string
+        }[]
+      }
+      send_notification: {
+        Args: {
+          p_actor_id?: string
+          p_link?: string
+          p_message: string
+          p_related_comment_id?: string
+          p_related_post_id?: string
+          p_title: string
+          p_type: Database["public"]["Enums"]["notification_type"]
+          p_user_id: string
+        }
+        Returns: string
+      }
+      sync_bonus_progress: {
+        Args: { p_ebook_id: string; p_user_id: string }
+        Returns: Json
+      }
+      update_reading_time: {
+        Args: { p_ebook_id: string; p_minutes_delta: number }
+        Returns: undefined
+      }
+      verify_schema_fixes: {
+        Args: never
+        Returns: {
+          check_name: string
+          details: string
+          status: string
+        }[]
       }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      difficulty_level: "Easy" | "Moderate" | "Hard"
+      notification_type: "like" | "comment" | "reply" | "mention" | "follow"
+      reaction_type:
+        | "like"
+        | "love"
+        | "strong"
+        | "empathy"
+        | "celebrate"
+        | "insightful"
+        | "helpful"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -930,6 +2762,19 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      difficulty_level: ["Easy", "Moderate", "Hard"],
+      notification_type: ["like", "comment", "reply", "mention", "follow"],
+      reaction_type: [
+        "like",
+        "love",
+        "strong",
+        "empathy",
+        "celebrate",
+        "insightful",
+        "helpful",
+      ],
+    },
   },
 } as const
