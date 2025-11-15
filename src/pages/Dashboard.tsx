@@ -385,7 +385,7 @@ export default function Dashboard() {
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-6">
               <div className="flex-1">
-                <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-4">
+                <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-full mb-4 shadow-lg">
                   <Sparkles className="w-4 h-4" />
                   <span className="text-sm font-semibold">Day {currentDay} of 30</span>
                 </div>
@@ -400,13 +400,13 @@ export default function Dashboard() {
             </div>
 
             {/* Progress Section - Dark Mode Optimized */}
-            <div className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/20 dark:border-white/10">
+            <div className="bg-white/20 rounded-2xl p-6 border border-white/30 shadow-lg">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-purple-100 dark:text-purple-200 font-medium">Your Transformation Progress</span>
                 <span className="text-2xl font-black">{currentDay}/{totalDays}</span>
               </div>
               <div className="relative">
-                <Progress value={(currentDay / totalDays) * 100} className="h-3 bg-white/20 dark:bg-white/10" />
+                <Progress value={(currentDay / totalDays) * 100} className="h-3 bg-white/20" />
                 <div className="absolute -top-1 left-0" style={{ left: `${(currentDay / totalDays) * 100}%` }}>
                   <div className="w-5 h-5 bg-white rounded-full shadow-lg -ml-2.5 flex items-center justify-center">
                     <div className="w-2 h-2 bg-purple-600 dark:bg-purple-400 rounded-full"></div>
@@ -414,7 +414,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="mt-6 bg-white/10 dark:bg-white/5 backdrop-blur-sm p-4 rounded-xl border border-white/20 dark:border-white/10">
+              <div className="mt-6 bg-white/20 p-4 rounded-xl border border-white/30 shadow-md">
                 <div className="flex items-center gap-2 mb-2">
                   <Target className="w-5 h-5 text-yellow-300 dark:text-yellow-400" />
                   <p className="font-bold text-yellow-300 dark:text-yellow-400">Today's Mission</p>
@@ -436,7 +436,7 @@ export default function Dashboard() {
               </Button>
               <Button
                 variant="outline"
-                className="bg-white/10 hover:bg-white/20 dark:bg-white/5 dark:hover:bg-white/10 text-white border-white/30 dark:border-white/20 font-bold backdrop-blur-sm h-12"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 font-bold shadow-lg h-12"
                 onClick={() => navigate('/videos')}
               >
                 <Play className="w-4 h-4 mr-2" />
@@ -447,11 +447,11 @@ export default function Dashboard() {
 
           {/* Urgency Strip - Dark Mode Optimized */}
           {showBanner && (
-            <div className="relative z-10 mt-6 bg-gradient-to-r from-yellow-400/90 to-orange-400/90 dark:from-yellow-600/80 dark:to-orange-600/80 backdrop-blur-sm rounded-xl p-4 border border-yellow-300/50 dark:border-yellow-500/30">
+            <div className="relative z-10 mt-6 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-xl p-4 border border-yellow-300/50 shadow-lg">
               <Button
                 variant="ghost"
                 size="icon"
-                className="absolute top-2 right-2 text-orange-900 dark:text-orange-100 hover:bg-white/20 dark:hover:bg-white/10 h-6 w-6"
+                className="absolute top-2 right-2 text-orange-900 hover:bg-white/20 h-6 w-6"
                 onClick={() => setShowBanner(false)}
               >
                 <X className="w-4 h-4" />
@@ -475,7 +475,7 @@ export default function Dashboard() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-white/20 dark:bg-white/10 rounded-xl backdrop-blur-sm">
+              <div className="p-3 bg-white/20 rounded-xl shadow-md">
                 <ThumbsUp className="w-6 h-6" />
               </div>
               <div className="flex-1">
@@ -494,25 +494,25 @@ export default function Dashboard() {
               <span className="text-4xl animate-bounce">🎉</span>
             </div>
 
-            <div className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-xl p-4 mb-4 border border-white/20 dark:border-white/10">
+            <div className="bg-white/20 rounded-xl p-4 mb-4 border border-white/30 shadow-md">
               <p className="text-lg font-medium italic leading-relaxed">
                 "{currentStory.quote}"
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-white/10 text-center">
-                <TrendingDown className="w-5 h-5 mx-auto mb-1 text-yellow-300 dark:text-yellow-400" />
+              <div className="bg-white/20 rounded-lg p-3 border border-white/30 text-center shadow-md">
+                <TrendingDown className="w-5 h-5 mx-auto mb-1 text-yellow-300" />
                 <div className="font-black text-lg">{currentStory.before.value}</div>
                 <div className="text-2xl my-1">↓</div>
-                <div className="font-black text-lg text-yellow-300 dark:text-yellow-400">{currentStory.after.value}</div>
+                <div className="font-black text-lg text-yellow-300">{currentStory.after.value}</div>
               </div>
-              <div className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-white/10 text-center">
+              <div className="bg-white/20 rounded-lg p-3 border border-white/30 text-center shadow-md">
                 <Clock className="w-5 h-5 mx-auto mb-1" />
                 <div className="text-xs opacity-80 mb-1">Timeline</div>
                 <div className="font-bold">{currentStory.timeline}</div>
               </div>
-              <div className="bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-lg p-3 border border-white/20 dark:border-white/10 text-center">
+              <div className="bg-white/20 rounded-lg p-3 border border-white/30 text-center shadow-md">
                 <Users className="w-5 h-5 mx-auto mb-1" />
                 <div className="text-xs opacity-80 mb-1">Child Age</div>
                 <div className="font-bold">{currentStory.childAge}</div>
@@ -533,7 +533,7 @@ export default function Dashboard() {
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-3 bg-white/20 dark:bg-white/10 rounded-xl backdrop-blur-sm">
+                <div className="p-3 bg-white/20 rounded-xl shadow-md">
                   <Sparkles className="w-6 h-6" />
                 </div>
                 <div>
@@ -592,7 +592,7 @@ export default function Dashboard() {
               </Button>
               <Button
                 variant="outline"
-                className="bg-white/10 hover:bg-white/20 dark:bg-white/5 dark:hover:bg-white/10 text-white border-white/30 dark:border-white/20 font-bold backdrop-blur-sm h-11"
+                className="bg-white/20 hover:bg-white/30 text-white border-white/30 font-bold shadow-lg h-11"
                 onClick={() => navigate('/quiz')}
               >
                 <BookOpen className="w-4 h-4 mr-2" />
@@ -884,7 +884,7 @@ export default function Dashboard() {
             </DialogHeader>
 
             {/* Benefits */}
-            <div className="space-y-3 mb-6 bg-white/50 dark:bg-black/20 rounded-2xl p-5 backdrop-blur-sm border border-purple-200/50 dark:border-purple-800/30">
+            <div className="space-y-3 mb-6 bg-card/80 rounded-2xl p-5 border border-border shadow-md">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/50 dark:to-pink-900/50 rounded-lg flex-shrink-0">
                   <Target className="w-5 h-5 text-purple-600 dark:text-purple-400" />
