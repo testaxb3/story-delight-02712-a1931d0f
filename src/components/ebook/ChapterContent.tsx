@@ -9,16 +9,57 @@ interface ChapterContentProps {
 }
 
 const renderContent = (content: string) => {
-  // Handle bold text (**text**)
-  const parts = content.split(/(\*\*.*?\*\*)/g);
+  // Process in order: code inline, bold, italic
+  // Split by code inline first (`code`)
+  const parts: (string | JSX.Element)[] = [];
+  let currentIndex = 0;
+  const codeRegex = /`([^`]+)`/g;
+  let match;
   
+  while ((match = codeRegex.exec(content)) !== null) {
+    // Add text before code
+    if (match.index > currentIndex) {
+      parts.push(content.substring(currentIndex, match.index));
+    }
+    // Add code element
+    parts.push(
+      <code key={`code-${match.index}`} className="px-2 py-1 bg-muted rounded text-sm font-mono">
+        {match[1]}
+      </code>
+    );
+    currentIndex = match.index + match[0].length;
+  }
+  
+  // Add remaining text
+  if (currentIndex < content.length) {
+    parts.push(content.substring(currentIndex));
+  }
+  
+  // Now process bold and italic in the string parts
   return (
     <>
-      {parts.map((part, i) => {
-        if (part.startsWith('**') && part.endsWith('**')) {
-          return <strong key={i}>{part.slice(2, -2)}</strong>;
-        }
-        return <span key={i}>{part}</span>;
+      {parts.map((part, partIdx) => {
+        if (typeof part !== 'string') return part;
+        
+        // Split by bold (**text**)
+        const boldParts = part.split(/(\*\*.*?\*\*)/g);
+        
+        return boldParts.map((boldPart, boldIdx) => {
+          if (boldPart.startsWith('**') && boldPart.endsWith('**')) {
+            return <strong key={`${partIdx}-bold-${boldIdx}`}>{boldPart.slice(2, -2)}</strong>;
+          }
+          
+          // Split by italic (*text* or _text_)
+          const italicParts = boldPart.split(/(\*[^*]+\*|_[^_]+_)/g);
+          
+          return italicParts.map((italicPart, italicIdx) => {
+            if ((italicPart.startsWith('*') && italicPart.endsWith('*') && italicPart.length > 2) ||
+                (italicPart.startsWith('_') && italicPart.endsWith('_') && italicPart.length > 2)) {
+              return <em key={`${partIdx}-${boldIdx}-italic-${italicIdx}`}>{italicPart.slice(1, -1)}</em>;
+            }
+            return <span key={`${partIdx}-${boldIdx}-${italicIdx}`}>{italicPart}</span>;
+          });
+        });
       })}
     </>
   );
