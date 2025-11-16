@@ -1,5 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.1';
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 interface Chapter {
   id: string;
   title: string;
@@ -120,7 +125,7 @@ function calculateStats(chapters: Chapter[]) {
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'POST', 'Access-Control-Allow-Headers': 'Content-Type' } });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -129,14 +134,19 @@ Deno.serve(async (req) => {
     if (!markdown || !title || !slug) {
       return new Response(JSON.stringify({ error: 'Missing required fields' }), { 
         status: 400,
-        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? 'https://iogceaotdodvugrmogpp.supabase.co';
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlvZ2NlYW90ZG9kdnVncm1vZ3BwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA4ODcwODQsImV4cCI6MjA3NjQ2MzA4NH0.uMAT-RZLc0jh1E03UiDrQ1gnpxfZulZ16OxQpypAGJo';
+
+    const supabaseClient = serviceRoleKey
+      ? createClient(supabaseUrl, serviceRoleKey)
+      : createClient(supabaseUrl, anonKey, {
+          global: { headers: { authorization: req.headers.get('authorization') ?? '' } }
+        });
 
     const chapters = parseMarkdownToChapters(markdown);
     const { totalWords, estimatedReadingTime } = calculateStats(chapters);
@@ -195,7 +205,7 @@ Deno.serve(async (req) => {
         estimatedReadingTime,
       }
     }), {
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
 
   } catch (error) {
@@ -205,7 +215,7 @@ Deno.serve(async (req) => {
       error: errorMessage
     }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
 });

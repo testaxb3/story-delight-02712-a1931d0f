@@ -3,6 +3,7 @@ import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { EbooksList } from '@/components/Admin/EbooksList';
 import { LinkEbookToBonus } from '@/components/Admin/LinkEbookToBonus';
 import { EbookCreationGuide } from '@/components/Admin/EbookCreationGuide';
+import { UploadMeltdownDecoder } from '@/components/Admin/UploadMeltdownDecoder';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -54,13 +55,17 @@ export function BonusesManagement({ onContentChanged }: BonusesManagementProps) 
 
         <TabsContent value="ebooks">
           <Card className="p-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold mb-2">Ebooks Criados</h3>
                 <p className="text-sm text-muted-foreground">
                   Gerencie os ebooks criados a partir de arquivos Markdown. Use a aba "Bonuses" para criar novos ebooks.
                 </p>
               </div>
+
+              {/* One-click uploader for Meltdown Decoder */}
+              <UploadMeltdownDecoder />
+
               <EbooksList />
             </div>
           </Card>
