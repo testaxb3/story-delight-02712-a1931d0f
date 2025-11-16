@@ -247,14 +247,69 @@ function BonusesContent() {
     [filteredAndSortedBonuses]
   );
 
-  // Loading state
+  // Loading state with premium skeleton
   if (isLoading) {
     return (
       <MainLayout>
         <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-12 md:pb-6">
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="ml-3 text-lg">Loading bonuses...</span>
+          <div className="container mx-auto px-4 py-8">
+            {/* Header Skeleton */}
+            <div className="mb-8 space-y-6">
+              <div className="relative overflow-hidden rounded-3xl p-8 bg-gradient-to-br from-primary/10 via-accent/5 to-secondary/10">
+                <div className="animate-pulse space-y-4">
+                  <div className="h-12 w-3/4 bg-muted/30 rounded-lg" />
+                  <div className="h-6 w-1/2 bg-muted/20 rounded-lg" />
+                </div>
+              </div>
+              
+              {/* Stats Skeleton */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="bonus-glass p-5 animate-pulse">
+                    <div className="h-10 w-10 bg-muted/30 rounded-xl mb-3" />
+                    <div className="h-8 w-16 bg-muted/30 rounded mb-2" />
+                    <div className="h-4 w-24 bg-muted/20 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Pills Skeleton */}
+            <div className="flex gap-2 mb-6 overflow-hidden">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="h-10 w-32 bg-muted/30 rounded-full animate-pulse" />
+              ))}
+            </div>
+            
+            {/* Cards Skeleton */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bonus-glass p-5 space-y-4"
+                >
+                  <div className="h-48 bg-muted/30 rounded-lg animate-pulse relative overflow-hidden">
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
+                      animate={{ x: ['-100%', '200%'] }}
+                      transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    />
+                  </div>
+                  <div className="space-y-3 animate-pulse">
+                    <div className="h-6 w-3/4 bg-muted/30 rounded" />
+                    <div className="h-4 w-full bg-muted/20 rounded" />
+                    <div className="h-4 w-5/6 bg-muted/20 rounded" />
+                    <div className="flex gap-2 mt-4">
+                      <div className="h-10 flex-1 bg-muted/30 rounded-lg" />
+                      <div className="h-10 w-20 bg-muted/20 rounded-lg" />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </MainLayout>
