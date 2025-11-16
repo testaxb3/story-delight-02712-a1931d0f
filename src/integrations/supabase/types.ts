@@ -47,6 +47,13 @@ export type Database = {
             foreignKeyName: "admin_audit_log_admin_id_fkey"
             columns: ["admin_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -182,6 +189,13 @@ export type Database = {
             foreignKeyName: "bonuses_archived_by_fkey"
             columns: ["archived_by"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -232,6 +246,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "child_profiles_parent_id_fkey"
             columns: ["parent_id"]
@@ -411,6 +432,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
@@ -643,6 +671,13 @@ export type Database = {
             foreignKeyName: "notifications_actor_id_fkey"
             columns: ["actor_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -797,6 +832,13 @@ export type Database = {
             foreignKeyName: "post_comments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -912,6 +954,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "posts"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "post_likes_user_id_fkey"
@@ -1192,6 +1241,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "scripts_with_full_stats"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "script_feedback_user_id_fkey"
@@ -1708,6 +1764,13 @@ export type Database = {
             foreignKeyName: "user_badges_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1765,6 +1828,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "bonuses_with_user_progress"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bonuses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "user_bonuses_user_id_fkey"
@@ -1936,6 +2006,13 @@ export type Database = {
             foreignKeyName: "user_followers_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_followers_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1945,6 +2022,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "public_profiles"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
           },
           {
             foreignKeyName: "user_followers_following_id_fkey"
@@ -2145,6 +2229,13 @@ export type Database = {
             foreignKeyName: "bonuses_archived_by_fkey"
             columns: ["archived_by"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2220,6 +2311,13 @@ export type Database = {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2258,6 +2356,13 @@ export type Database = {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2269,6 +2374,26 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dashboard_stats: {
+        Row: {
+          active_users_week: number | null
+          average_stress: number | null
+          meltdowns_after_day_7: number | null
+          meltdowns_before_day_7: number | null
+          posts_this_week: number | null
+          script_uses_today: number | null
+          script_uses_week: number | null
+          scripts_today_count: number | null
+          total_pdfs: number | null
+          total_script_uses: number | null
+          total_scripts: number | null
+          total_tracker_entries: number | null
+          total_videos: number | null
+          unique_scripts_used: number | null
+          user_id: string | null
+        }
+        Relationships: []
       }
       ebooks_with_stats: {
         Row: {
@@ -2361,6 +2486,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
           {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["author_id"]

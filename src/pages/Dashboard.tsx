@@ -21,6 +21,7 @@ import { getRandomSuccessStory, type SuccessStory } from '@/lib/successStories';
 import { useLiveStats } from '@/hooks/useLiveStats';
 import { getBrainTypeIcon } from '@/lib/brainTypes';
 import { useVideoProgress } from '@/hooks/useVideoProgress';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 
 // Premium Dashboard Components
 import { HeroRecommendation } from '@/components/Dashboard/HeroRecommendation';
@@ -59,24 +60,33 @@ export default function Dashboard() {
   const [showPWAGuide, setShowPWAGuide] = useState(false);
   const { activeChild, onboardingRequired } = useChildProfiles();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [summaryLoading, setSummaryLoading] = useState(false);
-  const [trackerSummary, setTrackerSummary] = useState({
-    averageStress: null as number | null,
-    meltdownBefore: null as number | null,
-    meltdownAfter: null as number | null,
-    totalEntries: 0,
-  });
-  const [scriptsUsedCount, setScriptsUsedCount] = useState(0);
-  const [loadingScriptsUsed, setLoadingScriptsUsed] = useState(false);
-  const [contentCounts, setContentCounts] = useState({ scripts: 0, videos: 0, pdfs: 0 });
   const [videos, setVideos] = useState<VideoRow[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
-  const { stats: liveStats, loading: loadingLiveStats } = useLiveStats();
+  
+  // Optimized: Single query for all dashboard stats
+  const { data: dashboardStats, isLoading: loadingDashboardStats } = useDashboardStats();
   const { progress, loading: loadingProgress } = useVideoProgress();
 
+  // Derived values from dashboard stats
+  const trackerSummary = {
+    averageStress: dashboardStats?.averageStress ?? null,
+    meltdownBefore: dashboardStats?.meltdownsBefore ?? null,
+    meltdownAfter: dashboardStats?.meltdownsAfter ?? null,
+    totalEntries: dashboardStats?.totalTrackerEntries ?? 0,
+  };
+  const scriptsUsedCount = dashboardStats?.uniqueScriptsUsed ?? 0;
+  const contentCounts = {
+    scripts: dashboardStats?.totalScripts ?? 0,
+    videos: dashboardStats?.totalVideos ?? 0,
+    pdfs: dashboardStats?.totalPdfs ?? 0,
+  };
+  const scriptsUsed = scriptsUsedCount;
+  const videosWatched = 0; // TODO: implement from dashboard_stats
+  const currentStreak = Math.max(trackerSummary.totalEntries, 1);
+
   // Track initial loading state
-  const isInitialLoading = loadingScriptsUsed || loadingVideos || summaryLoading;
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
     // ✅ SECURITY: Check quiz state from database instead of localStorage
@@ -91,120 +101,6 @@ export default function Dashboard() {
       setShowOnboardingModal(false);
     }
   }, [onboardingRequired, user]);
-
-  const meltdownValueMap = useMemo(() => ({
-    '0': 0,
-    '1-2': 1.5,
-    '3-5': 4,
-    '5+': 6,
-  }), []);
-
-  const loadSummary = useCallback(async () => {
-    if (!user?.profileId || !activeChild?.id) {
-      setTrackerSummary({
-        averageStress: null,
-        meltdownBefore: null,
-        meltdownAfter: null,
-        totalEntries: 0,
-      });
-      setSummaryLoading(false);
-      return;
-    }
-
-    setSummaryLoading(true);
-    const { data, error } = await supabase
-      .from('tracker_days')
-      .select('stress_level, meltdown_count, completed, completed_at')
-      .eq('user_id', user.profileId)
-      .eq('child_id', activeChild.id)
-      .order('completed_at', { ascending: true })
-      .returns<Array<{
-        stress_level: number | null;
-        meltdown_count: string | null;
-        completed: boolean | null;
-        completed_at: string | null;
-      }>>();
-
-    if (error) {
-      console.error('Failed to load tracker summary', error);
-      setTrackerSummary({
-        averageStress: null,
-        meltdownBefore: null,
-        meltdownAfter: null,
-        totalEntries: 0,
-      });
-      setSummaryLoading(false);
-      return;
-    }
-
-    const completedEntries = (data || []).filter((entry) => entry.completed);
-    const meltdownSeries = completedEntries
-      .map((entry) => (entry.meltdown_count ? meltdownValueMap[entry.meltdown_count] : null))
-      .filter((value): value is number => value !== null && value !== undefined);
-    const stressSeries = completedEntries
-      .map((entry) => entry.stress_level)
-      .filter((value): value is number => typeof value === 'number');
-
-    const average = (values: number[]) =>
-      values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
-
-    const baselineSample = meltdownSeries.slice(0, Math.min(3, meltdownSeries.length));
-    const latestSample = meltdownSeries.slice(Math.max(meltdownSeries.length - 3, 0));
-
-    setTrackerSummary({
-      averageStress: average(stressSeries),
-      meltdownBefore: average(baselineSample),
-      meltdownAfter: average(latestSample),
-      totalEntries: completedEntries.length,
-    });
-    setSummaryLoading(false);
-  }, [activeChild?.id, meltdownValueMap, user?.profileId]);
-
-  const loadScriptsUsed = useCallback(async () => {
-    if (!user?.id) {
-      setScriptsUsedCount(0);
-      setLoadingScriptsUsed(false);
-      return;
-    }
-
-    setLoadingScriptsUsed(true);
-    const { count, error } = await supabase
-      .from('script_usage')
-      .select('id', { count: 'exact', head: true })
-      .eq('user_id', user.id);
-
-    if (error) {
-      console.error('Failed to load scripts used count', error);
-      setScriptsUsedCount(0);
-    } else {
-      setScriptsUsedCount(count ?? 0);
-    }
-    setLoadingScriptsUsed(false);
-  }, [user?.id]);
-
-  const loadContentCounts = useCallback(async () => {
-    const [scriptsResponse, videosResponse, pdfsResponse] = await Promise.all([
-      supabase.from('scripts').select('id', { count: 'exact', head: true }),
-      supabase.from('videos').select('id', { count: 'exact', head: true }),
-      supabase.from('pdfs').select('id', { count: 'exact', head: true })
-    ]);
-
-    if (scriptsResponse.error) {
-      console.error('Failed to load script count', scriptsResponse.error);
-    }
-    if (videosResponse.error) {
-      console.error('Failed to load video count', videosResponse.error);
-    }
-    if (pdfsResponse.error) {
-      console.error('Failed to load pdf count', pdfsResponse.error);
-    }
-
-    setContentCounts({
-      scripts: scriptsResponse.count ?? 0,
-      videos: videosResponse.count ?? 0,
-      pdfs: pdfsResponse.count ?? 0,
-    });
-  }, []);
 
   const loadVideos = useCallback(async () => {
     setLoadingVideos(true);
@@ -223,19 +119,9 @@ export default function Dashboard() {
     setLoadingVideos(false);
   }, []);
 
-
   useEffect(() => {
-    loadSummary();
-  }, [loadSummary]);
-
-  useEffect(() => {
-    loadScriptsUsed();
-  }, [loadScriptsUsed]);
-
-  useEffect(() => {
-    loadContentCounts();
     loadVideos();
-  }, [loadContentCounts, loadVideos]);
+  }, [loadVideos]);
 
   // Welcome modal disabled - premium system being refactored
 
@@ -243,8 +129,7 @@ export default function Dashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentStory(getRandomSuccessStory());
-    }, 30000); // 30 seconds
-
+    }, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -258,12 +143,6 @@ export default function Dashboard() {
     // Welcome modal disabled - premium system being refactored
     checkPWAInstall();
   };
-
-  const totalDays = 30;
-  const currentDay = Math.min(trackerSummary.totalEntries + 1, totalDays);
-  const scriptsUsed = scriptsUsedCount;
-  const videosWatched = 0;
-  const currentStreak = Math.max(trackerSummary.totalEntries, 1);
 
   const getName = () => {
     return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Friend';
@@ -364,11 +243,11 @@ export default function Dashboard() {
       }
       return `Tantrums reduced from ${before} to ${after}! 📉`;
     }
-    if (summaryLoading) {
+    if (loadingDashboardStats) {
       return 'Crunching the latest progress…';
     }
     return 'Log your days in My Plan to see real progress here.';
-  }, [trackerSummary, summaryLoading]);
+  }, [trackerSummary, loadingDashboardStats]);
 
   const stressCopy = useMemo(() => {
     if (trackerSummary.averageStress !== null && trackerSummary.totalEntries > 0) {
