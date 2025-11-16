@@ -66,16 +66,12 @@ export default function Auth() {
           toast.error(errorMessage);
         }
       } else {
-        toast.success(isSignUp ? 'Account created successfully! Welcome to NEP System!' : 'Welcome back!');
-
         if (isSignUp) {
-          const hasCompletedOnboarding = localStorage.getItem('pwa_onboarding_completed');
-          if (!hasCompletedOnboarding) {
-            navigate('/onboarding', { replace: true });
-          } else {
-            navigate('/', { replace: true });
-          }
+          toast.success('Account created! Please check your email to confirm your account before signing in.', { duration: 8000 });
+          setIsSignUp(false); // Switch to sign-in mode
+          setPassword(''); // Clear password field
         } else {
+          toast.success('Welcome back!');
           navigate('/', { replace: true });
         }
       }
