@@ -33,6 +33,7 @@ const Bonuses = lazy(() => import("./pages/Bonuses"));
 const EbookReader = lazy(() => import("./pages/EbookReader"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
+const ScriptRequests = lazy(() => import("./pages/ScriptRequests"));
 
 // Loading fallback component for Suspense
 const PageLoader = () => (
@@ -110,6 +111,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Scripts />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/script-requests"
+          element={
+            <ProtectedRoute>
+              <ScriptRequests />
             </ProtectedRoute>
           }
         />

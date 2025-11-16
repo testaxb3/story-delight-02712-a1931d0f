@@ -45,11 +45,11 @@ const requestSchema = z.object({
 type RequestFormValues = z.infer<typeof requestSchema>;
 
 const LOCATION_OPTIONS = [
-  { id: 'home', label: 'Casa' },
-  { id: 'school', label: 'Escola' },
-  { id: 'public', label: 'Lugares públicos' },
-  { id: 'transport', label: 'Transporte' },
-  { id: 'family', label: 'Eventos familiares' },
+  { id: 'home', label: 'Home' },
+  { id: 'school', label: 'School' },
+  { id: 'public', label: 'Public places' },
+  { id: 'transport', label: 'Transportation' },
+  { id: 'family', label: 'Family events' },
 ];
 
 const BRAIN_PROFILES = [
@@ -68,10 +68,10 @@ const EMOTIONAL_STATES = [
 ];
 
 const URGENCY_LEVELS = [
-  { value: 'low', label: 'Baixa - Planejamento futuro' },
-  { value: 'medium', label: 'Média - Acontece regularmente' },
-  { value: 'high', label: 'Alta - Acontece diariamente' },
-  { value: 'urgent', label: 'Urgente - Preciso de ajuda agora!' },
+  { value: 'low', label: 'Low - Future planning' },
+  { value: 'medium', label: 'Medium - Happens regularly' },
+  { value: 'high', label: 'High - Happens daily' },
+  { value: 'urgent', label: 'Urgent - Need help now!' },
 ];
 
 interface RequestScriptModalProps {
@@ -119,31 +119,31 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5 text-primary" />
-            Solicitar Novo Script
+            Request New Script
           </DialogTitle>
           <DialogDescription>
-            Descreva a situação que você está enfrentando e nossa equipe criará um script personalizado para você.
+            Describe the situation you're facing and our team will create a personalized script for you.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Situação */}
+            {/* Situation */}
             <FormField
               control={form.control}
               name="situation_description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descreva a Situação *</FormLabel>
+                  <FormLabel>Describe the Situation *</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Ex: Meu filho de 6 anos tem meltdowns toda manhã antes da escola. Ele grita, se joga no chão e se recusa a se vestir..."
+                      placeholder="Ex: My 6-year-old has meltdowns every morning before school. He screams, throws himself on the floor and refuses to get dressed..."
                       className="min-h-[120px]"
                       {...field}
                     />
                   </FormControl>
                   <FormDescription>
-                    Seja específico sobre o que acontece, quando acontece e como seu filho reage
+                    Be specific about what happens, when it happens, and how your child reacts
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -151,17 +151,17 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Perfil Cerebral */}
+              {/* Brain Profile */}
               <FormField
                 control={form.control}
                 name="child_brain_profile"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Perfil Cerebral da Criança</FormLabel>
+                    <FormLabel>Child's Brain Profile</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Selecione o perfil" />
+                          <SelectValue placeholder="Select profile" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -177,13 +177,13 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
                 )}
               />
 
-              {/* Idade */}
+              {/* Age */}
               <FormField
                 control={form.control}
                 name="child_age"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Idade da Criança</FormLabel>
+                    <FormLabel>Child's Age</FormLabel>
                     <FormControl>
                       <Input type="number" min="1" max="18" placeholder="Ex: 7" {...field} />
                     </FormControl>
@@ -193,9 +193,9 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
               />
             </div>
 
-            {/* Local onde acontece */}
+            {/* Location */}
             <FormItem>
-              <FormLabel>Onde acontece?</FormLabel>
+              <FormLabel>Where does it happen?</FormLabel>
               <div className="grid grid-cols-2 gap-3 mt-2">
                 {LOCATION_OPTIONS.map((location) => (
                   <div key={location.id} className="flex items-center space-x-2">
@@ -221,46 +221,42 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
               </div>
             </FormItem>
 
-            {/* Estado Emocional dos Pais */}
+            {/* Parent Emotional State */}
             <FormField
               control={form.control}
               name="parent_emotional_state"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Como você costuma estar nessa situação?</FormLabel>
+                  <FormLabel>How do you usually feel in this situation?</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione seu estado emocional" />
+                        <SelectValue placeholder="Select your emotional state" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {EMOTIONAL_STATES.map((state) => (
                         <SelectItem key={state} value={state}>
-                          {state === 'calm' && 'Calmo(a)'}
-                          {state === 'stressed' && 'Estressado(a)'}
-                          {state === 'frustrated' && 'Frustrado(a)'}
-                          {state === 'exhausted' && 'Exausto(a)'}
-                          {state === 'overwhelmed' && 'Sobrecarregado(a)'}
+                          {state.charAt(0).toUpperCase() + state.slice(1)}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   <FormDescription>
-                    Isso nos ajuda a criar um script adequado ao seu estado emocional
+                    This helps us create a script suitable for your emotional state
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Nível de Urgência */}
+            {/* Urgency Level */}
             <FormField
               control={form.control}
               name="urgency_level"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nível de Urgência *</FormLabel>
+                  <FormLabel>Urgency Level *</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
@@ -280,16 +276,16 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
               )}
             />
 
-            {/* Notas Adicionais */}
+            {/* Additional Notes */}
             <FormField
               control={form.control}
               name="additional_notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Informações Adicionais</FormLabel>
+                  <FormLabel>Additional Information</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Qualquer outra informação que possa ser útil..."
+                      placeholder="Any other information that might be helpful..."
                       className="min-h-[80px]"
                       {...field}
                     />
@@ -306,11 +302,11 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
                 onClick={() => onOpenChange(false)}
                 disabled={isCreating}
               >
-                Cancelar
+                Cancel
               </Button>
               <Button type="submit" disabled={isCreating}>
                 {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Enviar Solicitação
+                Submit Request
               </Button>
             </div>
           </form>

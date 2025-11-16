@@ -63,14 +63,14 @@ export const useScriptRequests = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['script-requests'] });
-      toast.success('Solicitação enviada com sucesso!', {
-        description: 'Nossa equipe irá analisar seu pedido em breve.',
+      toast.success('Request submitted successfully!', {
+        description: 'Our team will review your request soon.',
       });
     },
     onError: (error) => {
       console.error('Error creating script request:', error);
-      toast.error('Erro ao enviar solicitação', {
-        description: 'Tente novamente mais tarde.',
+      toast.error('Failed to submit request', {
+        description: 'Please try again later.',
       });
     },
   });
@@ -133,11 +133,11 @@ export const useAdminScriptRequests = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-script-requests'] });
-      toast.success('Solicitação atualizada com sucesso!');
+      toast.success('Request updated successfully!');
     },
     onError: (error) => {
       console.error('Error updating script request:', error);
-      toast.error('Erro ao atualizar solicitação');
+      toast.error('Failed to update request');
     },
   });
 

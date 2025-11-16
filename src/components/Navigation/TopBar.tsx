@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Plus, Moon, Sun } from 'lucide-react';
+import { ChevronDown, Plus, Moon, Sun, MessageCircleHeart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -135,6 +135,17 @@ export function TopBar() {
 
         {/* Right actions */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Script Requests button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate('/script-requests')}
+            aria-label="My Script Requests"
+            className="rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
+          >
+            <MessageCircleHeart className="h-5 w-5 transition-transform" />
+          </Button>
+
           {/* Theme toggle button */}
           <Button
             variant="ghost"
