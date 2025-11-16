@@ -9,7 +9,7 @@ const EbookReaderPage = () => {
   const { ebookId } = useParams();
 
   // Load dynamic ebook content
-  const { ebook, chapters, isLoading, error } = useEbookContent(ebookId);
+  const { ebook, chapters, chaptersMarkdown, markdown_source, isLoading, error } = useEbookContent(ebookId);
   
   // Load user progress
   const { 
@@ -51,8 +51,9 @@ const EbookReaderPage = () => {
     );
   }
 
-  // Use dynamic chapters if available, fallback to hardcoded
-  const finalChapters = chapters && chapters.length > 0 ? chapters : ebookContent;
+  // Prefer markdown chapters, fallback to parsed chapters, then hardcoded
+  const useMarkdown = chaptersMarkdown && chaptersMarkdown.length > 0;
+  const finalChapters = useMarkdown ? chaptersMarkdown : (chapters && chapters.length > 0 ? chapters : ebookContent);
 
   if (!finalChapters || finalChapters.length === 0) {
     return (
@@ -81,6 +82,7 @@ const EbookReaderPage = () => {
   return (
     <EbookReader
       chapters={finalChapters}
+      useMarkdown={useMarkdown}
       initialChapter={initialChapter}
       initialScrollPosition={initialScrollPosition}
       completedChapters={completedChapters}

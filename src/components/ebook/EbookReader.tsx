@@ -3,6 +3,7 @@ import { X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "./ProgressBar";
 import { ChapterContent } from "./ChapterContent";
+import { MarkdownChapterContent } from "./MarkdownChapterContent";
 import { NavigationButtons } from "./NavigationButtons";
 import { ChapterCover } from "./ChapterCover";
 import { TableOfContents } from "./TableOfContents";
@@ -10,10 +11,12 @@ import { SearchDialog } from "./SearchDialog";
 import { ReadingControls } from "./ReadingControls";
 import { NotesPanel } from "./NotesPanel";
 import { Chapter } from "@/data/ebookContent";
+import { ChapterMarkdown } from "@/hooks/useEbookContent";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
 interface EbookReaderProps {
-  chapters: Chapter[];
+  chapters: Chapter[] | ChapterMarkdown[];
+  useMarkdown?: boolean;
   initialChapter?: number;
   initialScrollPosition?: number;
   completedChapters?: Set<number>;
@@ -24,7 +27,8 @@ interface EbookReaderProps {
 }
 
 export const EbookReader = ({ 
-  chapters, 
+  chapters,
+  useMarkdown = false,
   initialChapter = 0,
   initialScrollPosition = 0,
   completedChapters: externalCompleted,
@@ -55,6 +59,18 @@ export const EbookReader = ({
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentChapter = chapters[currentChapterIndex];
+  
+  // Extract title, subtitle, and content based on chapter type
+  const chapterTitle = useMarkdown 
+    ? (currentChapter as ChapterMarkdown).title 
+    : (currentChapter as Chapter).title;
+  const chapterSubtitle = useMarkdown 
+    ? undefined 
+    : (currentChapter as Chapter).subtitle;
+  const chapterContent = useMarkdown 
+    ? (currentChapter as ChapterMarkdown).markdown 
+    : (currentChapter as Chapter).content;
+    
   const progress = chapters.length > 0 
     ? Math.round(((currentChapterIndex + 1) / chapters.length) * 100)
     : 0;
@@ -180,11 +196,16 @@ export const EbookReader = ({
             <div className="flex items-center gap-2">
               <TableOfContents
                 chapters={chapters}
+                useMarkdown={useMarkdown}
                 currentChapter={currentChapterIndex}
                 onChapterSelect={handleChapterSelect}
                 completedChapters={completedChapters}
               />
-              <SearchDialog chapters={chapters} onResultClick={handleChapterSelect} />
+              <SearchDialog 
+                chapters={chapters} 
+                useMarkdown={useMarkdown}
+                onResultClick={handleChapterSelect} 
+              />
               <NotesPanel currentChapter={currentChapterIndex} />
               <ReadingControls
                 fontSize={fontSize}
@@ -209,14 +230,18 @@ export const EbookReader = ({
         <div className="mt-12">
           <ChapterCover
             chapterNumber={currentChapterIndex + 1}
-            title={currentChapter.title}
-            subtitle={currentChapter.subtitle}
+            title={chapterTitle}
+            subtitle={chapterSubtitle}
           />
         </div>
         
         {/* Chapter Content */}
         <div className="mt-8 animate-fade-in">
-          <ChapterContent blocks={currentChapter.content} />
+          {useMarkdown ? (
+            <MarkdownChapterContent markdown={chapterContent as string} />
+          ) : (
+            <ChapterContent blocks={chapterContent as any} />
+          )}
         </div>
         
         {/* Page Number */}

@@ -3,9 +3,11 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Chapter } from "@/data/ebookContent";
+import { ChapterMarkdown } from "@/hooks/useEbookContent";
 
 interface TableOfContentsProps {
-  chapters: Chapter[];
+  chapters: Chapter[] | ChapterMarkdown[];
+  useMarkdown?: boolean;
   currentChapter: number;
   onChapterSelect: (index: number) => void;
   completedChapters: Set<number>;
@@ -13,6 +15,7 @@ interface TableOfContentsProps {
 
 export const TableOfContents = ({
   chapters,
+  useMarkdown = false,
   currentChapter,
   onChapterSelect,
   completedChapters,
@@ -33,6 +36,13 @@ export const TableOfContents = ({
             {chapters.map((chapter, index) => {
               const isCompleted = completedChapters.has(index);
               const isCurrent = index === currentChapter;
+              
+              const title = useMarkdown 
+                ? (chapter as ChapterMarkdown).title 
+                : (chapter as Chapter).title;
+              const subtitle = useMarkdown 
+                ? undefined 
+                : (chapter as Chapter).subtitle;
               
               return (
                 <button
@@ -55,11 +65,11 @@ export const TableOfContents = ({
                         Chapter {index + 1}
                       </div>
                       <div className={`font-display text-sm ${isCurrent ? "text-primary font-semibold" : "text-foreground"}`}>
-                        {chapter.title}
+                        {title}
                       </div>
-                      {chapter.subtitle && (
+                      {subtitle && (
                         <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                          {chapter.subtitle}
+                          {subtitle}
                         </div>
                       )}
                     </div>
