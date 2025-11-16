@@ -51,11 +51,24 @@ export function useEbookContent(ebookId: string | undefined) {
       // Parse markdown into chapters (split by ## headings)
       const chaptersMarkdown: ChapterMarkdown[] = [];
       if (data.markdown_source) {
-        const markdownChapters = data.markdown_source.split(/(?=^## )/gm).filter(Boolean);
+        // Split by headings (##, ###, etc) at the start of a line
+        const markdownChapters = data.markdown_source
+          .split(/(?=^#{2,3}\s)/gm)
+          .filter(chunk => chunk.trim().length > 0);
         
-        markdownChapters.forEach((chapterMd) => {
-          const titleMatch = chapterMd.match(/^## (.+)$/m);
-          const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
+        markdownChapters.forEach((chapterMd, index) => {
+          // Extract title from the chapter markdown
+          const titleMatch = chapterMd.match(/^#{2,3}\s+(.+)$/m);
+          let title = titleMatch ? titleMatch[1].trim() : `Chapter ${index + 1}`;
+          
+          // If no title found, try to get from first line
+          if (!titleMatch) {
+            const firstLine = chapterMd.split('\n')[0]?.trim();
+            if (firstLine && firstLine.length > 0 && firstLine.length < 100) {
+              title = firstLine.replace(/^#+\s*/, '').trim();
+            }
+          }
+          
           chaptersMarkdown.push({ title, markdown: chapterMd });
         });
       }
