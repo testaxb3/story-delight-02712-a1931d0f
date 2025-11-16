@@ -116,7 +116,7 @@ export default function Auth() {
             
             <div className="flex items-center gap-2 relative">
               <span className="text-sm font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                1.2k+ parents transformaram suas famílias
+                1.2k+ parents transformed their families
               </span>
               <CheckCircle2 className="w-5 h-5 text-primary animate-pulse" />
             </div>
@@ -136,13 +136,13 @@ export default function Auth() {
               </div>
               
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-                {isSignUp ? 'Crie sua conta' : 'Bem-vindo de volta'}
+                {isSignUp ? 'Create your account' : 'Welcome back'}
               </h1>
               
               <p className="text-muted-foreground text-lg max-w-sm mx-auto">
                 {isSignUp 
-                  ? 'Junte-se a milhares de pais transformando suas famílias' 
-                  : 'Continue sua jornada rumo à parentalidade consciente'}
+                  ? 'Join thousands of parents transforming their families' 
+                  : 'Continue your journey to conscious parenting'}
               </p>
             </div>
 
@@ -160,7 +160,7 @@ export default function Auth() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="seu@email.com"
+                      placeholder="your@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-12 h-14 bg-background/50 backdrop-blur-xl border-border/50 hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
@@ -173,7 +173,7 @@ export default function Auth() {
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
                   <Lock className="w-4 h-4 text-primary" />
-                  Senha
+                  Password
                 </Label>
                 <div className="group relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
@@ -204,7 +204,7 @@ export default function Auth() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      {isSignUp ? '✨ Criar Conta' : '🚀 Entrar'}
+                      {isSignUp ? '✨ Create Account' : '🚀 Sign In'}
                     </>
                   )}
                 </span>
@@ -217,7 +217,7 @@ export default function Auth() {
                 <div className="w-full border-t border-border/50"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-4 text-muted-foreground font-medium">ou</span>
+                <span className="bg-card px-4 text-muted-foreground font-medium">or</span>
               </div>
             </div>
 
@@ -229,8 +229,8 @@ export default function Auth() {
               >
                 <span className="relative">
                   {isSignUp 
-                    ? 'Já tem uma conta? Faça login' 
-                    : 'Não tem conta? Cadastre-se'}
+                    ? 'Already have an account? Sign in' 
+                    : "Don't have an account? Sign up"}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-300"></span>
                 </span>
               </button>
@@ -240,7 +240,7 @@ export default function Auth() {
             {isSignUp && (
               <div className="pt-6 border-t border-primary/10">
                 <p className="text-sm font-semibold text-center mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  O que você vai receber:
+                  What you'll get:
                 </p>
                 <div className="grid gap-4">
                   <div className="group relative overflow-hidden">
@@ -250,8 +250,8 @@ export default function Auth() {
                         <Shield className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Seguro & Protegido</p>
-                        <p className="text-xs text-muted-foreground">Seus dados são criptografados e protegidos</p>
+                        <p className="text-sm font-semibold text-foreground mb-1">Safe & Secure</p>
+                        <p className="text-xs text-muted-foreground">Your data is encrypted and protected</p>
                       </div>
                     </div>
                   </div>
@@ -263,8 +263,8 @@ export default function Auth() {
                         <Zap className="w-5 h-5 text-accent" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Acesso Instantâneo</p>
-                        <p className="text-xs text-muted-foreground">Comece a usar todos os recursos imediatamente</p>
+                        <p className="text-sm font-semibold text-foreground mb-1">Instant Access</p>
+                        <p className="text-xs text-muted-foreground">Start using all features immediately</p>
                       </div>
                     </div>
                   </div>
@@ -276,8 +276,8 @@ export default function Auth() {
                         <DollarSign className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Acesso Completo</p>
-                        <p className="text-xs text-muted-foreground">Acesso a todos os scripts e vídeos premium</p>
+                        <p className="text-sm font-semibold text-foreground mb-1">Full Access</p>
+                        <p className="text-xs text-muted-foreground">Access all premium scripts and videos</p>
                       </div>
                     </div>
                   </div>
@@ -293,21 +293,21 @@ export default function Auth() {
             <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
               <Shield className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Seguro</span>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Secure</span>
           </div>
           
           <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
             <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg shadow-accent/20 group-hover:shadow-accent/40 transition-shadow duration-300">
               <Zap className="w-5 h-5 text-accent" />
             </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">Instantâneo</span>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">Instant</span>
           </div>
           
           <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
             <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
               <CheckCircle2 className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Acesso Total</span>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Full Access</span>
           </div>
         </div>
 
@@ -319,7 +319,7 @@ export default function Auth() {
               <Info className="w-5 h-5 text-blue-500" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Ao se cadastrar, você concorda com nossos Termos de Serviço e Política de Privacidade. Seus dados nunca serão compartilhados com terceiros.
+              By signing up, you agree to our Terms of Service and Privacy Policy. We'll never share your data with third parties.
             </p>
           </div>
         </div>
