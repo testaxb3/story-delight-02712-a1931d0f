@@ -112,24 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      // ✅ SECURITY: Validate if email is approved for access
-      const { data: isApproved, error: checkError } = await supabase
-        .rpc('is_email_approved', { p_email: email.toLowerCase().trim() });
-
-      if (checkError) {
-        console.error('Error checking approved status:', checkError);
-        return { error: { message: 'Error validating access. Please try again.' } };
-      }
-
-      if (!isApproved) {
-        return { 
-          error: { 
-            message: 'Access restricted to NEP System members. If you purchased access, please contact support@nepsystem.com' 
-          } 
-        };
-      }
-
-      // Create account with premium status
+      // Create account
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -137,8 +120,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           emailRedirectTo: `${window.location.origin}/`,
           data: {
             email: email,
-            full_name: email.split('@')[0],
-            premium: true
+            full_name: email.split('@')[0]
           }
         }
       });
@@ -150,14 +132,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (data.user) {
         console.log('User created, creating profile...');
-        // Create profile with premium status
+        // Create profile
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .insert({
             id: data.user.id,
             email,
-            name: email.split('@')[0],
-            premium: true  // ✅ Set premium for approved users
+            name: email.split('@')[0]
           })
           .select()
           .single();
@@ -168,16 +149,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           console.log('Profile created successfully:', profile);
         }
-
-        // ✅ Update approved_users with user_id
-        await supabase
-          .from('approved_users')
-          .update({
-            user_id: data.user.id,
-            account_created: true,
-            account_created_at: new Date().toISOString()
-          })
-          .eq('email', email.toLowerCase().trim());
       }
 
       return { error: null };
