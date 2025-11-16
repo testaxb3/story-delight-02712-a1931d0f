@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAdminScriptRequests } from '@/hooks/useScriptRequests';
+import { supabase } from '@/integrations/supabase/client';
 import {
   Card,
   CardContent,
@@ -27,7 +28,6 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertCircle, Clock, CheckCircle, XCircle, Eye, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 const STATUS_COLORS = {
   pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
@@ -44,10 +44,10 @@ const STATUS_ICONS = {
 };
 
 const STATUS_LABELS = {
-  pending: 'Pendente',
-  in_review: 'Em Análise',
-  completed: 'Concluído',
-  rejected: 'Rejeitado',
+  pending: 'Pending Review',
+  in_review: 'In Progress',
+  completed: 'Completed',
+  rejected: 'Cannot Complete',
 };
 
 const URGENCY_COLORS = {
@@ -75,7 +75,27 @@ export function ScriptRequestsPanel() {
         },
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          // Send notification to user about status change
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user && selectedRequest.user_id) {
+            const statusMessages = {
+              in_review: 'Your script request is now being reviewed by our team.',
+              completed: 'Your script request has been completed! Check the admin notes for details.',
+              rejected: 'Your script request could not be completed. See admin notes for more information.',
+              pending: 'Your script request status has been updated to pending.',
+            };
+
+            await supabase.from('notifications').insert({
+              user_id: selectedRequest.user_id,
+              type: 'system',
+              type_enum: 'system',
+              title: 'Script Request Update',
+              message: statusMessages[newStatus as keyof typeof statusMessages],
+              link: '/script-requests',
+            });
+          }
+
           setSelectedRequest(null);
           setAdminNotes('');
           setNewStatus('');
@@ -105,9 +125,9 @@ export function ScriptRequestsPanel() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Solicitações de Scripts</CardTitle>
+          <CardTitle>Script Requests</CardTitle>
           <CardDescription>
-            Gerencie solicitações de scripts personalizados dos usuários
+            Manage custom script requests from users
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -134,7 +154,7 @@ export function ScriptRequestsPanel() {
               <TabsContent key={status} value={status} className="space-y-4 mt-4">
                 {filterRequestsByStatus(status === 'all' ? undefined : status).length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground">
-                    Nenhuma solicitação encontrada
+                    No requests found
                   </div>
                 ) : (
                   filterRequestsByStatus(status === 'all' ? undefined : status).map(
@@ -170,7 +190,6 @@ export function ScriptRequestsPanel() {
                                   {' · '}
                                   {formatDistanceToNow(new Date(request.created_at), {
                                     addSuffix: true,
-                                    locale: ptBR,
                                   })}
                                 </div>
                               </div>
@@ -215,51 +234,50 @@ export function ScriptRequestsPanel() {
       <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Detalhes da Solicitação</DialogTitle>
+            <DialogTitle>Request Details</DialogTitle>
             <DialogDescription>
-              Analise e gerencie a solicitação de script
+              Review and manage script request
             </DialogDescription>
           </DialogHeader>
 
           {selectedRequest && (
             <div className="space-y-6">
-              {/* Informações do Usuário */}
+              {/* User Info */}
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">Usuário:</span>{' '}
+                  <span className="font-medium">User:</span>{' '}
                   {selectedRequest.profiles?.name || selectedRequest.profiles?.email}
                 </div>
                 <div>
-                  <span className="font-medium">Criado:</span>{' '}
+                  <span className="font-medium">Created:</span>{' '}
                   {formatDistanceToNow(new Date(selectedRequest.created_at), {
                     addSuffix: true,
-                    locale: ptBR,
                   })}
                 </div>
                 {selectedRequest.child_brain_profile && (
                   <div>
-                    <span className="font-medium">Perfil:</span> {selectedRequest.child_brain_profile}
+                    <span className="font-medium">Profile:</span> {selectedRequest.child_brain_profile}
                   </div>
                 )}
                 {selectedRequest.child_age && (
                   <div>
-                    <span className="font-medium">Idade:</span> {selectedRequest.child_age} anos
+                    <span className="font-medium">Age:</span> {selectedRequest.child_age} years
                   </div>
                 )}
               </div>
 
-              {/* Descrição da Situação */}
+              {/* Situation Description */}
               <div>
-                <h4 className="font-medium mb-2">Situação Descrita:</h4>
+                <h4 className="font-medium mb-2">Situation Described:</h4>
                 <p className="text-sm bg-muted p-4 rounded-lg whitespace-pre-wrap">
                   {selectedRequest.situation_description}
                 </p>
               </div>
 
-              {/* Locais */}
+              {/* Locations */}
               {selectedRequest.location_type && selectedRequest.location_type.length > 0 && (
                 <div>
-                  <h4 className="font-medium mb-2">Locais onde acontece:</h4>
+                  <h4 className="font-medium mb-2">Locations where it happens:</h4>
                   <div className="flex gap-2 flex-wrap">
                     {selectedRequest.location_type.map((loc: string) => (
                       <Badge key={loc} variant="secondary">
@@ -270,25 +288,25 @@ export function ScriptRequestsPanel() {
                 </div>
               )}
 
-              {/* Estado Emocional */}
+              {/* Emotional State */}
               {selectedRequest.parent_emotional_state && (
                 <div>
-                  <h4 className="font-medium mb-2">Estado emocional dos pais:</h4>
+                  <h4 className="font-medium mb-2">Parent's emotional state:</h4>
                   <Badge variant="outline">{selectedRequest.parent_emotional_state}</Badge>
                 </div>
               )}
 
-              {/* Notas Adicionais */}
+              {/* Additional Notes */}
               {selectedRequest.additional_notes && (
                 <div>
-                  <h4 className="font-medium mb-2">Notas Adicionais:</h4>
+                  <h4 className="font-medium mb-2">Additional Notes:</h4>
                   <p className="text-sm bg-muted p-4 rounded-lg">{selectedRequest.additional_notes}</p>
                 </div>
               )}
 
-              {/* Gerenciamento Admin */}
+              {/* Admin Management */}
               <div className="border-t pt-6 space-y-4">
-                <h4 className="font-medium">Gerenciamento</h4>
+                <h4 className="font-medium">Management</h4>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Status</label>
@@ -297,20 +315,20 @@ export function ScriptRequestsPanel() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">Pendente</SelectItem>
-                      <SelectItem value="in_review">Em Análise</SelectItem>
-                      <SelectItem value="completed">Concluído</SelectItem>
-                      <SelectItem value="rejected">Rejeitado</SelectItem>
+                      <SelectItem value="pending">Pending Review</SelectItem>
+                      <SelectItem value="in_review">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="rejected">Cannot Complete</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Notas do Admin</label>
+                  <label className="text-sm font-medium mb-2 block">Admin Notes</label>
                   <Textarea
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
-                    placeholder="Adicione notas sobre o progresso, próximos passos, etc..."
+                    placeholder="Add notes about progress, next steps, or why it cannot be completed..."
                     className="min-h-[100px]"
                   />
                 </div>
@@ -321,11 +339,11 @@ export function ScriptRequestsPanel() {
                     onClick={() => setSelectedRequest(null)}
                     disabled={isUpdating}
                   >
-                    Cancelar
+                    Cancel
                   </Button>
                   <Button onClick={handleUpdateStatus} disabled={isUpdating}>
                     {isUpdating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Salvar Alterações
+                    Save Changes
                   </Button>
                 </div>
               </div>
