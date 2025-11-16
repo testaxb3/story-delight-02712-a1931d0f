@@ -2200,12 +2200,18 @@ export type Database = {
       }
       community_posts_with_profiles: {
         Row: {
+          author_brain_type: string | null
           author_name: string | null
+          author_photo_url: string | null
           content: string | null
           created_at: string | null
           id: string | null
+          image_thumbnail_url: string | null
           image_url: string | null
+          is_seed_post: boolean | null
+          post_type: string | null
           profile_name: string | null
+          search_vector: unknown
           updated_at: string | null
           user_id: string | null
         }
@@ -2243,6 +2249,7 @@ export type Database = {
           profile_email: string | null
           profile_name: string | null
           profile_photo: string | null
+          search_vector: unknown
           updated_at: string | null
           user_id: string | null
         }
@@ -2419,7 +2426,14 @@ export type Database = {
         Row: {
           age_max: number | null
           age_min: number | null
+          age_range: string | null
+          avoid_step1: string | null
+          avoid_step2: string | null
+          avoid_step3: string | null
+          backup_plan: string | null
           category: string | null
+          common_mistakes: string[] | null
+          common_variations: Json | null
           created_at: string | null
           difficulty: string | null
           difficulty_level:
@@ -2427,22 +2441,43 @@ export type Database = {
             | null
           duration_minutes: number | null
           emergency_suitable: boolean | null
+          estimated_time_minutes: number | null
           expected_time_seconds: number | null
+          feedback_count: number | null
           id: string | null
           intensity_level: string | null
           location_type: string[] | null
+          neurological_tip: string | null
           parent_state: string[] | null
+          parent_state_needed: string | null
+          pause_after_phrase_1: number | null
+          pause_after_phrase_2: number | null
+          phrase_1: string | null
+          phrase_1_action: string | null
+          phrase_2: string | null
+          phrase_2_action: string | null
+          phrase_3: string | null
+          phrase_3_action: string | null
           profile: string | null
+          related_script_ids: string[] | null
           requires_preparation: boolean | null
+          say_it_like_this_step1: string | null
+          say_it_like_this_step2: string | null
+          say_it_like_this_step3: string | null
           situation_trigger: string | null
+          strategy_steps: Json | null
           success_count: number | null
-          success_rate: number | null
+          success_speed: string | null
           tags: string[] | null
           the_situation: string | null
           time_optimal: string[] | null
           title: string | null
           usage_count: number | null
+          what_doesnt_work: string | null
+          what_to_expect: Json | null
+          why_this_works: string | null
           works_in_public: boolean | null
+          wrong_way: string | null
         }
         Relationships: []
       }
@@ -2468,7 +2503,6 @@ export type Database = {
           emergency_suitable: boolean | null
           estimated_time_minutes: number | null
           expected_time_seconds: number | null
-          favorite_count: number | null
           id: string | null
           intensity_level: string | null
           location_type: string[] | null
@@ -2492,14 +2526,14 @@ export type Database = {
           say_it_like_this_step3: string | null
           situation_trigger: string | null
           strategy_steps: Json | null
-          success_rate_percent: number | null
+          success_rate: number | null
           success_speed: string | null
           tags: string[] | null
           the_situation: string | null
           time_optimal: string[] | null
           title: string | null
-          total_feedback_count: number | null
-          total_usage_count: number | null
+          total_feedback: number | null
+          total_uses: number | null
           what_doesnt_work: string | null
           what_to_expect: Json | null
           why_this_works: string | null
