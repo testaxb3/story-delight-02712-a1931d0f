@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2 } from 'lucide-react';
+import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2, AlertCircle, ShoppingCart } from 'lucide-react';
 import { loginSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { useRateLimit } from '@/hooks/useRateLimit';
@@ -14,7 +14,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -144,15 +144,33 @@ export default function Auth() {
               </div>
               
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-                {isSignUp ? 'Create your account' : 'Welcome back'}
+                {isSignUp ? 'Criar Sua Conta' : 'Bem-vindo de Volta'}
               </h1>
               
               <p className="text-muted-foreground text-lg max-w-sm mx-auto">
                 {isSignUp 
-                  ? 'Join thousands of parents transforming their families' 
-                  : 'Continue your journey to conscious parenting'}
+                  ? 'Use o mesmo email da sua compra' 
+                  : 'Entre para continuar'}
               </p>
             </div>
+
+            {/* Important Notice for Sign Up */}
+            {isSignUp && (
+              <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-sm">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-foreground mb-1">
+                      ⚠️ Importante: Use o Email da Compra
+                    </p>
+                    <p className="text-muted-foreground">
+                      Você deve usar <strong>o mesmo email</strong> que usou para comprar o acesso ao NEP System. 
+                      Somente emails de compradores aprovados podem criar contas.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Premium Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -212,7 +230,7 @@ export default function Auth() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      {isSignUp ? '✨ Create Account' : '🚀 Sign In'}
+                      {isSignUp ? 'Criar Conta' : 'Entrar'}
                     </>
                   )}
                 </span>
@@ -237,11 +255,31 @@ export default function Auth() {
               >
                 <span className="relative">
                   {isSignUp 
-                    ? 'Already have an account? Sign in' 
-                    : "Don't have an account? Sign up"}
+                    ? 'Já tem uma conta? Entre aqui' 
+                    : 'Não tem conta? Cadastre-se'}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-300"></span>
                 </span>
               </button>
+              
+              {/* Purchase Link for New Users */}
+              {isSignUp && (
+                <div className="mt-6 pt-6 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground mb-3 text-center">
+                    Ainda não comprou o acesso?
+                  </p>
+                  <a
+                    href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 w-full justify-center"
+                  >
+                    <ShoppingCart className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-foreground">
+                      Comprar Acesso ao NEP System
+                    </span>
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Premium Benefits - only shown on sign up */}
