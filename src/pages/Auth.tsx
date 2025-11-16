@@ -79,238 +79,248 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-      {/* Enhanced Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/5" />
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-accent/15 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '3s' }} />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
+      {/* Premium Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/15 to-secondary/10 animate-gradient" />
+      
+      {/* Floating Orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/30 to-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-accent/30 to-primary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '10s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '12s' }} />
       </div>
 
-      {/* Grid pattern */}
-      <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+      {/* Premium Grid Pattern */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{ 
+        backgroundImage: 'linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px)',
+        backgroundSize: '50px 50px'
+      }} />
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Social proof badge */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2 bg-card/90 backdrop-blur-xl px-4 py-2 rounded-full border border-border/50 shadow-lg">
-            <div className="flex -space-x-2">
-              <img
-                src="/avatar-1.webp"
-                alt="Parent avatar"
-                className="w-6 h-6 rounded-full border-2 border-background object-cover"
-              />
-              <img
-                src="/avatar-2.webp"
-                alt="Parent avatar"
-                className="w-6 h-6 rounded-full border-2 border-background object-cover"
-              />
-              <img
-                src="/avatar-3.webp"
-                alt="Parent avatar"
-                className="w-6 h-6 rounded-full border-2 border-background object-cover"
-              />
+      <div className="w-full max-w-md relative z-10 animate-fade-in">
+        {/* Premium Social Proof Badge */}
+        <div className="flex justify-center mb-8">
+          <div className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-2xl px-6 py-3 rounded-full border border-primary/20 shadow-xl hover:shadow-primary/20 transition-all duration-500 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="flex -space-x-3 relative">
+              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-primary/20">
+                <img src="/avatar-1.webp" alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-accent/20">
+                <img src="/avatar-2.webp" alt="" className="w-full h-full object-cover" />
+              </div>
+              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-primary/20">
+                <img src="/avatar-3.webp" alt="" className="w-full h-full object-cover" />
+              </div>
             </div>
-            <span className="text-xs font-semibold text-muted-foreground">
-              Join <span className="text-primary font-bold">1,000+</span> parents
-            </span>
+            
+            <div className="flex items-center gap-2 relative">
+              <span className="text-sm font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                1.2k+ parents transformaram suas famílias
+              </span>
+              <CheckCircle2 className="w-5 h-5 text-primary animate-pulse" />
+            </div>
           </div>
         </div>
 
-        <div className="bg-card/95 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-border/50">
-          {/* Logo & Title */}
-          <div className="flex flex-col items-center mb-6">
-            <div className="relative mb-5">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full blur-2xl opacity-50 animate-pulse" />
-              <div className="relative text-7xl animate-bounce-slow filter drop-shadow-2xl">🧠</div>
-            </div>
-            <h1 className="text-5xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mb-3 tracking-tight">
-              NEP SYSTEM
-            </h1>
-            <p className="text-muted-foreground text-center font-semibold text-base mb-4">
-              Brain-Based Parenting That Works
-            </p>
-            
-            {/* Value props - Quick bullets */}
-            <div className="flex flex-wrap justify-center gap-3 text-xs">
-              <div className="flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-full border border-primary/20">
-                <CheckCircle2 className="w-3.5 h-3.5 text-primary" />
-                <span className="font-semibold text-primary">Science-Backed</span>
+        {/* Premium Glass Card */}
+        <div className="auth-glass group relative overflow-hidden">
+          {/* Animated Glow Border */}
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
+          
+          <div className="relative bg-gradient-to-br from-card/95 via-card/98 to-card/95 backdrop-blur-2xl rounded-3xl border border-primary/20 p-8 md:p-10 space-y-8 shadow-2xl">
+            {/* Premium Header */}
+            <div className="text-center space-y-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-xl mb-4 shadow-lg shadow-primary/20 animate-float">
+                <div className="text-5xl animate-brain-pulse">🧠</div>
               </div>
-              <div className="flex items-center gap-1.5 bg-accent/10 px-3 py-1.5 rounded-full border border-accent/20">
-                <Zap className="w-3.5 h-3.5 text-accent" />
-                <span className="font-semibold text-accent">Instant Results</span>
-              </div>
-              <div className="flex items-center gap-1.5 bg-secondary/10 px-3 py-1.5 rounded-full border border-secondary/20">
-                <Shield className="w-3.5 h-3.5 text-secondary" />
-                <span className="font-semibold text-secondary">Proven Method</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Tab Toggle - More modern */}
-          <div className="flex bg-muted/50 rounded-2xl p-1.5 mb-6 backdrop-blur-sm border border-border/30">
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(false);
-                setPassword('');
-              }}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
-                !isSignUp
-                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg scale-[1.02]'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Sign In
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(true);
-                setPassword('');
-              }}
-              className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
-                isSignUp
-                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg scale-[1.02]'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Sign Up
-            </button>
-          </div>
-
-          {/* Benefits (Sign Up Only) */}
-          {isSignUp && (
-            <div className="mb-6 space-y-3 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 rounded-2xl p-5 border border-primary/20 backdrop-blur-sm">
-              <div className="flex items-start gap-3 group">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                </div>
-                <p className="text-sm text-foreground font-medium">Instant access to brain-based scripts</p>
-              </div>
-              <div className="flex items-start gap-3 group">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                </div>
-                <p className="text-sm text-foreground font-medium">Track your progress with 30-Day Plan</p>
-              </div>
-              <div className="flex items-start gap-3 group">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-success to-success/70 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  <CheckCircle2 className="w-3 h-3 text-white" />
-                </div>
-                <p className="text-sm text-foreground font-medium">Join a supportive parent community</p>
-              </div>
-            </div>
-          )}
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {isSignUp && (
-              <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 flex items-start gap-3">
-                <Info className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-foreground font-medium">
-                  Use the same email you used to purchase the product
-                </p>
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-bold text-foreground">
-                Email
-              </Label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors">
-                  <Mail className="w-5 h-5 text-muted-foreground group-focus-within:text-primary" />
-                </div>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="pl-12 h-13 rounded-xl bg-background border-2 border-border focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-medium"
-                  placeholder="you@example.com"
-                />
-              </div>
+              
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
+                {isSignUp ? 'Crie sua conta' : 'Bem-vindo de volta'}
+              </h1>
+              
+              <p className="text-muted-foreground text-lg max-w-sm mx-auto">
+                {isSignUp 
+                  ? 'Junte-se a milhares de pais transformando suas famílias' 
+                  : 'Continue sua jornada rumo à parentalidade consciente'}
+              </p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-sm font-bold text-foreground">
-                Password
-              </Label>
-              <div className="relative group">
-                <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors">
-                  <Lock className="w-5 h-5 text-muted-foreground group-focus-within:text-primary" />
+            {/* Premium Form */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
+                  <Mail className="w-4 h-4 text-primary" />
+                  Email
+                </Label>
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-12 h-14 bg-background/50 backdrop-blur-xl border-border/50 hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
+                      required
+                    />
+                  </div>
                 </div>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  className="pl-12 h-13 rounded-xl bg-background border-2 border-border focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-base font-medium"
-                  placeholder="••••••••"
-                />
               </div>
-              {isSignUp && (
-                <p className="text-xs text-muted-foreground mt-1.5 font-medium">
-                  Minimum 8 characters
-                </p>
-              )}
-            </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full h-14 text-base font-black bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 text-white rounded-xl shadow-2xl transition-all duration-300 hover:shadow-3xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <span className="flex items-center justify-center gap-2">
-                  {isSignUp ? (
-                    <>
-                      <Zap className="w-5 h-5" />
-                      Access Your Account
-                    </>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-primary" />
+                  Senha
+                </Label>
+                <div className="group relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-12 h-14 bg-background/50 backdrop-blur-xl border-border/50 hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="group relative w-full h-14 text-base font-bold bg-gradient-to-r from-primary via-accent to-primary hover:shadow-2xl hover:shadow-primary/50 transition-all duration-500 overflow-hidden animate-gradient bg-[length:200%_auto]"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                
+                <span className="relative flex items-center justify-center gap-2">
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      🚀 Welcome Back
+                      {isSignUp ? '✨ Criar Conta' : '🚀 Entrar'}
                     </>
                   )}
                 </span>
-              )}
-            </Button>
-          </form>
+              </Button>
+            </form>
 
-          {/* Features Footer */}
-          <div className="mt-8 pt-6 border-t border-border/50">
-            <p className="text-xs text-center text-muted-foreground mb-5 font-bold uppercase tracking-wider">
-              Trusted by parents worldwide
-            </p>
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20 hover:scale-105 transition-transform group">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-                <p className="text-xs font-bold text-foreground text-center">Secure</p>
+            {/* Premium Toggle */}
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-border/50"></div>
               </div>
-              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-accent/5 to-accent/10 border border-accent/20 hover:scale-105 transition-transform group">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
-                  <Zap className="w-5 h-5 text-white" />
-                </div>
-                <p className="text-xs font-bold text-foreground text-center">Instant</p>
-              </div>
-              <div className="flex flex-col items-center p-4 rounded-xl bg-gradient-to-br from-success/5 to-success/10 border border-success/20 hover:scale-105 transition-transform group">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-success to-success/80 flex items-center justify-center mb-2 group-hover:rotate-12 transition-transform">
-                  <CheckCircle2 className="w-5 h-5 text-white" />
-                </div>
-                <p className="text-xs font-bold text-foreground text-center">Full Access</p>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-4 text-muted-foreground font-medium">ou</span>
               </div>
             </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="group inline-flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-primary transition-all duration-300"
+              >
+                <span className="relative">
+                  {isSignUp 
+                    ? 'Já tem uma conta? Faça login' 
+                    : 'Não tem conta? Cadastre-se'}
+                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-300"></span>
+                </span>
+              </button>
+            </div>
+
+            {/* Premium Benefits - only shown on sign up */}
+            {isSignUp && (
+              <div className="pt-6 border-t border-primary/10">
+                <p className="text-sm font-semibold text-center mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  O que você vai receber:
+                </p>
+                <div className="grid gap-4">
+                  <div className="group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20">
+                        <Shield className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground mb-1">Seguro & Protegido</p>
+                        <p className="text-xs text-muted-foreground">Seus dados são criptografados e protegidos</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-accent/5 via-accent/3 to-transparent border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg shadow-accent/20">
+                        <Zap className="w-5 h-5 text-accent" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground mb-1">Acesso Instantâneo</p>
+                        <p className="text-xs text-muted-foreground">Comece a usar todos os recursos imediatamente</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20">
+                        <DollarSign className="w-5 h-5 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-semibold text-foreground mb-1">Acesso Completo</p>
+                        <p className="text-xs text-muted-foreground">Acesso a todos os scripts e vídeos premium</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Premium Trust Indicators */}
+        <div className="mt-10 flex items-center justify-center gap-8 md:gap-12">
+          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
+              <Shield className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Seguro</span>
+          </div>
+          
+          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg shadow-accent/20 group-hover:shadow-accent/40 transition-shadow duration-300">
+              <Zap className="w-5 h-5 text-accent" />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">Instantâneo</span>
+          </div>
+          
+          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
+              <CheckCircle2 className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Acesso Total</span>
+          </div>
+        </div>
+
+        {/* Premium Info Banner */}
+        <div className="mt-8 group relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-primary/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+          <div className="relative flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-blue-500/5 via-primary/5 to-transparent border border-blue-500/20 backdrop-blur-xl">
+            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/10">
+              <Info className="w-5 h-5 text-blue-500" />
+            </div>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Ao se cadastrar, você concorda com nossos Termos de Serviço e Política de Privacidade. Seus dados nunca serão compartilhados com terceiros.
+            </p>
           </div>
         </div>
       </div>
