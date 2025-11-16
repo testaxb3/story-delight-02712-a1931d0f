@@ -278,13 +278,13 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
                 Manage your educational video library with ease
               </p>
             </div>
-            <div className="flex items-center gap-3 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 shadow-sm">
-              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                <List className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <div className="flex items-center gap-3 card-glass border rounded-xl px-4 py-3 shadow-sm">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <List className="w-5 h-5 text-primary" />
               </div>
               <div>
-                <div className="text-2xl font-bold text-gray-900 dark:text-white">{videos.length}</div>
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400">Total Videos</div>
+                <div className="text-2xl font-bold text-foreground">{videos.length}</div>
+                <div className="text-xs font-medium text-muted-foreground">Total Videos</div>
               </div>
             </div>
           </div>
@@ -292,38 +292,38 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       </div>
 
       {/* Add Video Form - Glass Morphism Card */}
-      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-blue-500/5 to-transparent dark:from-purple-500/10 dark:via-blue-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="group relative rounded-2xl backdrop-premium shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="relative p-7">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
-              <Plus className="w-5 h-5 text-white" />
+            <div className="p-2.5 rounded-xl gradient-primary shadow-glow">
+              <Plus className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Add New Video</h3>
+            <h3 className="text-xl font-bold text-foreground">Add New Video</h3>
           </div>
 
           <form onSubmit={handleAddVideo} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="video-title" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="video-title" className="text-sm font-semibold text-foreground">
                 Video Title
               </Label>
               <Input
                 id="video-title"
                 placeholder="Enter video title"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                 value={form.title}
                 onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="video-description" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="video-description" className="text-sm font-semibold text-foreground">
                 Description
               </Label>
               <Textarea
                 id="video-description"
                 placeholder="Brief description of the video content"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200 resize-none"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200 resize-none"
                 rows={3}
                 value={form.description}
                 onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
@@ -332,18 +332,18 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="video-section" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <Label htmlFor="video-section" className="text-sm font-semibold text-foreground">
                   Section
                 </Label>
                 <Select
                   value={form.section}
                   onValueChange={(value) => setForm((prev) => ({ ...prev, section: value }))}
                 >
-                  <SelectTrigger className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20">
+                  <SelectTrigger className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20">
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                    <SelectItem value="foundation" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Foundations</SelectItem>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="foundation" className="focus:bg-accent">Foundations</SelectItem>
                     <SelectItem value="practice" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Daily Situations</SelectItem>
                     <SelectItem value="mastery" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Masterclass</SelectItem>
                     <SelectItem value="ages-1-2" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 1-2</SelectItem>
