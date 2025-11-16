@@ -36,9 +36,10 @@ export function fixEbookMarkdown(markdown: string): string {
   fixed = fixed.replace(/(#{1,6}\s[^\n]+)\n([^\n#])/g, '$1\n\n$2');
 
   // 7. Fix common markdown issues
-  // Ensure bold/italic markers are properly formatted
-  fixed = fixed.replace(/\*\*\s+/g, '**');
-  fixed = fixed.replace(/\s+\*\*/g, '**');
+  // Remove spaces INSIDE bold markers (e.g., "** text**" -> "**text**")
+  // But preserve spaces OUTSIDE (e.g., "text **bold** text" stays the same)
+  fixed = fixed.replace(/\*\*\s+([^\*])/g, '**$1');  // Remove space after opening **
+  fixed = fixed.replace(/([^\*])\s+\*\*/g, '$1**');  // Remove space before closing **
   
   // 8. Normalize bullet points
   fixed = fixed.replace(/^[\-\*]\s+/gm, '- ');
