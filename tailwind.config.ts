@@ -86,6 +86,10 @@ export default {
           overlay: "hsl(var(--surface-overlay))",
           glass: "hsl(var(--surface-glass))",
         },
+        text: {
+          'high-contrast': "hsl(var(--text-high-contrast))",
+          'medium-contrast': "hsl(var(--text-medium-contrast))",
+        },
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',

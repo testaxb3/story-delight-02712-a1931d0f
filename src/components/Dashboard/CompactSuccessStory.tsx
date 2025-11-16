@@ -8,9 +8,9 @@ interface CompactSuccessStoryProps {
 
 export const CompactSuccessStory = ({ story }: CompactSuccessStoryProps) => {
   return (
-    <div className="card-glass rounded-2xl p-6">
+    <div className="card-glass rounded-2xl p-6 hover-lift-strong">
       <div className="flex items-start gap-4">
-        <div className="p-3 rounded-xl bg-success/10 flex-shrink-0">
+        <div className="p-3 rounded-xl bg-success/10 flex-shrink-0 transition-transform duration-300 hover:scale-110">
           <ThumbsUp className="w-6 h-6 text-success" />
         </div>
         

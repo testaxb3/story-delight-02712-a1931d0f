@@ -40,9 +40,9 @@ export const EmptyState = ({
         className="mb-6 inline-block"
       >
         {emoji ? (
-          <span className="text-6xl">{emoji}</span>
+          <span className="text-6xl drop-shadow-lg">{emoji}</span>
         ) : (
-          <div className="p-6 rounded-full bg-gradient-primary/10 inline-block">
+          <div className="p-6 rounded-full bg-gradient-primary/10 inline-block hover-lift-strong">
             <Icon className="w-12 h-12 text-primary" />
           </div>
         )}
@@ -67,7 +67,7 @@ export const EmptyState = ({
         >
           <Button
             onClick={onAction}
-            className="gradient-primary hover-glow"
+            className="gradient-primary hover-glow-intense"
             size="lg"
           >
             {actionLabel}

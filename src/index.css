@@ -53,11 +53,15 @@
     --ring: 262 83% 58%;
     --radius: 1rem;
 
-    /* Premium Surface Elevation System */
+  /* Premium Surface Elevation System */
     --surface-base: 220 25% 98%;
     --surface-raised: 0 0% 100%;
     --surface-overlay: 220 15% 97%;
     --surface-glass: 220 20% 99%;     /* For glassmorphism effects */
+    
+    /* Enhanced Contrast Text */
+    --text-high-contrast: 220 45% 8%;  /* Extra dark for important text */
+    --text-medium-contrast: 220 35% 25%; /* Medium contrast for body */
 
     /* Profile Colors - Enhanced for uniqueness */
     --defiant: 6 85% 65%;
@@ -155,10 +159,14 @@
     --shadow-xl: 0 16px 60px -12px hsl(262 83% 58% / 0.3);
     --shadow-colored: 0 8px 32px -6px hsl(262 83% 58% / 0.35);
     
-    /* Dark Glassmorphism */
-    --glass-bg: hsl(220 35% 16% / 0.7);
-    --glass-border: hsl(220 25% 30% / 0.5);
+    /* Dark Glassmorphism - More pronounced */
+    --glass-bg: hsl(222 40% 16% / 0.6);
+    --glass-border: hsl(220 25% 30% / 0.3);
     --glass-blur: 16px;
+    
+    /* Enhanced Contrast Text */
+    --text-high-contrast: 220 20% 98%;  /* Extra bright for important text */
+    --text-medium-contrast: 220 15% 85%; /* Medium contrast for body */
   }
 }
 
@@ -225,6 +233,44 @@
 
   .animate-bounce-slow {
     animation: bounce-slow 3s ease-in-out infinite;
+  }
+
+  /* ============================================
+     MICRO-ANIMATIONS & INTERACTIONS
+     Smooth, delightful user feedback
+     ============================================ */
+  
+  @keyframes badge-pulse {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+  }
+  
+  .animate-badge-pulse {
+    animation: badge-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .hover-lift-strong {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s;
+  }
+  
+  .hover-lift-strong:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  .hover-glow-intense {
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  
+  .hover-glow-intense:hover {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.3);
+    transform: translateY(-2px);
   }
 
   /* ============================================
