@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { clearUserContext } from '@/lib/sentry';
 import { resetUser } from '@/lib/analytics';
 import { useUserProfile, useRefreshProfile } from '@/hooks/useUserProfile';
+import { ensureUserScaffolding } from '@/lib/supabase/scaffolding';
 
 // ✅ SECURITY: Password requirements
 const MIN_PASSWORD_LENGTH = 8;
@@ -68,6 +69,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         setSession(session);
         
+        // Ensure user scaffolding on sign in (fallback safety check)
+        if (event === 'SIGNED_IN' && session?.user) {
+          setTimeout(() => {
+            ensureUserScaffolding(session.user.id, session.user.email || '').catch(err => {
+              console.error('Failed to ensure user scaffolding:', err);
+            });
+          }, 0);
+        }
+        
         // PERFORMANCE: Profile will be fetched automatically by useUserProfile hook
         // No need for manual fetchUserProfile call here
         if (!session?.user) {
@@ -80,6 +90,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setAuthLoading(false);
+      
+      // Ensure scaffolding for existing session (fallback)
+      if (session?.user) {
+        setTimeout(() => {
+          ensureUserScaffolding(session.user.id, session.user.email || '').catch(err => {
+            console.error('Failed to ensure user scaffolding:', err);
+          });
+        }, 0);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -112,8 +131,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      // Create account
-      const { data, error } = await supabase.auth.signUp({
+      // Create account - profile will be created automatically by database trigger
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -130,27 +149,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error };
       }
 
-      if (data.user) {
-        console.log('User created, creating profile...');
-        // Create profile
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            email,
-            name: email.split('@')[0]
-          })
-          .select()
-          .single();
-
-        if (profileError) {
-          console.error('Profile creation error:', profileError);
-          // Continue anyway - profile might have been created by trigger
-        } else {
-          console.log('Profile created successfully:', profile);
-        }
-      }
-
+      // Profile and user_progress are created automatically by the handle_new_user() trigger
       return { error: null };
     } catch (error: any) {
       console.error('SignUp exception:', error);
