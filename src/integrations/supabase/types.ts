@@ -1166,13 +1166,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "script_feedback_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children_profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "script_feedback_script_id_fkey"
             columns: ["script_id"]
             isOneToOne: false
@@ -1539,24 +1532,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "tracker_days_child_id_fkey"
-            columns: ["child_id"]
-            isOneToOne: false
-            referencedRelation: "children_profiles"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "tracker_days_child_profile_id_fkey"
             columns: ["child_profile_id"]
             isOneToOne: false
             referencedRelation: "child_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tracker_days_child_profile_id_fkey"
-            columns: ["child_profile_id"]
-            isOneToOne: false
-            referencedRelation: "children_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -2092,57 +2071,6 @@ export type Database = {
           },
         ]
       }
-      children_profiles: {
-        Row: {
-          age: number | null
-          brain_profile: string | null
-          created_at: string | null
-          id: string | null
-          is_active: boolean | null
-          name: string | null
-          notes: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          age?: number | null
-          brain_profile?: string | null
-          created_at?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          name?: string | null
-          notes?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          age?: number | null
-          brain_profile?: string | null
-          created_at?: string | null
-          id?: string | null
-          is_active?: boolean | null
-          name?: string | null
-          notes?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "child_profiles_parent_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "child_profiles_parent_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "public_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       comments_with_profiles: {
         Row: {
           author_name: string | null
@@ -2406,18 +2334,29 @@ export type Database = {
           age_max: number | null
           age_min: number | null
           category: string | null
+          created_at: string | null
           difficulty: string | null
+          difficulty_level:
+            | Database["public"]["Enums"]["difficulty_level"]
+            | null
           duration_minutes: number | null
           emergency_suitable: boolean | null
+          expected_time_seconds: number | null
           id: string | null
-          preview_text: string | null
+          intensity_level: string | null
+          location_type: string[] | null
+          parent_state: string[] | null
           profile: string | null
-          progress_count: number | null
-          success_rate_percent: number | null
+          requires_preparation: boolean | null
+          situation_trigger: string | null
+          success_count: number | null
+          success_rate: number | null
           tags: string[] | null
+          the_situation: string | null
+          time_optimal: string[] | null
           title: string | null
-          total_feedback_count: number | null
-          worked_count: number | null
+          usage_count: number | null
+          works_in_public: boolean | null
         }
         Relationships: []
       }
@@ -2434,6 +2373,7 @@ export type Database = {
           common_mistakes: string[] | null
           common_variations: Json | null
           created_at: string | null
+          didnt_work_count: number | null
           difficulty: string | null
           difficulty_level:
             | Database["public"]["Enums"]["difficulty_level"]
@@ -2442,12 +2382,11 @@ export type Database = {
           emergency_suitable: boolean | null
           estimated_time_minutes: number | null
           expected_time_seconds: number | null
-          feedback_count: number | null
+          favorite_count: number | null
           id: string | null
           intensity_level: string | null
           location_type: string[] | null
           neurological_tip: string | null
-          not_yet_count: number | null
           parent_state: string[] | null
           parent_state_needed: string | null
           pause_after_phrase_1: number | null
@@ -2467,13 +2406,14 @@ export type Database = {
           say_it_like_this_step3: string | null
           situation_trigger: string | null
           strategy_steps: Json | null
-          success_rate: number | null
+          success_rate_percent: number | null
           success_speed: string | null
           tags: string[] | null
           the_situation: string | null
           time_optimal: string[] | null
           title: string | null
-          usage_count: number | null
+          total_feedback_count: number | null
+          total_usage_count: number | null
           what_doesnt_work: string | null
           what_to_expect: Json | null
           why_this_works: string | null
@@ -2581,13 +2521,6 @@ export type Database = {
             columns: ["child_profile_id"]
             isOneToOne: false
             referencedRelation: "child_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "tracker_days_child_profile_id_fkey"
-            columns: ["child_profile_id"]
-            isOneToOne: false
-            referencedRelation: "children_profiles"
             referencedColumns: ["id"]
           },
         ]
