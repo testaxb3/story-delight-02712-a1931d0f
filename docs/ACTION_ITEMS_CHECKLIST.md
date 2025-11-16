@@ -765,6 +765,72 @@ const handleForceUpdate = async () => {
 
 ---
 
+### Testes - Aumento de Cobertura ✅
+**Status:** COMPLETO
+**Responsável:** Dev Team
+**Prazo:** 16/11/2025
+
+**Testes Criados:**
+
+**Contexts:**
+- [x] AuthContext.test.tsx
+  - Inicialização com loading state
+  - Autenticação de usuário
+  - Sign out
+  - Error handling
+- [x] ChildProfilesContext.test.tsx
+  - Inicialização
+  - Detecção de onboarding
+  - Setting active child
+  - Refresh children list
+
+**Hooks:**
+- [x] useConfirm.test.tsx
+  - Inicialização
+  - Confirmação/cancelamento
+  - Textos customizados
+  - Múltiplas confirmações sequenciais
+- [x] useFavoriteScripts.test.tsx
+  - Inicialização
+  - Check favorite status
+  - Toggle favorite
+
+**Components:**
+- [x] LoadingState.test.tsx
+  - Render com props default
+  - Mensagens customizadas
+  - Tamanhos (sm/md/lg)
+  - Classes customizadas
+- [x] OptimizedImage.test.tsx
+  - Alt text
+  - Placeholder
+  - Eager/lazy loading
+  - onLoad handler
+  - Custom classes
+
+**Utils:**
+- [x] scriptUtils.test.ts
+  - formatCategory
+  - CATEGORY_EMOJIS
+  - convertToScriptItem
+  - Optional fields handling
+
+**Cobertura Esperada:**
+- Contexts: ~70%
+- Hooks: ~60%
+- Components: ~50%
+- Utils: ~80%
+- **Overall: 50-60%**
+
+**Como rodar:**
+```bash
+npm run test          # Rodar testes
+npm run test:ui       # UI interativa
+npm run test:coverage # Relatório de cobertura
+```
+
+---
+
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
 - [ ] P2: UX improvements
