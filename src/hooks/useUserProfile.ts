@@ -99,11 +99,16 @@ export function useUserProfile(userId: string | undefined, email: string | undef
 
 /**
  * Hook to manually refresh user profile
+ * Forces immediate refetch bypassing cache
  */
 export function useRefreshProfile() {
   const queryClient = useQueryClient();
 
   return async (userId: string) => {
-    await queryClient.invalidateQueries({ queryKey: ['user-profile', userId] });
+    // ✅ FIX: Use refetchQueries to force immediate fetch, not just invalidate
+    await queryClient.refetchQueries({ 
+      queryKey: ['user-profile', userId],
+      type: 'active' 
+    });
   };
 }
