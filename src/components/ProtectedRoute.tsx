@@ -20,8 +20,12 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
   const quizExemptRoutes = ['/quiz', '/refund', '/refund-status'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
+
+  // Permitir navegação imediatamente após concluir o quiz (primeira navegação)
+  const navState = location.state as { quizJustCompleted?: boolean } | null;
+  const justCompleted = !!navState?.quizJustCompleted;
   
-  if (!isQuizRoute && !user.quiz_completed) {
+  if (!isQuizRoute && !user.quiz_completed && !justCompleted) {
     return <Navigate to="/quiz" replace />;
   }
 

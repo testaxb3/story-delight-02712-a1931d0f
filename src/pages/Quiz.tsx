@@ -234,7 +234,7 @@ export default function Quiz() {
         toast.success('Profile created successfully!');
         
         // Step 4: Navigate after ensuring everything is updated
-        navigate('/dashboard', { replace: true });
+        navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
         toast.error('An error occurred. Please try again.');
@@ -242,7 +242,7 @@ export default function Quiz() {
         return;
       }
     } else {
-      navigate('/dashboard', { replace: true });
+      navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
     }
   };
 
