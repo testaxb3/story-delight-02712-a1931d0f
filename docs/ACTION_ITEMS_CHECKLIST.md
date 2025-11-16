@@ -829,6 +829,35 @@ npm run test:ui       # UI interativa
 npm run test:coverage # Relatório de cobertura
 ```
 
+**Adicionais (Fase 2):**
+- [x] useScriptCollections.test.tsx
+  - Inicialização
+  - CRUD operations
+  - Refresh functionality
+- [x] celebrationStats.test.ts (async functions)
+  - getTotalScriptCount
+  - getTodayScriptCount
+  - getStreakDays
+  - getDaysSinceStart
+- [x] intelligentSearch.test.ts
+  - Search by title/category/tags/situation
+  - Case insensitivity
+  - Emergency detection
+- [x] button.test.tsx
+  - Variants (default, destructive, outline, ghost)
+  - Sizes (sm, md, lg)
+  - Disabled state
+- [x] card.test.tsx
+  - All card components
+  - Complete structure
+
+**Cobertura Final Esperada:**
+- Contexts: ~70%
+- Hooks: ~65%
+- Components: ~60%
+- Utils: ~80%
+- **Overall: 60-70%**
+
 ---
 
 ### Sprint 4 (Semana 7-8)
