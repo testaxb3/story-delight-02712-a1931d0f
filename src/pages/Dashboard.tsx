@@ -65,17 +65,8 @@ export default function Dashboard() {
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
   
   // Optimized: Single query for all dashboard stats
-  const { data: dashboardStats, isLoading: loadingDashboardStats, error: dashboardError } = useDashboardStats();
+  const { data: dashboardStats, isLoading: loadingDashboardStats } = useDashboardStats();
   const { progress, loading: loadingProgress } = useVideoProgress();
-
-  // Debug: Log dashboard stats loading
-  useEffect(() => {
-    console.log('Dashboard Stats:', { 
-      data: dashboardStats, 
-      loading: loadingDashboardStats, 
-      error: dashboardError 
-    });
-  }, [dashboardStats, loadingDashboardStats, dashboardError]);
 
   // Derived values from dashboard stats
   const trackerSummary = {
@@ -323,7 +314,10 @@ export default function Dashboard() {
         />
 
         {/* This Week's Wins - Granular Metrics */}
-        <ThisWeeksWins userId={user?.id} />
+        <ThisWeeksWins 
+          wins={dashboardStats?.weeklyWins || []} 
+          loading={loadingDashboardStats} 
+        />
 
         {/* Quick Metrics Overview */}
         <div className="grid grid-cols-2 gap-4">
@@ -349,14 +343,23 @@ export default function Dashboard() {
           />
         </div>
 
+        {/* This Week's Wins */}
+        <ThisWeeksWins 
+          wins={dashboardStats?.weeklyWins || []} 
+          loading={loadingDashboardStats} 
+        />
+
+        {/* Recent Script Usage */}
+        <RecentScriptUsage 
+          recentScripts={dashboardStats?.recentScriptUsage || []} 
+          loading={loadingDashboardStats} 
+        />
+
         {/* Personalized Insights */}
         <PersonalizedInsights 
           userId={user?.id} 
           brainProfile={activeChild?.brain_profile || null}
         />
-
-        {/* Recent Script Usage */}
-        <RecentScriptUsage userId={user?.id} />
 
         {/* Compact Success Story at bottom */}
         <CompactSuccessStory story={currentStory} />
