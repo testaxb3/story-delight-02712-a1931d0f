@@ -353,13 +353,13 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="video-duration" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <Label htmlFor="video-duration" className="text-sm font-semibold text-foreground">
                   Duration (MM:SS)
                 </Label>
                 <Input
                   id="video-duration"
                   placeholder="e.g., 12:30"
-                  className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                  className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                   value={form.duration}
                   onChange={(event) => setForm((prev) => ({ ...prev, duration: event.target.value }))}
                 />
@@ -367,13 +367,13 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="video-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="video-url" className="text-sm font-semibold text-foreground">
                 Video URL
               </Label>
               <Input
                 id="video-url"
                 placeholder="https://www.youtube.com/watch?v=..."
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                 value={form.videoUrl}
                 onChange={(event) => setForm((prev) => ({ ...prev, videoUrl: event.target.value }))}
               />
@@ -381,7 +381,7 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between mb-1">
-                <Label htmlFor="thumbnail-url" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <Label htmlFor="thumbnail-url" className="text-sm font-semibold text-foreground">
                   Thumbnail URL
                 </Label>
                 <Button
@@ -390,7 +390,7 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
                   size="sm"
                   onClick={handleAutoFetchThumbnail}
                   disabled={fetchingThumbnail || !form.videoUrl.trim()}
-                  className="h-8 text-xs bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                  className="h-8 text-xs gradient-primary text-primary-foreground border-0 shadow-sm hover:shadow-md transition-all duration-200"
                 >
                   <ImageIcon className="w-3 h-3 mr-1.5" />
                   {fetchingThumbnail ? 'Fetching...' : 'Auto-fetch from YouTube'}
@@ -399,7 +399,7 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
               <Input
                 id="thumbnail-url"
                 placeholder="https://... (or click Auto-fetch)"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                 value={form.thumbnailUrl}
                 onChange={(event) => setForm((prev) => ({ ...prev, thumbnailUrl: event.target.value }))}
               />
@@ -421,42 +421,42 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="video-order" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="video-order" className="text-sm font-semibold text-foreground">
                 Order Index
               </Label>
               <Input
                 id="video-order"
                 type="number"
                 placeholder="0"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                 value={form.orderIndex}
                 onChange={(event) => setForm((prev) => ({ ...prev, orderIndex: event.target.value }))}
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-xl border border-purple-200/50 dark:border-purple-700/50">
+            <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/20">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 shadow-md">
-                  <Crown className="w-4 h-4 text-white" />
+                <div className="p-2 rounded-lg gradient-primary shadow-md">
+                  <Crown className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <div>
-                  <Label htmlFor="video-locked" className="text-sm font-semibold text-gray-900 dark:text-white cursor-pointer">
+                  <Label htmlFor="video-locked" className="text-sm font-semibold text-foreground cursor-pointer">
                     Premium Only
                   </Label>
-                  <p className="text-xs text-gray-600 dark:text-gray-400">Require premium subscription to access</p>
+                  <p className="text-xs text-muted-foreground">Require premium subscription to access</p>
                 </div>
               </div>
               <Switch
                 id="video-locked"
                 checked={form.premiumOnly}
                 onCheckedChange={(checked) => setForm((prev) => ({ ...prev, premiumOnly: checked }))}
-                className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-blue-600"
+                className="data-[state=checked]:gradient-primary"
               />
             </div>
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+              className="w-full gradient-primary text-primary-foreground font-semibold py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover-lift"
               disabled={loading}
             >
               {loading ? (
@@ -476,54 +476,54 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       </div>
 
       {/* Existing Videos Table - Glass Morphism Card */}
-      <div className="group relative rounded-2xl bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-transparent dark:from-blue-500/10 dark:via-purple-500/10 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="group relative rounded-2xl backdrop-premium shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
+        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         <div className="relative p-7">
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-              <List className="w-5 h-5 text-white" />
+            <div className="p-2.5 rounded-xl gradient-primary shadow-glow">
+              <List className="w-5 h-5 text-primary-foreground" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h3 className="text-xl font-bold text-foreground">
               Existing Videos
             </h3>
-            <span className="ml-auto px-3 py-1.5 bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-lg text-sm font-semibold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+            <span className="ml-auto px-3 py-1.5 bg-primary/10 rounded-lg text-sm font-semibold text-primary border border-primary/20">
               {videos.length} videos
             </span>
           </div>
 
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden bg-white/50 dark:bg-gray-950/50">
+          <div className="rounded-xl border border-border overflow-hidden bg-card/50">
             <Table>
               <TableHeader>
-                <TableRow className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900 hover:from-gray-100 hover:to-gray-100 dark:hover:from-gray-800 dark:hover:to-gray-800 border-b border-gray-200 dark:border-gray-700">
-                  <TableHead className="font-bold text-gray-900 dark:text-white">Title</TableHead>
-                  <TableHead className="font-bold text-gray-900 dark:text-white">Section</TableHead>
-                  <TableHead className="font-bold text-gray-900 dark:text-white">Duration</TableHead>
-                  <TableHead className="font-bold text-gray-900 dark:text-white">Order</TableHead>
-                  <TableHead className="font-bold text-gray-900 dark:text-white">Status</TableHead>
-                  <TableHead className="w-24 font-bold text-gray-900 dark:text-white">Actions</TableHead>
+                <TableRow className="bg-muted hover:bg-muted border-b border-border">
+                  <TableHead className="font-bold text-foreground">Title</TableHead>
+                  <TableHead className="font-bold text-foreground">Section</TableHead>
+                  <TableHead className="font-bold text-foreground">Duration</TableHead>
+                  <TableHead className="font-bold text-foreground">Order</TableHead>
+                  <TableHead className="font-bold text-foreground">Status</TableHead>
+                  <TableHead className="w-24 font-bold text-foreground">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {videos.map((video) => (
                   <TableRow
                     key={video.id}
-                    className="border-b border-gray-100 dark:border-gray-800 hover:bg-gradient-to-r hover:from-purple-50/50 hover:to-blue-50/50 dark:hover:from-purple-900/10 dark:hover:to-blue-900/10 transition-all duration-200"
+                    className="border-b border-border hover:bg-accent/50 transition-all duration-200"
                   >
-                    <TableCell className="font-semibold text-gray-900 dark:text-white">{video.title}</TableCell>
+                    <TableCell className="font-semibold text-foreground">{video.title}</TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 rounded-lg text-xs font-medium text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-secondary/10 rounded-lg text-xs font-medium text-secondary border border-secondary/20">
                         {getSectionDisplay(video.section)}
                       </span>
                     </TableCell>
-                    <TableCell className="text-gray-700 dark:text-gray-300 font-medium">{video.duration}</TableCell>
+                    <TableCell className="text-muted-foreground font-medium">{video.duration}</TableCell>
                     <TableCell>
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 text-sm font-bold text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-sm font-bold text-primary border border-primary/20">
                         {video.order_index ?? 0}
                       </span>
                     </TableCell>
                     <TableCell>
                       {video.premium_only ? (
-                        <Badge className="bg-gradient-to-r from-purple-500 to-blue-600 text-white border-0 shadow-sm hover:shadow-md transition-all duration-200">
+                        <Badge className="gradient-primary text-primary-foreground border-0 shadow-sm hover:shadow-md transition-all duration-200">
                           <Crown className="w-3 h-3 mr-1" />
                           Premium
                         </Badge>
@@ -563,15 +563,15 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
 
       {/* Edit Video Dialog */}
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-card border-border">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
-                <Edit className="w-5 h-5 text-white" />
+              <div className="p-2 rounded-xl gradient-primary shadow-glow">
+                <Edit className="w-5 h-5 text-primary-foreground" />
               </div>
               <div>
-                <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">Edit Video</DialogTitle>
-                <DialogDescription className="text-gray-600 dark:text-gray-400">
+                <DialogTitle className="text-2xl font-bold text-foreground">Edit Video</DialogTitle>
+                <DialogDescription className="text-muted-foreground">
                   Update the video details below
                 </DialogDescription>
               </div>
@@ -579,26 +579,26 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
           </DialogHeader>
           <form onSubmit={handleUpdateVideo} className="space-y-6 mt-4">
             <div className="space-y-2">
-              <Label htmlFor="edit-video-title" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="edit-video-title" className="text-sm font-semibold text-foreground">
                 Video Title
               </Label>
               <Input
                 id="edit-video-title"
                 placeholder="Enter video title"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200"
                 value={form.title}
                 onChange={(event) => setForm((prev) => ({ ...prev, title: event.target.value }))}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="edit-video-description" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <Label htmlFor="edit-video-description" className="text-sm font-semibold text-foreground">
                 Description
               </Label>
               <Textarea
                 id="edit-video-description"
                 placeholder="Brief description of the video content"
-                className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20 transition-all duration-200 resize-none"
+                className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20 transition-all duration-200 resize-none"
                 rows={3}
                 value={form.description}
                 onChange={(event) => setForm((prev) => ({ ...prev, description: event.target.value }))}
@@ -607,23 +607,23 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="edit-video-section" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                <Label htmlFor="edit-video-section" className="text-sm font-semibold text-foreground">
                   Section
                 </Label>
                 <Select
                   value={form.section}
                   onValueChange={(value) => setForm((prev) => ({ ...prev, section: value }))}
                 >
-                  <SelectTrigger className="mt-1 bg-white/50 dark:bg-gray-950/50 border-gray-300 dark:border-gray-600 focus:border-purple-500 dark:focus:border-purple-400 focus:ring-purple-500/20 dark:focus:ring-purple-400/20">
+                  <SelectTrigger className="mt-1 bg-input border-border focus:border-ring focus:ring-ring/20">
                     <SelectValue placeholder="Select section" />
                   </SelectTrigger>
-                  <SelectContent className="bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                    <SelectItem value="foundation" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Foundations</SelectItem>
-                    <SelectItem value="practice" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Daily Situations</SelectItem>
-                    <SelectItem value="mastery" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Masterclass</SelectItem>
-                    <SelectItem value="ages-1-2" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 1-2</SelectItem>
-                    <SelectItem value="ages-3-4" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 3-4</SelectItem>
-                    <SelectItem value="ages-5-plus" className="focus:bg-purple-50 dark:focus:bg-purple-900/20">Ages 5+</SelectItem>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="foundation" className="focus:bg-accent">Foundations</SelectItem>
+                    <SelectItem value="practice" className="focus:bg-accent">Daily Situations</SelectItem>
+                    <SelectItem value="mastery" className="focus:bg-accent">Masterclass</SelectItem>
+                    <SelectItem value="ages-1-2" className="focus:bg-accent">Ages 1-2</SelectItem>
+                    <SelectItem value="ages-3-4" className="focus:bg-accent">Ages 3-4</SelectItem>
+                    <SelectItem value="ages-5-plus" className="focus:bg-accent">Ages 5+</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
