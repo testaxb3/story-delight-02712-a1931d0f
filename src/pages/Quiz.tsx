@@ -225,11 +225,14 @@ export default function Quiz() {
             .eq('user_id', user.profileId)
         ]);
 
-        if (profileResult.error || progressResult.error) {
-          logger.error('Failed to update quiz completion:', profileResult.error || progressResult.error);
+        if (profileResult.error) {
+          logger.error('Failed to update quiz completion (profile):', profileResult.error);
           toast.error('Failed to save progress. Please try again.');
           setCompletingQuiz(false);
           return;
+        }
+        if (progressResult.error) {
+          logger.warn('user_progress update failed; proceeding anyway:', progressResult.error);
         }
 
         // Step 2: Optimistically update React Query cache
