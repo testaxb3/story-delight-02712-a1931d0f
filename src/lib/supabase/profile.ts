@@ -107,7 +107,10 @@ const buildProfileUpsertPayload = (
     payload.child_profile = sanitizedProfile;
   }
 
-  payload.quiz_completed = quizCompleted ?? false;
+  // Only set quiz_completed if explicitly provided
+  if (quizCompleted !== undefined) {
+    payload.quiz_completed = quizCompleted;
+  }
 
   return payload;
 };
@@ -124,8 +127,12 @@ const buildProgressUpsertPayload = (
 ): Partial<Database["public"]["Tables"]["user_progress"]["Insert"]> => {
   const payload: Partial<Database["public"]["Tables"]["user_progress"]["Insert"]> = {
     user_id: userId,
-    quiz_completed: quizCompleted ?? false,
   };
+
+  // Only set quiz_completed if explicitly provided
+  if (quizCompleted !== undefined) {
+    payload.quiz_completed = quizCompleted;
+  }
 
   const sanitizedProfile = sanitizeString(childProfile);
   if (sanitizedProfile !== null) {
