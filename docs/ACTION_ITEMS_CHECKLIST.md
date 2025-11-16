@@ -706,6 +706,21 @@ const handleForceUpdate = async () => {
   - ✅ Bonuses.tsx: Adicionado useMemo para filtros/listas
   - ✅ CSS .hover-scale usado no lugar de motion animations
   - ⏱️ Issue #4 e #6 resolvidos - ~30-40% redução bundle esperada
+- [x] P1: Performance Fase 3 - Long-term Optimizations (COMPLETO - 16/11/2025) ✅
+  - ✅ Criado componente OptimizedImage com lazy loading
+    - Intersection Observer para carregamento sob demanda
+    - Placeholders animados durante loading
+    - Suporte a eager loading para above-the-fold
+  - ✅ Melhoradas estratégias de caching no React Query
+    - staleTime: 10min (era 1min)
+    - gcTime: 60min (era 5min)
+    - networkMode: 'offlineFirst' para melhor suporte offline
+  - ✅ Aprimorado Service Worker (vite-plugin-pwa)
+    - Cache CacheFirst para Supabase Storage (7 dias)
+    - Cache CacheFirst para imagens estáticas (30 dias)
+    - Cache NetworkFirst para API (5min, timeout 10s)
+    - Cache CacheFirst para Google Fonts (1 ano)
+  - ⏱️ Resultados esperados: 40-50% carregamento mais rápido de imagens, melhor offline, menos network requests
 
 ### Sprint 4 (Semana 7-8)
 - [ ] P2: Otimizações de performance
