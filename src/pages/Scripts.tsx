@@ -44,6 +44,7 @@ import { convertToScriptItem, formatCategory, CATEGORY_EMOJIS, type ScriptItem }
 import { ScriptsHeader } from '@/components/scripts/ScriptsHeader';
 import { EmptyState } from '@/components/scripts/EmptyState';
 import { ErrorBoundary } from '@/components/common/ErrorBoundary';
+import { RequestScriptModal } from '@/components/Scripts/RequestScriptModal';
 
 type ScriptRow = Database['public']['Tables']['scripts']['Row'];
 type ScriptFeedbackRow = Database['public']['Tables']['script_feedback']['Row'];
@@ -92,6 +93,7 @@ function ScriptsContent() {
   const [creatingCollection, setCreatingCollection] = useState(false);
   const [showAlternatives, setShowAlternatives] = useState(false);
   const [selectedScriptRow, setSelectedScriptRow] = useState<ScriptRow | null>(null);
+  const [requestScriptModalOpen, setRequestScriptModalOpen] = useState(false);
 
   // Celebration hook for auto-celebrations
   const {
@@ -554,12 +556,21 @@ function ScriptsContent() {
       )}
 
       <div className="space-y-6">
-        <ScriptsHeader
-          totalScripts={brainScopedScripts.length}
-          usedToday={used.size}
-          brainType={currentBrain}
-          loading={loadingScripts}
-        />
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <ScriptsHeader
+            totalScripts={brainScopedScripts.length}
+            usedToday={used.size}
+            brainType={currentBrain}
+            loading={loadingScripts}
+          />
+          <Button
+            onClick={() => setRequestScriptModalOpen(true)}
+            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all"
+          >
+            <MessageCircleHeart className="w-4 h-4 mr-2" />
+            Request Script
+          </Button>
+        </div>
 
         <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200/50 dark:border-purple-800/50 shadow-xl">
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -763,6 +774,12 @@ function ScriptsContent() {
           onNavigateToScript={handleNavigateToScript}
           onOpenSOS={() => navigate('/sos')}
           onClose={() => setShowAlternatives(false)}
+        />
+
+        {/* Request Script Modal */}
+        <RequestScriptModal
+          open={requestScriptModalOpen}
+          onOpenChange={setRequestScriptModalOpen}
         />
       </div>
     </MainLayout>
