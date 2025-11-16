@@ -1,15 +1,15 @@
 import { TrendingUp } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
-import { useWeeklyWins } from '@/hooks/useWeeklyWins';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
+import type { WeeklyWin } from '@/hooks/useDashboardStats';
 
 interface ThisWeeksWinsProps {
-  userId: string | undefined;
+  wins: WeeklyWin[];
+  loading?: boolean;
 }
 
-export const ThisWeeksWins = ({ userId }: ThisWeeksWinsProps) => {
-  const { wins, loading } = useWeeklyWins(userId);
+export const ThisWeeksWins = ({ wins, loading = false }: ThisWeeksWinsProps) => {
 
   if (loading) {
     return (
@@ -74,7 +74,7 @@ export const ThisWeeksWins = ({ userId }: ThisWeeksWinsProps) => {
 
             {/* Content */}
             <div className="flex-1">
-              <h4 className={`font-bold ${win.color}`}>
+              <h4 className="font-bold text-foreground">
                 {win.title}
               </h4>
               <p className="text-sm text-muted-foreground">

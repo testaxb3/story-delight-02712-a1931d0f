@@ -1,16 +1,17 @@
 import { Clock, BookOpen } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
-import { useRecentScriptUsage } from '@/hooks/useRecentScriptUsage';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
+import { formatDistanceToNow } from 'date-fns';
+import type { RecentScript } from '@/hooks/useDashboardStats';
 
 interface RecentScriptUsageProps {
-  userId: string | undefined;
+  recentScripts: RecentScript[];
+  loading?: boolean;
 }
 
-export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
-  const { recentScripts, loading } = useRecentScriptUsage(userId, 5);
+export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScriptUsageProps) => {
 
   if (loading) {
     return (
@@ -62,7 +63,7 @@ export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
 
       {/* Scripts List */}
       <div className="space-y-2">
-        {recentScripts.map((script, index) => (
+        {recentScripts.slice(0, 5).map((script, index) => (
           <motion.div
             key={script.id}
             initial={{ opacity: 0, x: -20 }}
@@ -86,7 +87,7 @@ export const RecentScriptUsage = ({ userId }: RecentScriptUsageProps) => {
                 {script.scriptTitle}
               </p>
               <p className="text-xs text-muted-foreground">
-                {script.timeAgo}
+                {formatDistanceToNow(new Date(script.usedAt), { addSuffix: true })}
               </p>
             </div>
 

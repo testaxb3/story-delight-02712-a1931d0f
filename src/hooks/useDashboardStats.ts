@@ -2,6 +2,20 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
+export interface RecentScript {
+  id: string;
+  scriptTitle: string;
+  scriptCategory: string;
+  usedAt: string;
+  profile: string | null;
+}
+
+export interface WeeklyWin {
+  icon: string;
+  title: string;
+  metric: string;
+}
+
 export interface DashboardStats {
   // Tracker summary
   averageStress: number;
@@ -24,6 +38,10 @@ export interface DashboardStats {
   activeUsersWeek: number;
   scriptUsesWeek: number;
   postsThisWeek: number;
+  
+  // Recent activity
+  recentScriptUsage: RecentScript[];
+  weeklyWins: WeeklyWin[];
 }
 
 /**
@@ -33,13 +51,9 @@ export interface DashboardStats {
 export function useDashboardStats() {
   const { user } = useAuth();
 
-  console.log('useDashboardStats called with user:', user?.id);
-
   return useQuery({
     queryKey: ['dashboard-stats', user?.id],
     queryFn: async () => {
-      console.log('Fetching dashboard stats for user:', user?.id);
-      
       if (!user?.id) {
         throw new Error('User not authenticated');
       }
@@ -49,8 +63,6 @@ export function useDashboardStats() {
         .select('*')
         .eq('user_id', user.id)
         .single();
-
-      console.log('Dashboard stats response:', { data, error });
 
       if (error) throw error;
       if (!data) throw new Error('No dashboard data found');
@@ -71,6 +83,8 @@ export function useDashboardStats() {
         activeUsersWeek: data.active_users_week,
         scriptUsesWeek: data.script_uses_week,
         postsThisWeek: data.posts_this_week,
+        recentScriptUsage: Array.isArray(data.recent_script_usage) ? data.recent_script_usage : [],
+        weeklyWins: Array.isArray(data.weekly_wins) ? data.weekly_wins : [],
       } as DashboardStats;
     },
     enabled: !!user?.id,
