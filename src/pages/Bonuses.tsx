@@ -18,6 +18,7 @@ import { Progress } from "@/components/ui/progress";
 import { motion } from "framer-motion";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { BonusData, BonusCategory } from "@/types/bonus";
+import { supabase } from "@/integrations/supabase/client";
 
 function BonusesContent() {
   const { user } = useAuth();
@@ -155,12 +156,41 @@ function BonusesContent() {
     [allBonuses]
   );
 
+  // State for reading time
+  const [totalTimeSpent, setTotalTimeSpent] = useState("0h");
+
+  // Calculate total reading time from user_ebook_progress
+  useEffect(() => {
+    const fetchReadingTime = async () => {
+      if (!user?.id) return;
+      
+      const { data } = await supabase
+        .from('user_ebook_progress')
+        .select('reading_time_minutes')
+        .eq('user_id', user.id);
+      
+      const totalMinutes = data?.reduce((sum, record) => sum + (record.reading_time_minutes || 0), 0) || 0;
+      
+      if (totalMinutes === 0) {
+        setTotalTimeSpent("0h");
+      } else if (totalMinutes < 60) {
+        setTotalTimeSpent(`${totalMinutes}m`);
+      } else {
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        setTotalTimeSpent(minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`);
+      }
+    };
+
+    fetchReadingTime();
+  }, [user?.id]);
+
   const stats = useMemo(() => ({
     totalBonuses: allBonuses.length,
     unlockedBonuses: allBonuses.filter(b => !b.locked).length,
     completedBonuses: allBonuses.filter(b => b.completed).length,
-    totalTimeSpent: "2.5h"
-  }), [allBonuses]);
+    totalTimeSpent
+  }), [allBonuses, totalTimeSpent]);
 
   // Helper to check if URL is YouTube
   const isYouTubeUrl = (url: string) => {

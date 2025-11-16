@@ -71,7 +71,7 @@ export function useUserStats(userId: string | undefined) {
       try {
         // Fetch scripts usage count
         const { count: scriptsCount } = await supabase
-          .from('scripts_usage')
+          .from('script_usage')
           .select('*', { count: 'exact', head: true })
           .eq('user_id', userId);
 
@@ -109,7 +109,7 @@ export function useUserStats(userId: string | undefined) {
 
         // Calculate streak from scripts usage
         const { data: recentUsage } = await supabase
-          .from('scripts_usage')
+          .from('script_usage')
           .select('used_at')
           .eq('user_id', userId)
           .order('used_at', { ascending: false })
