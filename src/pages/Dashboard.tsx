@@ -65,8 +65,17 @@ export default function Dashboard() {
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
   
   // Optimized: Single query for all dashboard stats
-  const { data: dashboardStats, isLoading: loadingDashboardStats } = useDashboardStats();
+  const { data: dashboardStats, isLoading: loadingDashboardStats, error: dashboardError } = useDashboardStats();
   const { progress, loading: loadingProgress } = useVideoProgress();
+
+  // Debug: Log dashboard stats loading
+  useEffect(() => {
+    console.log('Dashboard Stats:', { 
+      data: dashboardStats, 
+      loading: loadingDashboardStats, 
+      error: dashboardError 
+    });
+  }, [dashboardStats, loadingDashboardStats, dashboardError]);
 
   // Derived values from dashboard stats
   const trackerSummary = {
@@ -122,6 +131,14 @@ export default function Dashboard() {
   useEffect(() => {
     loadVideos();
   }, [loadVideos]);
+
+  // Set loading state based on dashboard stats and video loading
+  useEffect(() => {
+    const allLoaded = !loadingDashboardStats && !loadingVideos && !loadingProgress;
+    if (allLoaded && isInitialLoading) {
+      setIsInitialLoading(false);
+    }
+  }, [loadingDashboardStats, loadingVideos, loadingProgress, isInitialLoading]);
 
   // Welcome modal disabled - premium system being refactored
 
