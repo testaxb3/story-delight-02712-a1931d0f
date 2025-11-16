@@ -90,6 +90,115 @@ export type Database = {
         }
         Relationships: []
       }
+      approved_users: {
+        Row: {
+          account_created: boolean | null
+          account_created_at: string | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          currency: string | null
+          email: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          notes: string | null
+          order_id: string | null
+          product_id: string | null
+          product_name: string | null
+          status: string | null
+          total_price: number | null
+          updated_at: string | null
+          user_id: string | null
+          webhook_data: Json | null
+        }
+        Insert: {
+          account_created?: boolean | null
+          account_created_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          currency?: string | null
+          email: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          webhook_data?: Json | null
+        }
+        Update: {
+          account_created?: boolean | null
+          account_created_at?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          currency?: string | null
+          email?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_id?: string | null
+          product_name?: string | null
+          status?: string | null
+          total_price?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          webhook_data?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "approved_users_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "approved_users_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_users_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "approved_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badges: {
         Row: {
           category: string | null
@@ -2898,6 +3007,7 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: never; Returns: boolean }
+      is_email_approved: { Args: { p_email: string }; Returns: boolean }
       mark_chapter_complete: {
         Args: { p_chapter_index: number; p_ebook_id: string }
         Returns: undefined
