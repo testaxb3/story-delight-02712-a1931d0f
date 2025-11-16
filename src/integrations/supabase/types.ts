@@ -1209,6 +1209,92 @@ export type Database = {
           },
         ]
       }
+      script_requests: {
+        Row: {
+          additional_notes: string | null
+          admin_notes: string | null
+          child_age: number | null
+          child_brain_profile: string | null
+          created_at: string | null
+          created_script_id: string | null
+          id: string
+          location_type: string[] | null
+          parent_emotional_state: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          situation_description: string
+          status: string | null
+          updated_at: string | null
+          urgency_level: string | null
+          user_id: string
+        }
+        Insert: {
+          additional_notes?: string | null
+          admin_notes?: string | null
+          child_age?: number | null
+          child_brain_profile?: string | null
+          created_at?: string | null
+          created_script_id?: string | null
+          id?: string
+          location_type?: string[] | null
+          parent_emotional_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          situation_description: string
+          status?: string | null
+          updated_at?: string | null
+          urgency_level?: string | null
+          user_id: string
+        }
+        Update: {
+          additional_notes?: string | null
+          admin_notes?: string | null
+          child_age?: number | null
+          child_brain_profile?: string | null
+          created_at?: string | null
+          created_script_id?: string | null
+          id?: string
+          location_type?: string[] | null
+          parent_emotional_state?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          situation_description?: string
+          status?: string | null
+          updated_at?: string | null
+          urgency_level?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "script_requests_created_script_id_fkey"
+            columns: ["created_script_id"]
+            isOneToOne: false
+            referencedRelation: "emergency_scripts_new"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_requests_created_script_id_fkey"
+            columns: ["created_script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_requests_created_script_id_fkey"
+            columns: ["created_script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_card_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "script_requests_created_script_id_fkey"
+            columns: ["created_script_id"]
+            isOneToOne: false
+            referencedRelation: "scripts_with_full_stats"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       script_usage: {
         Row: {
           id: string

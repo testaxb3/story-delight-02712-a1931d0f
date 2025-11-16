@@ -11,6 +11,7 @@ import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { AdminSystemTab } from '@/components/Admin/AdminSystemTab';
 import { BonusesManagement } from '@/components/Admin/BonusesManagement';
 import { ModerationPanel } from '@/components/Community/ModerationPanel';
+import { ScriptRequestsPanel } from '@/components/Admin/ScriptRequestsPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -24,7 +25,8 @@ import {
   Gift,
   Wand2,
   Shield,
-  Settings
+  Settings,
+  MessageCircleHeart
 } from 'lucide-react';
 
 export default function Admin() {
@@ -179,7 +181,7 @@ export default function Admin() {
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-8 w-full h-auto p-2 bg-muted/50">
+            <TabsList className="grid grid-cols-9 w-full h-auto p-2 bg-muted/50">
               <TabsTrigger
                 value="scripts"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
@@ -284,6 +286,19 @@ export default function Admin() {
                 </div>
               </TabsTrigger>
 
+              <TabsTrigger
+                value="requests"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <MessageCircleHeart className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Requests</span>
+                  <span className="text-xs bg-cyan-500 text-white px-2 py-0.5 rounded-full">
+                    New
+                  </span>
+                </div>
+              </TabsTrigger>
+
             </TabsList>
 
             <div className="p-6">
@@ -317,6 +332,10 @@ export default function Admin() {
 
               <TabsContent value="system" className="mt-0">
                 <AdminSystemTab />
+              </TabsContent>
+
+              <TabsContent value="requests" className="mt-0">
+                <ScriptRequestsPanel />
               </TabsContent>
             </div>
           </Tabs>
