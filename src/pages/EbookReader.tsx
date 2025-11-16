@@ -51,9 +51,11 @@ const EbookReaderPage = () => {
     );
   }
 
-  // Prefer markdown chapters, fallback to parsed chapters, then hardcoded
-  const useMarkdown = chaptersMarkdown && chaptersMarkdown.length > 0;
-  const finalChapters = useMarkdown ? chaptersMarkdown : (chapters && chapters.length > 0 ? chapters : ebookContent);
+  // Temporarily disable markdown rendering to restore previous working state
+  const useMarkdown = false;
+  const finalChapters = (chapters && chapters.length > 0)
+    ? chapters
+    : (chaptersMarkdown && chaptersMarkdown.length > 0 ? chaptersMarkdown : ebookContent);
 
   if (!finalChapters || finalChapters.length === 0) {
     return (
