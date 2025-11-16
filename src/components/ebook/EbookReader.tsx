@@ -3,7 +3,6 @@ import { X, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProgressBar } from "./ProgressBar";
 import { ChapterContent } from "./ChapterContent";
-import { MarkdownChapterContent } from "./MarkdownChapterContent";
 import { NavigationButtons } from "./NavigationButtons";
 import { ChapterCover } from "./ChapterCover";
 import { TableOfContents } from "./TableOfContents";
@@ -11,13 +10,10 @@ import { SearchDialog } from "./SearchDialog";
 import { ReadingControls } from "./ReadingControls";
 import { NotesPanel } from "./NotesPanel";
 import { Chapter } from "@/data/ebookContent";
-import { ChapterMarkdown } from "@/hooks/useEbookContent";
-import { extractChapterNumber } from "@/utils/markdownPreprocessor";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
 interface EbookReaderProps {
-  chapters: Chapter[] | ChapterMarkdown[];
-  useMarkdown?: boolean;
+  chapters: Chapter[];
   initialChapter?: number;
   initialScrollPosition?: number;
   completedChapters?: Set<number>;
@@ -28,8 +24,7 @@ interface EbookReaderProps {
 }
 
 export const EbookReader = ({ 
-  chapters,
-  useMarkdown = false,
+  chapters, 
   initialChapter = 0,
   initialScrollPosition = 0,
   completedChapters: externalCompleted,
@@ -60,39 +55,6 @@ export const EbookReader = ({
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
   const currentChapter = chapters[currentChapterIndex];
-  
-  // Extract title, subtitle, and content based on the `useMarkdown` prop
-  const chapterTitleRaw = useMarkdown 
-    ? (currentChapter as ChapterMarkdown).title 
-    : (currentChapter as Chapter).title;
-  const chapterSubtitle = useMarkdown 
-    ? undefined 
-    : (currentChapter as Chapter).subtitle;
-  const chapterContent = useMarkdown 
-    ? (currentChapter as ChapterMarkdown).markdown 
-    : (currentChapter as Chapter).content;
-
-  // Sanitize title to avoid markdown artifacts in the hero
-  const sanitizeTitle = (t: string) => {
-    let s = t || '';
-    s = s.replace(/^#+\s*/, ''); // remove heading marks
-    s = s.replace(/\*\*(.*?)\*\*/g, '$1'); // remove bold markers
-    s = s.replace(/[_`~]/g, ''); // remove other md markers
-    s = s.replace(/\s{2,}/g, ' ').trim();
-    // If title is super long, cut at first period if reasonable
-    if (s.length > 120) {
-      const stop = s.indexOf('. ');
-      if (stop > 40 && stop < 120) s = s.slice(0, stop + 1);
-      else s = s.slice(0, 120) + '…';
-    }
-    return s;
-  };
-  const chapterTitle = sanitizeTitle(chapterTitleRaw);
-  
-  // Extract chapter number from title if present, otherwise use array index
-  const extractedNumber = extractChapterNumber(chapterTitle);
-  const chapterNumber = extractedNumber !== null ? extractedNumber : currentChapterIndex + 1;
-    
   const progress = chapters.length > 0 
     ? Math.round(((currentChapterIndex + 1) / chapters.length) * 100)
     : 0;
@@ -218,16 +180,11 @@ export const EbookReader = ({
             <div className="flex items-center gap-2">
               <TableOfContents
                 chapters={chapters}
-                useMarkdown={useMarkdown}
                 currentChapter={currentChapterIndex}
                 onChapterSelect={handleChapterSelect}
                 completedChapters={completedChapters}
               />
-              <SearchDialog 
-                chapters={chapters} 
-                useMarkdown={useMarkdown}
-                onResultClick={handleChapterSelect} 
-              />
+              <SearchDialog chapters={chapters} onResultClick={handleChapterSelect} />
               <NotesPanel currentChapter={currentChapterIndex} />
               <ReadingControls
                 fontSize={fontSize}
@@ -251,19 +208,15 @@ export const EbookReader = ({
         {/* Chapter Cover */}
         <div className="mt-12">
           <ChapterCover
-            chapterNumber={chapterNumber}
-            title={chapterTitle}
-            subtitle={chapterSubtitle}
+            chapterNumber={currentChapterIndex + 1}
+            title={currentChapter.title}
+            subtitle={currentChapter.subtitle}
           />
         </div>
         
         {/* Chapter Content */}
         <div className="mt-8 animate-fade-in">
-          {useMarkdown ? (
-            <MarkdownChapterContent markdown={chapterContent as string} />
-          ) : (
-            <ChapterContent blocks={chapterContent as any} />
-          )}
+          <ChapterContent blocks={currentChapter.content} />
         </div>
         
         {/* Page Number */}
