@@ -61,8 +61,8 @@ export const EbookReader = ({
 
   const currentChapter = chapters[currentChapterIndex];
   
-  // Extract title, subtitle, and content based on chapter type
-  const chapterTitle = useMarkdown 
+  // Extract title, subtitle, and content based on the `useMarkdown` prop
+  const chapterTitleRaw = useMarkdown 
     ? (currentChapter as ChapterMarkdown).title 
     : (currentChapter as Chapter).title;
   const chapterSubtitle = useMarkdown 
@@ -71,6 +71,23 @@ export const EbookReader = ({
   const chapterContent = useMarkdown 
     ? (currentChapter as ChapterMarkdown).markdown 
     : (currentChapter as Chapter).content;
+
+  // Sanitize title to avoid markdown artifacts in the hero
+  const sanitizeTitle = (t: string) => {
+    let s = t || '';
+    s = s.replace(/^#+\s*/, ''); // remove heading marks
+    s = s.replace(/\*\*(.*?)\*\*/g, '$1'); // remove bold markers
+    s = s.replace(/[_`~]/g, ''); // remove other md markers
+    s = s.replace(/\s{2,}/g, ' ').trim();
+    // If title is super long, cut at first period if reasonable
+    if (s.length > 120) {
+      const stop = s.indexOf('. ');
+      if (stop > 40 && stop < 120) s = s.slice(0, stop + 1);
+      else s = s.slice(0, 120) + '…';
+    }
+    return s;
+  };
+  const chapterTitle = sanitizeTitle(chapterTitleRaw);
   
   // Extract chapter number from title if present, otherwise use array index
   const extractedNumber = extractChapterNumber(chapterTitle);

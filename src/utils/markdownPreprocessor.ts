@@ -48,6 +48,11 @@ export function preprocessMarkdown(markdown: string): string {
     }
   );
 
+  // As a final safety pass, convert any remaining **bold** to HTML <strong>
+  // This ensures rendering even if markdown parsing fails due to odd spacing
+  processed = processed.replace(/\*\*([^\n*][\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
+
   return processed;
 }
 
