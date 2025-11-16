@@ -34,12 +34,12 @@ export function ProfileHeader({
           className="mb-3"
         />
       )}
-      <h1 className="text-2xl md:text-3xl font-black mb-1 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+      <h1 className="text-2xl md:text-3xl font-black mb-1 bg-gradient-primary bg-clip-text text-transparent">
         {displayName}
       </h1>
       <p className="text-muted-foreground text-sm mb-3">{user?.email}</p>
       {user?.premium && (
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-primary to-accent text-white font-bold text-xs shadow-lg">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-primary text-primary-foreground font-bold text-xs shadow-glow animate-badge-pulse">
           <span className="text-base">👑</span>
           Premium
         </div>

@@ -4,8 +4,8 @@ import { cn } from '@/lib/utils';
 interface PremiumCardProps {
   children: ReactNode;
   variant?: 'elevated' | 'glass' | 'gradient' | 'default';
-  hover?: boolean;
-  glow?: boolean;
+  hover?: boolean | 'default' | 'strong';
+  glow?: boolean | 'default' | 'intense';
   className?: string;
 }
 
@@ -25,8 +25,15 @@ export const PremiumCard = ({
     default: 'bg-card border border-border',
   };
 
-  const hoverClasses = hover ? 'hover-lift' : '';
-  const glowClasses = glow ? 'shadow-glow' : '';
+  const hoverClasses = 
+    hover === 'strong' ? 'hover-lift-strong' : 
+    hover === 'default' || hover === true ? 'hover-lift' : 
+    '';
+    
+  const glowClasses = 
+    glow === 'intense' ? 'hover-glow-intense' : 
+    glow === 'default' || glow === true ? 'hover-glow' : 
+    '';
 
   return (
     <div 
