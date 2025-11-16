@@ -8,7 +8,7 @@ import { ContinueLearning } from "@/components/bonuses/ContinueLearning";
 import { BonusEmptyState } from "@/components/bonuses/BonusEmptyState";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X, AlertCircle } from "lucide-react";
+import { Play, BookOpen, FileText, Wrench, Sparkles, Calendar, Loader2, X, AlertCircle, Clock } from "lucide-react";
 import { useBonuses, useUpdateBonusProgress } from "@/hooks/useBonuses";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -478,41 +478,57 @@ function BonusesContent() {
           */}
         </main>
 
-        {/* Video Player Modal */}
+        {/* Video Player Modal - Premium Version */}
         <Dialog open={!!playingBonus} onOpenChange={(open) => !open && setPlayingBonus(null)}>
-          <DialogContent className="max-w-5xl w-[95vw] p-0 border-0 bg-black overflow-hidden">
+          <DialogContent className="max-w-6xl w-[98vw] h-[95vh] p-0 border-0 bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden">
             {playingBonus && playingBonus.videoUrl && (
-              <div className="relative">
-                {/* Close Button */}
+              <div className="relative h-full flex flex-col">
+                {/* Backdrop blur overlay */}
+                <div className="absolute inset-0 bg-black/40 backdrop-blur-xl -z-10" />
+                
+                {/* Premium gradient border effect */}
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-50 blur-xl -z-10" />
+
+                {/* Close Button - Premium Style */}
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setPlayingBonus(null)}
-                  className="absolute top-4 right-4 z-50 bg-black/50 hover:bg-black/70 text-white rounded-full h-10 w-10"
+                  className="absolute top-4 right-4 z-50 bg-black/80 hover:bg-black backdrop-blur-md text-white rounded-full h-12 w-12 border border-white/10 hover:border-primary/50 transition-all hover:scale-110"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </Button>
 
-                {/* Video Title */}
-                <div className="px-6 pt-6 pb-3 bg-black">
-                  <h3 className="text-lg md:text-xl font-bold text-white mb-1">
+                {/* Video Title - Premium Header */}
+                <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm relative z-10">
+                  <motion.h3
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xl md:text-2xl font-bold text-white mb-2 flex items-center gap-3"
+                  >
+                    <div className="p-2 bg-gradient-to-br from-primary/30 to-accent/30 rounded-lg">
+                      <Play className="w-5 h-5 text-primary" />
+                    </div>
                     {playingBonus.title}
-                  </h3>
-                  <div className="flex items-center gap-3 text-sm text-white/60">
+                  </motion.h3>
+                  
+                  <div className="flex items-center gap-4 text-sm">
                     {playingBonus.duration && (
-                      <span className="flex items-center gap-1">
-                        <Play className="w-3 h-3" />
+                      <span className="flex items-center gap-2 text-white/70 bg-white/5 px-3 py-1 rounded-full backdrop-blur-sm">
+                        <Clock className="w-3 h-3" />
                         {playingBonus.duration}
                       </span>
                     )}
                     {playingBonus.tags && playingBonus.tags.length > 0 && (
-                      <span>• {playingBonus.tags[0]}</span>
+                      <span className="text-white/70 bg-primary/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                        {playingBonus.tags[0]}
+                      </span>
                     )}
                   </div>
                 </div>
 
-                {/* Video Player */}
-                <div className="bg-black">
+                {/* Video Player - Flex grow to fill space */}
+                <div className="flex-1 bg-black relative overflow-hidden">
                   <OptimizedYouTubePlayer
                     videoUrl={playingBonus.videoUrl}
                     videoId={playingBonus.id}
@@ -526,49 +542,88 @@ function BonusesContent() {
                   />
                 </div>
 
-                {/* Progress Bar */}
-                <div className="px-6 py-4 bg-black border-t border-white/10">
-                  <div className="flex items-center justify-between text-xs text-white/60 mb-2">
-                    <span>
-                      {Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}
-                    </span>
-                    <span>
-                      {Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}
-                    </span>
+                {/* Premium Controls Bar */}
+                <div className="px-6 py-5 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md border-t border-white/10 relative z-10">
+                  {/* Progress Bar with Glow Effect */}
+                  <div className="mb-4">
+                    <div className="flex items-center justify-between text-xs text-white/60 mb-2 font-mono">
+                      <span className="bg-white/5 px-2 py-1 rounded">
+                        {Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}
+                      </span>
+                      <span className="bg-white/5 px-2 py-1 rounded">
+                        {Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}
+                      </span>
+                    </div>
+                    
+                    {/* Custom Progress Bar with Glow */}
+                    <div className="relative">
+                      <Progress
+                        value={videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0}
+                        className="h-2 bg-white/10"
+                      />
+                      {/* Glow effect on progress */}
+                      <motion.div
+                        className="absolute top-0 left-0 h-2 bg-gradient-to-r from-primary via-accent to-primary rounded-full"
+                        style={{
+                          width: `${videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0}%`,
+                          boxShadow: '0 0 20px hsl(var(--primary) / 0.6), 0 0 40px hsl(var(--accent) / 0.4)',
+                        }}
+                        animate={{
+                          opacity: [0.8, 1, 0.8],
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    </div>
                   </div>
-                  <Progress
-                    value={videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0}
-                    className="h-1.5"
-                  />
 
-                  {/* Playback Speed Controls */}
-                  <div className="flex items-center gap-2 mt-4">
-                    <span className="text-xs text-white/60">Speed:</span>
-                    {[1, 1.25, 1.5, 2].map((speed) => (
-                      <Button
-                        key={speed}
-                        variant={playbackRate === speed ? "default" : "ghost"}
-                        size="sm"
-                        onClick={() => setPlaybackRate(speed)}
-                        className={
-                          playbackRate === speed
-                            ? "h-7 px-3 text-xs bg-white text-black hover:bg-white/90"
-                            : "h-7 px-3 text-xs text-white/70 hover:text-white hover:bg-white/10"
-                        }
-                      >
-                        {speed}x
-                      </Button>
-                    ))}
+                  {/* Premium Playback Speed Controls */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm text-white/60 font-medium">Playback Speed</span>
+                      <div className="flex gap-2">
+                        {[1, 1.25, 1.5, 2].map((speed) => (
+                          <motion.div key={speed} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                            <Button
+                              variant={playbackRate === speed ? "default" : "ghost"}
+                              size="sm"
+                              onClick={() => setPlaybackRate(speed)}
+                              className={
+                                playbackRate === speed
+                                  ? "h-9 px-4 text-xs font-semibold bg-gradient-to-r from-primary to-accent text-white border-0 shadow-glow"
+                                  : "h-9 px-4 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+                              }
+                            >
+                              {speed}x
+                            </Button>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Quality Badge */}
+                    <div className="flex items-center gap-2 text-xs text-white/50">
+                      <Sparkles className="w-3 h-3 text-accent" />
+                      <span>Premium Quality</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Video Description */}
+                {/* Video Description - Collapsible */}
                 {playingBonus.description && (
-                  <div className="px-6 pb-6 bg-black border-t border-white/10">
-                    <p className="text-sm text-white/70 leading-relaxed mt-4">
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={{ delay: 0.3 }}
+                    className="px-6 py-4 bg-black/90 backdrop-blur-sm border-t border-white/10 max-h-24 overflow-y-auto"
+                  >
+                    <p className="text-sm text-white/70 leading-relaxed">
                       {playingBonus.description}
                     </p>
-                  </div>
+                  </motion.div>
                 )}
               </div>
             )}
