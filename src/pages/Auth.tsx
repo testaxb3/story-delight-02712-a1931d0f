@@ -56,7 +56,15 @@ export default function Auth() {
         : await signIn(email, password);
 
       if (error) {
-        toast.error(error.message);
+        // Improved error messages
+        const errorMessage = error.message;
+        if (errorMessage.includes('restricted') || errorMessage.includes('Access')) {
+          toast.error(errorMessage, { duration: 6000 });
+        } else if (errorMessage.includes('Invalid')) {
+          toast.error('Invalid email or password');
+        } else {
+          toast.error(errorMessage);
+        }
       } else {
         toast.success(isSignUp ? 'Account created successfully! Welcome to NEP System!' : 'Welcome back!');
 
@@ -323,6 +331,43 @@ export default function Auth() {
             </p>
           </div>
         </div>
+
+        {/* Need Access Section - Only show on login */}
+        {!isSignUp && (
+          <div className="mt-8 glass-card p-6 border border-white/10 rounded-xl">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
+                  <Lock className="w-6 h-6 text-purple-400" />
+                </div>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  🔒 NEP System Premium Access
+                </h3>
+                <p className="text-gray-300 text-sm mb-4">
+                  This application is exclusive to members who purchased the NEP System program.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <a
+                    href="https://nepsystem.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+                  >
+                    Get NEP System Access →
+                  </a>
+                  <a
+                    href="mailto:support@nepsystem.com"
+                    className="inline-flex items-center justify-center px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/5 transition-colors text-sm font-medium"
+                  >
+                    Contact Support
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
