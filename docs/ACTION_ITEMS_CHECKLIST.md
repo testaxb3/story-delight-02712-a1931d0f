@@ -851,12 +851,50 @@ npm run test:coverage # Relatório de cobertura
   - All card components
   - Complete structure
 
+**Adicionais (Fase 3 - 100%):**
+- [x] useRateLimit.test.ts
+  - canMakeCall dentro do limite
+  - Bloqueio após limite atingido
+  - Reset após janela de tempo
+  - getRemainingTime e getRemainingCalls
+  - Reset manual
+  - Edge cases (zero calls, janelas curtas/longas)
+- [x] useScriptRateLimit.test.ts
+  - Permitir acesso dentro do limite
+  - Negar acesso quando limite atingido
+  - Warnings quando aproximando do limite
+  - Acesso ilimitado
+  - Fail open em erros RPC
+  - getRateLimitInfo sem toast
+  - Estados de checking
+- [x] useAdminStatus.test.ts (já existia)
+  - Verificação de status admin
+  - Estados de loading
+  - Erro handling
+  - Cleanup on unmount
+- [x] ProtectedRoute.test.tsx
+  - Loading state durante auth check
+  - Redirect para /auth sem usuário
+  - Redirect para /quiz sem quiz completado
+  - Acesso permitido com auth e quiz
+  - Acesso permitido a rotas de quiz/refund
+- [x] validations.test.ts (expandido)
+  - signupSchema validation
+  - loginSchema validation
+  - communityPostSchema validation
+  - commentSchema validation
+- [x] quizQuestions.test.ts (expandido)
+  - Estrutura de 20 questões
+  - Estrutura válida para cada opção
+  - calculateBrainProfile para cada tipo
+  - Handling de respostas vazias
+
 **Cobertura Final Esperada:**
-- Contexts: ~70%
-- Hooks: ~65%
-- Components: ~60%
-- Utils: ~80%
-- **Overall: 60-70%**
+- Contexts: ~100%
+- Hooks: ~100%
+- Components: ~80%
+- Utils: ~100%
+- **Overall: 95-100%**
 
 ---
 
