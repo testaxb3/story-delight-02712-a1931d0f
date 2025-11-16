@@ -464,26 +464,6 @@ export default function Dashboard() {
 
         {/* Compact Success Story at bottom */}
         <CompactSuccessStory story={currentStory} />
-
-        {/* Community Live Stats */}
-        <div className="card-glass p-6 rounded-2xl">
-          <div className="flex items-center gap-2 mb-4">
-            <Users className="w-5 h-5 text-primary" />
-            <h3 className="font-bold">Live Community Stats</h3>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <div className="text-2xl font-black text-success">{liveStats.totalMembers.toLocaleString()}</div>
-              <div className="text-sm text-muted-foreground">Total Parents</div>
-              <div className="text-xs text-success mt-1">👥 {liveStats.activeUsersThisWeek} online now</div>
-            </div>
-            <div>
-              <div className="text-2xl font-black text-primary">{liveStats.scriptsUsedToday}</div>
-              <div className="text-sm text-muted-foreground">Scripts Today</div>
-              <div className="text-xs text-primary mt-1">📊 {liveStats.scriptsUsedThisWeek} this week</div>
-            </div>
-          </div>
-        </div>
       </div>
       )}
 
