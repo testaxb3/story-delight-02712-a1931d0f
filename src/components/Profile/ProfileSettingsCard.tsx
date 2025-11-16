@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Clock, Smartphone, Check, DollarSign, CheckCircle, Eye } from 'lucide-react';
+import { User, Clock, Smartphone, Check, DollarSign, CheckCircle, Eye, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
@@ -110,18 +110,16 @@ export function ProfileSettingsCard({
 
         <div className="mt-6 pt-6 border-t dark:border-slate-700">
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="w-4 h-4 text-primary dark:text-primary-foreground" />
+            <Mail className="w-4 h-4 text-primary dark:text-primary-foreground" />
             <h3 className="font-semibold text-sm dark:text-slate-200">Support</h3>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium dark:text-slate-300">Support via WhatsApp</span>
+            <span className="text-sm font-medium dark:text-slate-300">Support via Email</span>
             <a
-              href="https://wa.me/27617525578"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:support@nepsystem.pro"
               className="text-primary dark:text-primary-foreground text-sm font-semibold hover:underline transition-colors"
             >
-              Message us →
+              Email us →
             </a>
           </div>
         </div>
