@@ -33,9 +33,13 @@ export interface DashboardStats {
 export function useDashboardStats() {
   const { user } = useAuth();
 
+  console.log('useDashboardStats called with user:', user?.id);
+
   return useQuery({
     queryKey: ['dashboard-stats', user?.id],
     queryFn: async () => {
+      console.log('Fetching dashboard stats for user:', user?.id);
+      
       if (!user?.id) {
         throw new Error('User not authenticated');
       }
@@ -45,6 +49,8 @@ export function useDashboardStats() {
         .select('*')
         .eq('user_id', user.id)
         .single();
+
+      console.log('Dashboard stats response:', { data, error });
 
       if (error) throw error;
       if (!data) throw new Error('No dashboard data found');
