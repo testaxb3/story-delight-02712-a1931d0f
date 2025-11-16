@@ -144,13 +144,13 @@ export default function Auth() {
               </div>
               
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-                {isSignUp ? 'Criar Sua Conta' : 'Bem-vindo de Volta'}
+                {isSignUp ? 'Create Your Account' : 'Welcome Back'}
               </h1>
               
               <p className="text-muted-foreground text-lg max-w-sm mx-auto">
                 {isSignUp 
-                  ? 'Use o mesmo email da sua compra' 
-                  : 'Entre para continuar'}
+                  ? 'Use the same email from your purchase' 
+                  : 'Sign in to continue'}
               </p>
             </div>
 
@@ -161,11 +161,11 @@ export default function Auth() {
                   <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div className="text-sm">
                     <p className="font-semibold text-foreground mb-1">
-                      ⚠️ Importante: Use o Email da Compra
+                      ⚠️ Important: Use Your Purchase Email
                     </p>
                     <p className="text-muted-foreground">
-                      Você deve usar <strong>o mesmo email</strong> que usou para comprar o acesso ao NEP System. 
-                      Somente emails de compradores aprovados podem criar contas.
+                      You must use <strong>the same email</strong> you used to purchase NEP System access. 
+                      Only approved buyer emails can create accounts.
                     </p>
                   </div>
                 </div>
@@ -230,7 +230,7 @@ export default function Auth() {
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      {isSignUp ? 'Criar Conta' : 'Entrar'}
+                      {isSignUp ? '✨ Create Account' : '🚀 Sign In'}
                     </>
                   )}
                 </span>
@@ -255,8 +255,8 @@ export default function Auth() {
               >
                 <span className="relative">
                   {isSignUp 
-                    ? 'Já tem uma conta? Entre aqui' 
-                    : 'Não tem conta? Cadastre-se'}
+                    ? 'Already have an account? Sign in' 
+                    : "Don't have an account? Sign up"}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-primary to-accent group-hover:w-full transition-all duration-300"></span>
                 </span>
               </button>
@@ -265,7 +265,7 @@ export default function Auth() {
               {isSignUp && (
                 <div className="mt-6 pt-6 border-t border-border/50">
                   <p className="text-xs text-muted-foreground mb-3 text-center">
-                    Ainda não comprou o acesso?
+                    Haven't purchased access yet?
                   </p>
                   <a
                     href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
@@ -275,7 +275,7 @@ export default function Auth() {
                   >
                     <ShoppingCart className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium text-foreground">
-                      Comprar Acesso ao NEP System
+                      Purchase NEP System Access
                     </span>
                   </a>
                 </div>
