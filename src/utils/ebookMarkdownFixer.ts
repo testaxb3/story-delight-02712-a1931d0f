@@ -35,10 +35,15 @@ export function fixEbookMarkdown(markdown: string): string {
   fixed = fixed.replace(/([^\n])\n(#{1,6}\s)/g, '$1\n\n$2');
   fixed = fixed.replace(/(#{1,6}\s[^\n]+)\n([^\n#])/g, '$1\n\n$2');
 
-  // 7. Fix common markdown issues
-  // Remove spaces INSIDE bold markers (e.g., "** text**" -> "**text**") without touching newlines
-  fixed = fixed.replace(/\*\*[ \t]+([^\*])/g, '**$1');   // Remove spaces after opening ** (no newline)
-  fixed = fixed.replace(/([^\*])[ \t]+\*\*/g, '$1**');   // Remove spaces before closing ** (no newline)
+  // 6.5. Fix bold markers that are stuck to text without proper spacing
+  // Add space before opening ** if preceded by non-whitespace (except another *)
+  fixed = fixed.replace(/([^\s\*])\*\*([^\s])/g, '$1 **$2');
+  // Add space after closing ** if followed by non-whitespace/punctuation (except another *)
+  fixed = fixed.replace(/([^\s])\*\*([^\s\*\.\,\:\;\!\?\n\-])/g, '$1** $2');
+
+  // 7. Remove spaces INSIDE bold markers (e.g., "** text **" -> "**text**")
+  fixed = fixed.replace(/\*\*[ \t]+/g, '**');   // Remove spaces after opening **
+  fixed = fixed.replace(/[ \t]+\*\*/g, '**');   // Remove spaces before closing **
   
   // 8. Normalize bullet points
   fixed = fixed.replace(/^[\-\*]\s+/gm, '- ');
