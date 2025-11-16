@@ -11,13 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useIsAdmin } from '@/hooks/useIsAdmin';
+import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { useTheme } from 'next-themes';
 
 const Navigation = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
-  const { data: isAdmin } = useIsAdmin();
+  const { isAdmin } = useAdminStatus();
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 

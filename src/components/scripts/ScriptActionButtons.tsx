@@ -111,7 +111,10 @@ export function ScriptActionButtons({
       const newCount = usageCount + 1;
       const now = new Date();
 
-      // Save to localStorage
+      // Call parent handler first (updates Supabase)
+      onMarkUsed();
+
+      // Then save to localStorage for offline support
       localStorage.setItem(`${USAGE_KEY_PREFIX}${scriptId}`, newCount.toString());
       localStorage.setItem(`${LAST_USED_KEY_PREFIX}${scriptId}`, now.toISOString());
 
@@ -119,9 +122,6 @@ export function ScriptActionButtons({
       setLastUsed(now);
       setIsMarking(false);
       setIsSuccess(true);
-
-      // Call parent handler
-      onMarkUsed();
 
       // Trigger confetti
       triggerConfetti();

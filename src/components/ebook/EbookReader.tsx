@@ -100,9 +100,11 @@ export const EbookReader = ({
         if (!completedChapters.has(currentChapterIndex)) {
           const newCompleted = new Set(completedChapters);
           newCompleted.add(currentChapterIndex);
-          setCompletedChapters(newCompleted);
-          localStorage.setItem("ebook-completed", JSON.stringify(Array.from(newCompleted)));
+          
+          // Call parent callback first (updates Supabase), then update localStorage
           onChapterComplete?.(currentChapterIndex);
+          localStorage.setItem("ebook-completed", JSON.stringify(Array.from(newCompleted)));
+          setCompletedChapters(newCompleted);
         }
       }
 
