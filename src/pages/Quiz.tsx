@@ -62,7 +62,7 @@ export default function Quiz() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
 
   useEffect(() => {
@@ -218,7 +218,10 @@ export default function Quiz() {
         }
 
         // Force refresh children profiles and user data
-        await refreshChildren();
+        await Promise.all([
+          refreshChildren(),
+          refreshUser() // ✅ FIX: Refresh user context to update quiz_completed
+        ]);
         
         toast.success('Profile created successfully!');
       } catch (error) {
