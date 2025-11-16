@@ -5,6 +5,15 @@
 export function preprocessMarkdown(markdown: string): string {
   let processed = markdown;
 
+  // Normalize bold markers defensively (render-time fix)
+  // 1) Remove spaces inside ** **
+  processed = processed.replace(/\*\* +/g, '**');
+  processed = processed.replace(/ +\*\*/g, '**');
+  // 2) Add missing space before opening ** when glued to previous text
+  processed = processed.replace(/([^\s\*])\*\*([^\s\*])/g, '$1 **$2');
+  // 3) Add missing space after closing ** when glued to next word (avoid punctuation)
+  processed = processed.replace(/([^\s])\*\*([^\s\*\.,\:\;\!\?\n\-])/g, '$1** $2');
+
   // Remove standalone chapter labels (H1s like "CHAPTER 10" that are just labels, not titles)
   // Keep H1s that are actual content titles (more than just "CHAPTER X")
   processed = processed.replace(

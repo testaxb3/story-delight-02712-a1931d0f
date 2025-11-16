@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Chapter } from '@/data/ebookContent';
+import { extractChapterTitle } from '@/utils/markdownPreprocessor';
 
 export interface ChapterMarkdown {
   title: string;
@@ -57,16 +58,16 @@ export function useEbookContent(ebookId: string | undefined) {
           .filter(chunk => chunk.trim().length > 0);
         
         markdownChapters.forEach((chapterMd, index) => {
-          // Extract title from the chapter markdown
-          const titleMatch = chapterMd.match(/^#{2,3}\s+(.+)$/m);
-          let title = titleMatch ? titleMatch[1].trim() : `Chapter ${index + 1}`;
-          
-          // If no title found, try to get from first line
-          if (!titleMatch) {
-            const firstLine = chapterMd.split('\n')[0]?.trim();
-            if (firstLine && firstLine.length > 0 && firstLine.length < 100) {
-              title = firstLine.replace(/^#+\s*/, '').trim();
-            }
+          // Extract title robustly from markdown chunk
+          let title = extractChapterTitle(chapterMd);
+          // Fallback if still empty
+          if (!title || title.length === 0) {
+            title = `Chapter ${index + 1}`;
+          }
+          // Trim overly long titles to avoid huge hero blocks
+          if (title.length > 120) {
+            const trimmed = title.slice(0, 120);
+            title = trimmed.replace(/\s+\S*$/, '') + '…';
           }
           
           chaptersMarkdown.push({ title, markdown: chapterMd });
