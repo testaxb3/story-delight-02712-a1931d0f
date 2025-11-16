@@ -321,10 +321,10 @@ export default function Dashboard() {
 
         {/* Quick Metrics Overview */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Scripts Used */}
+          {/* Scripts Total */}
           <AnimatedMetricCard
             icon={BookOpen}
-            value={scriptsUsedCount}
+            value={contentCounts.scripts}
             label="Scripts Total"
             gradient="bg-gradient-primary"
             delay={0.5}
