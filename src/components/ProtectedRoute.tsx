@@ -25,7 +25,25 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const navState = location.state as { quizJustCompleted?: boolean } | null;
   const justCompleted = !!navState?.quizJustCompleted;
   
-  if (!isQuizRoute && !user.quiz_completed && !justCompleted) {
+  // Check sessionStorage for recent quiz completion (2-minute TTL)
+  const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
+  const withinTTL = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000; // 2 minutes
+
+  // Clear sessionStorage if quiz is confirmed completed
+  if (user.quiz_completed && quizCompletedAt > 0) {
+    sessionStorage.removeItem('quizJustCompletedAt');
+  }
+
+  // Debug log
+  console.debug('[ProtectedRoute]', {
+    path: location.pathname,
+    quiz_completed: user.quiz_completed,
+    justCompleted,
+    withinTTL,
+    isQuizRoute
+  });
+  
+  if (!isQuizRoute && !user.quiz_completed && !justCompleted && !withinTTL) {
     return <Navigate to="/quiz" replace />;
   }
 

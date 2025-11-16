@@ -64,10 +64,10 @@ export async function ensureUserScaffolding(userId: string, email: string) {
   const defaultName = normalizedEmail.split("@")[0] ?? "Parent";
 
   try {
+    // Don't pass quizCompleted to avoid overwriting existing status
     await saveChildProfile({
       parentName: defaultName,
       email: normalizedEmail,
-      quizCompleted: false,
     });
 
     console.log(`Profile scaffolded or updated for user ${userId}.`);

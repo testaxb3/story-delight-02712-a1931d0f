@@ -202,38 +202,53 @@ export default function Quiz() {
   const handleGoToDashboard = async () => {
     if (savingProfile || completingQuiz) return;
 
-    setCompletingQuiz(true); // ✅ Set loading state
+    setCompletingQuiz(true);
 
     if (user?.profileId) {
       try {
-        // Step 1: Update quiz completion in database
-        const { error } = await supabase
-          .from('profiles')
-          .update({
-            quiz_completed: true,
-            quiz_in_progress: false
-          })
-          .eq('id', user.profileId);
+        // Step 1: Update both profiles and user_progress tables
+        const [profileResult, progressResult] = await Promise.all([
+          supabase
+            .from('profiles')
+            .update({
+              quiz_completed: true,
+              quiz_in_progress: false
+            })
+            .eq('id', user.profileId),
+          supabase
+            .from('user_progress')
+            .update({
+              quiz_completed: true
+            })
+            .eq('user_id', user.profileId)
+        ]);
 
-        if (error) {
-          logger.error('Failed to update quiz completion:', error);
+        if (profileResult.error || progressResult.error) {
+          logger.error('Failed to update quiz completion:', profileResult.error || progressResult.error);
           toast.error('Failed to save progress. Please try again.');
           setCompletingQuiz(false);
           return;
         }
 
-        // Step 2: Force refresh user data and wait for completion
+        // Step 2: Optimistically update React Query cache
+        const queryClient = (await import('@tanstack/react-query')).useQueryClient;
+        const qc = queryClient();
+        qc.setQueryData(['user-profile', user.profileId], (old: any) => 
+          old ? { ...old, quiz_completed: true, quiz_in_progress: false } : old
+        );
+
+        // Step 3: Set sessionStorage flag for 2-minute bypass
+        sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
+
+        // Step 4: Force refresh user data
         await Promise.all([
           refreshChildren(),
           refreshUser()
         ]);
         
-        // Step 3: Small delay to ensure React Query cache propagates
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
         toast.success('Profile created successfully!');
         
-        // Step 4: Navigate after ensuring everything is updated
+        // Step 5: Navigate
         navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
@@ -242,6 +257,8 @@ export default function Quiz() {
         return;
       }
     } else {
+      // Set sessionStorage even without profileId
+      sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
       navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
     }
   };

@@ -105,10 +105,15 @@ export function useRefreshProfile() {
   const queryClient = useQueryClient();
 
   return async (userId: string) => {
-    // ✅ FIX: Use refetchQueries to force immediate fetch, not just invalidate
-    await queryClient.refetchQueries({ 
+    // Invalidate and force refetch, including inactive queries
+    await queryClient.invalidateQueries({
       queryKey: ['user-profile', userId],
-      type: 'active' 
+      exact: true,
+    });
+    await queryClient.refetchQueries({
+      queryKey: ['user-profile', userId],
+      type: 'all',
+      exact: true,
     });
   };
 }
