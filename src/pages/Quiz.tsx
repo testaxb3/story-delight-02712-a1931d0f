@@ -15,6 +15,7 @@ import { quizQuestions, calculateBrainProfile } from '@/lib/quizQuestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -65,6 +66,7 @@ export default function Quiz() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const syncQuizState = async () => {
@@ -231,9 +233,7 @@ export default function Quiz() {
         }
 
         // Step 2: Optimistically update React Query cache
-        const queryClient = (await import('@tanstack/react-query')).useQueryClient;
-        const qc = queryClient();
-        qc.setQueryData(['user-profile', user.profileId], (old: any) => 
+        queryClient.setQueryData(['user-profile', user.profileId], (old: any) => 
           old ? { ...old, quiz_completed: true, quiz_in_progress: false } : old
         );
 
