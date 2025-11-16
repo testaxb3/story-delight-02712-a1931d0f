@@ -12,6 +12,7 @@ import { ReadingControls } from "./ReadingControls";
 import { NotesPanel } from "./NotesPanel";
 import { Chapter } from "@/data/ebookContent";
 import { ChapterMarkdown } from "@/hooks/useEbookContent";
+import { extractChapterNumber } from "@/utils/markdownPreprocessor";
 import { useBookmarks } from "@/hooks/useBookmarks";
 
 interface EbookReaderProps {
@@ -70,6 +71,10 @@ export const EbookReader = ({
   const chapterContent = useMarkdown 
     ? (currentChapter as ChapterMarkdown).markdown 
     : (currentChapter as Chapter).content;
+  
+  // Extract chapter number from title if present, otherwise use array index
+  const extractedNumber = extractChapterNumber(chapterTitle);
+  const chapterNumber = extractedNumber !== null ? extractedNumber : currentChapterIndex + 1;
     
   const progress = chapters.length > 0 
     ? Math.round(((currentChapterIndex + 1) / chapters.length) * 100)
@@ -229,7 +234,7 @@ export const EbookReader = ({
         {/* Chapter Cover */}
         <div className="mt-12">
           <ChapterCover
-            chapterNumber={currentChapterIndex + 1}
+            chapterNumber={chapterNumber}
             title={chapterTitle}
             subtitle={chapterSubtitle}
           />

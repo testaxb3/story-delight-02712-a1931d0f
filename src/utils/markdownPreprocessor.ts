@@ -5,6 +5,13 @@
 export function preprocessMarkdown(markdown: string): string {
   let processed = markdown;
 
+  // Remove standalone chapter labels (H1s like "CHAPTER 10" that are just labels, not titles)
+  // Keep H1s that are actual content titles (more than just "CHAPTER X")
+  processed = processed.replace(
+    /^#\s+(CHAPTER|CAP[ÍI]TULO)\s+\d+\s*$/gim,
+    ''
+  );
+
   // Convert callouts from [!TYPE] syntax to custom HTML that we can detect
   // Supports: [!NOTE], [!TIP], [!WARNING], [!REMEMBER], [!TRY], [!SCIENCE]
   processed = processed.replace(
@@ -58,4 +65,30 @@ export function extractChapterTitle(markdown: string): string {
   }
   
   return 'Untitled Chapter';
+}
+
+/**
+ * Extracts chapter number from chapter title if present
+ * Returns null if no number is found
+ */
+export function extractChapterNumber(title: string): number | null {
+  // Try patterns like "Chapter 3:", "CHAPTER 3:", "3.", "Chapter Three"
+  const patterns = [
+    /chapter\s*(\d+)/i,           // "Chapter 3" or "CHAPTER 3"
+    /cap[íi]tulo\s*(\d+)/i,       // "Capítulo 3"
+    /^(\d+)\./,                    // "3. Title"
+    /^(\d+)\s*[-–—]\s*/,          // "3 - Title" or "3 – Title"
+  ];
+
+  for (const pattern of patterns) {
+    const match = title.match(pattern);
+    if (match && match[1]) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num)) {
+        return num;
+      }
+    }
+  }
+
+  return null;
 }
