@@ -16,8 +16,10 @@ export const ProgressTracker = ({ currentChapter, onProgressChange }: ProgressTr
   const isHalfway = progress >= 50 && progress < 100;
 
   useEffect(() => {
+    // Call parent callback first (to update Supabase if needed)
     onProgressChange?.(progress);
-    // Save progress to localStorage
+    
+    // Then update localStorage for offline support
     localStorage.setItem('ebook-progress', JSON.stringify({
       chapter: currentChapter,
       timestamp: new Date().toISOString(),

@@ -12,7 +12,7 @@ export function AnalyticsDashboard() {
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
       const [users, posts, scripts, videos, recentPosts, progress] = await Promise.all([
-        supabase.from("user_roles").select("user_id", { count: "exact" }),
+        supabase.from("profiles").select("id", { count: "exact" }),
         supabase.from("community_posts").select("id", { count: "exact" }),
         supabase.from("scripts").select("id", { count: "exact" }),
         supabase.from("videos").select("id", { count: "exact" }),

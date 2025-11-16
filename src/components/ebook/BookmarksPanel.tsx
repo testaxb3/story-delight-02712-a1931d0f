@@ -49,15 +49,19 @@ export const BookmarksPanel = ({
     };
 
     const updated = [...bookmarks, newBookmark];
-    setBookmarks(updated);
+    
+    // Update localStorage first, then state
     localStorage.setItem('ebook-bookmarks', JSON.stringify(updated));
+    setBookmarks(updated);
     onAddBookmark?.();
   };
 
   const removeBookmark = (id: string) => {
     const updated = bookmarks.filter(b => b.id !== id);
-    setBookmarks(updated);
+    
+    // Update localStorage first, then state
     localStorage.setItem('ebook-bookmarks', JSON.stringify(updated));
+    setBookmarks(updated);
   };
 
   const isCurrentChapterBookmarked = bookmarks.some(b => b.chapterId === currentChapter);
