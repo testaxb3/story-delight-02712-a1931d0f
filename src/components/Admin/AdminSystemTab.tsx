@@ -6,17 +6,8 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { RefreshCw, Loader2, AlertTriangle, CheckCircle2, Settings, Users, TrendingUp } from 'lucide-react';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
+import { useAdminRateLimit } from '@/hooks/useAdminRateLimit';
 
 interface UpdateStats {
   current_version: string;
@@ -35,6 +26,10 @@ export function AdminSystemTab() {
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const [stats, setStats] = useState<UpdateStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+
+  // Confirmation and rate limiting
+  const { confirm, ConfirmDialogComponent } = useConfirm();
+  const updateRateLimit = useAdminRateLimit(5, 60000, 'force updates');
 
   const MIN_UPDATE_INTERVAL = 60000; // 1 minute
   const remainingCooldown = Math.max(0, MIN_UPDATE_INTERVAL - (Date.now() - lastUpdateTime));
@@ -289,62 +284,29 @@ export function AdminSystemTab() {
             </div>
           )}
 
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                className="w-full gap-2"
-                size="lg"
-                disabled={updating || !canUpdate}
-              >
-                {updating ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Processing...
-                  </>
-                ) : !canUpdate ? (
-                  <>
-                    <AlertTriangle className="w-4 h-4" />
-                    Cooldown Active ({Math.ceil(remainingCooldown / 1000)}s)
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="w-4 h-4" />
-                    Force Global Update
-                  </>
-                )}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                  Confirm Global Update
-                </AlertDialogTitle>
-                <AlertDialogDescription asChild>
-                  <div className="space-y-2">
-                    <div>
-                      You are about to force an update for <strong>all users</strong> of the app.
-                    </div>
-                    <div className="text-sm">
-                      Message: "{updateMessage}"
-                    </div>
-                    <div className="font-semibold text-foreground">
-                      Do you want to continue?
-                    </div>
-                  </div>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleForceUpdate}
-                  className="bg-primary hover:bg-primary/90"
-                >
-                  Yes, Force Update
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button
+            className="w-full gap-2"
+            size="lg"
+            onClick={handleForceUpdate}
+            disabled={updating || !canUpdate}
+          >
+            {updating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Processing...
+              </>
+            ) : !canUpdate ? (
+              <>
+                <AlertTriangle className="w-4 h-4" />
+                Cooldown Active ({Math.ceil(remainingCooldown / 1000)}s)
+              </>
+            ) : (
+              <>
+                <RefreshCw className="w-4 h-4" />
+                Force Global Update
+              </>
+            )}
+          </Button>
         </CardContent>
       </Card>
 
@@ -377,6 +339,9 @@ export function AdminSystemTab() {
           </div>
         </CardContent>
       </Card>
+      
+      {/* Confirmation Dialog */}
+      {ConfirmDialogComponent}
     </div>
   );
 }

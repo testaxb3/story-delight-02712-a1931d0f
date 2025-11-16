@@ -5,16 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { useConfirm } from '@/hooks/useConfirm';
+import { useAdminRateLimit } from '@/hooks/useAdminRateLimit';
 import { BonusData } from '@/components/bonuses/BonusCard';
 import { BonusCard } from '@/components/bonuses/BonusCard';
 import { BonusesTable } from './BonusesTable';
@@ -71,7 +63,11 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
 
   // Bulk actions
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [showBulkDeleteDialog, setShowBulkDeleteDialog] = useState(false);
+  
+  // Confirmation and rate limiting
+  const { confirm, ConfirmDialogComponent } = useConfirm();
+  const deleteRateLimit = useAdminRateLimit(10, 60000, 'delete bonuses');
+  const bulkActionRateLimit = useAdminRateLimit(5, 60000, 'bulk operations');
 
   // Import/Export
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -171,22 +167,57 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
   };
 
   const handleDelete = async (id: string) => {
+    // Check rate limit
+    if (!deleteRateLimit.checkRateLimit()) {
+      return;
+    }
+
+    // Confirm deletion
+    const confirmed = await confirm({
+      title: 'Delete Bonus',
+      description: 'Are you sure you want to delete this bonus? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+
+    if (!confirmed) return;
+
     try {
       await deleteMutation.mutateAsync(id);
       onContentChanged?.();
+      toast.success('Bonus deleted successfully');
     } catch (error) {
       console.error('Error deleting bonus:', error);
+      toast.error('Failed to delete bonus');
     }
   };
 
   const handleBulkDelete = async () => {
+    // Check rate limit
+    if (!bulkActionRateLimit.checkRateLimit()) {
+      return;
+    }
+
+    // Confirm bulk deletion
+    const confirmed = await confirm({
+      title: 'Delete Multiple Bonuses',
+      description: `Are you sure you want to delete ${selectedIds.length} bonus${selectedIds.length > 1 ? 'es' : ''}? This action cannot be undone.`,
+      confirmText: 'Delete All',
+      cancelText: 'Cancel',
+      variant: 'destructive',
+    });
+
+    if (!confirmed) return;
+
     try {
       await deleteBulkMutation.mutateAsync(selectedIds);
       setSelectedIds([]);
-      setShowBulkDeleteDialog(false);
       onContentChanged?.();
+      toast.success(`${selectedIds.length} bonuses deleted successfully`);
     } catch (error) {
       console.error('Error bulk deleting bonuses:', error);
+      toast.error('Failed to delete bonuses');
     }
   };
 
@@ -327,10 +358,15 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
             {selectedIds.length > 0 && (
               <Button
                 variant="destructive"
-                onClick={() => setShowBulkDeleteDialog(true)}
+                onClick={handleBulkDelete}
                 className="gap-2"
+                disabled={deleteBulkMutation.isPending}
               >
-                <Trash2 className="w-4 h-4" />
+                {deleteBulkMutation.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
                 Delete Selected ({selectedIds.length})
               </Button>
             )}
@@ -492,26 +528,8 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Bulk Delete Dialog */}
-      <AlertDialog open={showBulkDeleteDialog} onOpenChange={setShowBulkDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Delete {selectedIds.length} bonuses?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will permanently delete the selected bonuses. This action cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleBulkDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Delete All
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      {/* Confirmation Dialog */}
+      {ConfirmDialogComponent}
 
       {/* Import Dialog */}
       <Dialog open={showImportDialog} onOpenChange={setShowImportDialog}>
