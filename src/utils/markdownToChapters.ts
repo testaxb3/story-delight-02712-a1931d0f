@@ -125,13 +125,27 @@ export function parseMarkdownToChapters(
       continue;
     }
 
-    // Callouts (special blocks)
+    // Callouts (special blocks) - multi-line support
     if (trimmed.startsWith('> [!')) {
       flushSection();
       const calloutMatch = trimmed.match(/^>\s*\[!(NOTE|WARNING|TIP|SCIENCE)\]\s*(.+)/i);
       if (calloutMatch) {
         const type = calloutMatch[1].toLowerCase();
-        const content = calloutMatch[2].trim();
+        let content = calloutMatch[2].trim();
+        
+        // Continue reading lines that start with '>'
+        i++;
+        while (i < lines.length && lines[i].trim().startsWith('>')) {
+          const continuationLine = lines[i].trim();
+          if (continuationLine === '>') {
+            content += '\n'; // Empty quote line = new paragraph
+          } else {
+            const lineContent = continuationLine.replace(/^>\s*/, '');
+            content += '\n' + lineContent;
+          }
+          i++;
+        }
+        i--; // Back up one line since we'll increment in the main loop
         
         const calloutTypeMap: Record<string, ChapterSection['calloutType']> = {
           note: 'remember',

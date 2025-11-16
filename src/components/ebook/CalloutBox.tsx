@@ -37,6 +37,56 @@ const calloutConfig = {
   }
 };
 
+const renderContent = (content: string) => {
+  // Process in order: code inline, bold, italic
+  const parts: (string | JSX.Element)[] = [];
+  let currentIndex = 0;
+  const codeRegex = /`([^`]+)`/g;
+  let match;
+  
+  while ((match = codeRegex.exec(content)) !== null) {
+    if (match.index > currentIndex) {
+      parts.push(content.substring(currentIndex, match.index));
+    }
+    parts.push(
+      <code key={`code-${match.index}`} className="px-2 py-1 bg-muted/50 rounded text-sm font-mono">
+        {match[1]}
+      </code>
+    );
+    currentIndex = match.index + match[0].length;
+  }
+  
+  if (currentIndex < content.length) {
+    parts.push(content.substring(currentIndex));
+  }
+  
+  return (
+    <>
+      {parts.map((part, partIdx) => {
+        if (typeof part !== 'string') return part;
+        
+        const boldParts = part.split(/(\*\*.*?\*\*)/g);
+        
+        return boldParts.map((boldPart, boldIdx) => {
+          if (boldPart.startsWith('**') && boldPart.endsWith('**')) {
+            return <strong key={`${partIdx}-bold-${boldIdx}`} className="font-semibold">{boldPart.slice(2, -2)}</strong>;
+          }
+          
+          const italicParts = boldPart.split(/(\*[^*]+\*|_[^_]+_)/g);
+          
+          return italicParts.map((italicPart, italicIdx) => {
+            if ((italicPart.startsWith('*') && italicPart.endsWith('*') && italicPart.length > 2) ||
+                (italicPart.startsWith('_') && italicPart.endsWith('_') && italicPart.length > 2)) {
+              return <em key={`${partIdx}-${boldIdx}-italic-${italicIdx}`}>{italicPart.slice(1, -1)}</em>;
+            }
+            return <span key={`${partIdx}-${boldIdx}-${italicIdx}`}>{italicPart}</span>;
+          });
+        });
+      })}
+    </>
+  );
+};
+
 export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
   const config = calloutConfig[type];
   const Icon = config.icon;
@@ -57,17 +107,9 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
             {content.split('\n').map((line, index) => {
               if (!line.trim()) return null;
 
-              // Handle bold text
-              const parts = line.split(/(\*\*.*?\*\*)/g);
-
               return (
                 <p key={index} className="text-foreground leading-relaxed m-0">
-                  {parts.map((part, i) => {
-                    if (part.startsWith('**') && part.endsWith('**')) {
-                      return <strong key={i} className="font-semibold">{part.slice(2, -2)}</strong>;
-                    }
-                    return <span key={i}>{part}</span>;
-                  })}
+                  {renderContent(line)}
                 </p>
               );
             })}
