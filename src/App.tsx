@@ -48,11 +48,16 @@ const PageLoader = () => (
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000, // 1 minute - data stays fresh
-      gcTime: 5 * 60 * 1000, // 5 minutes cache (renamed from cacheTime)
+      staleTime: 10 * 60 * 1000, // 10 minutes - increased for better caching
+      gcTime: 60 * 60 * 1000, // 60 minutes - keep data longer
       refetchOnWindowFocus: false, // Only refetch when explicitly needed
       refetchOnReconnect: true, // Refetch on network reconnect
       retry: 1, // Only retry once on failure
+      networkMode: 'offlineFirst', // Better offline support
+    },
+    mutations: {
+      retry: 1, // Retry failed mutations once
+      networkMode: 'offlineFirst', // Better offline support
     },
   },
 });

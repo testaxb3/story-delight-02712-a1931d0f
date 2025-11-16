@@ -70,18 +70,46 @@ export default defineConfig(({ mode }) => ({
 
         // Estratégias de cache otimizadas
         runtimeCaching: [
-          // Supabase API
+          // Supabase API - NetworkFirst with short cache
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+            urlPattern: /^https:\/\/.*\.supabase\.co\/rest\/.*/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "supabase-api",
+              networkTimeoutSeconds: 10,
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 // 24 horas
+                maxAgeSeconds: 5 * 60 // 5 minutes
               },
               cacheableResponse: {
                 statuses: [0, 200]
+              }
+            }
+          },
+          // Supabase Storage - CacheFirst for images
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'supabase-storage',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          // Static Images - CacheFirst with long expiration
+          {
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 60,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
               }
             }
           },
@@ -121,7 +149,7 @@ export default defineConfig(({ mode }) => ({
               }
             }
           },
-          // Google Fonts
+          // Google Fonts - CacheFirst with long expiration
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
             handler: 'CacheFirst',
@@ -129,7 +157,7 @@ export default defineConfig(({ mode }) => ({
               cacheName: 'google-fonts',
               expiration: {
                 maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 ano
+                maxAgeSeconds: 60 * 60 * 24 * 365 // 1 year
               },
               cacheableResponse: {
                 statuses: [0, 200]
