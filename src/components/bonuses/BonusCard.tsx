@@ -16,7 +16,8 @@ import {
   ExternalLink,
   Share2,
   Bookmark,
-  Star
+  Star,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BonusData, BonusCategory } from "@/types/bonus";
@@ -34,42 +35,49 @@ interface BonusCardProps {
 const categoryConfig: Record<BonusCategory, {
   icon: typeof Play;
   color: string;
+  glowClass: string;
   bgColor: string;
   textColor: string;
 }> = {
   [BonusCategory.VIDEO]: {
     icon: Play,
     color: "from-red-500 to-pink-500",
+    glowClass: "glow-video",
     bgColor: "bg-red-500/10",
     textColor: "text-red-500"
   },
   [BonusCategory.EBOOK]: {
     icon: BookOpen,
     color: "from-blue-500 to-cyan-500",
+    glowClass: "glow-ebook",
     bgColor: "bg-blue-500/10",
     textColor: "text-blue-500"
   },
   [BonusCategory.TOOL]: {
     icon: Wrench,
     color: "from-purple-500 to-indigo-500",
+    glowClass: "glow-tool",
     bgColor: "bg-purple-500/10",
     textColor: "text-purple-500"
   },
   [BonusCategory.PDF]: {
     icon: FileText,
     color: "from-emerald-500 to-teal-500",
+    glowClass: "glow-pdf",
     bgColor: "bg-emerald-500/10",
     textColor: "text-emerald-500"
   },
   [BonusCategory.SESSION]: {
     icon: Clock,
     color: "from-orange-500 to-amber-500",
+    glowClass: "glow-session",
     bgColor: "bg-orange-500/10",
     textColor: "text-orange-500"
   },
   [BonusCategory.TEMPLATE]: {
     icon: FileText,
     color: "from-violet-500 to-purple-500",
+    glowClass: "glow-template",
     bgColor: "bg-violet-500/10",
     textColor: "text-violet-500"
   }
@@ -86,31 +94,33 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -4 }}
+      whileHover={{ y: -6, scale: 1.02 }}
+      className="h-full"
     >
       <Card className={cn(
-        "group overflow-hidden transition-all duration-300",
-        "hover:shadow-2xl hover:shadow-primary/10",
-        bonus.locked ? "opacity-75" : "",
-        "border-2 hover:border-primary/30"
+        "group overflow-hidden transition-all duration-500 h-full flex flex-col",
+        "bonus-glass",
+        !bonus.locked && "hover:border-primary/40",
+        bonus.locked ? "opacity-80" : ""
       )}>
-        {/* Thumbnail Section */}
-        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900">
+        {/* Thumbnail Section with Parallax */}
+        <div className="relative h-48 overflow-hidden bg-gradient-to-br from-muted/50 to-muted">
           {bonus.thumbnail && !imageError ? (
             <>
-              {/* Blur placeholder */}
               {!imageLoaded && (
-                <div className="absolute inset-0 animate-pulse bg-muted" />
+                <div className="absolute inset-0 animate-pulse bg-muted/50 backdrop-blur-sm" />
               )}
-              <img
+              <motion.img
                 src={bonus.thumbnail}
                 alt={bonus.title}
                 loading="lazy"
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
+                whileHover={{ scale: 1.1 }}
+                transition={{ duration: 0.6 }}
                 className={cn(
-                  "w-full h-full transition-all duration-300 group-hover:scale-110",
-                  bonus.category === BonusCategory.EBOOK ? "object-contain" : "object-cover",
+                  "w-full h-full transition-all duration-600",
+                  bonus.category === BonusCategory.EBOOK ? "object-contain p-4" : "object-cover",
                   !imageLoaded && "opacity-0"
                 )}
               />
@@ -121,31 +131,30 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
             </div>
           )}
 
-          {/* Overlay - More subtle */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+          {/* Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
           {/* Status badges */}
           <div className="absolute bottom-3 left-3 flex gap-2 flex-wrap">
             {bonus.isNew && (
-              <Badge className="bg-gradient-to-r from-primary to-purple-600 text-white shadow-lg">
-                <Star className="w-3 h-3 mr-1" />
+              <Badge className="bg-accent text-accent-foreground shadow-lg border-0 animate-shimmer-glow">
+                <Sparkles className="w-3 h-3 mr-1" />
                 NEW
               </Badge>
             )}
             {bonus.completed && (
-              <Badge className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg">
+              <Badge className="bg-success/90 text-success-foreground shadow-lg border-0">
                 <CheckCircle2 className="w-3 h-3 mr-1" />
                 Completed
               </Badge>
             )}
             {!bonus.completed && bonus.progress !== undefined && bonus.progress > 0 && (
-              <Badge className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg">
-                <BookOpen className="w-3 h-3 mr-1" />
-                Continue Reading · {bonus.progress}%
+              <Badge className="bg-primary/90 text-primary-foreground shadow-lg border-0">
+                In Progress
               </Badge>
             )}
             {bonus.locked && (
-              <Badge variant="secondary" className="bg-black/60 text-white backdrop-blur-sm shadow-lg">
+              <Badge variant="secondary" className="bg-muted/90 shadow-lg backdrop-blur-sm border-0">
                 <Lock className="w-3 h-3 mr-1" />
                 Locked
               </Badge>
@@ -154,7 +163,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
 
           {/* Category badge */}
           <div className="absolute bottom-3 right-3">
-            <Badge className={cn(config.bgColor, config.textColor, "backdrop-blur-sm shadow-lg")}>
+            <Badge className={cn(config.bgColor, config.textColor, "backdrop-blur-sm shadow-lg border-0")}>
               <IconComponent className="w-3 h-3 mr-1" />
               {bonus.category.toUpperCase()}
             </Badge>
@@ -275,39 +284,26 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
               <div className="flex gap-2">
                 {bonus.viewUrl && (
                   <Button
-                    className="flex-1 gradient-primary text-white shadow-lg hover:shadow-xl transition-all"
+                    className={cn(
+                      "flex-1 group/btn transition-all duration-300",
+                      !bonus.completed && config.glowClass
+                    )}
                     onClick={() => onAction?.(bonus)}
                   >
-                    {bonus.category === 'video' ? (
-                      <>
-                        <Play className="w-4 h-4 mr-2" />
-                        {bonus.completed ? 'Watch Again' : 'Watch Now'}
-                      </>
-                    ) : (
-                      <>
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        {bonus.completed ? 'View Again' : 'View Now'}
-                      </>
-                    )}
+                    <Play className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
+                    {bonus.category === 'video' ? (bonus.completed ? 'Watch Again' : 'Watch Now') : (bonus.completed ? 'View Again' : 'View Now')}
                   </Button>
                 )}
                 {bonus.downloadUrl && (
                   <Button
                     variant="outline"
-                    className="hover:bg-primary hover:text-white transition-colors"
-                    onClick={() => onAction?.(bonus)}
+                    onClick={() => window.open(bonus.downloadUrl, '_blank')}
                   >
                     <Download className="w-4 h-4" />
                   </Button>
                 )}
-                {!bonus.viewUrl && !bonus.downloadUrl && (
-                  <Button
-                    className="w-full gradient-primary text-white shadow-lg hover:shadow-xl transition-all"
-                    onClick={() => onAction?.(bonus)}
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Access
-                  </Button>
+                {!bonus.completed && bonus.viewUrl && (
+                  <MarkCompleteButton bonusId={bonus.id} isCompleted={false} size="sm" />
                 )}
               </div>
             )}
