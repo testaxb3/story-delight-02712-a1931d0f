@@ -9,13 +9,16 @@ import { ScriptBox } from './ScriptBox';
 import { TableBlock } from './TableBlock';
 import { ChapterDecorator } from './ChapterDecorator';
 import { OptimizedImage } from '../common/OptimizedImage';
-import { cn } from '@/lib/utils';
+import { preprocessMarkdown } from '@/utils/markdownPreprocessor';
 
 interface MarkdownChapterContentProps {
   markdown: string;
 }
 
 export const MarkdownChapterContent = ({ markdown }: MarkdownChapterContentProps) => {
+  // Preprocess markdown to handle callouts and script blocks
+  const processedMarkdown = preprocessMarkdown(markdown);
+  
   return (
     <div className="space-y-6 reading-content">
       <ReactMarkdown
@@ -78,17 +81,11 @@ export const MarkdownChapterContent = ({ markdown }: MarkdownChapterContentProps
           </p>
         ),
 
-        // Links
+        // Links - Remove links in ebooks (not useful in printed/PDF format)
         a: ({ href, children, ...props }) => (
-          <a
-            href={href}
-            className="text-primary hover:text-primary/80 underline underline-offset-2 smooth-transition"
-            target="_blank"
-            rel="noopener noreferrer"
-            {...props}
-          >
+          <span className="text-foreground font-semibold">
             {children}
-          </a>
+          </span>
         ),
 
         // Lists
@@ -155,28 +152,8 @@ export const MarkdownChapterContent = ({ markdown }: MarkdownChapterContentProps
           );
         },
 
-        // Blockquotes (Callouts)
+        // Blockquotes (Callouts) - Now handled by preprocessor
         blockquote: ({ children, ...props }: any) => {
-          const childText = String(children);
-          
-          // Detect callout type
-          const noteMatch = childText.match(/\[!(NOTE|TRY|REMEMBER|WARNING|SCIENCE)\]/i);
-          if (noteMatch) {
-            const type = noteMatch[1].toLowerCase() as 'note' | 'try' | 'remember' | 'warning' | 'science';
-            const content = childText.replace(/\[!(NOTE|TRY|REMEMBER|WARNING|SCIENCE)\]/i, '').trim();
-            
-            const typeMap: Record<string, 'science' | 'try' | 'remember' | 'warning'> = {
-              'note': 'remember',
-              'try': 'try',
-              'remember': 'remember',
-              'warning': 'warning',
-              'science': 'science'
-            };
-            
-            return <CalloutBox type={typeMap[type] || 'remember'} content={content} />;
-          }
-
-          // Regular blockquote
           return (
             <blockquote 
               className="border-l-4 border-primary pl-4 italic text-muted-foreground my-4" 
@@ -185,6 +162,52 @@ export const MarkdownChapterContent = ({ markdown }: MarkdownChapterContentProps
               {children}
             </blockquote>
           );
+        },
+
+        // Divs - Handle preprocessed callouts and scripts
+        div: ({ children, ...props }: any) => {
+          const calloutType = (props as any)['data-callout'];
+          const isScript = (props as any)['data-script'];
+
+          if (calloutType) {
+            const typeMap: Record<string, 'science' | 'try' | 'remember' | 'warning'> = {
+              'note': 'remember',
+              'tip': 'try',
+              'remember': 'remember',
+              'warning': 'warning',
+              'science': 'science',
+              'try': 'try'
+            };
+            
+            // Extract text content recursively from React children
+            const extractText = (child: any): string => {
+              if (typeof child === 'string') return child;
+              if (typeof child === 'number') return String(child);
+              if (Array.isArray(child)) return child.map(extractText).join('');
+              if (child?.props?.children) return extractText(child.props.children);
+              return '';
+            };
+            
+            const content = extractText(children).trim();
+            
+            return <CalloutBox type={typeMap[calloutType] || 'remember'} content={content} />;
+          }
+
+          if (isScript) {
+            const extractText = (child: any): string => {
+              if (typeof child === 'string') return child;
+              if (typeof child === 'number') return String(child);
+              if (Array.isArray(child)) return child.map(extractText).join('');
+              if (child?.props?.children) return extractText(child.props.children);
+              return '';
+            };
+            
+            const content = extractText(children).trim();
+            const lines = content.split('\n').filter(line => line.trim());
+            return <ScriptBox content={lines} />;
+          }
+
+          return <div {...props}>{children}</div>;
         },
 
         // Tables
@@ -257,7 +280,7 @@ export const MarkdownChapterContent = ({ markdown }: MarkdownChapterContentProps
         ),
       }}
     >
-      {markdown}
+      {processedMarkdown}
     </ReactMarkdown>
     </div>
   );
