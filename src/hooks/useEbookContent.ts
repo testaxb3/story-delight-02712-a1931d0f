@@ -2,12 +2,19 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Chapter } from '@/data/ebookContent';
 
+export interface ChapterMarkdown {
+  title: string;
+  markdown: string;
+}
+
 export interface EbookWithChapters {
   id: string;
   title: string;
   subtitle: string | null;
   slug: string;
   chapters: Chapter[];
+  chaptersMarkdown: ChapterMarkdown[];
+  markdown_source: string | null;
   thumbnail_url: string | null;
   cover_color: string;
   total_chapters: number;
@@ -26,7 +33,7 @@ export function useEbookContent(ebookId: string | undefined) {
       
       const { data, error } = await supabase
         .from('ebooks')
-        .select('id, title, subtitle, slug, content, thumbnail_url, cover_color, total_chapters, estimated_reading_time, bonus_id')
+        .select('id, title, subtitle, slug, content, markdown_source, thumbnail_url, cover_color, total_chapters, estimated_reading_time, bonus_id')
         .eq('id', ebookId)
         .is('deleted_at', null)
         .maybeSingle();
@@ -41,9 +48,22 @@ export function useEbookContent(ebookId: string | undefined) {
       // Parse JSONB content to Chapter[]
       const chapters: Chapter[] = Array.isArray(data.content) ? (data.content as any) : [];
       
+      // Parse markdown into chapters (split by ## headings)
+      const chaptersMarkdown: ChapterMarkdown[] = [];
+      if (data.markdown_source) {
+        const markdownChapters = data.markdown_source.split(/(?=^## )/gm).filter(Boolean);
+        
+        markdownChapters.forEach((chapterMd) => {
+          const titleMatch = chapterMd.match(/^## (.+)$/m);
+          const title = titleMatch ? titleMatch[1].trim() : 'Untitled';
+          chaptersMarkdown.push({ title, markdown: chapterMd });
+        });
+      }
+      
       return {
         ...data,
         chapters,
+        chaptersMarkdown,
       } as EbookWithChapters;
     },
     enabled: !!ebookId,
@@ -53,6 +73,8 @@ export function useEbookContent(ebookId: string | undefined) {
   return { 
     ebook: data,
     chapters: data?.chapters || [],
+    chaptersMarkdown: data?.chaptersMarkdown || [],
+    markdown_source: data?.markdown_source || null,
     isLoading, 
     error 
   };

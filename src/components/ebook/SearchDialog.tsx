@@ -11,9 +11,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Chapter } from "@/data/ebookContent";
+import { ChapterMarkdown } from "@/hooks/useEbookContent";
 
 interface SearchDialogProps {
-  chapters: Chapter[];
+  chapters: Chapter[] | ChapterMarkdown[];
+  useMarkdown?: boolean;
   onResultClick: (chapterIndex: number) => void;
 }
 
@@ -24,7 +26,7 @@ interface SearchResult {
   preview: string;
 }
 
-export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => {
+export const SearchDialog = ({ chapters, useMarkdown = false, onResultClick }: SearchDialogProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -35,40 +37,62 @@ export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => 
     const searchTerm = query.toLowerCase();
 
     chapters.forEach((chapter, chapterIndex) => {
-      chapter.content.forEach((block) => {
-        let text = "";
-        
-        if (block.type === "heading" || block.type === "paragraph") {
-          text = typeof block.content === "string" ? block.content : "";
-        } else if (block.type === "list" && Array.isArray(block.content)) {
-          text = block.content.join(" ");
-        } else if (block.type === "callout" && typeof block.content === "string") {
-          text = block.content;
-        } else if (block.type === "script" && typeof block.content === "string") {
-          text = block.content;
-        } else if (block.type === "table" && typeof block.content === "object" && !Array.isArray(block.content)) {
-          const tableData = block.content as { headers: string[]; rows: string[][] };
-          text = [...tableData.headers, ...tableData.rows.flat()].join(" ");
-        }
+      let chapterTitle = "";
+      let searchableText = "";
 
-        if (text.toLowerCase().includes(searchTerm)) {
-          const index = text.toLowerCase().indexOf(searchTerm);
-          const start = Math.max(0, index - 50);
-          const end = Math.min(text.length, index + searchTerm.length + 50);
-          const preview = (start > 0 ? "..." : "") + text.slice(start, end) + (end < text.length ? "..." : "");
+      if (useMarkdown) {
+        const mdChapter = chapter as ChapterMarkdown;
+        chapterTitle = mdChapter.title;
+        // Remove markdown syntax for better searching
+        searchableText = mdChapter.markdown
+          .replace(/#{1,6}\s/g, '') // Remove heading markers
+          .replace(/\*\*/g, '') // Remove bold markers
+          .replace(/\*/g, '') // Remove italic markers
+          .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Keep link text only
+          .replace(/`([^`]+)`/g, '$1'); // Remove code markers
+      } else {
+        const stdChapter = chapter as Chapter;
+        chapterTitle = stdChapter.title;
 
-          results.push({
-            chapterIndex,
-            chapterTitle: chapter.title,
-            content: text,
-            preview,
-          });
-        }
-      });
+        // Search through content blocks
+        stdChapter.content.forEach((block) => {
+          let text = "";
+          
+          if (block.type === "heading" || block.type === "paragraph") {
+            text = typeof block.content === "string" ? block.content : "";
+          } else if (block.type === "list" && Array.isArray(block.content)) {
+            text = block.content.join(" ");
+          } else if (block.type === "callout" && typeof block.content === "string") {
+            text = block.content;
+          } else if (block.type === "script" && typeof block.content === "string") {
+            text = block.content;
+          } else if (block.type === "table" && typeof block.content === "object" && !Array.isArray(block.content)) {
+            const tableData = block.content as { headers: string[]; rows: string[][] };
+            text = [...tableData.headers, ...tableData.rows.flat()].join(" ");
+          }
+
+          searchableText += text + " ";
+        });
+      }
+
+      // Search in the accumulated text
+      if (searchableText.toLowerCase().includes(searchTerm)) {
+        const index = searchableText.toLowerCase().indexOf(searchTerm);
+        const start = Math.max(0, index - 50);
+        const end = Math.min(searchableText.length, index + searchTerm.length + 50);
+        const preview = (start > 0 ? "..." : "") + searchableText.slice(start, end) + (end < searchableText.length ? "..." : "");
+
+        results.push({
+          chapterIndex,
+          chapterTitle,
+          content: searchableText,
+          preview,
+        });
+      }
     });
 
     return results;
-  }, [query, chapters]);
+  }, [query, chapters, useMarkdown]);
 
   const handleResultClick = (chapterIndex: number) => {
     onResultClick(chapterIndex);
