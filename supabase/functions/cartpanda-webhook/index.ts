@@ -18,6 +18,34 @@ interface CartpandaWebhookData {
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
+  cid?: string; // may carry extra query params like ?email=...
+}
+
+// Helper to resolve a valid email from webhook payload or CID
+function resolveEmail(data: CartpandaWebhookData): string | null {
+  const raw = (data.email || '').trim();
+  const looksValid = raw && raw.includes('@') && !/^\{.*\}$/.test(raw);
+  if (looksValid) return raw.toLowerCase();
+
+  const cid = data.cid;
+  if (cid) {
+    try {
+      const decoded = decodeURIComponent(cid);
+      // Check if CID contains query string (e.g., "123?email=foo@bar.com")
+      const qIndex = decoded.indexOf('?');
+      const query = qIndex >= 0 ? decoded.slice(qIndex + 1) : decoded;
+      const params = new URLSearchParams(query);
+      const fromParam = params.get('email');
+      if (fromParam && fromParam.includes('@')) return fromParam.toLowerCase();
+      // Fallback: regex search within CID
+      const match = decoded.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+      if (match) return match[0].toLowerCase();
+    } catch (_) {
+      // ignore parse errors
+    }
+  }
+
+  return null;
 }
 
 Deno.serve(async (req) => {
@@ -42,48 +70,52 @@ Deno.serve(async (req) => {
 
     console.log('📦 Webhook data:', JSON.stringify(webhookData, null, 2));
 
-    // Validate required email
-    if (!webhookData.email) {
-      console.error('❌ Email missing in webhook data');
-      return new Response(
-        JSON.stringify({ error: 'Email is required' }),
-        { 
-          status: 400, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
+// Resolve and validate email
+const resolvedEmail = resolveEmail(webhookData);
+if (!resolvedEmail) {
+  console.error('❌ Email missing or invalid in webhook data (including CID check)');
+  return new Response(
+    JSON.stringify({ error: 'Email is required', note: 'Include a valid email or pass it through cid query (e.g., cid=123?email=user@example.com)' }),
+    { 
+      status: 400, 
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
     }
+  );
+}
 
-    // Normalize email
-    const email = webhookData.email.toLowerCase().trim();
+const email = resolvedEmail.toLowerCase().trim();
+console.log('📧 Resolved email:', email);
 
     // Create Supabase client with service role
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Insert or update approved_users
-    const { data: approvedUser, error: approvedError } = await supabase
-      .from('approved_users')
-      .upsert({
-        email,
-        order_id: webhookData.order_id || null,
-        product_id: webhookData.product_id || null,
-        product_name: webhookData.product_name || null,
-        total_price: webhookData.total_price ? parseFloat(webhookData.total_price) : null,
-        currency: webhookData.currency || 'USD',
-        first_name: webhookData.first_name || null,
-        last_name: webhookData.last_name || null,
-        status: 'active',
-        approved_at: new Date().toISOString(),
-        webhook_data: webhookData, // Save complete data for audit
-        updated_at: new Date().toISOString(),
-      }, {
-        onConflict: 'email',
-        ignoreDuplicates: false
-      })
-      .select()
-      .single();
+// Persist full payload including resolved email for audit
+const webhookRecord = { ...webhookData, resolved_email: email } as Record<string, unknown>;
+
+// Insert or update approved_users
+const { data: approvedUser, error: approvedError } = await supabase
+  .from('approved_users')
+  .upsert({
+    email,
+    order_id: webhookData.order_id || null,
+    product_id: webhookData.product_id || null,
+    product_name: webhookData.product_name || null,
+    total_price: webhookData.total_price ? parseFloat(webhookData.total_price) : null,
+    currency: webhookData.currency || 'USD',
+    first_name: webhookData.first_name || null,
+    last_name: webhookData.last_name || null,
+    status: 'active',
+    approved_at: new Date().toISOString(),
+    webhook_data: webhookRecord, // Save complete data for audit
+    updated_at: new Date().toISOString(),
+  }, {
+    onConflict: 'email',
+    ignoreDuplicates: false
+  })
+  .select()
+  .single();
 
     if (approvedError) {
       console.error('❌ Error inserting approved user:', approvedError);
