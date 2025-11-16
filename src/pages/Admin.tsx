@@ -10,6 +10,7 @@ import { AdminRefundsTab } from '@/components/Admin/AdminRefundsTab';
 import { AdminBonusesTab } from '@/components/Admin/AdminBonusesTab';
 import { AdminSystemTab } from '@/components/Admin/AdminSystemTab';
 import { BonusesManagement } from '@/components/Admin/BonusesManagement';
+import { EbookMarkdownFixer } from '@/components/Admin/EbookMarkdownFixer';
 import { ModerationPanel } from '@/components/Community/ModerationPanel';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +25,8 @@ import {
   Gift,
   Wand2,
   Shield,
-  Settings
+  Settings,
+  Wrench
 } from 'lucide-react';
 
 export default function Admin() {
@@ -284,6 +286,16 @@ export default function Admin() {
                 </div>
               </TabsTrigger>
 
+              <TabsTrigger
+                value="ebooks-fixer"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Wrench className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Fix Ebooks</span>
+                </div>
+              </TabsTrigger>
+
             </TabsList>
 
             <div className="p-6">
@@ -317,6 +329,10 @@ export default function Admin() {
 
               <TabsContent value="system" className="mt-0">
                 <AdminSystemTab />
+              </TabsContent>
+              
+              <TabsContent value="ebooks-fixer" className="mt-0">
+                <EbookMarkdownFixer />
               </TabsContent>
             </div>
           </Tabs>
