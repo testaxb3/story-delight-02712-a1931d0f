@@ -61,6 +61,7 @@ export default function Quiz() {
   const [hasStarted, setHasStarted] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [completingQuiz, setCompletingQuiz] = useState(false); // ✅ NEW: Track quiz completion process
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
@@ -199,10 +200,13 @@ export default function Quiz() {
   };
 
   const handleGoToDashboard = async () => {
-    if (savingProfile) return;
+    if (savingProfile || completingQuiz) return;
+
+    setCompletingQuiz(true); // ✅ Set loading state
 
     if (user?.profileId) {
       try {
+        // Step 1: Update quiz completion in database
         const { error } = await supabase
           .from('profiles')
           .update({
@@ -214,24 +218,32 @@ export default function Quiz() {
         if (error) {
           logger.error('Failed to update quiz completion:', error);
           toast.error('Failed to save progress. Please try again.');
+          setCompletingQuiz(false);
           return;
         }
 
-        // Force refresh children profiles and user data
+        // Step 2: Force refresh user data and wait for completion
         await Promise.all([
           refreshChildren(),
-          refreshUser() // ✅ FIX: Refresh user context to update quiz_completed
+          refreshUser()
         ]);
         
+        // Step 3: Small delay to ensure React Query cache propagates
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         toast.success('Profile created successfully!');
+        
+        // Step 4: Navigate after ensuring everything is updated
+        navigate('/dashboard', { replace: true });
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
         toast.error('An error occurred. Please try again.');
+        setCompletingQuiz(false);
         return;
       }
+    } else {
+      navigate('/dashboard', { replace: true });
     }
-
-    navigate('/dashboard', { replace: true });
   };
 
   const brainTypeInfo: Record<BrainProfile, {
@@ -589,11 +601,19 @@ export default function Quiz() {
                             <Button 
                               size="lg" 
                               onClick={handleGoToDashboard}
-                              disabled={savingProfile}
-                              className="w-full h-14 text-lg rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300 group"
+                              disabled={savingProfile || completingQuiz}
+                              className="w-full h-14 text-lg rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300 group disabled:opacity-50"
                             >
-                              Go to Dashboard
-                              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                              {completingQuiz ? (
+                                <>
+                                  <span className="animate-pulse">Finalizing...</span>
+                                </>
+                              ) : (
+                                <>
+                                  Go to Dashboard
+                                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                                </>
+                              )}
                             </Button>
                           </motion.div>
                         </motion.div>
