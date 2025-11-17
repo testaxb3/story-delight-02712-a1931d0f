@@ -2282,42 +2282,57 @@ export type Database = {
       }
       videos: {
         Row: {
+          attribution_required: boolean | null
           created_at: string
+          creator_name: string | null
           description: string | null
           duration: string | null
           id: string
+          license_type: string | null
           locked: boolean
           order_index: number
+          original_url: string | null
           premium_only: boolean
           section: string
           thumbnail_url: string | null
           title: string
+          verified_date: string | null
           video_url: string
         }
         Insert: {
+          attribution_required?: boolean | null
           created_at?: string
+          creator_name?: string | null
           description?: string | null
           duration?: string | null
           id?: string
+          license_type?: string | null
           locked?: boolean
           order_index?: number
+          original_url?: string | null
           premium_only?: boolean
           section: string
           thumbnail_url?: string | null
           title: string
+          verified_date?: string | null
           video_url: string
         }
         Update: {
+          attribution_required?: boolean | null
           created_at?: string
+          creator_name?: string | null
           description?: string | null
           duration?: string | null
           id?: string
+          license_type?: string | null
           locked?: boolean
           order_index?: number
+          original_url?: string | null
           premium_only?: boolean
           section?: string
           thumbnail_url?: string | null
           title?: string
+          verified_date?: string | null
           video_url?: string
         }
         Relationships: []

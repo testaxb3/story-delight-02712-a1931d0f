@@ -23,6 +23,11 @@ export function VideosForm() {
     duration: "",
     order_index: 0,
     locked: false,
+    license_type: "Standard",
+    creator_name: "",
+    original_url: "",
+    attribution_required: false,
+    verified: false,
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -30,6 +35,25 @@ export function VideosForm() {
     setLoading(true);
 
     try {
+      // Validation for CC-BY videos
+      if (formData.license_type !== "Standard" && formData.attribution_required) {
+        if (!formData.creator_name.trim()) {
+          toast.error("Creator name is required for CC-BY videos");
+          setLoading(false);
+          return;
+        }
+        if (!formData.original_url.trim()) {
+          toast.error("Original URL is required for CC-BY videos");
+          setLoading(false);
+          return;
+        }
+        if (!formData.verified) {
+          toast.error("Please verify the license manually before submitting");
+          setLoading(false);
+          return;
+        }
+      }
+
       const payload = {
         ...formData,
         title: formData.title.trim(),
@@ -37,6 +61,9 @@ export function VideosForm() {
         video_url: formData.video_url.trim(),
         duration: formData.duration.trim(),
         order_index: Number(formData.order_index) || 0,
+        creator_name: formData.creator_name.trim() || null,
+        original_url: formData.original_url.trim() || null,
+        verified_date: formData.verified ? new Date().toISOString() : null,
       };
 
       const { error } = await supabase.from("videos").insert(payload);
@@ -56,6 +83,11 @@ export function VideosForm() {
         duration: "",
         order_index: 0,
         locked: false,
+        license_type: "Standard",
+        creator_name: "",
+        original_url: "",
+        attribution_required: false,
+        verified: false,
       });
     } catch (error: any) {
       toast.error(error.message || "Failed to add video"); // <-- MUDOU AQUI
@@ -149,9 +181,86 @@ export function VideosForm() {
             />
             <Label htmlFor="locked">Premium Only</Label>
           </div>
-          <Button type="submit" disabled={loading}>
-            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Add Video
+
+          {/* Creative Commons Attribution Section */}
+          <div className="border-t pt-4 space-y-4">
+            <h3 className="font-semibold text-sm">Creative Commons Attribution</h3>
+            <div>
+              <Label htmlFor="license_type">License Type</Label>
+              <Select 
+                value={formData.license_type} 
+                onValueChange={(value) => setFormData({ 
+                  ...formData, 
+                  license_type: value,
+                  attribution_required: value !== "Standard"
+                })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select license" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Standard">Standard YouTube License (Default)</SelectItem>
+                  <SelectItem value="CC-BY">CC-BY (Attribution)</SelectItem>
+                  <SelectItem value="CC-BY-SA">CC-BY-SA (Attribution ShareAlike)</SelectItem>
+                  <SelectItem value="CC0">CC0 (Public Domain)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {formData.attribution_required && (
+              <>
+                <div>
+                  <Label htmlFor="creator_name">Creator Name *</Label>
+                  <Input
+                    id="creator_name"
+                    value={formData.creator_name}
+                    onChange={(e) => setFormData({ ...formData, creator_name: e.target.value })}
+                    placeholder="e.g., Sprouts"
+                    required={formData.attribution_required}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="original_url">Original YouTube URL *</Label>
+                  <Input
+                    id="original_url"
+                    value={formData.original_url}
+                    onChange={(e) => setFormData({ ...formData, original_url: e.target.value })}
+                    placeholder="https://youtube.com/watch?v=..."
+                    required={formData.attribution_required}
+                  />
+                </div>
+                <div className="flex items-center space-x-2 bg-muted p-3 rounded-md">
+                  <Switch
+                    id="verified"
+                    checked={formData.verified}
+                    onCheckedChange={(checked) => setFormData({ ...formData, verified: checked })}
+                  />
+                  <Label htmlFor="verified" className="text-sm">
+                    I manually verified this video has {formData.license_type} license on YouTube *
+                  </Label>
+                </div>
+                <div className="text-xs text-muted-foreground space-y-1 bg-muted p-2 rounded">
+                  <p className="font-semibold">How to verify license:</p>
+                  <ol className="list-decimal ml-4 space-y-1">
+                    <li>Open the video on YouTube</li>
+                    <li>Scroll down and click "Show more"</li>
+                    <li>Check the "License" section</li>
+                    <li>Confirm it says "Creative Commons Attribution license (reuse allowed)"</li>
+                  </ol>
+                </div>
+              </>
+            )}
+          </div>
+
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              "Add Video"
+            )}
           </Button>
         </form>
       </CardContent>
