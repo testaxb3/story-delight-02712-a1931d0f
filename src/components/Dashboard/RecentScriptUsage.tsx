@@ -2,7 +2,6 @@ import { Clock, BookOpen } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import type { RecentScript } from '@/hooks/useDashboardStats';
 
@@ -47,12 +46,7 @@ export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScri
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.6 }}
-      className="card-elevated p-6 rounded-2xl"
-    >
+    <div className="card-elevated p-6 rounded-2xl animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <Clock className="w-5 h-5 text-primary" />
@@ -63,23 +57,15 @@ export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScri
 
       {/* Scripts List */}
       <div className="space-y-2">
-        {recentScripts.slice(0, 5).map((script, index) => (
-          <motion.div
+        {recentScripts.slice(0, 5).map((script) => (
+          <div
             key={script.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.7 + index * 0.05 }}
-            whileHover={{ scale: 1.01, x: 5 }}
-            className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-colors border border-border/50 cursor-pointer"
+            className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-200 hover:scale-[1.01] hover:translate-x-1 border border-border/50 cursor-pointer"
           >
             {/* Icon */}
-            <motion.div
-              className="p-2 rounded-lg bg-gradient-primary"
-              whileHover={{ rotate: [0, -10, 10, 0] }}
-              transition={{ duration: 0.4 }}
-            >
+            <div className="p-2 rounded-lg bg-gradient-primary transition-transform hover:rotate-12">
               <BookOpen className="w-4 h-4 text-white" />
-            </motion.div>
+            </div>
 
             {/* Content */}
             <div className="flex-1 min-w-0">
@@ -98,9 +84,9 @@ export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScri
             >
               {script.scriptCategory}
             </Badge>
-          </motion.div>
+          </div>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
