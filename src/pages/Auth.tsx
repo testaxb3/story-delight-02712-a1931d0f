@@ -288,45 +288,45 @@ export default function Auth() {
             {/* Premium Benefits - only shown on sign up */}
             {isSignUp && (
               <div className="pt-6 border-t border-border">
-                <p className="text-sm font-semibold text-center mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                <p className="text-xs sm:text-sm font-semibold text-center mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   What you'll get:
                 </p>
-                <div className="grid gap-4">
+                <div className="grid gap-3">
                   <div className="group relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-lg">
-                        <Shield className="w-5 h-5 text-primary" />
+                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
+                        <Shield className="w-4 h-4 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Safe & Secure</p>
-                        <p className="text-xs text-muted-foreground">Your data is encrypted and protected</p>
+                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Safe & Secure</p>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">Your data is encrypted and protected</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="group relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/15 to-accent/10 shadow-lg">
-                        <Zap className="w-5 h-5 text-accent" />
+                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-accent/15 to-accent/10">
+                        <Zap className="w-4 h-4 text-accent" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Instant Access</p>
-                        <p className="text-xs text-muted-foreground">Start using all features immediately</p>
+                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Instant Access</p>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">Start using all features immediately</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="group relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-lg">
-                        <DollarSign className="w-5 h-5 text-primary" />
+                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
+                        <DollarSign className="w-4 h-4 text-primary" />
                       </div>
                       <div className="flex-1">
-                        <p className="text-sm font-semibold text-foreground mb-1">Full Access</p>
-                        <p className="text-xs text-muted-foreground">Access all premium scripts and videos</p>
+                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Full Access</p>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground">Access all premium scripts and videos</p>
                       </div>
                     </div>
                   </div>
@@ -336,29 +336,6 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Premium Trust Indicators */}
-        <div className="mt-10 flex items-center justify-center gap-8 md:gap-12">
-          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
-              <Shield className="w-5 h-5 text-primary" />
-            </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Secure</span>
-          </div>
-          
-          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/15 to-accent/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
-              <Zap className="w-5 h-5 text-accent" />
-            </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">Instant</span>
-          </div>
-          
-          <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
-              <CheckCircle2 className="w-5 h-5 text-primary" />
-            </div>
-            <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Full Access</span>
-          </div>
-        </div>
 
         {/* Premium Info Banner */}
         <div className="mt-8 group relative overflow-hidden">
