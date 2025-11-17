@@ -3,6 +3,7 @@ import ReactPlayer from 'react-player/youtube';
 import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { Loader2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { Badge } from '@/components/ui/badge';
 
 interface OptimizedYouTubePlayerProps {
   videoUrl: string;
@@ -12,6 +13,12 @@ interface OptimizedYouTubePlayerProps {
   onPlaybackRateChange?: (rate: number) => void;
   playbackRate?: number; // Playback speed
   showFullscreenHint?: boolean; // Show fullscreen hint message (default: true)
+  // Creative Commons Attribution
+  attribution?: {
+    licenseType?: string | null;
+    creatorName?: string | null;
+    originalUrl?: string | null;
+  };
 }
 
 // Helper to detect if device is mobile
@@ -51,7 +58,8 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   onTimeUpdate,
   onPlaybackRateChange,
   playbackRate = 1,
-  showFullscreenHint = true
+  showFullscreenHint = true,
+  attribution
 }) => {
   // Use custom controls for ALL devices - clean player everywhere
   const [useCustomControls] = useState(true);
@@ -727,6 +735,39 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
             <span className="text-sm text-white/90">
               The video is loading...
             </span>
+          </div>
+        </div>
+      )}
+
+      {/* Creative Commons Attribution Card */}
+      {attribution?.licenseType && attribution.licenseType !== "Standard" && (
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 sm:p-4" style={{ zIndex: 5 }}>
+          <div className="flex items-center gap-2 sm:gap-3 text-white/90 text-xs sm:text-sm">
+            <div className="flex-shrink-0">
+              <Badge variant="outline" className="bg-white/10 text-white border-white/20">
+                {attribution.licenseType}
+              </Badge>
+            </div>
+            {attribution.creatorName && (
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="text-white/70">by</span>
+                <span className="font-semibold">{attribution.creatorName}</span>
+              </div>
+            )}
+            {attribution.originalUrl && (
+              <a
+                href={attribution.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-auto text-xs underline hover:text-white transition-colors flex items-center gap-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                View Original
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            )}
           </div>
         </div>
       )}
