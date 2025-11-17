@@ -92,7 +92,7 @@ export default function Auth() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-3 sm:p-4 relative overflow-hidden">
       {/* Premium Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/15 to-secondary/10 animate-gradient" />
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-accent/8 to-secondary/5 animate-gradient" />
       
       {/* Floating Orbs - Responsive sizes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -102,25 +102,25 @@ export default function Auth() {
       </div>
 
       {/* Premium Grid Pattern */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{ 
-        backgroundImage: 'linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px)',
+      <div className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]" style={{ 
+        backgroundImage: 'linear-gradient(hsl(var(--foreground) / 0.05) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground) / 0.05) 1px, transparent 1px)',
         backgroundSize: '50px 50px'
       }} />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
         {/* Premium Social Proof Badge */}
         <div className="flex justify-center mb-8">
-          <div className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-card/80 via-card/90 to-card/80 backdrop-blur-2xl px-6 py-3 rounded-full border border-primary/20 shadow-xl hover:shadow-primary/20 transition-all duration-500 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="group relative inline-flex items-center gap-3 bg-card/95 backdrop-blur-2xl px-6 py-3 rounded-full border border-border shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             
             <div className="flex -space-x-3 relative">
-              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-primary/20">
+              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-primary/30">
                 <img src="/avatar-1.webp" alt="" className="w-full h-full object-cover" />
               </div>
-              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-accent/20">
+              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-accent/30">
                 <img src="/avatar-2.webp" alt="" className="w-full h-full object-cover" />
               </div>
-              <div className="w-8 h-8 rounded-full border-2 border-background overflow-hidden ring-2 ring-primary/20">
+              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-primary/30">
                 <img src="/avatar-3.webp" alt="" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -137,12 +137,12 @@ export default function Auth() {
         {/* Premium Glass Card */}
         <div className="auth-glass group relative overflow-hidden">
           {/* Animated Glow Border */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
           
-          <div className="relative bg-gradient-to-br from-card/95 via-card/98 to-card/95 backdrop-blur-2xl rounded-3xl border border-primary/20 p-8 md:p-10 space-y-8 shadow-2xl">
+          <div className="relative bg-card/95 backdrop-blur-2xl rounded-3xl border border-border p-5 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-xl">
             {/* Premium Header */}
             <div className="text-center space-y-3 sm:space-y-4">
-              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-xl mb-3 sm:mb-4 shadow-lg shadow-primary/20 animate-float">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-xl mb-3 sm:mb-4 shadow-lg animate-float">
                 <div className="text-4xl sm:text-5xl animate-brain-pulse">🧠</div>
               </div>
               
@@ -159,7 +159,7 @@ export default function Auth() {
 
             {/* Important Notice for Sign Up */}
             {isSignUp && (
-              <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 backdrop-blur-sm">
+              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 backdrop-blur-sm">
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
                   <div className="text-sm">
@@ -178,12 +178,12 @@ export default function Auth() {
             {/* Premium Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
                   Email
                 </Label>
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
                     <Input
@@ -192,7 +192,7 @@ export default function Auth() {
                       placeholder="your@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="pl-12 h-14 bg-background/50 backdrop-blur-xl border-border/50 hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
+                      className="pl-12 h-10 sm:h-11 bg-input border-border hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
                       required
                     />
                   </div>
@@ -200,12 +200,12 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-foreground/90 flex items-center gap-2">
+                <Label htmlFor="password" className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Lock className="w-4 h-4 text-primary" />
                   Password
                 </Label>
                 <div className="group relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl opacity-0 group-hover:opacity-100 blur transition-opacity duration-300" />
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors duration-300" />
                     <Input
@@ -214,7 +214,7 @@ export default function Auth() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-12 h-14 bg-background/50 backdrop-blur-xl border-border/50 hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
+                      className="pl-12 h-10 sm:h-11 bg-input border-border hover:border-primary/50 focus:border-primary rounded-xl transition-all duration-300 text-base"
                       required
                     />
                   </div>
@@ -287,15 +287,15 @@ export default function Auth() {
 
             {/* Premium Benefits - only shown on sign up */}
             {isSignUp && (
-              <div className="pt-6 border-t border-primary/10">
+              <div className="pt-6 border-t border-border">
                 <p className="text-sm font-semibold text-center mb-6 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   What you'll get:
                 </p>
                 <div className="grid gap-4">
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-lg">
                         <Shield className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
@@ -306,9 +306,9 @@ export default function Auth() {
                   </div>
 
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-accent/5 via-accent/3 to-transparent border border-accent/20 hover:border-accent/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg shadow-accent/20">
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/15 to-accent/10 shadow-lg">
                         <Zap className="w-5 h-5 text-accent" />
                       </div>
                       <div className="flex-1">
@@ -319,9 +319,9 @@ export default function Auth() {
                   </div>
 
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-gradient-to-br from-primary/5 via-primary/3 to-transparent border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+                    <div className="relative flex items-start gap-4 p-4 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-lg">
                         <DollarSign className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1">
@@ -339,21 +339,21 @@ export default function Auth() {
         {/* Premium Trust Indicators */}
         <div className="mt-10 flex items-center justify-center gap-8 md:gap-12">
           <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
               <Shield className="w-5 h-5 text-primary" />
             </div>
             <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Secure</span>
           </div>
           
           <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/20 to-accent/10 shadow-lg shadow-accent/20 group-hover:shadow-accent/40 transition-shadow duration-300">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-accent/15 to-accent/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
               <Zap className="w-5 h-5 text-accent" />
             </div>
             <span className="text-xs font-medium text-muted-foreground group-hover:text-accent transition-colors duration-300">Instant</span>
           </div>
           
           <div className="group flex flex-col items-center gap-2 transition-transform duration-300 hover:scale-110">
-            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg shadow-primary/20 group-hover:shadow-primary/40 transition-shadow duration-300">
+            <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary/15 to-primary/10 shadow-md group-hover:shadow-lg transition-shadow duration-300">
               <CheckCircle2 className="w-5 h-5 text-primary" />
             </div>
             <span className="text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors duration-300">Full Access</span>
@@ -362,10 +362,10 @@ export default function Auth() {
 
         {/* Premium Info Banner */}
         <div className="mt-8 group relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-primary/10 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-          <div className="relative flex items-start gap-4 p-5 rounded-2xl bg-gradient-to-br from-blue-500/5 via-primary/5 to-transparent border border-blue-500/20 backdrop-blur-xl">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500/20 to-blue-500/10">
-              <Info className="w-5 h-5 text-blue-500" />
+          <div className="absolute inset-0 bg-gradient-to-r from-muted/50 to-primary/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
+          <div className="relative flex items-start gap-4 p-5 rounded-2xl bg-muted/30 border border-border backdrop-blur-xl">
+            <div className="p-2 rounded-lg bg-muted/50">
+              <Info className="w-5 h-5 text-muted-foreground" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               By signing up, you agree to our Terms of Service and Privacy Policy. We'll never share your data with third parties.
@@ -375,18 +375,18 @@ export default function Auth() {
 
         {/* Need Access Section - Only show on login */}
         {!isSignUp && (
-          <div className="mt-8 glass-card p-6 border border-white/10 rounded-xl">
+          <div className="mt-8 p-6 border border-border rounded-xl bg-card/50 backdrop-blur-xl">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500/20 to-blue-500/20 flex items-center justify-center">
-                  <Lock className="w-6 h-6 text-purple-400" />
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                  <Lock className="w-6 h-6 text-primary" />
                 </div>
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-white mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   🔒 NEP System Premium Access
                 </h3>
-                <p className="text-gray-300 text-sm mb-4">
+                <p className="text-muted-foreground text-sm mb-4">
                   This application is exclusive to members who purchased the NEP System program.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3">
@@ -394,13 +394,13 @@ export default function Auth() {
                     href="https://nepsystem.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
+                    className="inline-flex items-center justify-center px-4 py-2 bg-gradient-to-r from-primary to-accent text-primary-foreground rounded-lg hover:opacity-90 transition-opacity text-sm font-medium"
                   >
                     Get NEP System Access →
                   </a>
                   <a
                     href="mailto:support@nepsystem.com"
-                    className="inline-flex items-center justify-center px-4 py-2 border border-white/20 text-white rounded-lg hover:bg-white/5 transition-colors text-sm font-medium"
+                    className="inline-flex items-center justify-center px-4 py-2 border border-border text-foreground rounded-lg hover:bg-muted/50 transition-colors text-sm font-medium"
                   >
                     Contact Support
                   </a>
