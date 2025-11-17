@@ -87,7 +87,7 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
   return (
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent 
-        className={`max-w-2xl border border-border/50 bg-card backdrop-blur-xl p-0 overflow-hidden ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
+        className={`w-[95vw] sm:w-full max-w-2xl border border-border/50 bg-card backdrop-blur-xl p-0 overflow-hidden ${isClosing ? 'animate-fade-out' : 'animate-fade-in'}`}
         onInteractOutside={(e) => e.preventDefault()}
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
@@ -102,58 +102,58 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
           <Sparkles className="absolute bottom-8 right-16 w-6 h-6 text-primary/60 animate-pulse" style={{ animationDelay: '1.5s' }} />
         </div>
 
-        <div className="relative p-8 sm:p-12 text-center">
+        <div className="relative p-5 sm:p-8 md:p-12 text-center">
           {/* Celebration emoji */}
-          <div className="text-7xl mb-6 animate-bounce">🧠</div>
+          <div className="text-5xl sm:text-6xl md:text-7xl mb-4 sm:mb-6 animate-bounce">🧠</div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
             You're In! 🎉
           </h1>
           
-          <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-foreground mb-3 sm:mb-4">
             Everything Starts with ONE Quiz
           </h2>
           
-          <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground mb-6 sm:mb-8 leading-relaxed max-w-xl mx-auto px-2">
             In just 3 minutes, you'll discover your child's brain type and unlock a completely personalized system designed specifically for <span className="font-bold text-primary">how their brain works</span>.
           </p>
 
           {/* What's Next */}
-          <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 backdrop-blur-sm rounded-2xl p-8 mb-8 text-left space-y-6 border-2 border-primary/20">
+          <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 text-left space-y-4 sm:space-y-6 border-2 border-primary/20">
             <div className="text-center">
-              <h3 className="font-bold text-2xl mb-2 text-foreground">Here's What Happens Next:</h3>
-              <p className="text-sm text-muted-foreground">The exact roadmap to transformation</p>
+              <h3 className="font-bold text-lg sm:text-xl md:text-2xl mb-1 sm:mb-2 text-foreground">Here's What Happens Next:</h3>
+              <p className="text-xs sm:text-sm text-muted-foreground">The exact roadmap to transformation</p>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-start gap-3 sm:gap-4 bg-card/50 p-3 sm:p-4 rounded-xl">
+                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg">
                   1
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-1">Take the Brain Profile Quiz</p>
-                  <p className="text-sm text-muted-foreground">Discover if your child is INTENSE, DISTRACTED, or DEFIANT</p>
+                  <p className="font-semibold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">Take the Brain Profile Quiz</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Discover if your child is INTENSE, DISTRACTED, or DEFIANT</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+              <div className="flex items-start gap-3 sm:gap-4 bg-card/50 p-3 sm:p-4 rounded-xl">
+                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg">
                   2
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-1">Get Your Personalized Scripts</p>
-                  <p className="text-sm text-muted-foreground">Access hundreds of word-for-word scripts for YOUR child's brain</p>
+                  <p className="font-semibold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">Get Your Personalized Scripts</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Access hundreds of word-for-word scripts for YOUR child's brain</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
-                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+              <div className="flex items-start gap-3 sm:gap-4 bg-card/50 p-3 sm:p-4 rounded-xl">
+                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-base sm:text-lg">
                   3
                 </div>
                 <div>
-                  <p className="font-semibold text-foreground mb-1">Start Seeing Results Today</p>
-                  <p className="text-sm text-muted-foreground">Use your first script within minutes and watch the magic happen</p>
+                  <p className="font-semibold text-foreground mb-0.5 sm:mb-1 text-sm sm:text-base">Start Seeing Results Today</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Use your first script within minutes and watch the magic happen</p>
                 </div>
               </div>
             </div>
