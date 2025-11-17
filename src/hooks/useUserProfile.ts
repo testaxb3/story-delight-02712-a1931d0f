@@ -57,13 +57,22 @@ export function useUserProfile(userId: string | undefined, email: string | undef
           // Silently fail - user will be prompted to complete profile
         }
 
+        // ✅ DEBUG: Log profile data to track quiz state
+        console.log('[useUserProfile] Profile loaded:', {
+          userId,
+          email,
+          quiz_completed: profile?.quiz_completed,
+          quiz_in_progress: profile?.quiz_in_progress,
+          timestamp: new Date().toISOString()
+        });
+
         const userData: User = {
           id: userId,
           email: email,
           user_metadata: {
             full_name: profile?.name || email.split('@')[0]
           },
-          premium: profile?.premium ?? false, // ✅ SECURITY FIX: Default to free tier
+          premium: profile?.premium ?? false,
           profileId: profile?.id || userId,
           photo_url: profile?.photo_url || null,
           quiz_completed: profile?.quiz_completed ?? false,
@@ -92,11 +101,12 @@ export function useUserProfile(userId: string | undefined, email: string | undef
       }
     },
     enabled: !!userId && !!email,
-    staleTime: 30 * 1000, // ✅ FIX: 30 seconds - reduced from 5min to catch quiz completion faster
-    gcTime: 5 * 60 * 1000, // 5 minutes cache - reduced from 10min
+    staleTime: 0, // ✅ FIX: Always fetch fresh data (no cache staleness)
+    gcTime: 1 * 60 * 1000, // 1 minute cache
     retry: 1,
-    refetchOnMount: true, // ✅ FIX: Always refetch on component mount for fresh data
-    refetchOnWindowFocus: true, // ✅ FIX: Refetch when user returns to tab
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: 10 * 1000, // ✅ FIX: Refetch every 10s to catch database updates
   });
 }
 
