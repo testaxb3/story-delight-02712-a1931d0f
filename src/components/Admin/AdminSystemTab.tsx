@@ -26,6 +26,7 @@ export function AdminSystemTab() {
   const [lastUpdateTime, setLastUpdateTime] = useState<number>(0);
   const [stats, setStats] = useState<UpdateStats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
+  const [clearingFlag, setClearingFlag] = useState(false);
 
   // Confirmation and rate limiting
   const { confirm, ConfirmDialogComponent } = useConfirm();
@@ -63,6 +64,32 @@ export function AdminSystemTab() {
       .replace(/<[^>]*>/g, '') // Remove HTML tags
       .replace(/[<>'"]/g, '') // Remove dangerous characters
       .trim();
+  };
+
+  const handleClearForceUpdate = async () => {
+    setClearingFlag(true);
+    
+    try {
+      const { data, error } = await supabase.rpc('clear_force_update_flag');
+
+      if (error) throw error;
+
+      toast.success('Force update flag cleared', {
+        description: 'Users will no longer see the update prompt',
+        icon: <CheckCircle2 className="w-5 h-5" />,
+      });
+
+      // Reload statistics
+      setTimeout(() => loadStatistics(), 1000);
+    } catch (error: any) {
+      console.error('Error clearing force update flag:', error);
+      toast.error('Error clearing flag', {
+        description: error.message || 'Please try again later',
+        icon: <AlertTriangle className="w-5 h-5" />,
+      });
+    } finally {
+      setClearingFlag(false);
+    }
   };
 
   const handleForceUpdate = async () => {
@@ -247,6 +274,11 @@ export function AdminSystemTab() {
             <p className="mt-2 text-xs text-muted-foreground">
               All users will see an update prompt on their next app visit and will automatically reload to the latest version.
             </p>
+            <div className="mt-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+              <p className="text-sm text-blue-900 dark:text-blue-100">
+                💡 <strong>Tip:</strong> After all users have updated, click "Clear Force Update Flag" below to stop showing the prompt.
+              </p>
+            </div>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -294,29 +326,52 @@ export function AdminSystemTab() {
             </div>
           )}
 
-          <Button
-            className="w-full gap-2"
-            size="lg"
-            onClick={handleForceUpdate}
-            disabled={updating || !canUpdate}
-          >
-            {updating ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Processing...
-              </>
-            ) : !canUpdate ? (
-              <>
-                <AlertTriangle className="w-4 h-4" />
-                Cooldown Active ({Math.ceil(remainingCooldown / 1000)}s)
-              </>
-            ) : (
-              <>
-                <RefreshCw className="w-4 h-4" />
-                Force Global Update
-              </>
+          <div className="grid grid-cols-1 gap-3">
+            <Button
+              className="w-full gap-2"
+              size="lg"
+              onClick={handleForceUpdate}
+              disabled={updating || !canUpdate}
+            >
+              {updating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processing...
+                </>
+              ) : !canUpdate ? (
+                <>
+                  <AlertTriangle className="w-4 h-4" />
+                  Cooldown Active ({Math.ceil(remainingCooldown / 1000)}s)
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="w-4 h-4" />
+                  Force Global Update
+                </>
+              )}
+            </Button>
+
+            {stats?.force_update_enabled && (
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={handleClearForceUpdate}
+                disabled={clearingFlag}
+              >
+                {clearingFlag ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Clearing...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-4 h-4" />
+                    Clear Force Update Flag
+                  </>
+                )}
+              </Button>
             )}
-          </Button>
+          </div>
         </CardContent>
       </Card>
 
