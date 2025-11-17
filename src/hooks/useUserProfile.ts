@@ -103,20 +103,28 @@ export function useUserProfile(userId: string | undefined, email: string | undef
 /**
  * Hook to manually refresh user profile
  * Forces immediate refetch bypassing cache
+ * ✅ FIX: Aguarda refetch completar ANTES de resolver a Promise
  */
 export function useRefreshProfile() {
   const queryClient = useQueryClient();
 
   return async (userId: string) => {
-    // Invalidate and force refetch, including inactive queries
-    await queryClient.invalidateQueries({
+    // Step 1: Invalidate cache to mark data as stale
+    queryClient.invalidateQueries({
       queryKey: ['user-profile', userId],
       exact: true,
     });
+
+    // Step 2: Force refetch and WAIT for completion
     await queryClient.refetchQueries({
       queryKey: ['user-profile', userId],
-      type: 'all',
+      type: 'active',
       exact: true,
     });
+
+    // Step 3: Additional safety delay to ensure cache propagation
+    // This prevents race conditions where components read old cache
+    // before React Query updates are fully propagated
+    await new Promise(resolve => setTimeout(resolve, 300));
   };
 }
