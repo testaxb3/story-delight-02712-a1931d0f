@@ -224,75 +224,13 @@ export function VideosForm() {
               required
             />
           </div>
-          
-          <div>
-            <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
-            <div className="flex gap-2">
-              <Input
-                id="thumbnail_url"
-                value={formData.thumbnail_url}
-                onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                placeholder="https://... (or click Auto-fetch)"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleAutoFetchThumbnail}
-                disabled={fetchingThumbnail || !formData.video_url}
-                className="whitespace-nowrap"
-              >
-                {fetchingThumbnail ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Fetching...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    Auto-fetch from YouTube
-                  </>
-                )}
-              </Button>
+
+          {/* Creative Commons Attribution Section - MOVED UP FOR VISIBILITY */}
+          <div className="border-2 border-primary/20 rounded-lg p-4 space-y-4 bg-primary/5">
+            <div className="flex items-center gap-2">
+              <span className="text-lg">📄</span>
+              <h3 className="font-semibold text-base">Creative Commons License</h3>
             </div>
-            {formData.thumbnail_url && (
-              <div className="mt-2">
-                <img 
-                  src={formData.thumbnail_url} 
-                  alt="Thumbnail preview" 
-                  className="w-full max-w-xs rounded-md border"
-                />
-              </div>
-            )}
-          </div>
-
-          <div>
-            <Label htmlFor="order_index">Order Index</Label>
-            <Input
-              id="order_index"
-              type="number"
-              value={formData.order_index}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  order_index: Number(e.target.value) || 0,
-                })
-              }
-              placeholder="0"
-              required
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="locked"
-              checked={formData.locked}
-              onCheckedChange={(checked) => setFormData({ ...formData, locked: checked })}
-            />
-            <Label htmlFor="locked">Premium Only</Label>
-          </div>
-
-          {/* Creative Commons Attribution Section */}
-          <div className="border-t pt-4 space-y-4">
-            <h3 className="font-semibold text-sm">Creative Commons Attribution</h3>
             <div>
               <Label htmlFor="license_type">License Type</Label>
               <Select 
@@ -358,6 +296,71 @@ export function VideosForm() {
                 </div>
               </>
             )}
+          </div>
+          
+          <div>
+            <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
+            <div className="flex gap-2">
+              <Input
+                id="thumbnail_url"
+                value={formData.thumbnail_url}
+                onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                placeholder="https://... (or click Auto-fetch)"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAutoFetchThumbnail}
+                disabled={fetchingThumbnail || !formData.video_url}
+                className="whitespace-nowrap"
+              >
+                {fetchingThumbnail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Auto-fetch from YouTube
+                  </>
+                )}
+              </Button>
+            </div>
+            {formData.thumbnail_url && (
+              <div className="mt-2">
+                <img 
+                  src={formData.thumbnail_url} 
+                  alt="Thumbnail preview" 
+                  className="w-full max-w-xs rounded-md border"
+                />
+              </div>
+            )}
+          </div>
+
+          <div>
+            <Label htmlFor="order_index">Order Index</Label>
+            <Input
+              id="order_index"
+              type="number"
+              value={formData.order_index}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  order_index: Number(e.target.value) || 0,
+                })
+              }
+              placeholder="0"
+              required
+            />
+          </div>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="locked"
+              checked={formData.locked}
+              onCheckedChange={(checked) => setFormData({ ...formData, locked: checked })}
+            />
+            <Label htmlFor="locked">Premium Only</Label>
           </div>
 
           <Button type="submit" disabled={loading} className="w-full">
