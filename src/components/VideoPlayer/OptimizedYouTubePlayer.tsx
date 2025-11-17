@@ -741,31 +741,34 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
 
       {/* Creative Commons Attribution Card */}
       {attribution?.licenseType && attribution.licenseType !== "Standard" && (
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-3 sm:p-4" style={{ zIndex: 5 }}>
-          <div className="flex items-center gap-2 sm:gap-3 text-white/90 text-xs sm:text-sm">
-            <div className="flex-shrink-0">
-              <Badge variant="outline" className="bg-white/10 text-white border-white/20">
-                {attribution.licenseType}
+        <div 
+          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent p-3 sm:p-4 pb-4 sm:pb-6" 
+          style={{ zIndex: 15 }}
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 text-white text-xs sm:text-sm">
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant="outline" className="bg-yellow-500/20 text-yellow-300 border-yellow-400/40 font-semibold">
+                📄 {attribution.licenseType}
               </Badge>
+              {attribution.creatorName && (
+                <div className="flex items-center gap-1.5">
+                  <span className="text-white/70">by</span>
+                  <span className="font-bold text-white">{attribution.creatorName}</span>
+                </div>
+              )}
             </div>
-            {attribution.creatorName && (
-              <div className="flex items-center gap-1 sm:gap-2">
-                <span className="text-white/70">by</span>
-                <span className="font-semibold">{attribution.creatorName}</span>
-              </div>
-            )}
             {attribution.originalUrl && (
               <a
                 href={attribution.originalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto text-xs underline hover:text-white transition-colors flex items-center gap-1"
+                className="sm:ml-auto text-xs underline hover:text-yellow-300 transition-colors flex items-center gap-1 text-white/90 hover:text-white"
                 onClick={(e) => e.stopPropagation()}
               >
-                View Original
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
+                View Original Video
               </a>
             )}
           </div>
