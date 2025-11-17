@@ -83,15 +83,15 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-primary/5 p-3 sm:p-4 relative overflow-hidden">
       {/* Premium Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-accent/15 to-secondary/10 animate-gradient" />
       
-      {/* Floating Orbs */}
+      {/* Floating Orbs - Responsive sizes */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-primary/30 to-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }} />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-gradient-to-br from-accent/30 to-primary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '10s' }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '12s' }} />
+        <div className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 bg-gradient-to-br from-primary/30 to-accent/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '0s', animationDuration: '8s' }} />
+        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 sm:w-80 sm:h-80 md:w-[500px] md:h-[500px] bg-gradient-to-br from-accent/30 to-primary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s', animationDuration: '10s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-96 sm:h-96 md:w-[600px] md:h-[600px] bg-gradient-to-br from-primary/20 to-secondary/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '4s', animationDuration: '12s' }} />
       </div>
 
       {/* Premium Grid Pattern */}
@@ -134,9 +134,9 @@ export default function Auth() {
           
           <div className="relative bg-gradient-to-br from-card/95 via-card/98 to-card/95 backdrop-blur-2xl rounded-3xl border border-primary/20 p-8 md:p-10 space-y-8 shadow-2xl">
             {/* Premium Header */}
-            <div className="text-center space-y-4">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-xl mb-4 shadow-lg shadow-primary/20 animate-float">
-                <div className="text-5xl animate-brain-pulse">🧠</div>
+            <div className="text-center space-y-3 sm:space-y-4">
+              <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-xl mb-3 sm:mb-4 shadow-lg shadow-primary/20 animate-float">
+                <div className="text-4xl sm:text-5xl animate-brain-pulse">🧠</div>
               </div>
               
               <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
