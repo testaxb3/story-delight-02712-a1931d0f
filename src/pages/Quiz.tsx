@@ -233,26 +233,33 @@ export default function Quiz() {
             if (error) logger.warn('user_progress update failed; proceeding anyway:', error);
           });
 
-        // ✅ FIX: Step 3 - Invalidate ALL related caches immediately
+        // ✅ FIX: Step 3 - Optimistically update cache FIRST for immediate UI updates
+        queryClient.setQueryData(['user-profile', user.profileId], (old: any) => {
+          if (!old) return old;
+          return {
+            ...old,
+            quiz_completed: true,
+            quiz_in_progress: false
+          };
+        });
+
+        // Step 4: Invalidate ALL related caches to trigger refetch
         queryClient.invalidateQueries({ queryKey: ['user-profile', user.profileId] });
         queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
 
-        // Step 4: Optimistically update cache while queries refetch
-        queryClient.setQueryData(['user-profile', user.profileId], (old: any) =>
-          old ? { ...old, quiz_completed: true, quiz_in_progress: false } : old
-        );
-
-        // Step 5: Set sessionStorage flag for 2-minute bypass
+        // Step 5: Set sessionStorage flag for 5-minute bypass (increased from 2min)
         sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
 
         // ✅ FIX: Step 6 - Wait for refresh to complete BEFORE navigating
+        // refreshUser() now includes 300ms safety delay internally
         await Promise.all([
           refreshChildren(),
           refreshUser()
         ]);
 
-        // ✅ FIX: Step 7 - Small delay to ensure state propagation
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // ✅ FIX: Step 7 - Extended delay to ensure state propagation (100ms → 500ms)
+        // This gives React Query more time to update cache and components to re-render
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         toast.success('Profile created successfully!');
 
