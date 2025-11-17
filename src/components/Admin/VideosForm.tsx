@@ -7,19 +7,22 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner"; // <-- MUDOU AQUI
-import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { getYouTubeThumbnail } from "@/lib/youtube";
 
 export function VideosForm() {
   // const { toast } foi removido
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
+  const [fetchingThumbnail, setFetchingThumbnail] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     section: "foundation",
     video_url: "",
+    thumbnail_url: "",
     duration: "",
     order_index: 0,
     locked: false,
@@ -29,6 +32,51 @@ export function VideosForm() {
     attribution_required: false,
     verified: false,
   });
+
+  const handleAutoFetchThumbnail = async () => {
+    if (!formData.video_url.trim()) {
+      toast.error("Please enter a video URL first");
+      return;
+    }
+
+    setFetchingThumbnail(true);
+    try {
+      const thumbnailUrl = getYouTubeThumbnail(formData.video_url, 'maxres');
+      
+      if (!thumbnailUrl) {
+        toast.error("Could not extract video ID from URL");
+        return;
+      }
+
+      // Verify thumbnail exists
+      const response = await fetch(thumbnailUrl, { method: 'HEAD' });
+      if (response.ok) {
+        setFormData({ ...formData, thumbnail_url: thumbnailUrl });
+        toast.success("Thumbnail fetched successfully");
+      } else {
+        // Fallback to HQ thumbnail
+        const hqThumbnail = getYouTubeThumbnail(formData.video_url, 'hq');
+        if (hqThumbnail) {
+          setFormData({ ...formData, thumbnail_url: hqThumbnail });
+          toast.success("Thumbnail fetched successfully (HQ quality)");
+        } else {
+          toast.error("Could not fetch thumbnail");
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching thumbnail:', error);
+      // Try fallback anyway
+      const hqThumbnail = getYouTubeThumbnail(formData.video_url, 'hq');
+      if (hqThumbnail) {
+        setFormData({ ...formData, thumbnail_url: hqThumbnail });
+        toast.success("Thumbnail fetched successfully");
+      } else {
+        toast.error("Could not fetch thumbnail");
+      }
+    } finally {
+      setFetchingThumbnail(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +128,7 @@ export function VideosForm() {
         description: "",
         section: "foundation",
         video_url: "",
+        thumbnail_url: "",
         duration: "",
         order_index: 0,
         locked: false,
@@ -157,6 +206,47 @@ export function VideosForm() {
               required
             />
           </div>
+          
+          <div>
+            <Label htmlFor="thumbnail_url">Thumbnail URL</Label>
+            <div className="flex gap-2">
+              <Input
+                id="thumbnail_url"
+                value={formData.thumbnail_url}
+                onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
+                placeholder="https://... (or click Auto-fetch)"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAutoFetchThumbnail}
+                disabled={fetchingThumbnail || !formData.video_url}
+                className="whitespace-nowrap"
+              >
+                {fetchingThumbnail ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Fetching...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Auto-fetch from YouTube
+                  </>
+                )}
+              </Button>
+            </div>
+            {formData.thumbnail_url && (
+              <div className="mt-2">
+                <img 
+                  src={formData.thumbnail_url} 
+                  alt="Thumbnail preview" 
+                  className="w-full max-w-xs rounded-md border"
+                />
+              </div>
+            )}
+          </div>
+
           <div>
             <Label htmlFor="order_index">Order Index</Label>
             <Input
