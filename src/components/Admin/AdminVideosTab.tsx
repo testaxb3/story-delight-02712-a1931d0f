@@ -68,6 +68,11 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
     thumbnailUrl: '',
     orderIndex: '0',
     premiumOnly: false,
+    licenseType: 'Standard',
+    creatorName: '',
+    originalUrl: '',
+    attributionRequired: false,
+    verified: false,
   });
   const [loading, setLoading] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
@@ -85,6 +90,11 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       thumbnailUrl: '',
       orderIndex: '0',
       premiumOnly: false,
+      licenseType: 'Standard',
+      creatorName: '',
+      originalUrl: '',
+      attributionRequired: false,
+      verified: false,
     });
   };
 
@@ -154,6 +164,22 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       return;
     }
 
+    // Validation for CC videos
+    if (form.licenseType !== 'Standard' && form.attributionRequired) {
+      if (!form.creatorName.trim()) {
+        toast.error('Creator name is required for CC-BY videos');
+        return;
+      }
+      if (!form.originalUrl.trim()) {
+        toast.error('Original URL is required for CC-BY videos');
+        return;
+      }
+      if (!form.verified) {
+        toast.error('Please verify the license manually before submitting');
+        return;
+      }
+    }
+
     setLoading(true);
 
     const payload = {
@@ -165,6 +191,11 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       thumbnail_url: form.thumbnailUrl.trim() || null,
       order_index: Number(form.orderIndex) || 0,
       premium_only: form.premiumOnly,
+      license_type: form.licenseType,
+      creator_name: form.creatorName.trim() || null,
+      original_url: form.originalUrl.trim() || null,
+      attribution_required: form.attributionRequired,
+      verified_date: form.verified ? new Date().toISOString() : null,
     };
 
     try {
@@ -197,6 +228,11 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       thumbnailUrl: video.thumbnail_url || '',
       orderIndex: String(video.order_index ?? 0),
       premiumOnly: video.premium_only ?? false,
+      licenseType: video.license_type || 'Standard',
+      creatorName: video.creator_name || '',
+      originalUrl: video.original_url || '',
+      attributionRequired: video.attribution_required ?? false,
+      verified: !!video.verified_date,
     });
     setShowEditDialog(true);
   };
@@ -207,6 +243,22 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
     if (!editingVideo || !form.title.trim() || !form.duration.trim()) {
       toast.error('Title and duration are required');
       return;
+    }
+
+    // Validation for CC videos
+    if (form.licenseType !== 'Standard' && form.attributionRequired) {
+      if (!form.creatorName.trim()) {
+        toast.error('Creator name is required for CC-BY videos');
+        return;
+      }
+      if (!form.originalUrl.trim()) {
+        toast.error('Original URL is required for CC-BY videos');
+        return;
+      }
+      if (!form.verified) {
+        toast.error('Please verify the license manually before submitting');
+        return;
+      }
     }
 
     setLoading(true);
@@ -220,6 +272,11 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
       thumbnail_url: form.thumbnailUrl.trim() || null,
       order_index: Number(form.orderIndex) || 0,
       premium_only: form.premiumOnly,
+      license_type: form.licenseType,
+      creator_name: form.creatorName.trim() || null,
+      original_url: form.originalUrl.trim() || null,
+      attribution_required: form.attributionRequired,
+      verified_date: form.verified ? new Date().toISOString() : null,
     };
 
     try {
@@ -432,6 +489,79 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
                 value={form.orderIndex}
                 onChange={(event) => setForm((prev) => ({ ...prev, orderIndex: event.target.value }))}
               />
+            </div>
+
+            {/* Creative Commons License Section */}
+            <div className="border-2 border-primary/20 rounded-xl p-4 space-y-4 bg-primary/5">
+              <div className="flex items-center gap-2">
+                <span className="text-lg">📄</span>
+                <h3 className="font-semibold text-base text-foreground">Creative Commons License</h3>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="license-type" className="text-sm font-semibold text-foreground">
+                  License Type
+                </Label>
+                <Select 
+                  value={form.licenseType} 
+                  onValueChange={(value) => setForm({ 
+                    ...form, 
+                    licenseType: value,
+                    attributionRequired: value !== 'Standard'
+                  })}
+                >
+                  <SelectTrigger className="bg-input border-border">
+                    <SelectValue placeholder="Select license" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border-border">
+                    <SelectItem value="Standard">Standard YouTube License (Default)</SelectItem>
+                    <SelectItem value="CC-BY">CC-BY (Attribution)</SelectItem>
+                    <SelectItem value="CC-BY-SA">CC-BY-SA (Attribution ShareAlike)</SelectItem>
+                    <SelectItem value="CC0">CC0 (Public Domain)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {form.attributionRequired && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="creator-name" className="text-sm font-semibold text-foreground">
+                      Creator Name *
+                    </Label>
+                    <Input
+                      id="creator-name"
+                      value={form.creatorName}
+                      onChange={(e) => setForm({ ...form, creatorName: e.target.value })}
+                      placeholder="e.g., Sprouts"
+                      className="bg-input border-border"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="original-url" className="text-sm font-semibold text-foreground">
+                      Original Video URL *
+                    </Label>
+                    <Input
+                      id="original-url"
+                      value={form.originalUrl}
+                      onChange={(e) => setForm({ ...form, originalUrl: e.target.value })}
+                      placeholder="https://youtube.com/..."
+                      className="bg-input border-border"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg">
+                    <Switch
+                      id="verified-license"
+                      checked={form.verified}
+                      onCheckedChange={(checked) => setForm({ ...form, verified: checked })}
+                    />
+                    <Label htmlFor="verified-license" className="text-sm font-medium cursor-pointer">
+                      I verified this video has a {form.licenseType} license
+                    </Label>
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/20">
