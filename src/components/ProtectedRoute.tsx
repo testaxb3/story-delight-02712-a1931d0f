@@ -34,18 +34,23 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     sessionStorage.removeItem('quizJustCompletedAt');
   }
 
+  // ✅ NEW FIX: Handle inconsistent state (quiz_completed=true but quiz_in_progress=true)
+  // This can happen from race conditions or incomplete updates
+  const hasInconsistentState = user.quiz_completed && user.quiz_in_progress;
+  
   // Debug log
   console.debug('[ProtectedRoute]', {
     path: location.pathname,
     quiz_completed: user.quiz_completed,
     quiz_in_progress: user.quiz_in_progress,
+    hasInconsistentState,
     justCompleted,
     withinTTL,
     isQuizRoute
   });
 
-  // ✅ FIX: More strict check - redirect to quiz ONLY if definitely not completed
-  // This prevents false positives from stale cache
+  // ✅ FIX: If quiz is marked completed, ALWAYS allow access (even if in_progress is stuck)
+  // Prioritize quiz_completed over quiz_in_progress to handle inconsistent states
   if (!isQuizRoute && !user.quiz_completed && !justCompleted && !withinTTL) {
     return <Navigate to="/quiz" replace />;
   }
