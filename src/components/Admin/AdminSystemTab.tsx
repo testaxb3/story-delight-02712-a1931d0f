@@ -237,6 +237,10 @@ export function AdminSystemTab() {
           </CardTitle>
           <CardDescription>
             Force all users to update the PWA app, clearing cache and loading the latest version.
+            <br />
+            <span className="text-destructive font-semibold">⚠️ Important:</span> After forcing an update, 
+            you MUST update <code className="text-xs bg-muted px-1 py-0.5 rounded">src/config/version.ts</code> to 
+            match the new build number and deploy, otherwise you'll receive update prompts indefinitely.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

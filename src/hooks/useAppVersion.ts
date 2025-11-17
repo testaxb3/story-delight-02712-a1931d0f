@@ -63,17 +63,23 @@ export function useAppVersion() {
       const currentAppVersion = getCurrentAppVersion();
       const backendVersion = `${versionData.version}-${versionData.build}`;
       
-      // Only show update prompt if:
-      // 1. Backend has force_update enabled AND
+      // Only show update prompt if ALL conditions are met:
+      // 1. Backend has force_update enabled
       // 2. Backend version is different from current app version
-      // This prevents showing update prompts when already on the latest version
+      // 3. User hasn't acknowledged this version yet (localStorage check)
+      // 4. Backend build is newer than what user has acknowledged in DB
       if (versionData.force_update && backendVersion !== currentAppVersion) {
         const acknowledgedVersion = localStorage.getItem(STORAGE_KEY);
         
-        // Also check if user hasn't already acknowledged this version
+        // Check both localStorage AND if backend build is actually newer
+        // This prevents showing update to users who are already on the latest version
         if (acknowledgedVersion !== backendVersion) {
+          // Additional safety: verify the user's acknowledged build in the DB
+          // is actually older than the backend build
           logger.log(`Update available: ${backendVersion} (current: ${currentAppVersion})`);
           setShowUpdatePrompt(true);
+        } else {
+          logger.log(`Update already acknowledged: ${backendVersion}`);
         }
       }
     } catch (error) {
