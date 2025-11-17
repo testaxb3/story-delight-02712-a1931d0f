@@ -223,10 +223,21 @@ export const saveChildProfile = async ({
   parentName,
   email,
 }: SaveChildProfilePayload = {}): Promise<ProfileRow> => {
+  // Prevent overwriting quiz_completed when not explicitly provided
+  if (quizCompleted === undefined) {
+    return await fallbackSaveChildProfile({
+      childName,
+      childProfile,
+      quizCompleted,
+      parentName,
+      email,
+    });
+  }
+
   const { data, error } = await supabase.rpc("save_child_profile", {
     child_name: childName ?? null,
     child_profile: childProfile ?? null,
-    quiz_completed: quizCompleted ?? false,
+    quiz_completed: quizCompleted, // do not default to false
     parent_name: parentName ?? null,
     email: email ?? null,
   });
