@@ -24,10 +24,11 @@ export default function Auth() {
   const loginRateLimit = useRateLimit(5, 60000);
 
   useEffect(() => {
-    if (user) {
+    // Only redirect if user exists AND welcome modal is not showing
+    if (user && !showWelcomeModal) {
       navigate('/', { replace: true });
     }
-  }, [user, navigate]);
+  }, [user, navigate, showWelcomeModal]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,10 +86,7 @@ export default function Auth() {
 
   const handleWelcomeModalClose = () => {
     setShowWelcomeModal(false);
-    // Show success message about email confirmation
-    toast.success('Please check your email to confirm your account before signing in.', { duration: 8000 });
-    setIsSignUp(false); // Switch to sign-in mode
-    setPassword(''); // Clear password field
+    // Don't show toast or switch mode here - let the modal navigate to quiz
   };
 
   return (
