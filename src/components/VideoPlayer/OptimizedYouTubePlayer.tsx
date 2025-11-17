@@ -739,31 +739,36 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
         </div>
       )}
 
-      {/* Creative Commons Attribution - Positioned at bottom but visible */}
-      {attribution?.licenseType && attribution.licenseType !== "Standard" && (
-        <div 
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/95 to-transparent px-3 sm:px-4 pb-16 sm:pb-20 pt-6" 
-          style={{ zIndex: 15, pointerEvents: 'none' }}
-        >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 text-white text-xs sm:text-sm pointer-events-auto">
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant="outline" className="bg-yellow-500/20 text-yellow-300 border-yellow-400/40 font-semibold">
-                📄 {attribution.licenseType}
-              </Badge>
-              {attribution.creatorName && (
-                <div className="flex items-center gap-1.5">
-                  <span className="text-white/70">by</span>
-                  <span className="font-bold text-white">{attribution.creatorName}</span>
-                </div>
-              )}
-            </div>
+      {/* Creative Commons Attribution overlay removed; rendered below player instead */}
+    </div>
+  );
+
+  // When fullscreen, render via Portal to escape Dialog z-index
+  if (isFullscreen && typeof document !== 'undefined') {
+    return createPortal(playerContent, document.body);
+  }
+
+  // Render player with attribution BELOW the video (outside of the player area)
+  return (
+    <div className="w-full">
+      {playerContent}
+      {attribution?.licenseType && attribution.licenseType !== 'Standard' && (
+        <div className="mt-2 px-2 sm:px-0">
+          <div className="bg-card border border-border rounded-lg px-3 py-2 text-xs sm:text-sm flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-400/40 font-semibold">
+              📄 {attribution.licenseType}
+            </Badge>
+            {attribution.creatorName && (
+              <span className="text-muted-foreground">
+                by <span className="text-foreground font-medium">{attribution.creatorName}</span>
+              </span>
+            )}
             {attribution.originalUrl && (
               <a
                 href={attribution.originalUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="sm:ml-auto text-xs underline hover:text-yellow-300 transition-colors flex items-center gap-1 text-white/90 hover:text-white"
-                onClick={(e) => e.stopPropagation()}
+                className="sm:ml-auto underline hover:text-primary transition-colors flex items-center gap-1"
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -776,11 +781,4 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
       )}
     </div>
   );
-
-  // When fullscreen, render via Portal to escape Dialog z-index
-  if (isFullscreen && typeof document !== 'undefined') {
-    return createPortal(playerContent, document.body);
-  }
-
-  return playerContent;
 };
