@@ -28,7 +28,8 @@ export const fetchProfile = async (
     throw error;
   }
 
-  return (data as ProfileRow | null) ?? null;
+  // Safe cast after error check (via unknown to satisfy TypeScript)
+  return (data ?? null) as unknown as ProfileRow | null;
 };
 
 /**
@@ -103,7 +104,7 @@ const buildProfileUpsertPayload = (
 
   const sanitizedProfile = sanitizeString(childProfile);
   if (sanitizedProfile !== null) {
-    payload.child_profile = sanitizedProfile;
+    (payload as any).child_profile = sanitizedProfile;
   }
 
   // Only set quiz_completed if explicitly provided
@@ -157,16 +158,27 @@ const buildDefaultProfile = (
   return {
     id: userId,
     child_name: sanitizeString(childName),
-    child_profile: sanitizeString(childProfile),
     created_at: new Date().toISOString(),
     email: sanitizeEmail(email),
     is_admin: false,
     name: sanitizeString(parentName),
-    premium: false, // ✅ FIX: Default to free tier (not auto-premium)
+    premium: false,
     quiz_completed: quizCompleted ?? false,
     role: null,
     updated_at: new Date().toISOString(),
-  } as ProfileRow;
+    avatar_url: null,
+    badges: null,
+    bio: null,
+    brain_profile: sanitizeString(childProfile),
+    comments_count: 0,
+    followers_count: 0,
+    following_count: 0,
+    likes_received_count: 0,
+    photo_url: null,
+    posts_count: 0,
+    quiz_in_progress: false,
+    welcome_modal_shown: null,
+  };
 };
 
 /**
