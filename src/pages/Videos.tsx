@@ -412,7 +412,7 @@ export default function Videos() {
         <Dialog open={!!playingVideo} onOpenChange={() => setPlayingVideo(null)}>
           <DialogContent className="max-w-6xl w-[98vw] sm:w-[95vw] h-[98vh] sm:h-[90vh] p-0 overflow-hidden bg-gradient-to-br from-background via-background/95 to-background border-border shadow-2xl">
             <div className="h-full flex flex-col">
-              <DialogHeader className="p-3 sm:p-4 md:p-6 bg-gradient-to-r from-card/95 via-card/90 to-card/95 backdrop-blur-xl border-b border-border">
+              <DialogHeader className="p-3 sm:p-4 md:p-6 pr-14 bg-gradient-to-r from-card/95 via-card/90 to-card/95 backdrop-blur-xl border-b border-border">
                 <div className="flex items-start sm:items-center gap-2 sm:gap-3">
                   <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
                     <Play className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
@@ -427,7 +427,7 @@ export default function Videos() {
                       </p>
                     )}
                   </div>
-                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
+                  <Badge className="mr-10 bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
                     <Eye className="h-3 w-3 mr-1" />
                     <span className="hidden sm:inline">{Math.round(getProgressPercentage(playingVideo?.id || ''))}% Watched</span>
                     <span className="sm:hidden">{Math.round(getProgressPercentage(playingVideo?.id || ''))}%</span>
