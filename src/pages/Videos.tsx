@@ -410,26 +410,27 @@ export default function Videos() {
 
         {/* Video Player Modal */}
         <Dialog open={!!playingVideo} onOpenChange={() => setPlayingVideo(null)}>
-          <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden bg-gradient-to-br from-black via-gray-900 to-black border-primary/20">
+          <DialogContent className="max-w-6xl w-[98vw] sm:w-[95vw] h-[98vh] sm:h-[90vh] p-0 overflow-hidden bg-gradient-to-br from-background via-background/95 to-background border-border shadow-2xl">
             <div className="h-full flex flex-col">
-              <DialogHeader className="p-6 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl border-b border-border/40">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-lg shadow-primary/50">
-                    <Play className="h-5 w-5 text-white" />
+              <DialogHeader className="p-3 sm:p-4 md:p-6 bg-gradient-to-r from-card/95 via-card/90 to-card/95 backdrop-blur-xl border-b border-border">
+                <div className="flex items-start sm:items-center gap-2 sm:gap-3">
+                  <div className="h-8 w-8 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0">
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
                   </div>
-                  <div className="flex-1">
-                    <DialogTitle className="text-xl font-bold">
+                  <div className="flex-1 min-w-0">
+                    <DialogTitle className="text-base sm:text-lg md:text-xl font-bold text-foreground line-clamp-1">
                       {playingVideo?.title}
                     </DialogTitle>
                     {playingVideo?.description && (
-                      <p className="text-sm text-muted-foreground line-clamp-1">
+                      <p className="text-xs sm:text-sm text-muted-foreground line-clamp-1 mt-0.5">
                         {playingVideo.description}
                       </p>
                     )}
                   </div>
-                  <Badge className="bg-primary/10 text-primary border-primary/20">
+                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs sm:text-sm whitespace-nowrap flex-shrink-0">
                     <Eye className="h-3 w-3 mr-1" />
-                    {Math.round(getProgressPercentage(playingVideo?.id || ''))}% Watched
+                    <span className="hidden sm:inline">{Math.round(getProgressPercentage(playingVideo?.id || ''))}% Watched</span>
+                    <span className="sm:hidden">{Math.round(getProgressPercentage(playingVideo?.id || ''))}%</span>
                   </Badge>
                 </div>
               </DialogHeader>
@@ -453,38 +454,40 @@ export default function Videos() {
                 )}
               </div>
 
-              <div className="p-4 bg-gradient-to-r from-background/95 via-background/90 to-background/95 backdrop-blur-xl border-t border-border/40">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Clock className="h-4 w-4" />
+              <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-r from-card/95 via-card/90 to-card/95 backdrop-blur-xl border-t border-border">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-2 sm:mb-3">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                    <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
                     <span>{Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}</span>
                     <span>/</span>
                     <span>{Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}</span>
                   </div>
                   
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Speed:</span>
-                    {[0.5, 0.75, 1, 1.25, 1.5, 2].map(rate => (
-                      <Button
-                        key={rate}
-                        size="sm"
-                        variant={playbackRate === rate ? 'default' : 'outline'}
-                        onClick={() => setPlaybackRate(rate)}
-                        className={cn(
-                          'h-7 px-2 text-xs transition-all',
-                          playbackRate === rate && 'bg-primary shadow-lg shadow-primary/50'
-                        )}
-                      >
-                        {rate}x
-                      </Button>
-                    ))}
+                  <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
+                    <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">Speed:</span>
+                    <div className="flex items-center gap-1 flex-wrap">
+                      {[0.5, 0.75, 1, 1.25, 1.5, 2].map(rate => (
+                        <Button
+                          key={rate}
+                          size="sm"
+                          variant={playbackRate === rate ? 'default' : 'outline'}
+                          onClick={() => setPlaybackRate(rate)}
+                          className={cn(
+                            'h-6 sm:h-7 px-1.5 sm:px-2 text-xs transition-all',
+                            playbackRate === rate && 'bg-primary text-primary-foreground shadow-lg shadow-primary/50'
+                          )}
+                        >
+                          {rate}x
+                        </Button>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
                 <div className="relative">
                   <Progress
                     value={(currentTime / videoDuration) * 100 || 0}
-                    className="h-2 bg-muted/20"
+                    className="h-1.5 sm:h-2 bg-muted/20"
                   />
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/30 to-primary/0 opacity-50 animate-pulse pointer-events-none" />
                 </div>

@@ -535,7 +535,7 @@ function BonusesContent() {
 
         {/* Video Player Modal - Premium Version */}
         <Dialog open={!!playingBonus} onOpenChange={(open) => !open && setPlayingBonus(null)}>
-          <DialogContent className="max-w-6xl w-[98vw] h-[95vh] p-0 border-0 bg-gradient-to-br from-black via-gray-900 to-black overflow-hidden">
+          <DialogContent className="max-w-6xl w-[98vw] sm:w-[95vw] h-[98vh] sm:h-[95vh] p-0 border-0 bg-gradient-to-br from-background via-background/95 to-background overflow-hidden">
             {playingBonus && playingBonus.videoUrl && (
               <div className="relative h-full flex flex-col">
                 {/* Backdrop blur overlay */}
@@ -549,33 +549,33 @@ function BonusesContent() {
                   variant="ghost"
                   size="icon"
                   onClick={() => setPlayingBonus(null)}
-                  className="absolute top-4 right-4 z-50 bg-black/80 hover:bg-black backdrop-blur-md text-white rounded-full h-12 w-12 border border-white/10 hover:border-primary/50 transition-all hover:scale-110"
+                  className="absolute top-2 right-2 sm:top-4 sm:right-4 z-50 bg-black/80 hover:bg-black backdrop-blur-md text-white rounded-full h-8 w-8 sm:h-10 sm:w-10 md:h-12 md:w-12 border border-white/10 hover:border-primary/50 transition-all hover:scale-110"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
                 </Button>
 
                 {/* Video Title - Premium Header */}
-                <div className="px-6 pt-6 pb-4 bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm relative z-10">
+                <div className="px-3 pt-3 pb-2 sm:px-4 sm:pt-4 sm:pb-3 md:px-6 md:pt-6 md:pb-4 bg-gradient-to-b from-black/90 to-transparent backdrop-blur-sm relative z-10">
                   <motion.h3
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-xl md:text-2xl font-bold text-white mb-2 flex items-center gap-3"
+                    className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white mb-1.5 sm:mb-2 flex items-center gap-2 sm:gap-3"
                   >
-                    <div className="p-2 bg-gradient-to-br from-primary/30 to-accent/30 rounded-lg">
-                      <Play className="w-5 h-5 text-primary" />
+                    <div className="p-1.5 sm:p-2 bg-gradient-to-br from-primary/30 to-accent/30 rounded-lg flex-shrink-0">
+                      <Play className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primary" />
                     </div>
-                    {playingBonus.title}
+                    <span className="line-clamp-1">{playingBonus.title}</span>
                   </motion.h3>
                   
-                  <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 sm:gap-3 md:gap-4 text-xs sm:text-sm flex-wrap">
                     {playingBonus.duration && (
-                      <span className="flex items-center gap-2 text-white/70 bg-white/5 px-3 py-1 rounded-full backdrop-blur-sm">
-                        <Clock className="w-3 h-3" />
+                      <span className="flex items-center gap-1 sm:gap-2 text-white/70 bg-white/5 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full backdrop-blur-sm">
+                        <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                         {playingBonus.duration}
                       </span>
                     )}
                     {playingBonus.tags && playingBonus.tags.length > 0 && (
-                      <span className="text-white/70 bg-primary/10 px-3 py-1 rounded-full backdrop-blur-sm">
+                      <span className="text-white/70 bg-primary/10 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full backdrop-blur-sm">
                         {playingBonus.tags[0]}
                       </span>
                     )}
@@ -598,14 +598,14 @@ function BonusesContent() {
                 </div>
 
                 {/* Premium Controls Bar */}
-                <div className="px-6 py-5 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md border-t border-white/10 relative z-10">
+                <div className="px-2 py-2 sm:px-3 sm:py-3 md:px-4 md:py-4 lg:px-6 lg:py-5 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md border-t border-white/10 relative z-10">
                   {/* Progress Bar with Glow Effect */}
-                  <div className="mb-4">
-                    <div className="flex items-center justify-between text-xs text-white/60 mb-2 font-mono">
-                      <span className="bg-white/5 px-2 py-1 rounded">
+                  <div className="mb-2 sm:mb-3 md:mb-4">
+                    <div className="flex items-center justify-between text-xs text-white/60 mb-1 sm:mb-2 font-mono">
+                      <span className="bg-white/5 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
                         {Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}
                       </span>
-                      <span className="bg-white/5 px-2 py-1 rounded">
+                      <span className="bg-white/5 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-xs">
                         {Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}
                       </span>
                     </div>
@@ -614,11 +614,11 @@ function BonusesContent() {
                     <div className="relative">
                       <Progress
                         value={videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0}
-                        className="h-2 bg-white/10"
+                        className="h-1.5 sm:h-2 bg-white/10"
                       />
                       {/* Glow effect on progress */}
                       <motion.div
-                        className="absolute top-0 left-0 h-2 bg-gradient-to-r from-primary via-accent to-primary rounded-full"
+                        className="absolute top-0 left-0 h-1.5 sm:h-2 bg-gradient-to-r from-primary via-accent to-primary rounded-full"
                         style={{
                           width: `${videoDuration > 0 ? (currentTime / videoDuration) * 100 : 0}%`,
                           boxShadow: '0 0 20px hsl(var(--primary) / 0.6), 0 0 40px hsl(var(--accent) / 0.4)',
@@ -636,10 +636,10 @@ function BonusesContent() {
                   </div>
 
                   {/* Premium Playback Speed Controls */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm text-white/60 font-medium">Playback Speed</span>
-                      <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                    <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+                      <span className="text-xs sm:text-sm text-white/60 font-medium whitespace-nowrap">Speed</span>
+                      <div className="flex gap-1 sm:gap-2 flex-wrap">
                         {[1, 1.25, 1.5, 2].map((speed) => (
                           <motion.div key={speed} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                             <Button
@@ -648,8 +648,8 @@ function BonusesContent() {
                               onClick={() => setPlaybackRate(speed)}
                               className={
                                 playbackRate === speed
-                                  ? "h-9 px-4 text-xs font-semibold bg-gradient-to-r from-primary to-accent text-white border-0 shadow-glow"
-                                  : "h-9 px-4 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
+                                  ? "h-7 sm:h-8 md:h-9 px-2 sm:px-3 md:px-4 text-xs font-semibold bg-gradient-to-r from-primary to-accent text-white border-0 shadow-glow"
+                                  : "h-7 sm:h-8 md:h-9 px-2 sm:px-3 md:px-4 text-xs text-white/70 hover:text-white hover:bg-white/10 border border-white/10"
                               }
                             >
                               {speed}x
@@ -660,9 +660,10 @@ function BonusesContent() {
                     </div>
                     
                     {/* Quality Badge */}
-                    <div className="flex items-center gap-2 text-xs text-white/50">
-                      <Sparkles className="w-3 h-3 text-accent" />
-                      <span>Premium Quality</span>
+                    <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-white/50">
+                      <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-accent" />
+                      <span className="hidden sm:inline">Premium Quality</span>
+                      <span className="sm:hidden">Premium</span>
                     </div>
                   </div>
                 </div>
