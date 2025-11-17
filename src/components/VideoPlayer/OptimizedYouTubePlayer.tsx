@@ -739,13 +739,13 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
         </div>
       )}
 
-      {/* Creative Commons Attribution Card */}
+      {/* Creative Commons Attribution - Positioned at bottom but visible */}
       {attribution?.licenseType && attribution.licenseType !== "Standard" && (
         <div 
-          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/90 to-transparent p-3 sm:p-4 pb-4 sm:pb-6" 
-          style={{ zIndex: 15 }}
+          className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/95 to-transparent px-3 sm:px-4 pb-16 sm:pb-20 pt-6" 
+          style={{ zIndex: 15, pointerEvents: 'none' }}
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 text-white text-xs sm:text-sm">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 text-white text-xs sm:text-sm pointer-events-auto">
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant="outline" className="bg-yellow-500/20 text-yellow-300 border-yellow-400/40 font-semibold">
                 📄 {attribution.licenseType}
