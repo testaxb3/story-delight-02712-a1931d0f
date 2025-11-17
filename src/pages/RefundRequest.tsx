@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from 'sonner';
-import { ArrowLeft, AlertTriangle, CheckCircle, DollarSign, Mail, MessageCircle } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle, DollarSign, Mail } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function RefundRequest() {
@@ -71,37 +71,37 @@ export default function RefundRequest() {
 
   if (step === 'info') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-        <div className="max-w-3xl mx-auto pt-8">
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted/30 p-3 sm:p-4">
+        <div className="max-w-3xl mx-auto pt-4 sm:pt-8">
           <Button
             variant="ghost"
             onClick={() => navigate('/profile')}
-            className="mb-6"
+            className="mb-4 sm:mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Profile
           </Button>
 
-          <Card className="border-2">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                <DollarSign className="w-8 h-8 text-primary" />
+          <Card className="border border-border shadow-lg">
+            <CardHeader className="text-center p-4 sm:p-6">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-primary" />
               </div>
-              <CardTitle className="text-2xl">Refund Policy</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-xl sm:text-2xl">Refund Policy</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Please read carefully before requesting your refund
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6">
               {/* Money Back Guarantee */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+              <div className="bg-success/10 border border-success/20 rounded-lg p-3 sm:p-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-success mt-0.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-green-900 mb-1">
+                    <h3 className="font-semibold text-success-foreground mb-1 text-sm sm:text-base">
                       30-Day Money-Back Guarantee
                     </h3>
-                    <p className="text-sm text-green-800">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       If you're not satisfied with NEP System, we offer a full refund within 30 days of purchase, no questions asked.
                     </p>
                   </div>
@@ -109,28 +109,28 @@ export default function RefundRequest() {
               </div>
 
               {/* Warning about Chargeback */}
-              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5 flex-shrink-0" />
+              <div className="bg-destructive/10 border-2 border-destructive/30 rounded-lg p-3 sm:p-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-destructive mt-0.5 flex-shrink-0" />
                   <div>
-                    <h3 className="font-semibold text-red-900 mb-2">
+                    <h3 className="font-semibold text-destructive mb-2 text-sm sm:text-base">
                       ⚠️ IMPORTANT: DO NOT request a chargeback from your bank
                     </h3>
-                    <ul className="text-sm text-red-800 space-y-2">
+                    <ul className="text-xs sm:text-sm text-muted-foreground space-y-1.5 sm:space-y-2">
                       <li className="flex items-start gap-2">
-                        <span className="text-red-600 mt-0.5">•</span>
+                        <span className="text-destructive mt-0.5">•</span>
                         <span>
                           <strong>Damages your credit reputation:</strong> Chargebacks are recorded in your history and may cause your card to be blocked for future purchases
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-red-600 mt-0.5">•</span>
+                        <span className="text-destructive mt-0.5">•</span>
                         <span>
                           <strong>Slower process:</strong> Bank chargebacks take 30-90 days, while our refund is processed in 5-7 business days
                         </span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-red-600 mt-0.5">•</span>
+                        <span className="text-destructive mt-0.5">•</span>
                         <span>
                           <strong>We have dedicated support:</strong> We're a serious company and want to solve your problem. Talk to us first!
                         </span>
@@ -141,60 +141,58 @@ export default function RefundRequest() {
               </div>
 
               {/* How to Request */}
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h3 className="font-semibold text-blue-900 mb-3">
+              <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 sm:p-4">
+                <h3 className="font-semibold text-foreground mb-2 sm:mb-3 text-sm sm:text-base">
                   How to request a refund correctly:
                 </h3>
-                <ol className="text-sm text-blue-800 space-y-2">
+                <ol className="text-xs sm:text-sm text-muted-foreground space-y-1.5 sm:space-y-2">
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">1.</span>
+                    <span className="font-bold text-primary">1.</span>
                     <span>Click the "Request Refund" button below</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">2.</span>
+                    <span className="font-bold text-primary">2.</span>
                     <span>Tell us the reason (this helps us improve)</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">3.</span>
+                    <span className="font-bold text-primary">3.</span>
                     <span>Receive a response within 24 hours</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="font-bold text-blue-600">4.</span>
+                    <span className="font-bold text-primary">4.</span>
                     <span>Refund processed in 5-7 business days</span>
                   </li>
                 </ol>
               </div>
 
               {/* Contact Support First */}
-              <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                <div className="flex items-start gap-3">
-                  <Mail className="w-5 h-5 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <div>
-                    <h3 className="font-semibold text-purple-900 mb-1">
-                      Before requesting a refund...
+              <div className="bg-accent/10 border border-accent/20 rounded-lg p-3 sm:p-4">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-accent mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-foreground mb-1 text-sm sm:text-base">
+                      📧 Before requesting a refund...
                     </h3>
-                    <p className="text-sm text-purple-800 mb-3">
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
                       We can help! Many issues can be quickly resolved by our support team.
                     </p>
                     <a
-                      href="https://wa.me/1234567890?text=Hi!%20I%20need%20help%20with%20my%20NEP%20System%20purchase"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
+                      href="mailto:support@nepsystem.com"
+                      className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-accent hover:text-accent/80 transition-colors"
                     >
-                      <MessageCircle className="w-4 h-4" />
-                      Message us on WhatsApp
+                      <Mail className="w-4 h-4" />
+                      Contact Support: support@nepsystem.com
                     </a>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col gap-3 pt-4">
+              <div className="flex flex-col gap-3 pt-2 sm:pt-4">
                 <Button
                   size="lg"
                   onClick={() => setStep('reason')}
-                  className="w-full"
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base"
                 >
                   Continue with Refund Request
                 </Button>
@@ -202,7 +200,7 @@ export default function RefundRequest() {
                   size="lg"
                   variant="outline"
                   onClick={() => navigate('/profile')}
-                  className="w-full"
+                  className="w-full h-11 sm:h-12 text-sm sm:text-base"
                 >
                   Back to Profile
                 </Button>
