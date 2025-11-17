@@ -104,69 +104,72 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
 
         <div className="relative p-8 sm:p-12 text-center">
           {/* Celebration emoji */}
-          <div className="text-7xl mb-4 animate-bounce">🎉</div>
+          <div className="text-7xl mb-6 animate-bounce">🧠</div>
 
           {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl font-bold mb-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-            Welcome to The Obedience Language!
+          <h1 className="text-4xl sm:text-5xl font-bold mb-3 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            You're In! 🎉
           </h1>
           
           <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
-            Your $47 Investment Just Unlocked Something Incredible
+            Everything Starts with ONE Quiz
           </h2>
           
           <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto">
-            You've just gained access to the complete <span className="font-bold text-primary">NEP System</span> - a science-backed method that's already helped thousands of parents transform their relationship with their children.
+            In just 3 minutes, you'll discover your child's brain type and unlock a completely personalized system designed specifically for <span className="font-bold text-primary">how their brain works</span>.
           </p>
 
-          {/* Benefits list */}
-          <div className="bg-gradient-to-br from-muted/30 to-primary/5 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left space-y-4 border border-primary/10">
-            <h3 className="font-semibold text-lg mb-4 text-center flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              Here's what you just unlocked:
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-foreground"><strong>300+ personalized scripts</strong> tailored to your child's brain type</span>
+          {/* What's Next */}
+          <div className="bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 backdrop-blur-sm rounded-2xl p-8 mb-8 text-left space-y-6 border-2 border-primary/20">
+            <div className="text-center">
+              <h3 className="font-bold text-2xl mb-2 text-foreground">Here's What Happens Next:</h3>
+              <p className="text-sm text-muted-foreground">The exact roadmap to transformation</p>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+                  1
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Take the Brain Profile Quiz</p>
+                  <p className="text-sm text-muted-foreground">Discover if your child is INTENSE, DISTRACTED, or DEFIANT</p>
+                </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-foreground"><strong>Expert video training library</strong> with step-by-step guidance</span>
+              
+              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+                  2
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Get Your Personalized Scripts</p>
+                  <p className="text-sm text-muted-foreground">Access hundreds of word-for-word scripts for YOUR child's brain</p>
+                </div>
               </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-foreground"><strong>Brain Profile Quiz</strong> to discover your child's unique wiring</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-foreground"><strong>Exclusive bonuses</strong> including ebooks and tools</span>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                <span className="text-foreground"><strong>Lifetime access</strong> to all future updates and content</span>
+              
+              <div className="flex items-start gap-4 bg-card/50 p-4 rounded-xl">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold text-lg">
+                  3
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground mb-1">Start Seeing Results Today</p>
+                  <p className="text-sm text-muted-foreground">Use your first script within minutes and watch the magic happen</p>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* CTA Badge */}
-          <Badge variant="outline" className="mb-4 px-4 py-2 text-sm border-primary/30 bg-primary/5">
-            <Sparkles className="w-4 h-4 mr-2 text-primary" />
-            Everything is ready for you to start
-          </Badge>
 
           {/* CTA Button */}
           <Button
             onClick={handleStartTransformation}
             size="lg"
-            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-xl hover:shadow-2xl transition-all duration-300"
+            className="w-full h-16 text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl hover:shadow-3xl transition-all duration-300 animate-pulse"
           >
-            <Gift className="w-5 h-5 mr-2" />
-            Start My Transformation Now
+            Let's Discover Your Child's Brain Type! 🚀
           </Button>
 
           <p className="text-xs text-muted-foreground mt-4">
-            🚀 Your purchase is complete - Let's discover your child's brain type and unlock their personalized strategies!
+            ⏱️ Takes only 3 minutes • 10,000+ parents have already done this
           </p>
         </div>
       </DialogContent>
