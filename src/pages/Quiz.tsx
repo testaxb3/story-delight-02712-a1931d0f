@@ -16,7 +16,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import { QuizWelcome } from '@/components/quiz/QuizWelcome';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -61,7 +60,6 @@ export default function Quiz() {
   const [result, setResult] = useState<{ type: BrainProfile; score: number } | null>(null);
   const [childName, setChildName] = useState('');
   const [hasStarted, setHasStarted] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [completingQuiz, setCompletingQuiz] = useState(false);
@@ -91,10 +89,6 @@ export default function Quiz() {
 
   const handleAnswer = (value: string) => {
     setAnswers(prev => ({ ...prev, [currentQuestion]: value }));
-  };
-
-  const handleWelcomeComplete = () => {
-    setShowWelcome(false);
   };
 
   const handleStartQuiz = () => {
@@ -313,11 +307,6 @@ export default function Quiz() {
   };
 
   const progress = hasStarted ? ((currentQuestion + 1) / questions.length) * 100 : 0;
-
-  // Show welcome screen first
-  if (showWelcome) {
-    return <QuizWelcome onStart={handleWelcomeComplete} />;
-  }
 
   return (
     <MainLayout hideBottomNav hideSideNav hideTopBar>
