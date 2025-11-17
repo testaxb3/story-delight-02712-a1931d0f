@@ -238,9 +238,17 @@ export function AdminSystemTab() {
           <CardDescription>
             Force all users to update the PWA app, clearing cache and loading the latest version.
             <br />
-            <span className="text-destructive font-semibold">⚠️ Important:</span> After forcing an update, 
-            you MUST update <code className="text-xs bg-muted px-1 py-0.5 rounded">src/config/version.ts</code> to 
-            match the new build number and deploy, otherwise you'll receive update prompts indefinitely.
+            <br />
+            <span className="text-destructive font-semibold">⚠️ CRITICAL PROCESS - Follow these steps IN ORDER:</span>
+            <ol className="list-decimal list-inside mt-2 space-y-1 text-sm">
+              <li>Update <code className="text-xs bg-muted px-1 py-0.5 rounded">src/config/version.ts</code> with the new build number</li>
+              <li>Deploy the frontend (click "Update" in Publish dialog)</li>
+              <li>Wait for deployment to complete (~2-3 minutes)</li>
+              <li>THEN click "Force Global Update" below</li>
+            </ol>
+            <p className="mt-2 text-xs text-muted-foreground">
+              If you force update BEFORE deploying, users won't get infinite loops but will see the prompt again on the next force update.
+            </p>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
