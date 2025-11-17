@@ -20,8 +20,9 @@ import type { Database } from '@/integrations/supabase/types';
 import { getRandomSuccessStory, type SuccessStory } from '@/lib/successStories';
 import { useLiveStats } from '@/hooks/useLiveStats';
 import { getBrainTypeIcon } from '@/lib/brainTypes';
-import { useVideoProgress } from '@/hooks/useVideoProgress';
+import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { useVideos } from '@/hooks/useVideos';
 
 // Premium Dashboard Components
 import { HeroRecommendation } from '@/components/Dashboard/HeroRecommendation';
@@ -60,13 +61,12 @@ export default function Dashboard() {
   const [showPWAGuide, setShowPWAGuide] = useState(false);
   const { activeChild, onboardingRequired } = useChildProfiles();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [videos, setVideos] = useState<VideoRow[]>([]);
-  const [loadingVideos, setLoadingVideos] = useState(false);
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
-  
+
   // Optimized: Single query for all dashboard stats
   const { data: dashboardStats, isLoading: loadingDashboardStats } = useDashboardStats();
-  const { progress, loading: loadingProgress } = useVideoProgress();
+  const { progress, loading: loadingProgress } = useVideoProgressOptimized();
+  const { data: videos = [], isLoading: loadingVideos } = useVideos();
 
   // Derived values from dashboard stats
   const trackerSummary = {
@@ -101,27 +101,6 @@ export default function Dashboard() {
       setShowOnboardingModal(false);
     }
   }, [user]);
-
-  const loadVideos = useCallback(async () => {
-    setLoadingVideos(true);
-    const { data, error } = await supabase
-      .from('videos')
-      .select('*')
-      .order('order_index', { ascending: true });
-
-    if (error) {
-      console.error('Failed to load videos', error);
-      setVideos([]);
-    } else {
-      setVideos(data ?? []);
-    }
-
-    setLoadingVideos(false);
-  }, []);
-
-  useEffect(() => {
-    loadVideos();
-  }, [loadVideos]);
 
   // Set loading state based on dashboard stats and video loading
   useEffect(() => {
@@ -308,15 +287,9 @@ export default function Dashboard() {
         )}
 
         {/* Quick Actions - Only 2 main cards */}
-        <QuickActions 
+        <QuickActions
           scriptsCount={contentCounts.scripts}
           videosCount={contentCounts.videos}
-        />
-
-        {/* This Week's Wins - Granular Metrics */}
-        <ThisWeeksWins 
-          wins={dashboardStats?.weeklyWins || []} 
-          loading={loadingDashboardStats} 
         />
 
         {/* Quick Metrics Overview */}

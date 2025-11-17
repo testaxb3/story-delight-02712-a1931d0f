@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, useCallback, useMemo } from 'react';
 import ReactPlayer from 'react-player/youtube';
-import { useVideoProgress } from '@/hooks/useVideoProgress';
+import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { Loader2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
 
@@ -75,11 +75,17 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   // Hook existente para progresso
   const {
     getProgress,
-    updateProgress,
+    updateProgress: updateProgressFn,
     loading: isLoadingProgress
-  } = useVideoProgress();
+  } = useVideoProgressOptimized();
 
   const videoProgress = getProgress(videoId);
+
+  // Use ref to stabilize updateProgress function
+  const updateProgressRef = useRef(updateProgressFn);
+  useEffect(() => {
+    updateProgressRef.current = updateProgressFn;
+  }, [updateProgressFn]);
 
   // Reset state when videoId changes
   useEffect(() => {
@@ -132,8 +138,8 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
     if (!forceUpdate && progressDiff < 3) return;
 
     lastSavedProgressRef.current = progressSeconds;
-    await updateProgress(videoId, Math.floor(progressSeconds), Math.floor(duration));
-  }, [videoId, duration, updateProgress]);
+    await updateProgressRef.current(videoId, Math.floor(progressSeconds), Math.floor(duration));
+  }, [videoId, duration]);
 
   // Quando o player estiver pronto, busca o tempo salvo
   const handleReady = () => {

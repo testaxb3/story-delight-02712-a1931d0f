@@ -11,7 +11,7 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { Bookmark, BookmarkCheck, CheckCircle2, Play, Lock, Clock, Eye, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useVideoProgress } from '@/hooks/useVideoProgress';
+import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { useVideoBookmarks } from '@/hooks/useVideoBookmarks';
 import { EmptyState } from '@/components/common/EmptyState';
 import { useAuth } from '@/contexts/AuthContext';
@@ -73,15 +73,15 @@ export default function Videos() {
     queryFn: fetchVideos,
   });
 
-  const { progress, updateProgress, markAsWatched, getProgressPercentage, isCompleted, isInProgress } = useVideoProgress();
+  const { progress, updateProgress, markAsWatched, getProgressPercentage, isCompleted, isInProgress } = useVideoProgressOptimized();
   const { bookmarks, loading: bookmarksLoading, toggleBookmark, isBookmarked } = useVideoBookmarks();
 
   const watched = useMemo(() => {
-    return new Set(Object.keys(progress).filter(id => isCompleted(id)));
+    return new Set(Array.from(progress.keys()).filter(id => isCompleted(id)));
   }, [progress, isCompleted]);
 
   const inProgressSet = useMemo(() => {
-    return new Set(Object.keys(progress).filter(id => isInProgress(id)));
+    return new Set(Array.from(progress.keys()).filter(id => isInProgress(id)));
   }, [progress, isInProgress]);
 
   const sections = useMemo(() => {

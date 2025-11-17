@@ -1,6 +1,6 @@
 import { Lightbulb } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
-import { usePersonalizedInsights } from '@/hooks/usePersonalizedInsights';
+import { usePersonalizedInsightsOptimized } from '@/hooks/usePersonalizedInsightsOptimized';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface PersonalizedInsightsProps {
@@ -9,7 +9,7 @@ interface PersonalizedInsightsProps {
 }
 
 export const PersonalizedInsights = ({ userId, brainProfile }: PersonalizedInsightsProps) => {
-  const { insights, loading } = usePersonalizedInsights(userId, brainProfile);
+  const { insights, loading } = usePersonalizedInsightsOptimized(userId, brainProfile);
 
   if (loading) {
     return (

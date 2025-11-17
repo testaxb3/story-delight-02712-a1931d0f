@@ -90,9 +90,9 @@ export function useDashboardStats() {
       } as DashboardStats;
     },
     enabled: !!user?.id,
-    staleTime: 2 * 60 * 1000, // Consider data fresh for 2 minutes
-    gcTime: 10 * 60 * 1000, // Keep in cache for 10 minutes
-    refetchOnWindowFocus: true,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes (increased from 2)
+    gcTime: 15 * 60 * 1000, // Keep in cache for 15 minutes (increased from 10)
+    refetchOnWindowFocus: false, // Don't refetch when window gains focus
     refetchOnMount: false, // Don't refetch if data is fresh
   });
 }
