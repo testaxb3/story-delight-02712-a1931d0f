@@ -6,6 +6,7 @@ import { clearUserContext } from '@/lib/sentry';
 import { resetUser } from '@/lib/analytics';
 import { useUserProfile, useRefreshProfile } from '@/hooks/useUserProfile';
 import { ensureUserScaffolding } from '@/lib/supabase/scaffolding';
+import { useQueryClient } from '@tanstack/react-query';
 
 // ✅ SECURITY: Password requirements
 const MIN_PASSWORD_LENGTH = 8;
@@ -38,15 +39,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<any>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   // PERFORMANCE: Use React Query hook for profile data
   // This replaces manual state management and provides automatic caching
-  const { 
-    data: user, 
+  const {
+    data: user,
     isLoading: profileLoading,
-    refetch: refetchProfile 
+    refetch: refetchProfile
   } = useUserProfile(session?.user?.id, session?.user?.email);
-  
+
   const refreshProfile = useRefreshProfile();
 
   // Combined loading state: auth loading OR profile loading
@@ -110,13 +112,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password
       });
 
       if (error) {
         return { error };
+      }
+
+      // ✅ FIX: Invalidate all caches on login to ensure fresh data
+      // This prevents showing stale quiz_completed status
+      if (data?.user?.id) {
+        queryClient.invalidateQueries({ queryKey: ['user-profile', data.user.id] });
+        queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
       }
 
       return { error: null };

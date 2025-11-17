@@ -29,7 +29,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
   const withinTTL = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000; // 2 minutes
 
-  // Clear sessionStorage if quiz is confirmed completed
+  // ✅ FIX: Clear sessionStorage if quiz is confirmed completed in database
   if (user.quiz_completed && quizCompletedAt > 0) {
     sessionStorage.removeItem('quizJustCompletedAt');
   }
@@ -38,11 +38,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   console.debug('[ProtectedRoute]', {
     path: location.pathname,
     quiz_completed: user.quiz_completed,
+    quiz_in_progress: user.quiz_in_progress,
     justCompleted,
     withinTTL,
     isQuizRoute
   });
-  
+
+  // ✅ FIX: More strict check - redirect to quiz ONLY if definitely not completed
+  // This prevents false positives from stale cache
   if (!isQuizRoute && !user.quiz_completed && !justCompleted && !withinTTL) {
     return <Navigate to="/quiz" replace />;
   }

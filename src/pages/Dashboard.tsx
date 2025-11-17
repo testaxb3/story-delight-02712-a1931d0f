@@ -93,14 +93,14 @@ export default function Dashboard() {
     const quizInProgress = user?.quiz_in_progress;
     const quizCompleted = user?.quiz_completed;
 
-    // Only show onboarding if quiz is NOT completed and NOT in progress
-    // If quiz is completed but no children exist, that's a data issue we'll handle elsewhere
-    if (!quizCompleted && !quizInProgress && onboardingRequired) {
+    // ✅ FIX: Simplified logic - only check quiz_completed from database
+    // Don't rely on onboardingRequired to avoid race conditions with child_profiles loading
+    if (!quizCompleted && !quizInProgress) {
       setShowOnboardingModal(true);
     } else {
       setShowOnboardingModal(false);
     }
-  }, [onboardingRequired, user]);
+  }, [user]);
 
   const loadVideos = useCallback(async () => {
     setLoadingVideos(true);
