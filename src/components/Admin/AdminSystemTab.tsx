@@ -239,15 +239,13 @@ export function AdminSystemTab() {
             Force all users to update the PWA app, clearing cache and loading the latest version.
             <br />
             <br />
-            <span className="text-destructive font-semibold">⚠️ CRITICAL PROCESS - Follow these steps IN ORDER:</span>
-            <ol className="list-decimal list-inside mt-2 space-y-1 text-sm">
-              <li>Update <code className="text-xs bg-muted px-1 py-0.5 rounded">src/config/version.ts</code> with the new build number</li>
-              <li>Deploy the frontend (click "Update" in Publish dialog)</li>
-              <li>Wait for deployment to complete (~2-3 minutes)</li>
-              <li>THEN click "Force Global Update" below</li>
-            </ol>
+            <span className="text-green-600 dark:text-green-400 font-semibold">✅ Simplified Process:</span>
+            <p className="mt-2 text-sm">
+              Just click "Force Global Update" below. The system now manages versions entirely in the database - 
+              no need to manually update code files or deploy!
+            </p>
             <p className="mt-2 text-xs text-muted-foreground">
-              If you force update BEFORE deploying, users won't get infinite loops but will see the prompt again on the next force update.
+              All users will see an update prompt on their next app visit and will automatically reload to the latest version.
             </p>
           </CardDescription>
         </CardHeader>
