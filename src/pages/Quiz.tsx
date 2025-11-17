@@ -256,8 +256,9 @@ export default function Quiz() {
 
         toast.success('Profile created successfully!');
 
-        // Step 8: Navigate (now data is guaranteed fresh)
-        navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
+        // Step 8: Navigate to root dashboard (now data is guaranteed fresh)
+        // ✅ FIX: Use '/' instead of '/dashboard' (route was consolidated)
+        navigate('/', { replace: true, state: { quizJustCompleted: true } });
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
         toast.error('An error occurred. Please try again.');
@@ -267,7 +268,8 @@ export default function Quiz() {
     } else {
       // Set sessionStorage even without profileId
       sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-      navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
+      // ✅ FIX: Use '/' instead of '/dashboard' (route was consolidated)
+      navigate('/', { replace: true, state: { quizJustCompleted: true } });
     }
   };
 
