@@ -41,38 +41,56 @@ export function VideosForm() {
 
     setFetchingThumbnail(true);
     try {
+      // Get thumbnail
       const thumbnailUrl = getYouTubeThumbnail(formData.video_url, 'maxres');
       
       if (!thumbnailUrl) {
         toast.error("Could not extract video ID from URL");
+        setFetchingThumbnail(false);
         return;
       }
 
-      // Verify thumbnail exists
-      const response = await fetch(thumbnailUrl, { method: 'HEAD' });
-      if (response.ok) {
-        setFormData({ ...formData, thumbnail_url: thumbnailUrl });
-        toast.success("Thumbnail fetched successfully");
-      } else {
-        // Fallback to HQ thumbnail
-        const hqThumbnail = getYouTubeThumbnail(formData.video_url, 'hq');
-        if (hqThumbnail) {
-          setFormData({ ...formData, thumbnail_url: hqThumbnail });
-          toast.success("Thumbnail fetched successfully (HQ quality)");
+      // Fetch video info using YouTube oEmbed API (no API key needed)
+      try {
+        const oEmbedUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(formData.video_url)}&format=json`;
+        const response = await fetch(oEmbedUrl);
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          setFormData({
+            ...formData,
+            thumbnail_url: thumbnailUrl,
+            title: formData.title || data.title || "", // Only set if empty
+            creator_name: data.author_name || "",
+            original_url: formData.video_url, // Auto-fill original URL
+          });
+          
+          toast.success("Video information fetched successfully! Please verify the license manually.", {
+            duration: 5000,
+          });
         } else {
-          toast.error("Could not fetch thumbnail");
+          // Fallback: just set thumbnail
+          setFormData({ 
+            ...formData, 
+            thumbnail_url: thumbnailUrl,
+            original_url: formData.video_url,
+          });
+          toast.success("Thumbnail fetched. Please fill in creator information manually.");
         }
+      } catch (error) {
+        console.error('Error fetching video info:', error);
+        // Fallback: just set thumbnail
+        setFormData({ 
+          ...formData, 
+          thumbnail_url: thumbnailUrl,
+          original_url: formData.video_url,
+        });
+        toast.success("Thumbnail fetched. Please fill in creator information manually.");
       }
     } catch (error) {
-      console.error('Error fetching thumbnail:', error);
-      // Try fallback anyway
-      const hqThumbnail = getYouTubeThumbnail(formData.video_url, 'hq');
-      if (hqThumbnail) {
-        setFormData({ ...formData, thumbnail_url: hqThumbnail });
-        toast.success("Thumbnail fetched successfully");
-      } else {
-        toast.error("Could not fetch thumbnail");
-      }
+      console.error('Error in auto-fetch:', error);
+      toast.error("Could not fetch video information");
     } finally {
       setFetchingThumbnail(false);
     }
