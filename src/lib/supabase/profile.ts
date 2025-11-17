@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -84,7 +83,7 @@ const buildProfileUpsertPayload = (
 ): Partial<ProfileRow> & { id: string } => {
   const payload: Partial<ProfileRow> & { id: string } = {
     id: userId,
-    subscription_status: 'premium', // Todos os usuários iniciais são premium
+    // ✅ FIX: Removed auto-premium - let database use default value
   };
 
   const sanitizedChildName = sanitizeString(childName);
@@ -163,7 +162,7 @@ const buildDefaultProfile = (
     email: sanitizeEmail(email),
     is_admin: false,
     name: sanitizeString(parentName),
-    subscription_status: 'premium',
+    premium: false, // ✅ FIX: Default to free tier (not auto-premium)
     quiz_completed: quizCompleted ?? false,
     role: null,
     updated_at: new Date().toISOString(),
