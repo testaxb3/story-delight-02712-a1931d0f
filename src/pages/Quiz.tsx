@@ -208,50 +208,55 @@ export default function Quiz() {
 
     if (user?.profileId) {
       try {
-        // Step 1: Update both profiles and user_progress tables
-        const [profileResult, progressResult] = await Promise.all([
-          supabase
-            .from('profiles')
-            .update({
-              quiz_completed: true,
-              quiz_in_progress: false
-            })
-            .eq('id', user.profileId),
-          supabase
-            .from('user_progress')
-            .update({
-              quiz_completed: true
-            })
-            .eq('user_id', user.profileId)
-        ]);
+        // ✅ FIX: Step 1 - Update database FIRST (profiles table is source of truth)
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            quiz_completed: true,
+            quiz_in_progress: false
+          })
+          .eq('id', user.profileId);
 
-        if (profileResult.error) {
-          logger.error('Failed to update quiz completion (profile):', profileResult.error);
+        if (profileError) {
+          logger.error('Failed to update quiz completion (profile):', profileError);
           toast.error('Failed to save progress. Please try again.');
           setCompletingQuiz(false);
           return;
         }
-        if (progressResult.error) {
-          logger.warn('user_progress update failed; proceeding anyway:', progressResult.error);
-        }
 
-        // Step 2: Optimistically update React Query cache
-        queryClient.setQueryData(['user-profile', user.profileId], (old: any) => 
+        // Step 2: Update user_progress (secondary, can fail)
+        await supabase
+          .from('user_progress')
+          .update({ quiz_completed: true })
+          .eq('user_id', user.profileId)
+          .then(({ error }) => {
+            if (error) logger.warn('user_progress update failed; proceeding anyway:', error);
+          });
+
+        // ✅ FIX: Step 3 - Invalidate ALL related caches immediately
+        queryClient.invalidateQueries({ queryKey: ['user-profile', user.profileId] });
+        queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
+
+        // Step 4: Optimistically update cache while queries refetch
+        queryClient.setQueryData(['user-profile', user.profileId], (old: any) =>
           old ? { ...old, quiz_completed: true, quiz_in_progress: false } : old
         );
 
-        // Step 3: Set sessionStorage flag for 2-minute bypass
+        // Step 5: Set sessionStorage flag for 2-minute bypass
         sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
 
-        // Step 4: Force refresh user data
+        // ✅ FIX: Step 6 - Wait for refresh to complete BEFORE navigating
         await Promise.all([
           refreshChildren(),
           refreshUser()
         ]);
-        
+
+        // ✅ FIX: Step 7 - Small delay to ensure state propagation
+        await new Promise(resolve => setTimeout(resolve, 100));
+
         toast.success('Profile created successfully!');
-        
-        // Step 5: Navigate
+
+        // Step 8: Navigate (now data is guaranteed fresh)
         navigate('/dashboard', { replace: true, state: { quizJustCompleted: true } });
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);

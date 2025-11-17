@@ -91,9 +91,11 @@ export function useUserProfile(userId: string | undefined, email: string | undef
       }
     },
     enabled: !!userId && !!email,
-    staleTime: 5 * 60 * 1000, // 5 minutes - profile data doesn't change often
-    gcTime: 10 * 60 * 1000, // 10 minutes cache
+    staleTime: 30 * 1000, // ✅ FIX: 30 seconds - reduced from 5min to catch quiz completion faster
+    gcTime: 5 * 60 * 1000, // 5 minutes cache - reduced from 10min
     retry: 1,
+    refetchOnMount: true, // ✅ FIX: Always refetch on component mount for fresh data
+    refetchOnWindowFocus: true, // ✅ FIX: Refetch when user returns to tab
   });
 }
 
