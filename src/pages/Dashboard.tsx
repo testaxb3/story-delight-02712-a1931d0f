@@ -35,7 +35,6 @@ import { RecentScriptUsage } from '@/components/Dashboard/RecentScriptUsage';
 import { PersonalizedInsights } from '@/components/Dashboard/PersonalizedInsights';
 import { AnimatedMetricCard } from '@/components/Dashboard/AnimatedMetricCard';
 import { LoadingDashboard } from '@/components/Dashboard/LoadingDashboard';
-import { WelcomeGiftModal } from '@/components/WelcomeGiftModal';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -62,7 +61,6 @@ export default function Dashboard() {
   const [showPWAGuide, setShowPWAGuide] = useState(false);
   const { activeChild, onboardingRequired } = useChildProfiles();
   const [showOnboardingModal, setShowOnboardingModal] = useState(false);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [currentStory, setCurrentStory] = useState<SuccessStory>(getRandomSuccessStory());
 
   // Optimized: Single query for all dashboard stats
@@ -112,33 +110,6 @@ export default function Dashboard() {
     }
   }, [loadingDashboardStats, loadingVideos, loadingProgress, isInitialLoading]);
 
-  // Welcome modal - show on first login after signup
-  useEffect(() => {
-    if (!user?.profileId) return;
-
-    const checkWelcomeModal = async () => {
-      // Check localStorage first (faster)
-      const localStorageShown = localStorage.getItem('welcome_gift_shown');
-      if (localStorageShown === 'true') {
-        return;
-      }
-
-      // Check database
-      const { data } = await supabase
-        .from('profiles')
-        .select('welcome_modal_shown')
-        .eq('id', user.profileId)
-        .single();
-
-      // Show modal if not shown before
-      if (data && !data.welcome_modal_shown) {
-        setShowWelcomeModal(true);
-      }
-    };
-
-    checkWelcomeModal();
-  }, [user?.profileId]);
-
   // Rotate success story every 30 seconds
   useEffect(() => {
     const interval = setInterval(() => {
@@ -151,11 +122,6 @@ export default function Dashboard() {
   // Users can still install PWA from browser menu
   const checkPWAInstall = () => {
     // Disabled - onboarding page handles PWA installation guide
-  };
-
-  const handleWelcomeModalClose = () => {
-    setShowWelcomeModal(false);
-    checkPWAInstall();
   };
 
   const getName = () => {
@@ -430,12 +396,6 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Welcome Gift Modal */}
-      <WelcomeGiftModal 
-        open={showWelcomeModal} 
-        onClose={handleWelcomeModalClose} 
-      />
     </MainLayout>
   );
 }
