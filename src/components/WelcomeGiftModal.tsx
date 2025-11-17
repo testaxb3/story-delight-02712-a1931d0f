@@ -92,7 +92,7 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
         onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogDescription className="sr-only">
-          Welcome gift modal offering lifetime premium access to NEP System
+          Welcome celebration modal for The Obedience Language purchase
         </DialogDescription>
         {/* Sparkles decoration */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -103,73 +103,70 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
         </div>
 
         <div className="relative p-8 sm:p-12 text-center">
-          {/* Gift emoji */}
-          <div className="text-7xl mb-4 animate-bounce">🎁</div>
+          {/* Celebration emoji */}
+          <div className="text-7xl mb-4 animate-bounce">🎉</div>
 
           {/* Heading */}
-          <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-            WELCOME TO NEP SYSTEM!
+          <h1 className="text-4xl sm:text-5xl font-bold mb-2 bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Welcome to The Obedience Language!
           </h1>
-
-          {/* Subheading */}
-          <p className="text-xl font-semibold text-primary mb-4">
-            SPECIAL LAUNCH GIFT
+          
+          <h2 className="text-xl sm:text-2xl font-semibold text-foreground mb-4">
+            Your $47 Investment Just Unlocked Something Incredible
+          </h2>
+          
+          <p className="text-lg text-muted-foreground mb-8 leading-relaxed max-w-xl mx-auto">
+            You've just gained access to the complete <span className="font-bold text-primary">NEP System</span> - a science-backed method that's already helped thousands of parents transform their relationship with their children.
           </p>
 
-          {/* Main announcement */}
-          <div className="mb-4">
-            <p className="text-2xl font-bold mb-2 text-foreground">
-              ✨ Lifetime PREMIUM Access Unlocked!
-            </p>
-            <Badge className="bg-primary text-primary-foreground border-none px-4 py-1 text-sm font-semibold">
-              Value: $297/year
-            </Badge>
+          {/* Benefits list */}
+          <div className="bg-gradient-to-br from-muted/30 to-primary/5 backdrop-blur-sm rounded-2xl p-6 mb-8 text-left space-y-4 border border-primary/10">
+            <h3 className="font-semibold text-lg mb-4 text-center flex items-center justify-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Here's what you just unlocked:
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <span className="text-foreground"><strong>300+ personalized scripts</strong> tailored to your child's brain type</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <span className="text-foreground"><strong>Expert video training library</strong> with step-by-step guidance</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <span className="text-foreground"><strong>Brain Profile Quiz</strong> to discover your child's unique wiring</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <span className="text-foreground"><strong>Exclusive bonuses</strong> including ebooks and tools</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
+                <span className="text-foreground"><strong>Lifetime access</strong> to all future updates and content</span>
+              </div>
+            </div>
           </div>
 
-          {/* Description */}
-          <p className="text-base text-muted-foreground mb-6 max-w-xl mx-auto leading-relaxed">
-            You're among the first to believe in the NEP method. As a thank you, we're unlocking ALL premium content at NO additional cost. Forever! 🚀
-          </p>
-
-          {/* Benefits card */}
-          <div className="bg-muted/30 border border-border/30 rounded-lg p-6 mb-6 text-left max-w-md mx-auto">
-            <h3 className="font-bold text-lg mb-4 text-center text-foreground">What you get:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground">25+ Advanced NEP Scripts</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground">9 Complete Training Videos</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground">8 Premium Exclusive PDFs</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground">Priority WhatsApp Support</span>
-              </li>
-              <li className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-foreground">All Future Updates Included</span>
-              </li>
-            </ul>
-          </div>
+          {/* CTA Badge */}
+          <Badge variant="outline" className="mb-4 px-4 py-2 text-sm border-primary/30 bg-primary/5">
+            <Sparkles className="w-4 h-4 mr-2 text-primary" />
+            Everything is ready for you to start
+          </Badge>
 
           {/* CTA Button */}
-          <Button 
-            size="lg" 
-            className="w-full max-w-md font-semibold text-lg py-6"
+          <Button
             onClick={handleStartTransformation}
+            size="lg"
+            className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-xl hover:shadow-2xl transition-all duration-300"
           >
-            Start My Transformation →
+            <Gift className="w-5 h-5 mr-2" />
+            Start My Transformation Now
           </Button>
 
-          {/* Footer */}
-          <p className="text-xs text-muted-foreground mt-6">
-            This gift is exclusive to our first customers
+          <p className="text-xs text-muted-foreground mt-4">
+            🚀 Your purchase is complete - Let's discover your child's brain type and unlock their personalized strategies!
           </p>
         </div>
       </DialogContent>
