@@ -9,12 +9,14 @@ import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2, Alert
 import { loginSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { useRateLimit } from '@/hooks/useRateLimit';
+import { WelcomeGiftModal } from '@/components/WelcomeGiftModal';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -67,9 +69,8 @@ export default function Auth() {
         }
       } else {
         if (isSignUp) {
-          toast.success('Account created! Please check your email to confirm your account before signing in.', { duration: 8000 });
-          setIsSignUp(false); // Switch to sign-in mode
-          setPassword(''); // Clear password field
+          // Show welcome modal on successful signup
+          setShowWelcomeModal(true);
         } else {
           toast.success('Welcome back!');
           navigate('/', { replace: true });
@@ -80,6 +81,14 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false);
+    // Show success message about email confirmation
+    toast.success('Please check your email to confirm your account before signing in.', { duration: 8000 });
+    setIsSignUp(false); // Switch to sign-in mode
+    setPassword(''); // Clear password field
   };
 
   return (
@@ -403,6 +412,12 @@ export default function Auth() {
           </div>
         )}
       </div>
+
+      {/* Welcome Gift Modal */}
+      <WelcomeGiftModal 
+        open={showWelcomeModal} 
+        onClose={handleWelcomeModalClose} 
+      />
     </div>
   );
 }
