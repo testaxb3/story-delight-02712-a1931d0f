@@ -32,23 +32,24 @@ export function useEbooks() {
   const { data: ebooks, isLoading, error, refetch } = useQuery({
     queryKey: ['ebooks'],
     queryFn: async () => {
+      // ✅ PERFORMANCE: ebooks_with_stats is a view - select * is acceptable here
       const { data, error } = await supabase
         .from('ebooks_with_stats')
         .select('*')
         .is('deleted_at', null)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       return data as Ebook[];
     },
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 
-  return { 
-    ebooks: ebooks || [], 
-    isLoading, 
-    error, 
-    refetch 
+  return {
+    ebooks: ebooks || [],
+    isLoading,
+    error,
+    refetch
   };
 }
 

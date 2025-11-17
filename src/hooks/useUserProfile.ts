@@ -45,9 +45,10 @@ export function useUserProfile(userId: string | undefined, email: string | undef
 
       try {
         // ✅ FIXED: Search by userId (id column) instead of email to avoid 406 error
+        // ✅ PERFORMANCE: Only select needed columns (was selecting all ~22 fields)
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('*')
+          .select('id, name, email, premium, photo_url, quiz_completed, quiz_in_progress')
           .eq('id', userId)
           .single();
 

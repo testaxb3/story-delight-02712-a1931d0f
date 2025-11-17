@@ -31,7 +31,8 @@ export function useNotifications(userId: string | null) {
       try {
         const { data, error } = await supabase
           .from('notifications')
-          .select('*')
+          // ✅ PERFORMANCE: Only select needed columns
+          .select('id, title, message, read, created_at, type')
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
           .limit(50);

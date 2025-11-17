@@ -131,14 +131,6 @@ function AppContent() {
           }
         />
         <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
           path="/community"
           element={
             <ProtectedRoute>
@@ -191,14 +183,6 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <EbookReader />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/feed"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
             </ProtectedRoute>
           }
         />
