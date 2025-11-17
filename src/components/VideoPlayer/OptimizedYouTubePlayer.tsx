@@ -587,7 +587,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
             toggleFullscreen();
           }}
           disabled={isPlaying}
-          className={`absolute top-4 right-4 z-50 w-10 h-10 rounded-lg bg-black/70 backdrop-blur-sm flex items-center justify-center transition-all duration-200 ${
+          className={`absolute top-4 right-4 w-10 h-10 rounded-lg bg-black/70 backdrop-blur-sm flex items-center justify-center transition-all duration-200 ${
             isPlaying
               ? 'opacity-40 cursor-not-allowed'
               : isFullscreen
@@ -595,7 +595,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
               : 'sm:opacity-0 sm:group-hover:opacity-100 opacity-80 hover:bg-black/90'
           }`}
           aria-label={isFullscreen ? (isPlaying ? "Pause to exit fullscreen" : "Exit fullscreen") : "Open in fullscreen"}
-          style={{ pointerEvents: 'auto', touchAction: 'manipulation' }}
+          style={{ pointerEvents: 'auto', touchAction: 'manipulation', zIndex: 9999 }}
         >
           {isFullscreen ? (
             // Exit fullscreen icon (X) - disabled style when playing
@@ -748,37 +748,6 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
     return createPortal(playerContent, document.body);
   }
 
-  // Render player with attribution BELOW the video (outside of the player area)
-  return (
-    <div className="w-full">
-      {playerContent}
-      {attribution?.licenseType && attribution.licenseType !== 'Standard' && (
-        <div className="mt-2 px-2 sm:px-0">
-          <div className="bg-card border border-border rounded-lg px-3 py-2 text-xs sm:text-sm flex flex-col sm:flex-row gap-2 items-start sm:items-center">
-            <Badge variant="outline" className="bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-400/40 font-semibold">
-              📄 {attribution.licenseType}
-            </Badge>
-            {attribution.creatorName && (
-              <span className="text-muted-foreground">
-                by <span className="text-foreground font-medium">{attribution.creatorName}</span>
-              </span>
-            )}
-            {attribution.originalUrl && (
-              <a
-                href={attribution.originalUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="sm:ml-auto underline hover:text-primary transition-colors flex items-center gap-1"
-              >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-                View Original Video
-              </a>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
+  // Render player without attribution (attribution now shown in parent component header)
+  return playerContent;
 };

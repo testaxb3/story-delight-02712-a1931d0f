@@ -461,11 +461,39 @@ export default function Videos() {
 
               <div className="p-2 sm:p-3 md:p-4 bg-gradient-to-r from-card/95 via-card/90 to-card/95 backdrop-blur-xl border-t border-border">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0 mb-2 sm:mb-3">
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
-                    <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
-                    <span>{Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}</span>
-                    <span>/</span>
-                    <span>{Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}</span>
+                  {/* Time Display and CC Attribution */}
+                  <div className="flex items-center gap-2 sm:gap-4 flex-wrap text-xs sm:text-sm text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Clock className="h-3 w-3 sm:h-4 sm:w-4" />
+                      <span>{Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')}</span>
+                      <span>/</span>
+                      <span>{Math.floor(videoDuration / 60)}:{String(Math.floor(videoDuration % 60)).padStart(2, '0')}</span>
+                    </div>
+                    
+                    {/* CC Attribution - Compact */}
+                    {playingVideo?.license_type && playingVideo.license_type !== 'Standard' && (
+                      <div className="flex items-center gap-1.5 text-[10px] sm:text-xs">
+                        <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border border-yellow-400/40 rounded font-medium">
+                          {playingVideo.license_type}
+                        </span>
+                        {playingVideo.creator_name && (
+                          <span className="text-muted-foreground">
+                            by <span className="text-foreground font-medium">{playingVideo.creator_name}</span>
+                          </span>
+                        )}
+                        {playingVideo.original_url && (
+                          <a
+                            href={playingVideo.original_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline hover:text-primary transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            Original
+                          </a>
+                        )}
+                      </div>
+                    )}
                   </div>
                   
                   <div className="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto">
