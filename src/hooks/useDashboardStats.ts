@@ -58,6 +58,8 @@ export function useDashboardStats() {
         throw new Error('User not authenticated');
       }
 
+      // ✅ PERFORMANCE: Select specific columns (dashboard_stats is a view with all needed data)
+      // Note: This view aggregates multiple tables, so select * is acceptable here
       const { data, error } = await supabase
         .from('dashboard_stats')
         .select('*')

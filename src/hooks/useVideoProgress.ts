@@ -24,9 +24,10 @@ export function useVideoProgress() {
     }
 
     try {
+      // ✅ PERFORMANCE: Only select needed columns
       const { data, error } = await supabase
         .from('video_progress')
-        .select('*')
+        .select('video_id, progress_seconds, total_duration_seconds, completed, last_watched_at')
         .eq('user_id', user.id);
 
       if (error) throw error;
