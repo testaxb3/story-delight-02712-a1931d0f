@@ -139,7 +139,7 @@ export default function Auth() {
           {/* Animated Glow Border */}
           <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-700" />
           
-          <div className="relative bg-card/95 backdrop-blur-2xl rounded-3xl border border-border p-5 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-xl">
+          <div className="relative bg-card/95 backdrop-blur-2xl rounded-3xl border border-border p-4 sm:p-5 md:p-6 space-y-4 sm:space-y-5 shadow-xl">
             {/* Premium Header */}
             <div className="text-center space-y-3 sm:space-y-4">
               <div className="inline-flex items-center justify-center w-16 h-16 sm:w-18 sm:h-18 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-primary/10 to-accent/10 backdrop-blur-xl mb-3 sm:mb-4 shadow-lg animate-float">
@@ -159,16 +159,15 @@ export default function Auth() {
 
             {/* Important Notice for Sign Up */}
             {isSignUp && (
-              <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 backdrop-blur-sm">
-                <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <div className="text-sm">
-                    <p className="font-semibold text-foreground mb-1">
-                      ⚠️ Important: Use Your Purchase Email
+              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 backdrop-blur-sm">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                  <div className="text-xs">
+                    <p className="font-semibold text-foreground mb-0.5">
+                      ⚠️ Use Your Purchase Email
                     </p>
                     <p className="text-muted-foreground">
-                      You must use <strong>the same email</strong> you used to purchase NEP System access. 
-                      Only approved buyer emails can create accounts.
+                      Use <strong>the same email</strong> from your NEP System purchase.
                     </p>
                   </div>
                 </div>
@@ -176,7 +175,7 @@ export default function Auth() {
             )}
 
             {/* Premium Form */}
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Mail className="w-4 h-4 text-primary" />
@@ -224,7 +223,7 @@ export default function Auth() {
               <Button
                 type="submit"
                 disabled={loading}
-                className="group relative w-full h-14 text-base font-bold bg-gradient-to-r from-primary via-accent to-primary hover:shadow-2xl hover:shadow-primary/50 transition-all duration-500 overflow-hidden animate-gradient bg-[length:200%_auto]"
+                className="group relative w-full h-11 text-base font-bold bg-gradient-to-r from-primary via-accent to-primary hover:shadow-2xl hover:shadow-primary/50 transition-all duration-500 overflow-hidden animate-gradient bg-[length:200%_auto]"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-accent/50 to-primary/50 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
                 
@@ -266,15 +265,15 @@ export default function Auth() {
               
               {/* Purchase Link for New Users */}
               {isSignUp && (
-                <div className="mt-6 pt-6 border-t border-border/50">
-                  <p className="text-xs text-muted-foreground mb-3 text-center">
+                <div className="mt-4 pt-4 border-t border-border/50">
+                  <p className="text-xs text-muted-foreground mb-2 text-center">
                     Haven't purchased access yet?
                   </p>
                   <a
                     href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 w-full justify-center"
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 hover:from-primary/20 hover:to-accent/20 border border-primary/20 hover:border-primary/40 transition-all duration-300 w-full justify-center"
                   >
                     <ShoppingCart className="h-4 w-4 text-primary" />
                     <span className="text-sm font-medium text-foreground">
@@ -287,47 +286,35 @@ export default function Auth() {
 
             {/* Premium Benefits - only shown on sign up */}
             {isSignUp && (
-              <div className="pt-6 border-t border-border">
-                <p className="text-xs sm:text-sm font-semibold text-center mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              <div className="pt-4 border-t border-border">
+                <p className="text-xs font-semibold text-center mb-2 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
                   What you'll get:
                 </p>
-                <div className="grid gap-3">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
-                        <Shield className="w-4 h-4 text-primary" />
+                    <div className="relative flex flex-col items-center gap-1.5 p-2 rounded-lg bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
+                        <Shield className="w-3.5 h-3.5 text-primary" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Safe & Secure</p>
-                        <p className="text-[11px] sm:text-xs text-muted-foreground">Your data is encrypted and protected</p>
-                      </div>
+                      <p className="text-[10px] font-semibold text-foreground text-center">Safe & Secure</p>
                     </div>
                   </div>
 
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/5 to-primary/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-accent/15 to-accent/10">
-                        <Zap className="w-4 h-4 text-accent" />
+                    <div className="relative flex flex-col items-center gap-1.5 p-2 rounded-lg bg-accent/5 border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                      <div className="p-1.5 rounded-lg bg-gradient-to-br from-accent/15 to-accent/10">
+                        <Zap className="w-3.5 h-3.5 text-accent" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Instant Access</p>
-                        <p className="text-[11px] sm:text-xs text-muted-foreground">Start using all features immediately</p>
-                      </div>
+                      <p className="text-[10px] font-semibold text-foreground text-center">Instant Access</p>
                     </div>
                   </div>
 
                   <div className="group relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-                    <div className="relative flex items-start gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="p-2 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
-                        <DollarSign className="w-4 h-4 text-primary" />
+                    <div className="relative flex flex-col items-center gap-1.5 p-2 rounded-lg bg-primary/5 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                      <div className="p-1.5 rounded-lg bg-gradient-to-br from-primary/15 to-primary/10">
+                        <DollarSign className="w-3.5 h-3.5 text-primary" />
                       </div>
-                      <div className="flex-1">
-                        <p className="text-xs sm:text-sm font-semibold text-foreground mb-0.5">Full Access</p>
-                        <p className="text-[11px] sm:text-xs text-muted-foreground">Access all premium scripts and videos</p>
-                      </div>
+                      <p className="text-[10px] font-semibold text-foreground text-center">Full Access</p>
                     </div>
                   </div>
                 </div>
@@ -338,14 +325,14 @@ export default function Auth() {
 
 
         {/* Premium Info Banner */}
-        <div className="mt-8 group relative overflow-hidden">
+        <div className="mt-4 group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-muted/50 to-primary/5 opacity-0 group-hover:opacity-100 blur transition-opacity duration-500" />
-          <div className="relative flex items-start gap-4 p-5 rounded-2xl bg-muted/30 border border-border backdrop-blur-xl">
-            <div className="p-2 rounded-lg bg-muted/50">
-              <Info className="w-5 h-5 text-muted-foreground" />
+          <div className="relative flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border backdrop-blur-xl">
+            <div className="p-1.5 rounded-lg bg-muted/50">
+              <Info className="w-4 h-4 text-muted-foreground" />
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              By signing up, you agree to our Terms of Service and Privacy Policy. We'll never share your data with third parties.
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              By signing up, you agree to our Terms of Service and Privacy Policy.
             </p>
           </div>
         </div>
