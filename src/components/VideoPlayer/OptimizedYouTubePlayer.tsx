@@ -408,10 +408,10 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   useEffect(() => {
     return () => {
       if (currentProgressRef.current > 0 && duration > 0) {
-        updateProgress(videoId, Math.floor(currentProgressRef.current), Math.floor(duration));
+        updateProgressRef.current(videoId, Math.floor(currentProgressRef.current), Math.floor(duration));
       }
     };
-  }, [videoId, duration, updateProgress]);
+  }, [videoId, duration]);
 
   // Handle player errors
   const handleError = (error: any) => {

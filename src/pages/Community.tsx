@@ -36,7 +36,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-type CommunityPost = typeof mockCommunityPosts[number];
+type CommunityPost = {
+  id: string;
+  author: string;
+  initials: string;
+  dayNumber: number;
+  brainType: string;
+  role: string;
+  content: string;
+  timestamp: string;
+  likesCount: number;
+  commentsCount: number;
+  imageUrl: string | null;
+  imageThumbnailUrl?: string | null;
+  isSpotlight: boolean;
+  userHasLiked: boolean;
+  userId: string | null;
+  photoUrl?: string | null;
+  post_type?: string | null;
+};
 
 type SupabasePost = {
   id: string;
@@ -368,7 +386,10 @@ function CommunityContent() {
       }
 
       const newCommunityPost = buildCommunityPost(
-        data as SupabasePost,
+        {
+          ...data,
+          profiles: Array.isArray(data.profiles) ? data.profiles[0] : data.profiles
+        } as SupabasePost,
         0,
         false,
         currentBrain,
