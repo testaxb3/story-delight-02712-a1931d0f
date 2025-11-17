@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +15,13 @@ interface WelcomeGiftModalProps {
 
 export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isClosing, setIsClosing] = useState(false);
+
+  // Debug: Log when modal opens/closes
+  useEffect(() => {
+    console.log('🔍 WelcomeGiftModal open state changed:', open);
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -79,8 +86,9 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
     // Close with animation
     setIsClosing(true);
     setTimeout(() => {
-      console.log('🎁 Welcome modal fully closed, calling onClose callback');
+      console.log('🎁 Welcome modal fully closed, navigating to quiz');
       onClose();
+      navigate('/quiz');
     }, 500);
   };
 
