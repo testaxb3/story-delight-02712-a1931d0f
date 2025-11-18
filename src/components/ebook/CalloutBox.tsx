@@ -91,11 +91,6 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
   const config = calloutConfig[type];
   const Icon = config.icon;
 
-  // Split content into title and body (first paragraph before double newline is title)
-  const parts = content.split('\n\n');
-  const title = parts.length > 1 ? parts[0].trim() : null;
-  const bodyContent = parts.length > 1 ? parts.slice(1).join('\n\n') : content;
-
   return (
     <div className={`my-8 p-8 rounded-2xl border-2 smooth-transition backdrop-blur-sm ${config.className}`}>
       <div className="flex gap-5">
@@ -108,21 +103,11 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
             {config.title}
           </Badge>
 
-          {title && (
-            <div className="font-semibold text-lg text-foreground">
-              {renderContent(title)}
-            </div>
-          )}
-
           <div className="space-y-3 font-body text-base">
-            {bodyContent.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
-              <div key={paraIndex} className="space-y-1.5">
-                {paragraph.split('\n').filter(line => line.trim()).map((line, lineIndex) => (
-                  <p key={lineIndex} className="text-foreground leading-relaxed m-0">
-                    {renderContent(line)}
-                  </p>
-                ))}
-              </div>
+            {content.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
+              <p key={paraIndex} className="text-foreground leading-relaxed">
+                {renderContent(paragraph)}
+              </p>
             ))}
           </div>
         </div>
