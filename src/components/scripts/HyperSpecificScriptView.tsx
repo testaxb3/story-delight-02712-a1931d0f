@@ -313,7 +313,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                       {/* Step Explanation - Simple and Clean */}
                       <div className="prose prose-slate dark:prose-invert max-w-none">
                         <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
-                          {step.step_explanation}
+                          {renderMarkdown(step.step_explanation)}
                         </p>
                       </div>
 
