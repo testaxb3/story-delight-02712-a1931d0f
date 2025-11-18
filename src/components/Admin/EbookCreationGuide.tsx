@@ -1,27 +1,19 @@
 import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { 
-  Copy, 
-  Check, 
   FileText, 
   Pen, 
   BookOpen, 
   CheckCircle2, 
   Rocket,
-  ExternalLink,
-  AlertCircle
+  Sparkles,
+  Brain,
+  MessageSquare,
+  CheckSquare,
+  ListChecks
 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import {
   ebookCategories,
   profileTypes,
@@ -34,51 +26,36 @@ import {
   writingExamples,
   calloutGuidelines,
   qualityChecklist,
-  templateStructure
+  templateStructure,
+  readerV2JsonFormat,
+  readerV2Standards
 } from '@/data/writingExamples';
 
 export function EbookCreationGuide() {
-  const [selectedCategory, setSelectedCategory] = useState<EbookCategory>('rotinas');
+  const [selectedCategory, setSelectedCategory] = useState<EbookCategory>('routines');
   const [selectedProfile, setSelectedProfile] = useState<ProfileType>('universal');
-  const [copied, setCopied] = useState(false);
-  const { toast } = useToast();
 
-  const handleCopyPrompt = () => {
-    const prompts = getPromptsByCategory(selectedCategory);
-    const selectedPrompt = prompts.find(p => p.profile === selectedProfile);
-    
-    if (selectedPrompt) {
-      navigator.clipboard.writeText(selectedPrompt.prompt);
-      setCopied(true);
-      toast({
-        title: "Prompt copiado!",
-        description: "Cole no Claude AI para gerar seu ebook.",
-      });
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const prompts = getPromptsByCategory(selectedCategory);
-  const selectedPrompt = prompts.find(p => p.profile === selectedProfile);
+  const availableEbooks = getPromptsByCategory(selectedCategory);
+  const selectedEbook = availableEbooks.find(e => e.profile === selectedProfile);
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h2 className="text-3xl font-bold">📘 Guia de Criação de Ebooks NEP</h2>
+        <h2 className="text-3xl font-bold">📘 NEP Ebook Creation Guide</h2>
         <p className="text-muted-foreground">
-          Sistema completo com prompts otimizados, referências de escrita e templates para criar ebooks de alta qualidade usando Claude AI
+          Complete visual reference with categories, profiles, writing standards, and Reader V2 format guidelines
         </p>
       </div>
 
-      <Tabs defaultValue="prompts" className="w-full">
+      <Tabs defaultValue="reference" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="prompts" className="flex items-center gap-2">
-            <FileText className="w-4 h-4" />
-            <span className="hidden sm:inline">Prompts</span>
+          <TabsTrigger value="reference" className="flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            <span className="hidden sm:inline">Reference</span>
           </TabsTrigger>
           <TabsTrigger value="writing" className="flex items-center gap-2">
             <Pen className="w-4 h-4" />
-            <span className="hidden sm:inline">Escrita</span>
+            <span className="hidden sm:inline">Writing</span>
           </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <BookOpen className="w-4 h-4" />
@@ -90,382 +67,480 @@ export function EbookCreationGuide() {
           </TabsTrigger>
           <TabsTrigger value="howto" className="flex items-center gap-2">
             <Rocket className="w-4 h-4" />
-            <span className="hidden sm:inline">Como Usar</span>
+            <span className="hidden sm:inline">How to Use</span>
           </TabsTrigger>
         </TabsList>
 
-        {/* ABA 1: PROMPTS PRONTOS */}
-        <TabsContent value="prompts" className="space-y-4">
-          <Card className="p-6 space-y-4">
+        {/* TAB 1: QUICK REFERENCE */}
+        <TabsContent value="reference" className="space-y-4">
+          <Card className="p-6 space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-2">📝 Prompts Prontos para Claude AI</h3>
+              <h3 className="text-2xl font-bold mb-2">🎯 Quick Creation Reference</h3>
               <p className="text-sm text-muted-foreground">
-                Selecione o tipo de ebook e o profile para gerar um prompt otimizado
+                Browse available categories and child profiles, then request creation in chat
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Categoria do Ebook</label>
-                <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as EbookCategory)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(ebookCategories).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Profile da Criança</label>
-                <Select value={selectedProfile} onValueChange={(v) => setSelectedProfile(v as ProfileType)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(profileTypes).map(([key, label]) => (
-                      <SelectItem key={key} value={key}>{label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Available Categories */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                Available Categories
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Object.entries(ebookCategories).map(([key, label]) => (
+                  <Card 
+                    key={key}
+                    className={`p-4 cursor-pointer transition-all hover:border-primary ${
+                      selectedCategory === key ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    onClick={() => setSelectedCategory(key as EbookCategory)}
+                  >
+                    <div className="font-medium">{label}</div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      {getPromptsByCategory(key as EbookCategory).length} ebook(s) available
+                    </div>
+                  </Card>
+                ))}
               </div>
             </div>
 
-            {selectedPrompt && (
+            {/* Child Profiles */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <Brain className="w-5 h-5" />
+                Child Profiles
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {Object.entries(profileTypes).map(([key, label]) => (
+                  <Card
+                    key={key}
+                    className={`p-4 cursor-pointer transition-all hover:border-primary ${
+                      selectedProfile === key ? 'border-primary bg-primary/5' : ''
+                    }`}
+                    onClick={() => setSelectedProfile(key as ProfileType)}
+                  >
+                    <Badge variant={key === 'universal' ? 'default' : 'outline'} className="mb-2">
+                      {key.toUpperCase()}
+                    </Badge>
+                    <div className="text-sm">{label}</div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Selected Ebook Preview */}
+            {selectedEbook && (
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-medium">{selectedPrompt.title}</h4>
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleCopyPrompt}
-                      variant="outline"
-                      size="sm"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Copiado!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copiar Prompt
-                        </>
-                      )}
-                    </Button>
-                    <Button
-                      onClick={() => window.open('https://claude.ai', '_blank')}
-                      size="sm"
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      Abrir Claude AI
-                    </Button>
+                <h4 className="text-lg font-semibold flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Selected Ebook Preview
+                </h4>
+                <Card className="p-4 bg-primary/5 border-primary">
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h5 className="font-semibold">{selectedEbook.title}</h5>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {selectedEbook.description}
+                        </p>
+                      </div>
+                      <Badge>{selectedProfile.toUpperCase()}</Badge>
+                    </div>
                   </div>
-                </div>
-
-                <Textarea
-                  value={selectedPrompt.prompt}
-                  readOnly
-                  className="font-mono text-xs h-96"
-                />
-
-                <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-                  <p className="text-sm">
-                    <strong>💡 Como usar:</strong> Copie este prompt, cole no Claude AI, e adicione detalhes específicos do seu ebook. 
-                    O Claude vai gerar o conteúdo completo seguindo o padrão NEP.
-                  </p>
-                </div>
+                </Card>
               </div>
             )}
+
+            {/* How to Request in Chat */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <MessageSquare className="w-5 h-5" />
+                How to Request in Chat
+              </h4>
+              <Card className="p-6 bg-gradient-to-br from-primary/10 to-primary/5 border-primary">
+                <div className="space-y-4">
+                  <p className="text-sm font-medium">
+                    💬 After selecting your category and profile above, go to chat and say:
+                  </p>
+                  <div className="bg-background rounded-lg p-4 border-2 border-primary/20">
+                    <code className="text-sm font-mono">
+                      "Create ebook: <span className="text-primary font-bold">{selectedCategory}</span> for <span className="text-primary font-bold">{selectedProfile.toUpperCase()}</span> profile"
+                    </code>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Example: "Create ebook: routines for INTENSE profile"
+                  </p>
+                  <div className="pt-2 border-t">
+                    <p className="text-xs text-muted-foreground">
+                      ✅ Lovable AI will create the ebook using Reader V2 format<br/>
+                      ✅ Review and request adjustments as needed<br/>
+                      ✅ Ebook will automatically appear on bonuses page
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Current Ebooks Status */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <CheckSquare className="w-5 h-5" />
+                Existing Ebooks Status
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <Card className="p-4">
+                  <Badge className="mb-2">✅ Created</Badge>
+                  <div className="text-sm font-medium">35 Strategies to Get Your Child Off Screens V2</div>
+                  <div className="text-xs text-muted-foreground">screen-time / universal</div>
+                </Card>
+                <Card className="p-4">
+                  <Badge className="mb-2">✅ Created</Badge>
+                  <div className="text-sm font-medium">The Meltdown Decoder V2</div>
+                  <div className="text-xs text-muted-foreground">behavior / universal</div>
+                </Card>
+                <Card className="p-4 opacity-50">
+                  <Badge variant="outline" className="mb-2">⭐ Planned</Badge>
+                  <div className="text-sm font-medium">More ebooks coming soon...</div>
+                  <div className="text-xs text-muted-foreground">Request in chat</div>
+                </Card>
+              </div>
+            </div>
           </Card>
         </TabsContent>
 
-        {/* ABA 2: REFERÊNCIAS DE ESCRITA */}
+        {/* TAB 2: WRITING STANDARDS */}
         <TabsContent value="writing" className="space-y-4">
           <Card className="p-6 space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-2">✍️ Referências de Escrita NEP</h3>
+              <h3 className="text-2xl font-bold mb-2">✍️ Writing Standards</h3>
               <p className="text-sm text-muted-foreground">
-                Tom, voz e estilo para criar conteúdo que soa REAL (não IA)
+                Guidelines for writing conversational, high-value ebook content
               </p>
             </div>
 
-            {/* DO's and DON'Ts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-3">
-                <h4 className="font-semibold text-green-600 dark:text-green-400">✅ FAÇA</h4>
-                <ul className="space-y-2">
-                  {writingGuidelines.do.map((item, i) => (
-                    <li key={i} className="text-sm flex items-start gap-2">
-                      <Check className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Do's */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold text-green-600 dark:text-green-400">✅ DO</h4>
+              <ul className="space-y-2">
+                {writingGuidelines.do.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-              <div className="space-y-3">
-                <h4 className="font-semibold text-red-600 dark:text-red-400">❌ NÃO FAÇA</h4>
-                <ul className="space-y-2">
-                  {writingGuidelines.dont.map((item, i) => (
-                    <li key={i} className="text-sm flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {/* Don'ts */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold text-red-600 dark:text-red-400">❌ DON'T</h4>
+              <ul className="space-y-2">
+                {writingGuidelines.dont.map((item, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0">✗</span>
+                    <span className="text-sm">{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
 
             {/* AI Phrases to Avoid */}
-            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <h4 className="font-semibold mb-3 text-red-800 dark:text-red-300">
-                🚨 Frases de IA para EVITAR
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold text-orange-600 dark:text-orange-400">
+                🚫 AI Phrases to AVOID
               </h4>
-              <p className="text-sm text-red-700 dark:text-red-400 mb-2">
-                Se qualquer frase abaixo aparece no seu ebook, REESCREVA:
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {writingGuidelines.aiPhrases.map((phrase, i) => (
-                  <div key={i} className="text-sm font-mono bg-red-100 dark:bg-red-900/30 px-3 py-1 rounded">
-                    {phrase}
-                  </div>
-                ))}
+              <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {writingGuidelines.aiPhrases.map((phrase, i) => (
+                    <div key={i} className="text-sm text-orange-900 dark:text-orange-200">
+                      {phrase}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
             {/* Writing Examples */}
             <div className="space-y-4">
-              <h4 className="font-semibold">📚 Exemplos: BOM vs RUIM</h4>
+              <h4 className="text-lg font-semibold">📝 Before & After Examples</h4>
               {writingExamples.map((example, i) => (
-                <div key={i} className="border rounded-lg p-4 space-y-3">
-                  <h5 className="font-medium">{example.title}</h5>
+                <Card key={i} className="p-4">
+                  <h5 className="font-semibold mb-3">{example.title}</h5>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded p-3">
-                      <p className="text-xs font-semibold text-red-800 dark:text-red-300 mb-1">❌ RUIM (genérico/IA):</p>
-                      <p className="text-sm text-foreground/80 italic">{example.bad}</p>
+                      <div className="text-xs font-semibold text-red-600 dark:text-red-400 mb-1">❌ BAD</div>
+                      <p className="text-sm">{example.bad}</p>
                     </div>
-
+                    
                     <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded p-3">
-                      <p className="text-xs font-semibold text-green-800 dark:text-green-300 mb-1">✅ BOM (natural/NEP):</p>
-                      <p className="text-sm text-foreground/80">{example.good}</p>
+                      <div className="text-xs font-semibold text-green-600 dark:text-green-400 mb-1">✅ GOOD</div>
+                      <p className="text-sm whitespace-pre-line">{example.good}</p>
+                    </div>
+                    
+                    <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded p-3">
+                      <div className="text-xs font-semibold text-blue-600 dark:text-blue-400 mb-1">💡 WHY</div>
+                      <p className="text-sm">{example.why}</p>
                     </div>
                   </div>
-
-                  <div className="bg-primary/5 rounded p-3">
-                    <p className="text-xs font-medium text-primary mb-1">💡 Por quê funciona:</p>
-                    <p className="text-sm">{example.why}</p>
-                  </div>
-                </div>
+                </Card>
               ))}
             </div>
 
             {/* Callout Guidelines */}
-            <div className="space-y-3">
-              <h4 className="font-semibold">📌 Como Usar Callouts</h4>
-              <div className="grid gap-3">
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">🎨 Callout Types (Reader V2)</h4>
+              <div className="grid gap-4">
                 {Object.entries(calloutGuidelines).map(([type, guide]) => (
-                  <div key={type} className="border rounded-lg p-3">
-                    <p className="font-medium text-sm mb-1">
-                      [{type.toUpperCase()}] - {guide.when}
-                    </p>
-                    <pre className="text-xs bg-muted p-2 rounded overflow-x-auto">
-                      {guide.example}
-                    </pre>
-                  </div>
+                  <Card key={type} className="p-4">
+                    <Badge className="mb-2">{type.toUpperCase()}</Badge>
+                    <div className="space-y-2">
+                      <p className="text-sm"><span className="font-semibold">When to use:</span> {guide.when}</p>
+                      <div className="bg-muted rounded p-3 text-sm font-mono whitespace-pre-line">
+                        {guide.example}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Reader V2 JSON Format */}
+            <div className="space-y-4">
+              <h4 className="text-lg font-semibold">🔧 Reader V2 JSON Format</h4>
+              
+              <div className="space-y-3">
+                <h5 className="font-medium">Block Types:</h5>
+                {readerV2JsonFormat.blockTypes.map((block, i) => (
+                  <Card key={i} className="p-4">
+                    <Badge variant="outline" className="mb-2">{block.type}</Badge>
+                    <p className="text-sm mb-3">{block.description}</p>
+                    <div className="bg-slate-950 dark:bg-slate-900 rounded p-3 text-sm">
+                      <pre className="text-green-400 overflow-x-auto">
+                        {JSON.stringify(block.example, null, 2)}
+                      </pre>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              <div className="space-y-3">
+                <h5 className="font-medium">Critical Rules:</h5>
+                <Card className="p-4 bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800">
+                  <ul className="space-y-2">
+                    {readerV2JsonFormat.criticalRules.map((rule, i) => (
+                      <li key={i} className="text-sm flex items-start gap-2">
+                        <span className="flex-shrink-0">{rule.startsWith('✅') ? '✅' : '❌'}</span>
+                        <span>{rule.replace(/^[✅❌]\s/, '')}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
+              </div>
+            </div>
+          </Card>
+        </TabsContent>
+
+        {/* TAB 3: TEMPLATES */}
+        <TabsContent value="templates" className="space-y-4">
+          <Card className="p-6 space-y-6">
+            <div>
+              <h3 className="text-2xl font-bold mb-2">📋 Structure Templates</h3>
+              <p className="text-sm text-muted-foreground">
+                Standard chapter structure and formatting guidelines
+              </p>
+            </div>
+
+            {/* Chapter Structure */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold">Chapter Structure Standards</h4>
+              <Card className="p-4 bg-primary/5">
+                <ul className="space-y-2">
+                  {readerV2Standards.chapterStructure.map((item, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                      <span className="text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+
+            {/* Formatting Rules */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold">Formatting Rules</h4>
+              <Card className="p-4">
+                <ul className="space-y-2">
+                  {readerV2Standards.formattingRules.map((rule, i) => (
+                    <li key={i} className="flex items-start gap-2">
+                      <span className="text-primary mt-0.5 flex-shrink-0">→</span>
+                      <span className="text-sm">{rule}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            </div>
+
+            {/* 7-Chapter Template */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold">7-Chapter Template</h4>
+              <div className="space-y-3">
+                {templateStructure.sevenChapter.chapters.map((chapter) => (
+                  <Card key={chapter.number} className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <Badge className="mb-1">Chapter {chapter.number}</Badge>
+                        <h5 className="font-semibold">{chapter.title}</h5>
+                      </div>
+                      <Badge variant="outline">{chapter.wordCount}</Badge>
+                    </div>
+                    <ul className="space-y-1">
+                      {chapter.content.map((item, i) => (
+                        <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                          <span className="mt-0.5">•</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </Card>
                 ))}
               </div>
             </div>
           </Card>
         </TabsContent>
 
-        {/* ABA 3: TEMPLATES */}
-        <TabsContent value="templates" className="space-y-4">
-          <Card className="p-6 space-y-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-2">📚 Templates & Estruturas</h3>
-              <p className="text-sm text-muted-foreground">
-                Estruturas comprovadas para criar ebooks de alto valor
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              <h4 className="font-semibold">{templateStructure.sevenChapter.title}</h4>
-              
-              {templateStructure.sevenChapter.chapters.map((chapter) => (
-                <div key={chapter.number} className="border rounded-lg p-4 space-y-2">
-                  <div className="flex items-start justify-between">
-                    <h5 className="font-medium">
-                      CHAPTER {chapter.number}: {chapter.title}
-                    </h5>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded">
-                      {chapter.wordCount} palavras
-                    </span>
-                  </div>
-                  <p className="text-sm text-muted-foreground">{chapter.content}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-2">
-              <h4 className="font-semibold">💡 Dica de Estrutura</h4>
-              <ul className="text-sm space-y-1 list-disc list-inside">
-                <li>Capítulos 1-2: Problema + Por quê (validação + neurociência)</li>
-                <li>Capítulos 3-4: Solução + Prática (framework + scripts)</li>
-                <li>Capítulos 5-6: Realidade + Exemplos (falhas + sucessos)</li>
-                <li>Capítulo 7: Quick Reference (ferramentas rápidas)</li>
-              </ul>
-            </div>
-          </Card>
-        </TabsContent>
-
-        {/* ABA 4: CHECKLIST */}
+        {/* TAB 4: CHECKLIST */}
         <TabsContent value="checklist" className="space-y-4">
           <Card className="p-6 space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-2">✅ Checklist de Qualidade</h3>
+              <h3 className="text-2xl font-bold mb-2">✅ Quality Checklist</h3>
               <p className="text-sm text-muted-foreground">
-                Valide seu ebook antes de publicar
+                Comprehensive validation checklist for ebook quality
               </p>
             </div>
 
-            {Object.entries(qualityChecklist).map(([section, items]) => (
-              <div key={section} className="space-y-3">
-                <h4 className="font-semibold capitalize">
-                  {section === 'content' && '📝 Conteúdo'}
-                  {section === 'writing' && '✍️ Escrita'}
-                  {section === 'value' && '🧠 Valor'}
-                  {section === 'structure' && '📐 Estrutura'}
-                  {section === 'redFlags' && '🚨 Red Flags'}
+            {Object.entries(qualityChecklist).map(([category, items]) => (
+              <div key={category} className="space-y-3">
+                <h4 className="text-lg font-semibold capitalize flex items-center gap-2">
+                  <ListChecks className="w-5 h-5" />
+                  {category.replace(/([A-Z])/g, ' $1').trim()}
                 </h4>
-                <div className="space-y-2">
-                  {items.map((checkItem: { item: string; critical: boolean }, i: number) => (
-                    <div
-                      key={i}
-                      className={`flex items-start gap-3 p-3 rounded-lg border ${
-                        checkItem.critical
-                          ? 'bg-orange-50 dark:bg-orange-950/20 border-orange-200 dark:border-orange-800'
-                          : 'bg-muted/50'
-                      }`}
-                    >
-                      <input type="checkbox" className="mt-1" />
-                      <span className="text-sm flex-1">
-                        {checkItem.item}
-                        {checkItem.critical && (
-                          <span className="ml-2 text-xs font-semibold text-orange-600 dark:text-orange-400">
-                            [CRÍTICO]
-                          </span>
-                        )}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+                <Card className={`p-4 ${
+                  category === 'redFlags' 
+                    ? 'bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800' 
+                    : category === 'readerV2Compatibility'
+                    ? 'bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800'
+                    : ''
+                }`}>
+                  <ul className="space-y-2">
+                    {items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="flex-shrink-0 mt-0.5">
+                          {category === 'redFlags' ? '❌' : '☐'}
+                        </span>
+                        <span className="text-sm">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </Card>
               </div>
             ))}
-
-            <div className="bg-primary/10 border border-primary rounded-lg p-4">
-              <h4 className="font-semibold mb-2">🎯 Teste Final: "7AM Chaos Test"</h4>
-              <p className="text-sm">
-                Antes de publicar, pergunte: "Se um pai estressado às 7am, atrasado, com criança em meltdown, 
-                consegue abrir esse ebook e USAR algo imediatamente?"
-              </p>
-              <p className="text-sm font-semibold mt-2 text-primary">
-                Se NÃO, REESCREVA até passar no teste.
-              </p>
-            </div>
           </Card>
         </TabsContent>
 
-        {/* ABA 5: COMO USAR */}
+        {/* TAB 5: HOW TO USE */}
         <TabsContent value="howto" className="space-y-4">
           <Card className="p-6 space-y-6">
             <div>
-              <h3 className="text-xl font-semibold mb-2">🚀 Como Usar Este Guia</h3>
+              <h3 className="text-2xl font-bold mb-2">🚀 How to Use This Guide</h3>
               <p className="text-sm text-muted-foreground">
-                Workflow completo de criação de ebooks
+                Step-by-step workflow for creating high-quality ebooks
               </p>
             </div>
 
             <div className="space-y-4">
-              {[
-                {
-                  step: 1,
-                  title: 'Escolha o Tipo de Ebook',
-                  content: 'Vá para aba "Prompts Prontos", selecione categoria (Rotinas, Comportamento, etc.) e profile (INTENSE, DISTRACTED, DEFIANT, Universal)'
-                },
-                {
-                  step: 2,
-                  title: 'Copie o Prompt',
-                  content: 'Clique em "Copiar Prompt Completo". O prompt já está otimizado para Claude AI com todo o contexto necessário.'
-                },
-                {
-                  step: 3,
-                  title: 'Use no Claude AI',
-                  content: 'Abra Claude.ai, cole o prompt copiado, adicione detalhes específicos do ebook que você quer, e deixe o Claude gerar o conteúdo.'
-                },
-                {
-                  step: 4,
-                  title: 'Revise com Checklist',
-                  content: 'Use aba "Checklist de Qualidade" para verificar cada item. Preste atenção especial aos itens marcados como [CRÍTICO].'
-                },
-                {
-                  step: 5,
-                  title: 'Refine a Linguagem',
-                  content: 'Use aba "Referências de Escrita" para comparar exemplos BONS vs RUINS. Ajuste trechos que soam genéricos ou "IA".'
-                },
-                {
-                  step: 6,
-                  title: 'Valide o Formato',
-                  content: 'Certifique-se que usa "## CHAPTER X:" corretamente. Adicione blocos [!NOTE], [!TIP], [!WARNING], [!SCIENCE]. Verifique contagem de palavras (800-1200/capítulo).'
-                },
-                {
-                  step: 7,
-                  title: 'Upload no Admin',
-                  content: 'Vá para Bonuses → Novo Bônus → EBOOK. Faça upload do arquivo .md, revise preview de capítulos, e clique em "Processar e Criar Ebook".'
-                }
-              ].map((item) => (
-                <div key={item.step} className="flex gap-4 p-4 border rounded-lg">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold">
-                    {item.step}
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                    1
                   </div>
-                  <div className="flex-1">
-                    <h5 className="font-semibold mb-1">{item.title}</h5>
-                    <p className="text-sm text-muted-foreground">{item.content}</p>
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Explore Categories & Profiles</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Go to "Reference" tab → Browse categories → Select child profile → Note the combination you want
+                    </p>
                   </div>
                 </div>
-              ))}
+              </Card>
+
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Check Writing Standards</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Review "Writing" tab → Understand Do's/Don'ts → Study before/after examples → Note callout types and Reader V2 format
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Request in Chat</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Go to chat → Say: "Create ebook: [category] for [profile] profile" → Lovable AI will create with Reader V2 format
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                    4
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Review & Refine</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Check "Checklist" tab → Validate quality → Request adjustments in chat → Iterate until perfect
+                    </p>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
+                    5
+                  </div>
+                  <div className="space-y-1">
+                    <h4 className="font-semibold">Publish</h4>
+                    <p className="text-sm text-muted-foreground">
+                      Ebook automatically appears on bonuses page → Create corresponding bonus entry → Link ebook to bonus → Users can access
+                    </p>
+                  </div>
+                </div>
+              </Card>
             </div>
 
-            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 space-y-3">
-              <h4 className="font-semibold">💡 Dicas de Prompting para Claude AI</h4>
-              <div className="space-y-2 text-sm">
-                <p><strong>Seja específico sobre o perfil:</strong> "Criança DEFIANT, 6 anos, recusa rotina matinal"</p>
-                <p><strong>Peça exemplos reais:</strong> "Não use 'João, 5 anos'. Crie exemplo detalhado com contexto real"</p>
-                <p><strong>Solicite revisão de tom:</strong> "Revise para soar menos acadêmico, mais como amigo falando"</p>
-                <p><strong>Itere em partes:</strong> Gere 2-3 capítulos por vez, revise e ajuste tom antes de continuar</p>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-800 rounded-lg p-4">
-              <h4 className="font-semibold mb-2 text-orange-800 dark:text-orange-300">
-                🔄 Prompt de Refinamento
-              </h4>
-              <p className="text-sm text-orange-700 dark:text-orange-400 mb-2">
-                Se o conteúdo ficou genérico, use este prompt no Claude:
-              </p>
-              <pre className="text-xs bg-orange-100 dark:bg-orange-900/30 p-3 rounded overflow-x-auto">
-{`"Revise este capítulo para:
-1. Remover frases de IA ('É importante notar que...', 'Devemos considerar...')
-2. Adicionar exemplos ESPECÍFICOS (detalhes reais, não genéricos)
-3. Usar linguagem conversacional (como amigo experiente falando)
-4. Incluir backup plans realistas
-5. Passar no '7AM Chaos Test' (funciona quando tudo está caótico?)"`}
-              </pre>
-            </div>
+            <Card className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
+              <h4 className="font-semibold mb-2 text-yellow-900 dark:text-yellow-200">💡 Pro Tips</h4>
+              <ul className="space-y-2 text-sm text-yellow-900 dark:text-yellow-200">
+                <li>• Always specify category + profile clearly in your request</li>
+                <li>• Reference this guide when asking for adjustments</li>
+                <li>• Ask for specific sections to be refined (e.g., "Make Chapter 3 more conversational")</li>
+                <li>• Validate Reader V2 format compliance before publishing</li>
+                <li>• Remember: all content must be in English</li>
+              </ul>
+            </Card>
           </Card>
         </TabsContent>
       </Tabs>

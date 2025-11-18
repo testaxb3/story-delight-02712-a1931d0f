@@ -1,7 +1,7 @@
 export type EbookCategory = 
-  | 'rotinas'
-  | 'comportamento'
-  | 'emocoes'
+  | 'routines'
+  | 'behavior'
+  | 'emotions'
   | 'sleep'
   | 'school'
   | 'mealtime'
@@ -14,274 +14,168 @@ export interface PromptTemplate {
   category: EbookCategory;
   profile: ProfileType;
   title: string;
-  prompt: string;
+  description: string;
 }
 
 export const ebookCategories: Record<EbookCategory, string> = {
-  'rotinas': 'Rotinas (Matinais, Noturnas, Transições)',
-  'comportamento': 'Comportamento (Birras, Desafio, Cooperação)',
-  'emocoes': 'Emoções (Regulação, Ansiedade, Frustração)',
-  'sleep': 'Sleep (Hora de Dormir, Resistência)',
-  'school': 'School (Preparação, Lição de Casa)',
-  'mealtime': 'Mealtime (Seletividade, Comportamento)',
-  'screen-time': 'Screen Time (Desligamento, Limites)',
-  'public-behavior': 'Public Behavior (Restaurantes, Lojas)'
+  'routines': 'Routines (Morning, Evening, Transitions)',
+  'behavior': 'Behavior (Tantrums, Defiance, Cooperation)',
+  'emotions': 'Emotions (Regulation, Anxiety, Frustration)',
+  'sleep': 'Sleep (Bedtime, Resistance)',
+  'school': 'School (Preparation, Homework)',
+  'mealtime': 'Mealtime (Selectivity, Behavior)',
+  'screen-time': 'Screen Time (Shutdown, Limits)',
+  'public-behavior': 'Public Behavior (Restaurants, Stores)'
 };
 
 export const profileTypes: Record<ProfileType, string> = {
-  'intense': 'INTENSE Profile',
-  'distracted': 'DISTRACTED Profile',
-  'defiant': 'DEFIANT Profile',
-  'universal': 'Universal (Todos os Perfis)'
+  'intense': 'INTENSE Profile (High emotional reactivity)',
+  'distracted': 'DISTRACTED Profile (Attention challenges)',
+  'defiant': 'DEFIANT Profile (Strong autonomy needs)',
+  'universal': 'Universal (All Profiles)'
 };
 
-const basePromptStructure = `You are Dr. Sarah Mitchell, child psychologist with 15 years treating families. You've worked with 2,000+ families and know the REAL challenges of neurodivergent parenting.
-
-MISSION: Write ULTRA-PRACTICAL ebook about {{TITLE}} that reads like it's written by an EXPERIENCED HUMAN, NOT by AI.
-
-Theme: {{THEME}}
-Profile: {{PROFILE}}
-
-CHAPTERS:
-{{CHAPTERS}}
-
-CRITICAL WRITING RULES:
-
-1. FORBIDDEN LANGUAGE (NEVER use):
-❌ "It's important to note", "It's crucial", "It's essential"
-❌ "Navigate the journey", "Empower", "Valuable tools"
-❌ "Furthermore", "Moreover", "Additionally"
-
-2. EXTREME SPECIFICITY:
-✅ EXACT numbers: "2min30s", "8:15am", "3 breaths"
-✅ Named examples: "Sarah tried...", "Jake, age 4"
-✅ Sensory details: sounds, textures, smells
-✅ Real context: times, places, cultural specifics
-
-3. TONE: Like a consultant having coffee with the family
-- Use contractions: "you're", "can't", "won't"
-- Short sentences (max 20 words)
-- Direct questions: "Know why?"
-- Admit reality: "It's not easy", "It'll fail first"
-
-4. STRUCTURE:
-- Open with specific micro-story (50-100 words)
-- Minimum 3 practical examples per chapter
-- Show what went WRONG before success
-- Scripts with exact timing: "pause 3 seconds"
-- End with tiny action to do TODAY
-
-5. CHECKLIST:
-- [ ] Zero "it's important/crucial/essential"
-- [ ] Minimum 5 specific numbers
-- [ ] 2+ named examples
-- [ ] Included what to do when it DOESN'T work
-- [ ] Sounds like late-night text from friend, not textbook
-
-WRITE THE EBOOK NOW:`;
-
 export const promptTemplates: PromptTemplate[] = [
-  // ROTINAS
+  // ROUTINES
   {
-    category: 'rotinas',
+    category: 'routines',
     profile: 'universal',
-    title: 'Rotinas que Funcionam na Realidade',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "The Morning Routine That Actually Works"]')
-      .replace('{{THEME}}', 'Rotinas Matinais/Noturnas para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Your Routines Keep Failing** (problema real que eles vivem)
-2. **The Science Behind Routine Resistance** (neurociência em 5º grau, não acadêmico)
-3. **The 3-Phase Routine Framework** (estrutura prática)
-4. **Scripts for Each Transition** (frases prontas NEP)
-5. **When It All Falls Apart** (backup plans realistas)
-6. **Success Stories** (exemplos reais, não perfeitos)
-7. **Quick Reference Guide** (cheat sheet visual)`)
+    title: 'Morning Routines That Actually Work',
+    description: 'Practical morning/evening routines for neurodivergent children'
   },
   {
-    category: 'rotinas',
-    profile: 'defiant',
-    title: 'Rotinas para Crianças DEFIANT',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Making Routines Work for Your DEFIANT Child"]')
-      .replace('{{THEME}}', 'Rotinas para Crianças DEFIANT (2-12 anos)')
-      .replace('{{CHAPTERS}}', `1. **Why Power Struggles Destroy Routines** (o problema real do DEFIANT)
-2. **The Autonomy Brain** (neurociência do controle)
-3. **The Choice-Based Routine System** (dar escolhas sem perder estrutura)
-4. **Connection Scripts That Disarm Resistance** (frases NEP específicas)
-5. **Emergency Backup Plans** (quando tudo falha)
-6. **Real DEFIANT Success Stories** (não editados, reais)
-7. **Visual Routine Tools** (charts que funcionam)`)
-  },
-  {
-    category: 'rotinas',
+    category: 'routines',
     profile: 'intense',
-    title: 'Rotinas para Crianças INTENSE',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Calming Routines for INTENSE Kids"]')
-      .replace('{{THEME}}', 'Rotinas para Crianças INTENSE (2-12 anos)')
-      .replace('{{CHAPTERS}}', `1. **Why Transitions Trigger Meltdowns** (o problema INTENSE)
-2. **The Sensory Overload Brain** (neurociência da intensidade)
-3. **The Slow-Transition Routine** (adaptações sensoriais)
-4. **Calming Scripts for Big Feelings** (frases NEP para intensidade)
-5. **Meltdown Recovery Plans** (o que fazer depois)
-6. **INTENSE Success Stories** (exemplos reais)
-7. **Sensory-Friendly Routine Charts** (ferramentas visuais)`)
+    title: 'Routines for INTENSE Children',
+    description: 'Routines adapted for highly sensitive, emotionally reactive children'
   },
   {
-    category: 'rotinas',
+    category: 'routines',
     profile: 'distracted',
-    title: 'Rotinas para Crianças DISTRACTED',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Focus-Friendly Routines for DISTRACTED Kids"]')
-      .replace('{{THEME}}', 'Rotinas para Crianças DISTRACTED (2-12 anos)')
-      .replace('{{CHAPTERS}}', `1. **Why Your Child Can't Stay On Track** (o problema DISTRACTED)
-2. **The Attention-Switching Brain** (neurociência da distração)
-3. **The One-Step-at-a-Time Routine** (chunks gerenciáveis)
-4. **Redirection Scripts That Work** (frases NEP para foco)
-5. **Visual Anchor Systems** (ferramentas de foco)
-6. **DISTRACTED Success Stories** (exemplos reais)
-7. **Step-by-Step Visual Guides** (checklists visuais)`)
-  },
-
-  // COMPORTAMENTO
-  {
-    category: 'comportamento',
-    profile: 'universal',
-    title: 'Comportamento: Além do Gentle Parenting',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "What to Do When Gentle Parenting Fails"]')
-      .replace('{{THEME}}', 'Comportamento Desafiador em Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Gentle Parenting Doesn't Work** (validação do problema)
-2. **The Neurodivergent Behavior Brain** (ciência do comportamento)
-3. **The NEP 3-Step System** (Connection → Validation → Command)
-4. **Scripts for Common Behaviors** (birras, desafio, cooperação)
-5. **When Behaviors Escalate** (backup plans)
-6. **Real Behavior Transformations** (exemplos)
-7. **Quick Behavior Response Guide** (cheat sheet)`)
+    title: 'Routines for DISTRACTED Children',
+    description: 'Routines that work with short attention spans and distractibility'
   },
   {
-    category: 'comportamento',
+    category: 'routines',
     profile: 'defiant',
-    title: 'Defiance: Entendendo o Cérebro DEFIANT',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Understanding the DEFIANT Brain"]')
-      .replace('{{THEME}}', 'Comportamento Desafiador em Crianças DEFIANT')
-      .replace('{{CHAPTERS}}', `1. **It's Not Just Defiance** (o que está realmente acontecendo)
-2. **The Autonomy-Seeking Brain** (neurociência)
-3. **The Choice Framework** (dar poder sem perder autoridade)
-4. **De-escalation Scripts** (frases NEP para desafio)
-5. **Power Struggle Recovery** (quando você já está no meio)
-6. **DEFIANT Wins** (exemplos reais)
-7. **Quick De-escalation Tools** (ferramentas rápidas)`)
+    title: 'Routines for DEFIANT Children',
+    description: 'Power-struggle-free routines for strong-willed children'
   },
-
-  // EMOÇÕES
+  // BEHAVIOR
   {
-    category: 'emocoes',
-    profile: 'intense',
-    title: 'Regulação Emocional para Crianças INTENSE',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Helping Your INTENSE Child Regulate Big Emotions"]')
-      .replace('{{THEME}}', 'Regulação Emocional para Crianças INTENSE')
-      .replace('{{CHAPTERS}}', `1. **When Feelings Are Too Big** (o problema INTENSE)
-2. **The Emotional Intensity Brain** (neurociência das emoções)
-3. **The Co-Regulation System** (você regula primeiro)
-4. **Calming Scripts for Emotional Storms** (frases NEP)
-5. **Emergency Regulation Tools** (quando está explodindo)
-6. **INTENSE Emotion Success Stories** (exemplos)
-7. **Emotion Regulation Toolkit** (ferramentas práticas)`)
+    category: 'behavior',
+    profile: 'universal',
+    title: 'Managing Tantrums and Meltdowns',
+    description: 'Practical strategies for tantrums, defiance, and cooperation'
   },
-
+  {
+    category: 'behavior',
+    profile: 'intense',
+    title: 'Behavior Strategies for INTENSE Children',
+    description: 'Managing emotional outbursts and reactivity'
+  },
+  {
+    category: 'behavior',
+    profile: 'distracted',
+    title: 'Behavior Strategies for DISTRACTED Children',
+    description: 'Managing impulsivity and following through'
+  },
+  {
+    category: 'behavior',
+    profile: 'defiant',
+    title: 'Behavior Strategies for DEFIANT Children',
+    description: 'Ending power struggles and building cooperation'
+  },
+  // EMOTIONS
+  {
+    category: 'emotions',
+    profile: 'universal',
+    title: 'Emotional Regulation for Kids',
+    description: 'Teaching children to understand and manage their emotions'
+  },
+  {
+    category: 'emotions',
+    profile: 'intense',
+    title: 'Emotional Regulation for INTENSE Children',
+    description: 'Co-regulation strategies for emotionally sensitive children'
+  },
+  {
+    category: 'emotions',
+    profile: 'distracted',
+    title: 'Emotional Regulation for DISTRACTED Children',
+    description: 'Quick regulation strategies that hold attention'
+  },
+  {
+    category: 'emotions',
+    profile: 'defiant',
+    title: 'Emotional Regulation for DEFIANT Children',
+    description: 'Regulation without power struggles'
+  },
   // SLEEP
   {
     category: 'sleep',
     profile: 'universal',
-    title: 'Sleep: Hora de Dormir Sem Guerra',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Bedtime Without the Battle"]')
-      .replace('{{THEME}}', 'Hora de Dormir para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Bedtime Is A War Zone** (o problema real)
-2. **The Neurodivergent Sleep Brain** (ciência do sono)
-3. **The Wind-Down System** (rotina que funciona)
-4. **Bedtime Scripts** (frases NEP para sono)
-5. **Resistance & Escape Plans** (quando não querem dormir)
-6. **Sleep Success Stories** (exemplos reais)
-7. **Bedtime Quick Reference** (guia rápido)`)
+    title: 'Bedtime Without Battles',
+    description: 'Sleep strategies for bedtime resistance'
   },
-
+  {
+    category: 'sleep',
+    profile: 'intense',
+    title: 'Sleep Strategies for INTENSE Children',
+    description: 'Calming bedtime routines for anxious sleepers'
+  },
   // SCHOOL
   {
     category: 'school',
     profile: 'universal',
-    title: 'School: Sobrevivendo à Rotina Escolar',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "School Mornings & Homework That Don\'t End in Tears"]')
-      .replace('{{THEME}}', 'Rotina Escolar para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why School Is Harder for Neurodivergent Kids** (validação)
-2. **The Executive Function Gap** (ciência das dificuldades escolares)
-3. **The School Prep System** (preparação matinal)
-4. **Homework Without Tears** (estratégias práticas)
-5. **School Refusal & Resistance** (quando não querem ir)
-6. **School Success Stories** (exemplos)
-7. **School Survival Toolkit** (ferramentas)`)
+    title: 'School Success Strategies',
+    description: 'Morning preparation and homework management'
   },
-
+  {
+    category: 'school',
+    profile: 'distracted',
+    title: 'School Strategies for DISTRACTED Children',
+    description: 'Focus and organization for school challenges'
+  },
   // MEALTIME
   {
     category: 'mealtime',
     profile: 'universal',
-    title: 'Mealtime: Alimentação Sem Drama',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Mealtime Without the Drama"]')
-      .replace('{{THEME}}', 'Alimentação para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Mealtime Is A Battleground** (o problema real)
-2. **The Sensory Food Brain** (neurociência da seletividade)
-3. **The Pressure-Free Eating System** (remover pressão)
-4. **Mealtime Scripts** (frases NEP para comida)
-5. **Food Refusal Strategies** (quando não querem comer)
-6. **Mealtime Wins** (exemplos reais)
-7. **Mealtime Quick Guide** (ferramentas práticas)`)
+    title: 'Peaceful Mealtimes',
+    description: 'Managing picky eating and mealtime behavior'
   },
-
+  {
+    category: 'mealtime',
+    profile: 'intense',
+    title: 'Mealtime for INTENSE Children',
+    description: 'Sensory-friendly mealtime strategies'
+  },
   // SCREEN TIME
   {
     category: 'screen-time',
     profile: 'universal',
-    title: 'Screen Time: Limites Sem Meltdowns',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Screen Time Limits Without the Meltdown"]')
-      .replace('{{THEME}}', 'Screen Time para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Screen Time Ends in Tears** (o problema)
-2. **The Hyperfocus Screen Brain** (neurociência do engajamento)
-3. **The Transition Warning System** (preparar para desligar)
-4. **Screen-Off Scripts** (frases NEP)
-5. **Meltdown Prevention Plans** (evitar explosões)
-6. **Screen Success Stories** (exemplos)
-7. **Screen Time Toolkit** (ferramentas práticas)`)
+    title: '35 Strategies to Get Your Child Off Screens',
+    description: 'Screen shutdown and healthy limits'
   },
-
+  {
+    category: 'screen-time',
+    profile: 'defiant',
+    title: 'Screen Time for DEFIANT Children',
+    description: 'Setting limits without meltdowns'
+  },
   // PUBLIC BEHAVIOR
   {
     category: 'public-behavior',
     profile: 'universal',
-    title: 'Public Behavior: Saídas Sem Estresse',
-    prompt: basePromptStructure
-      .replace('{{TITLE}}', '[SEU TÍTULO - ex: "Going Out Without the Drama"]')
-      .replace('{{THEME}}', 'Comportamento em Público para Crianças Neurodivergentes')
-      .replace('{{CHAPTERS}}', `1. **Why Public Outings Are Stressful** (o problema)
-2. **The Sensory Overload in Public** (neurociência)
-3. **The Public Prep System** (preparação antes de sair)
-4. **Public Scripts** (frases NEP para locais públicos)
-5. **Emergency Exit Plans** (quando precisa sair rápido)
-6. **Public Success Stories** (exemplos)
-7. **Public Outing Toolkit** (ferramentas para levar)`)
+    title: 'Handling Public Meltdowns',
+    description: 'Restaurants, stores, and public spaces'
   }
 ];
 
-export const getPromptByCategory = (category: EbookCategory, profile: ProfileType): PromptTemplate | undefined => {
-  return promptTemplates.find(p => p.category === category && p.profile === profile);
+export const getPromptsByCategory = (category: EbookCategory) => {
+  return promptTemplates.filter(p => p.category === category);
 };
 
-export const getPromptsByCategory = (category: EbookCategory): PromptTemplate[] => {
-  return promptTemplates.filter(p => p.category === category);
+export const getPromptByCategory = (category: EbookCategory, profile: ProfileType) => {
+  return promptTemplates.find(p => p.category === category && p.profile === profile);
 };
