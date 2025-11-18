@@ -115,7 +115,7 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
             return (
               <p
                 key={index}
-                className="text-lg leading-loose text-foreground/90 tracking-wide mb-6 select-text"
+                className="text-lg leading-loose text-foreground/90 tracking-wide my-4 select-text"
               >
                 {typeof block.content === 'string' && renderContent(block.content)}
               </p>
