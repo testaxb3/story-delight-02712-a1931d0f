@@ -24,10 +24,13 @@ export function useEbookContent(ebookId: string | undefined) {
     queryFn: async () => {
       if (!ebookId) return null;
       
+      // Check if ebookId is UUID or slug
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ebookId);
+      
       const { data, error } = await supabase
         .from('ebooks')
         .select('id, title, subtitle, slug, content, thumbnail_url, cover_color, total_chapters, estimated_reading_time, bonus_id')
-        .eq('id', ebookId)
+        .eq(isUUID ? 'id' : 'slug', ebookId)
         .is('deleted_at', null)
         .maybeSingle();
       
