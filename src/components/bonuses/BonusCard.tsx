@@ -119,8 +119,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
                 whileHover={{ scale: 1.1 }}
                 transition={{ duration: 0.6 }}
                 className={cn(
-                  "w-full h-full transition-all duration-600",
-                  bonus.category === BonusCategory.EBOOK ? "object-contain p-4" : "object-cover",
+                  "w-full h-full object-cover transition-all duration-600",
                   !imageLoaded && "opacity-0"
                 )}
               />
