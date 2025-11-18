@@ -102,10 +102,17 @@ export function useBonuses(filters?: {
         throw countError;
       }
 
-      // Fetch paginated bonuses
+      // Fetch paginated bonuses with ebook thumbnails
       let bonusQuery = supabase
         .from("bonuses")
-        .select("*")
+        .select(`
+          *,
+          ebook:ebooks!bonus_id(
+            id,
+            thumbnail_url,
+            slug
+          )
+        `)
         .order("created_at", { ascending: false })
         .range(page * pageSize, (page + 1) * pageSize - 1);
 
@@ -152,9 +159,12 @@ export function useBonuses(filters?: {
       const bonuses = bonusesData?.map(row => {
         const baseBonus = transformBonusRow(row);
         const userProgress = userProgressMap.get(row.id);
+        const ebookData = Array.isArray(row.ebook) ? row.ebook[0] : row.ebook;
 
         return {
           ...baseBonus,
+          // Prioritize ebook thumbnail over bonus thumbnail
+          thumbnail: ebookData?.thumbnail_url || baseBonus.thumbnail,
           progress: userProgress?.progress || 0,
           completed: userProgress?.completed || false,
         };
