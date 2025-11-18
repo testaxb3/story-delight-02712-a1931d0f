@@ -219,28 +219,9 @@ function BonusesContent() {
       }
     }
 
-    // If it's an ebook, check for V2 version first
-    if (bonus.category === 'ebook') {
-      // Check if there's a V2 ebook for this bonus
-      const { data: ebooksV2 } = await supabase
-        .from('ebooks')
-        .select('id, slug')
-        .eq('bonus_id', bonus.id)
-        .ilike('slug', '%-v2')
-        .is('deleted_at', null)
-        .maybeSingle();
-      
-      if (ebooksV2) {
-        // Use V2 reader
-        navigate(`/ebook-v2/${ebooksV2.id}`);
-        return;
-      }
-      
-      // Fallback to regular ebook reader
-      const ebookPath = bonus.viewUrl && bonus.viewUrl.startsWith('/ebook/')
-        ? bonus.viewUrl
-        : '/ebook/ebook-main'; // fallback for legacy /ebook link
-      navigate(ebookPath);
+    // If it's an ebook, use viewUrl directly
+    if (bonus.category === 'ebook' && bonus.viewUrl) {
+      navigate(bonus.viewUrl);
       return;
     }
 
