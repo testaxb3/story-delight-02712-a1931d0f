@@ -453,92 +453,256 @@ export function EbookCreationGuide() {
         <TabsContent value="howto" className="space-y-4">
           <Card className="p-6 space-y-6">
             <div>
-              <h3 className="text-2xl font-bold mb-2">🚀 How to Use This Guide</h3>
+              <h3 className="text-2xl font-bold mb-2">🚀 AI Ebook Creation Process</h3>
               <p className="text-sm text-muted-foreground">
-                Step-by-step workflow for creating high-quality ebooks
+                Detailed step-by-step instructions for the AI to follow when creating ebooks
               </p>
             </div>
 
-            <div className="space-y-4">
-              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    1
+            {/* How to Request in Chat */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <MessageSquare className="w-5 h-5 text-primary" />
+                How to Request in Chat
+              </h4>
+              <Card className="p-4 bg-primary/10 border-primary">
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium mb-2">💬 Chat Format:</p>
+                    <code className="block p-3 bg-background rounded text-sm">
+                      "Create ebook: [category] for [profile] profile"
+                    </code>
                   </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold">Explore Categories & Profiles</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Go to "Reference" tab → Browse categories → Select child profile → Note the combination you want
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    2
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold">Check Writing Standards</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Review "Writing" tab → Understand Do's/Don'ts → Study before/after examples → Note callout types and Reader V2 format
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    3
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold">Request in Chat</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Go to chat → Say: "Create ebook: [category] for [profile] profile" → Lovable AI will create with Reader V2 format
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    4
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold">Review & Refine</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Check "Checklist" tab → Validate quality → Request adjustments in chat → Iterate until perfect
-                    </p>
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="p-4 bg-gradient-to-r from-primary/10 to-primary/5 border-primary">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center font-bold flex-shrink-0">
-                    5
-                  </div>
-                  <div className="space-y-1">
-                    <h4 className="font-semibold">Publish</h4>
-                    <p className="text-sm text-muted-foreground">
-                      Ebook automatically appears on bonuses page → Create corresponding bonus entry → Link ebook to bonus → Users can access
-                    </p>
+                  <div>
+                    <p className="text-sm font-medium mb-2">Example:</p>
+                    <code className="block p-3 bg-background rounded text-sm">
+                      "Create ebook: routines for INTENSE profile"
+                    </code>
                   </div>
                 </div>
               </Card>
             </div>
 
-            <Card className="p-4 bg-yellow-50 dark:bg-yellow-950/20 border-yellow-200 dark:border-yellow-800">
-              <h4 className="font-semibold mb-2 text-yellow-900 dark:text-yellow-200">💡 Pro Tips</h4>
-              <ul className="space-y-2 text-sm text-yellow-900 dark:text-yellow-200">
-                <li>• Always specify category + profile clearly in your request</li>
-                <li>• Reference this guide when asking for adjustments</li>
-                <li>• Ask for specific sections to be refined (e.g., "Make Chapter 3 more conversational")</li>
-                <li>• Validate Reader V2 format compliance before publishing</li>
-                <li>• Remember: all content must be in English</li>
+            {/* AI Creation Process */}
+            <div className="space-y-3">
+              <h4 className="text-lg font-semibold flex items-center gap-2">
+                <Brain className="w-5 h-5 text-primary" />
+                AI Creation Process (Follow These Steps)
+              </h4>
+              <div className="space-y-3">
+                <Card className="p-4 border-l-4 border-l-primary">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-primary">Step 1</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Review Writing Standards</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Before creating content, review the <strong>Writing Standards</strong> tab:
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
+                          <span>Check DO's and DON'Ts (avoid generic AI phrases, use specific numbers)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
+                          <span>Review callout types: REMEMBER, SCIENCE, WARNING, TRY</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
+                          <span>Study before/after examples to understand quality standards</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-primary" />
+                          <span>Understand Reader V2 JSON format and block types</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 border-l-4 border-l-blue-500">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-blue-500">Step 2</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Study Template Structure</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Review the <strong>Templates</strong> tab thoroughly:
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                          <span>Understand 7-chapter structure (Problem → Science → Framework → Scripts → Failures → Stories → Quick Ref)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                          <span>Follow chapter formatting rules (H2 sections, 2-4 paragraphs, callouts, script boxes)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                          <span>Ensure proper line breaks within paragraphs for readability</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-500" />
+                          <span>Each block must be self-contained (no dependencies on adjacent blocks)</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 border-l-4 border-l-green-500">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-green-500">Step 3</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Create Ebook Content</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Write the ebook following all standards:
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>7 chapters with proper structure (cover, micro-story opening, sections, callouts, scripts)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>Use **bold** for key concepts, *italic* for emphasis</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>Include specific numbers (minimum 5 per chapter)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>Write in conversational, engaging tone (not academic)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>Callouts: title + content together in ONE block</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-green-500" />
+                          <span>Lists: separate array entries (never concatenated)</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 border-l-4 border-l-orange-500">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-orange-500">Step 4</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Insert into Database</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Add the ebook to the database:
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
+                          <span>Create migration to INSERT into public.ebooks table</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
+                          <span>Slug format: [category]-[profile]-v2 (e.g., routines-intense-v2)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
+                          <span>Set estimated_reading_time (usually 35-50 minutes for 7 chapters)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-orange-500" />
+                          <span>Leave bonus_id as NULL (will link in next step)</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 border-l-4 border-l-purple-500">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-purple-500">Step 5</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Create Bonus Entry & Link</h5>
+                      <p className="text-sm text-muted-foreground">
+                        <strong className="text-destructive">CRITICAL: Always do this automatically!</strong>
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
+                          <span>INSERT bonus entry into public.bonuses (category: 'ebook', lowercase)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
+                          <span>Set view_url: '/bonuses?ebook=[slug]'</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
+                          <span>UPDATE ebooks.bonus_id to link to the new bonus</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
+                          <span><strong>Do NOT wait for user to ask!</strong> Always create bonus + link automatically</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-4 border-l-4 border-l-teal-500">
+                  <div className="flex items-start gap-3">
+                    <Badge className="mt-1 bg-teal-500">Step 6</Badge>
+                    <div className="space-y-2 flex-1">
+                      <h5 className="font-semibold">Quality Check</h5>
+                      <p className="text-sm text-muted-foreground">
+                        Run through the <strong>Quality Checklist</strong> tab:
+                      </p>
+                      <ul className="text-sm space-y-1 ml-4">
+                        <li className="flex items-start gap-2">
+                          <ListChecks className="w-4 h-4 mt-0.5 flex-shrink-0 text-teal-500" />
+                          <span>Content quality (no AI phrases, specific numbers, conversational tone)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <ListChecks className="w-4 h-4 mt-0.5 flex-shrink-0 text-teal-500" />
+                          <span>Reader V2 compatibility (JSON format, callout types, self-contained blocks)</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <ListChecks className="w-4 h-4 mt-0.5 flex-shrink-0 text-teal-500" />
+                          <span>Technical requirements (slug, reading time, English, tags)</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
+
+            {/* Critical Reminders */}
+            <Card className="p-4 bg-destructive/10 border-destructive">
+              <h4 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                <span className="text-2xl">⚠️</span>
+                Critical Reminders
+              </h4>
+              <ul className="space-y-2">
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive font-bold mt-0.5">→</span>
+                  <span className="text-sm"><strong>Always create the bonus entry automatically</strong> (Step 5) - don't wait for user to ask</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive font-bold mt-0.5">→</span>
+                  <span className="text-sm">Bonus category must be <code className="bg-background px-1 rounded">'ebook'</code> (lowercase)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive font-bold mt-0.5">→</span>
+                  <span className="text-sm">Callout blocks: title + content in ONE block (not split)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive font-bold mt-0.5">→</span>
+                  <span className="text-sm">List items: separate array entries (never concatenated strings)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-destructive font-bold mt-0.5">→</span>
+                  <span className="text-sm">All content in English</span>
+                </li>
               </ul>
             </Card>
           </Card>
