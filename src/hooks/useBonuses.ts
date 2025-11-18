@@ -16,11 +16,17 @@ export const bonusesKeys = {
 
 // Transform database row to BonusData
 function transformBonusRow(row: any): BonusData {
+  // Ensure category is valid, default to EBOOK if not
+  const validCategory = (row.category && 
+    Object.values(BonusCategory).includes(row.category as BonusCategory))
+    ? row.category as BonusCategory
+    : BonusCategory.EBOOK;
+  
   return {
     id: row.id,
     title: row.title,
     description: row.description,
-    category: row.category,
+    category: validCategory,
     thumbnail: row.thumbnail || undefined,
     duration: row.duration || undefined,
     size: row.file_size || undefined,
