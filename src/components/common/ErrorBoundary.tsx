@@ -40,12 +40,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <AlertTriangle className="w-6 h-6 text-destructive" />
-                  <h2 className="text-lg font-semibold">Algo deu errado</h2>
+                  <h2 className="text-lg font-semibold">Something went wrong</h2>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  Desculpe, ocorreu um erro inesperado. Tente recarregar a página ou voltar para a página inicial.
+                  Sorry, an unexpected error occurred. Try reloading the page or go back to the home page.
                 </p>
                 {process.env.NODE_ENV === 'development' && this.state.error && (
                   <div className="bg-muted p-3 rounded text-xs font-mono text-muted-foreground overflow-auto max-h-32">
@@ -58,13 +58,13 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
                     onClick={this.handleReset}
                     className="flex-1"
                   >
-                    Tentar Novamente
+                    Try Again
                   </Button>
                   <Button
                     onClick={() => window.location.href = '/'}
                     className="flex-1"
                   >
-                    Ir para Início
+                    Go to Home
                   </Button>
                 </div>
               </CardContent>
