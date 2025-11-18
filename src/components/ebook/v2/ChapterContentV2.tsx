@@ -112,12 +112,39 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
             );
 
           case "paragraph":
+            let paragraphContent = typeof block.content === 'string' ? block.content : '';
+            
+            // Detect and format bullet points (•) by adding line breaks
+            if (paragraphContent.includes('•') && !paragraphContent.includes('\n•')) {
+              paragraphContent = paragraphContent.replace(/\s*•\s*/g, '\n• ').trim();
+            }
+            
+            // Detect numbered lists and add line breaks before numbers
+            if (paragraphContent.match(/\d+\.\s/g)) {
+              paragraphContent = paragraphContent.replace(/(\s+)(\d+\.\s)/g, '\n$2').trim();
+            }
+            
+            // If content has line breaks, render as multiple lines
+            if (paragraphContent.includes('\n')) {
+              const lines = paragraphContent.split('\n').filter(line => line.trim());
+              return (
+                <div key={index} className="my-4 space-y-2 select-text">
+                  {lines.map((line, lineIdx) => (
+                    <p key={lineIdx} className="text-lg leading-loose text-foreground/90 tracking-wide">
+                      {renderContent(line)}
+                    </p>
+                  ))}
+                </div>
+              );
+            }
+            
+            // Single line paragraph
             return (
               <p
                 key={index}
                 className="text-lg leading-loose text-foreground/90 tracking-wide my-4 select-text"
               >
-                {typeof block.content === 'string' && renderContent(block.content)}
+                {renderContent(paragraphContent)}
               </p>
             );
 
