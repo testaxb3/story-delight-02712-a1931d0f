@@ -141,7 +141,7 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
               <CalloutBox
                 key={index}
                 type={block.calloutType || "remember"}
-                content={typeof block.content === 'string' ? block.content : ''}
+                content={block.content as string | { title?: string; body: string }}
               />
             );
 
