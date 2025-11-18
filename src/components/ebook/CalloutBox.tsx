@@ -97,7 +97,17 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
     : content;
   
   const displayTitle = contentObj.title || config.title;
-  const displayBody = contentObj.body;
+  let displayBody = contentObj.body;
+  
+  // Detect and format bullet points (•) by adding line breaks before each bullet
+  if (displayBody.includes('•') && !displayBody.includes('\n•')) {
+    displayBody = displayBody.replace(/\s*•\s*/g, '\n• ').trim();
+  }
+  
+  // Detect numbered lists (1., 2., 3., etc.) and add line breaks
+  if (displayBody.match(/\d+\.\s/g)) {
+    displayBody = displayBody.replace(/(\d+\.\s)/g, '\n$1').trim();
+  }
 
   return (
     <div className={`my-8 p-8 rounded-2xl border-2 smooth-transition backdrop-blur-sm ${config.className}`}>
@@ -112,9 +122,9 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
           </Badge>
 
           <div className="space-y-3 font-body text-base">
-            {displayBody.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
-              <p key={paraIndex} className="text-foreground leading-relaxed">
-                {renderContent(paragraph)}
+            {displayBody.split('\n').filter(line => line.trim()).map((line, lineIndex) => (
+              <p key={lineIndex} className="text-foreground leading-relaxed">
+                {renderContent(line)}
               </p>
             ))}
           </div>
