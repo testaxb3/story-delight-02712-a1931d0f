@@ -28,10 +28,17 @@ export function useAppVersion() {
 
   const checkVersion = async () => {
     try {
+      // Não mostrar update se acabou de atualizar (iOS flag)
+      if (sessionStorage.getItem('pwa_just_updated') === 'true') {
+        sessionStorage.removeItem('pwa_just_updated');
+        logger.log('⏭️ Skipping version check - app just updated');
+        return;
+      }
+
       // Não mostrar update em páginas específicas
       const currentPath = window.location.pathname;
       const excludedPaths = ['/auth', '/quiz', '/onboarding'];
-      
+
       if (excludedPaths.some(path => currentPath.startsWith(path))) {
         return;
       }
