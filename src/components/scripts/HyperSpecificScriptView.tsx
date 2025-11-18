@@ -165,7 +165,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
               <div className="space-y-3">
                 {script.the_situation.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-base leading-relaxed text-slate-800 dark:text-slate-200">
-                    {paragraph.trim()}
+                    {renderMarkdown(paragraph.trim())}
                   </p>
                 ))}
               </div>
