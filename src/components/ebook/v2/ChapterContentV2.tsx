@@ -83,34 +83,6 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
 
   const chapterHighlights = getChapterHighlights(chapterIndex);
 
-  // Pre-process blocks to merge callout/script titles with their content paragraphs
-  const processedBlocks = blocks.reduce((acc: ChapterSection[], block, index) => {
-    // Skip paragraphs that start with ">" - they're callout content
-    if (block.type === 'paragraph' && typeof block.content === 'string' && block.content.trim().startsWith('>')) {
-      // Check if previous block was a callout
-      const prevBlock = acc[acc.length - 1];
-      if (prevBlock && prevBlock.type === 'callout') {
-        // Merge content into previous callout
-        const cleanContent = block.content.replace(/^>\s*/, '').trim();
-        prevBlock.content = `${prevBlock.content}\n\n${cleanContent}`;
-        return acc;
-      }
-    }
-    
-    // Check if this is a callout followed by content paragraph
-    if (block.type === 'callout') {
-      const nextBlock = blocks[index + 1];
-      if (nextBlock && nextBlock.type === 'paragraph' && typeof nextBlock.content === 'string' && nextBlock.content.trim().startsWith('>')) {
-        // Content will be merged in next iteration
-        acc.push(block);
-        return acc;
-      }
-    }
-    
-    acc.push(block);
-    return acc;
-  }, []);
-
   return (
     <article className="space-y-8">
       {selectedText && selectionPosition && (
@@ -124,7 +96,7 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
         />
       )}
 
-      {processedBlocks.map((block, index) => {
+      {blocks.map((block, index) => {
         switch (block.type) {
           case "heading":
             return (
@@ -147,27 +119,9 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
             );
 
           case "list":
-            // Split list items that contain multiple entries (separated by "**")
-            const splitItems = Array.isArray(block.content) 
-              ? block.content.flatMap(item => {
-                  if (typeof item === 'string') {
-                    // Check if item contains multiple bold entries
-                    const boldMatches = item.match(/\*\*[^*]+\*\*/g);
-                    if (boldMatches && boldMatches.length > 1) {
-                      // Split by bold markers and create separate items
-                      const parts = item.split(/(\*\*[^*]+\*\*[^*]*?)(?=\*\*|$)/g).filter(Boolean);
-                      return parts
-                        .map(p => p.trim())
-                        .filter(p => p && p.startsWith('**'));
-                    }
-                  }
-                  return [item];
-                })
-              : [];
-            
             return (
               <ul key={index} className="space-y-3 my-6 ml-6">
-                {splitItems.map((item, itemIndex) => (
+                {Array.isArray(block.content) && block.content.map((item, itemIndex) => (
                   <li
                     key={itemIndex}
                     className="text-lg leading-loose text-foreground/90 flex gap-3 select-text"
