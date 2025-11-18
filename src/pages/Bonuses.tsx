@@ -87,7 +87,6 @@ function BonusesContent() {
       all: totalBonuses,
       video: allBonuses.filter(b => b.category === BonusCategory.VIDEO).length,
       ebook: allBonuses.filter(b => b.category === BonusCategory.EBOOK).length,
-      pdf: allBonuses.filter(b => b.category === BonusCategory.PDF).length,
       tool: allBonuses.filter(b => b.category === BonusCategory.TOOL).length,
       template: allBonuses.filter(b => b.category === BonusCategory.TEMPLATE).length,
       session: allBonuses.filter(b => b.category === BonusCategory.SESSION).length,
@@ -99,7 +98,6 @@ function BonusesContent() {
     { id: "all", label: "All Bonuses", icon: Sparkles, count: categoryCounts.all },
     { id: "video", label: "Videos", icon: Play, count: categoryCounts.video },
     { id: "ebook", label: "Ebooks", icon: BookOpen, count: categoryCounts.ebook },
-    { id: "pdf", label: "PDFs", icon: FileText, count: categoryCounts.pdf },
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
   ];
 
