@@ -3,6 +3,7 @@ export interface Chapter {
   title: string;
   subtitle?: string;
   content: ChapterSection[];
+  sections?: ChapterSection[]; // Support for database format
   color?: 'defiant' | 'intense' | 'distracted';
 }
 
