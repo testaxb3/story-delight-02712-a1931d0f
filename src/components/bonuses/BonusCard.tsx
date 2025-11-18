@@ -287,7 +287,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
               </div>
             ) : (
               <div className="flex gap-2">
-                {bonus.viewUrl && (
+                {(bonus.viewUrl || bonus.category === 'ebook') && (
                   <Button
                     className={cn(
                       "flex-1 group/btn transition-all duration-300",
@@ -295,8 +295,17 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
                     )}
                     onClick={() => onAction?.(bonus)}
                   >
-                    <Play className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                    {bonus.category === 'video' ? (bonus.completed ? 'Watch Again' : 'Watch Now') : (bonus.completed ? 'View Again' : 'View Now')}
+                    {bonus.category === 'ebook' ? (
+                      <>
+                        <BookOpen className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
+                        {bonus.completed ? 'Read Again' : 'Read Now'}
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
+                        {bonus.category === 'video' ? (bonus.completed ? 'Watch Again' : 'Watch Now') : (bonus.completed ? 'View Again' : 'View Now')}
+                      </>
+                    )}
                   </Button>
                 )}
                 {bonus.downloadUrl && (
