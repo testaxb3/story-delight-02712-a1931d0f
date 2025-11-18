@@ -199,7 +199,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
               {bonus.tags.map((tag, i) => (
                 <span
                   key={i}
-                  className="px-2 py-1 text-xs bg-secondary rounded-md text-muted-foreground"
+                  className="px-2 py-1 text-xs bg-accent/20 dark:bg-accent/10 rounded-md text-accent-foreground font-medium"
                 >
                   {tag}
                 </span>
