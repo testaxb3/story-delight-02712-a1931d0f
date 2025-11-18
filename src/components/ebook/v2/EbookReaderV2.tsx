@@ -235,7 +235,7 @@ export const EbookReaderV2 = ({
         />
 
         <ChapterContentV2 
-          blocks={currentChapter.content}
+          blocks={currentChapter.sections || currentChapter.content || []}
           chapterIndex={currentChapterIndex}
         />
 

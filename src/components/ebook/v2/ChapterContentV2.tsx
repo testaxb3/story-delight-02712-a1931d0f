@@ -83,6 +83,9 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
 
   const chapterHighlights = getChapterHighlights(chapterIndex);
 
+  // Safety check: ensure blocks is an array
+  const safeBlocks = Array.isArray(blocks) ? blocks : [];
+
   return (
     <article className="space-y-8">
       {selectedText && selectionPosition && (
@@ -96,7 +99,7 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
         />
       )}
 
-      {blocks.map((block, index) => {
+      {safeBlocks.map((block, index) => {
         switch (block.type) {
           case "heading":
             return (
