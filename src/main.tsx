@@ -15,23 +15,33 @@ if ('serviceWorker' in navigator) {
     immediate: true,
     onNeedRefresh() {
       // This will be handled by useAppVersion hook
+      console.log('🔄 Service Worker update available');
       window.dispatchEvent(new CustomEvent('sw-update-available'));
     },
     onOfflineReady() {
-      console.log('App ready to work offline');
+      console.log('✅ App ready to work offline');
     },
     onRegisteredSW(swScriptUrl, registration) {
-      // Check for updates every 60 minutes
+      console.log('✅ Service Worker registered:', swScriptUrl);
+
+      // Check for updates every 30 minutes (optimized from 60)
       if (registration) {
         setInterval(() => {
+          console.log('🔍 Checking for Service Worker updates...');
           registration.update();
-        }, 60 * 60 * 1000);
+        }, 30 * 60 * 1000);
       }
     },
+    onRegisterError(error) {
+      console.error('❌ Service Worker registration error:', error);
+    },
   });
-  
+
   // Make updateSW available globally for update process
   (window as any).__updateSW = updateSW;
+  console.log('✅ Service Worker update function registered globally');
+} else {
+  console.warn('⚠️ Service Worker not supported in this browser');
 }
 
 createRoot(document.getElementById("root")!).render(
