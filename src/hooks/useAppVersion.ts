@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { logger } from '@/lib/logger';
 import { toast } from 'sonner';
+import { performPlatformUpdate, getPlatformInfo, logPlatformInfo } from '@/utils/platform';
 // Version is now managed entirely in the database
 
 interface AppVersionInfo {
@@ -15,10 +16,10 @@ interface AppVersionInfo {
 const STORAGE_KEY = 'app_version_acknowledged';
 const UPDATE_ATTEMPT_KEY = 'app_update_attempt_count';
 const MAX_UPDATE_ATTEMPTS = 3;
-const CHECK_INTERVAL = 15 * 60 * 1000; // Check every 15 minutes (reduced from 5)
+const CHECK_INTERVAL = 5 * 60 * 1000; // ✅ Check every 5 minutes (optimized for faster updates)
 
 const SESSION_START_KEY = 'app_session_start';
-const MIN_SESSION_TIME = 60000; // 1 minuto antes de mostrar update
+const MIN_SESSION_TIME = 30000; // ✅ 30 seconds before showing update (optimized)
 
 export function useAppVersion() {
   const [versionInfo, setVersionInfo] = useState<AppVersionInfo | null>(null);
@@ -98,23 +99,31 @@ export function useAppVersion() {
       // Remove the update attempt counter
       localStorage.removeItem(UPDATE_ATTEMPT_KEY);
 
-      toast.success('Updating app...', {
-        description: 'The app will reload in a moment.',
-        duration: 1500,
+      // Log platform info for debugging
+      const platform = getPlatformInfo();
+      logger.log('🔄 Performing update for platform:', {
+        browser: platform.browserName,
+        isIOS: platform.isIOS,
+        requiresHardReload: platform.requiresHardReload,
       });
 
-      // Use the proper PWA update mechanism
-      const updateSW = (window as any).__updateSW;
-      
-      if (updateSW) {
-        // This will trigger the service worker update and reload
-        await updateSW(true);
-      } else {
-        // Fallback: traditional reload after a short delay
-        setTimeout(() => {
+      // Show appropriate toast message
+      const updateMethod = platform.requiresHardReload ? 'hard reload' : 'Service Worker';
+      toast.success('Updating app...', {
+        description: `Using ${updateMethod}. The app will reload in a moment.`,
+        duration: 2000,
+      });
+
+      // Wait a bit for toast to show, then perform platform-specific update
+      setTimeout(async () => {
+        try {
+          await performPlatformUpdate();
+        } catch (error) {
+          logger.error('Error during platform update:', error);
+          // Fallback: simple reload
           window.location.reload();
-        }, 1500);
-      }
+        }
+      }, 1500);
 
     } catch (error) {
       logger.error('Error during update:', error);
@@ -135,17 +144,20 @@ export function useAppVersion() {
   };
 
   useEffect(() => {
+    // Log platform info on mount for debugging
+    logPlatformInfo();
+
     // Registrar início da sessão se não existir
     if (!localStorage.getItem(SESSION_START_KEY)) {
       localStorage.setItem(SESSION_START_KEY, String(Date.now()));
     }
 
-    // Delay inicial antes da primeira verificação (2 minutos)
+    // ✅ Delay inicial reduzido (30 segundos em vez de 2 minutos)
     const initialDelay = setTimeout(() => {
       checkVersion();
-    }, 2 * 60 * 1000);
+    }, 30 * 1000);
 
-    // Set up periodic version check (a cada 15 minutos)
+    // ✅ Set up periodic version check (a cada 5 minutos em vez de 15)
     const interval = setInterval(checkVersion, CHECK_INTERVAL);
 
     return () => {

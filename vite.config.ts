@@ -59,8 +59,8 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Configuração para coexistir com OneSignal
         cleanupOutdatedCaches: true,
-        skipWaiting: false,
-        clientsClaim: false,
+        skipWaiting: true,  // ✅ Permite novo SW assumir controle imediatamente
+        clientsClaim: true, // ✅ Novo SW controla clientes existentes imediatamente
 
         // Não gerenciar navegação - deixar OneSignal fazer isso
         navigateFallback: undefined,
