@@ -59,6 +59,8 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Configuração para coexistir com OneSignal
         cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
 
         // Não gerenciar navegação - deixar OneSignal fazer isso
         navigateFallback: undefined,
