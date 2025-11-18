@@ -4,9 +4,35 @@ import * as Sentry from "@sentry/react";
 import App from "./App.tsx";
 import "./index.css";
 import { initSentry } from "./lib/sentry";
+import { registerSW } from 'virtual:pwa-register';
 
 // Initialize Sentry error tracking
 initSentry();
+
+// Register Service Worker with proper update handling
+if ('serviceWorker' in navigator) {
+  const updateSW = registerSW({
+    immediate: true,
+    onNeedRefresh() {
+      // This will be handled by useAppVersion hook
+      window.dispatchEvent(new CustomEvent('sw-update-available'));
+    },
+    onOfflineReady() {
+      console.log('App ready to work offline');
+    },
+    onRegisteredSW(swScriptUrl, registration) {
+      // Check for updates every 60 minutes
+      if (registration) {
+        setInterval(() => {
+          registration.update();
+        }, 60 * 60 * 1000);
+      }
+    },
+  });
+  
+  // Make updateSW available globally for update process
+  (window as any).__updateSW = updateSW;
+}
 
 createRoot(document.getElementById("root")!).render(
   <Sentry.ErrorBoundary
