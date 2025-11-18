@@ -229,7 +229,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                   if (trimmed.startsWith('❌') || trimmed.startsWith('•')) {
                     const lines = paragraph.split('\n');
                     const mainText = lines[0].replace(/^[❌•]\s*/, '').trim();
-                    const explanation = lines.slice(1).join(' ').replace('→', '').trim();
+                    const explanation = lines.slice(1).map(l => l.replace(/^→\s*/, '').trim()).filter(Boolean).join('\n');
 
                     return (
                       <div key={idx} className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-200 dark:border-red-800 shadow-sm">

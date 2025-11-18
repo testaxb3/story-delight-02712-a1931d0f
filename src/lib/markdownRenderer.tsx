@@ -1,7 +1,7 @@
 import React from "react";
 
 /**
- * Renders inline markdown: **bold**, *italic*, `code`
+ * Renders inline markdown: **bold**, *italic*, `code`, and \n as line breaks
  * Returns an array of React elements ready for rendering
  */
 export function renderMarkdown(text: string): React.ReactNode[] {
@@ -12,16 +12,18 @@ export function renderMarkdown(text: string): React.ReactNode[] {
   let key = 0;
 
   while (currentText.length > 0) {
-    // Find the next markdown pattern
+    // Find the next markdown pattern or line break
     const boldIndex = currentText.search(/\*\*(.+?)\*\*/);
     const italicIndex = currentText.search(/[*_](.+?)[*_]/);
     const codeIndex = currentText.search(/`(.+?)`/);
+    const lineBreakIndex = currentText.indexOf('\n');
 
     // Find which pattern comes first
     const patterns = [
       { index: boldIndex, type: 'bold' },
       { index: italicIndex, type: 'italic' },
-      { index: codeIndex, type: 'code' }
+      { index: codeIndex, type: 'code' },
+      { index: lineBreakIndex, type: 'linebreak' }
     ].filter(p => p.index !== -1).sort((a, b) => a.index - b.index);
 
     // If no patterns found, add remaining text
@@ -40,7 +42,11 @@ export function renderMarkdown(text: string): React.ReactNode[] {
     // Process the pattern
     const textAfterPrelude = currentText.substring(nextPattern.index);
     
-    if (nextPattern.type === 'bold') {
+    if (nextPattern.type === 'linebreak') {
+      elements.push(<br key={key++} />);
+      currentText = textAfterPrelude.substring(1);
+      continue;
+    } else if (nextPattern.type === 'bold') {
       const match = textAfterPrelude.match(/^\*\*(.+?)\*\*/);
       if (match) {
         elements.push(
