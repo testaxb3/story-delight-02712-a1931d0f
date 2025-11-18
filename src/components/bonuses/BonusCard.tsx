@@ -84,7 +84,7 @@ const categoryConfig: Record<BonusCategory, {
 };
 
 export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
-  const config = categoryConfig[bonus.category];
+  const config = categoryConfig[bonus.category as BonusCategory] || categoryConfig[BonusCategory.EBOOK];
   const IconComponent = config.icon;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
