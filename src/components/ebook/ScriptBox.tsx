@@ -56,7 +56,12 @@ const renderContent = (content: string) => {
 
 export const ScriptBox = ({ content }: ScriptBoxProps) => {
   // Handle both string and array content
-  const textContent = Array.isArray(content) ? content.join('\n') : content;
+  let textContent = Array.isArray(content) ? content.join('\n') : content;
+  
+  // Detect and format bullet points (•) by adding line breaks before each bullet
+  if (textContent.includes('•') && !textContent.includes('\n•')) {
+    textContent = textContent.replace(/\s*•\s*/g, '\n• ').trim();
+  }
   
   // Split by double newlines for paragraphs, then split each paragraph by single newlines
   const sections = textContent.split('\n\n').filter(section => section.trim());
