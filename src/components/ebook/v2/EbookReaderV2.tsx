@@ -131,7 +131,9 @@ export const EbookReaderV2 = ({
     if (currentChapterIndex < chapters.length - 1) {
       const nextIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(nextIndex);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Force immediate scroll to top
+      window.scrollTo({ top: 0, behavior: "instant" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
       onChapterChange?.(nextIndex);
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
@@ -140,14 +142,18 @@ export const EbookReaderV2 = ({
     if (currentChapterIndex > 0) {
       const prevIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(prevIndex);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Force immediate scroll to top
+      window.scrollTo({ top: 0, behavior: "instant" });
+      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
       onChapterChange?.(prevIndex);
     }
   }, [currentChapterIndex, onChapterChange]);
 
   const handleChapterSelect = useCallback((index: number) => {
     setCurrentChapterIndex(index);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Force immediate scroll to top
+    window.scrollTo({ top: 0, behavior: "instant" });
+    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
     onChapterChange?.(index);
   }, [onChapterChange]);
 
