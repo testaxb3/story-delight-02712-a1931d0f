@@ -7,6 +7,11 @@ afterEach(() => {
   cleanup();
 });
 
+// Mock PWA register module
+vi.mock('virtual:pwa-register', () => ({
+  registerSW: vi.fn(() => vi.fn()),
+}));
+
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
