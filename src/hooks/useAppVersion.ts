@@ -130,16 +130,27 @@ export function useAppVersion() {
         duration: 1500,
       });
 
-      // Force a hard reload to bypass all caches
-      // This is safer than manually clearing caches in PWA context
-      setTimeout(() => {
-        // Send message to service worker to skip waiting and activate immediately
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+      // Aggressive cache clearing and service worker reset
+      setTimeout(async () => {
+        try {
+          // Clear all caches
+          if ('caches' in window) {
+            const cacheNames = await caches.keys();
+            await Promise.all(cacheNames.map(name => caches.delete(name)));
+          }
+          
+          // Unregister all service workers
+          if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            await Promise.all(registrations.map(reg => reg.unregister()));
+          }
+          
+          // Hard reload with cache busting
+          window.location.href = window.location.origin + window.location.pathname + '?t=' + Date.now();
+        } catch (error) {
+          // Fallback: force reload anyway
+          window.location.reload();
         }
-        
-        // Hard reload that bypasses cache
-        window.location.reload();
       }, 1500);
 
     } catch (error) {
