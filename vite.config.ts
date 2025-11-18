@@ -18,8 +18,8 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     // Configuração PWA
     VitePWA({
-      registerType: "autoUpdate",
-      injectRegister: 'auto',
+      registerType: "prompt",
+      injectRegister: null,
       devOptions: {
         enabled: false
       },
@@ -59,8 +59,8 @@ export default defineConfig(({ mode }) => ({
       workbox: {
         // Configuração para coexistir com OneSignal
         cleanupOutdatedCaches: true,
-        skipWaiting: true,
-        clientsClaim: true,
+        skipWaiting: false,
+        clientsClaim: false,
 
         // Não gerenciar navegação - deixar OneSignal fazer isso
         navigateFallback: undefined,

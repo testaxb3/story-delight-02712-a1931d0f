@@ -99,39 +99,21 @@ export function useAppVersion() {
       localStorage.removeItem(UPDATE_ATTEMPT_KEY);
 
       toast.success('Updating app...', {
-        description: 'Please wait while we update the application.',
-        duration: 2000,
+        description: 'The app will reload in a moment.',
+        duration: 1500,
       });
 
-      // Wait for service worker to be ready and in control before reloading
-      if ('serviceWorker' in navigator) {
-        let reloadTimeout: NodeJS.Timeout;
-        
-        const handleControllerChange = () => {
-          clearTimeout(reloadTimeout);
-          // New service worker has taken control, safe to reload now
-          window.location.reload();
-        };
-
-        // Register listener for when the new SW takes control
-        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange, { once: true });
-
-        // Tell the waiting service worker to skip waiting and activate
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration && registration.waiting) {
-          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-        }
-
-        // Fallback: if controllerchange doesn't fire within 3 seconds, reload anyway
-        reloadTimeout = setTimeout(() => {
-          navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-          window.location.reload();
-        }, 3000);
+      // Use the proper PWA update mechanism
+      const updateSW = (window as any).__updateSW;
+      
+      if (updateSW) {
+        // This will trigger the service worker update and reload
+        await updateSW(true);
       } else {
-        // No service worker support, just reload
+        // Fallback: traditional reload after a short delay
         setTimeout(() => {
           window.location.reload();
-        }, 2000);
+        }, 1500);
       }
 
     } catch (error) {
