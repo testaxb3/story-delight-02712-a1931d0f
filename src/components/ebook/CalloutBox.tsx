@@ -88,7 +88,9 @@ const renderContent = (content: string) => {
 };
 
 export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
-  const config = calloutConfig[type];
+  // Validate type and fallback to 'remember' if invalid
+  const validType = type && calloutConfig[type] ? type : "remember";
+  const config = calloutConfig[validType];
   const Icon = config.icon;
   
   // Handle both string and object content
