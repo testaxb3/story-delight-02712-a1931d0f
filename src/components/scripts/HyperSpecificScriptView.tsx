@@ -369,7 +369,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
           </button>
 
           {whyThisWorksExpanded && (
-            <div className="px-5 pb-5 animate-in fade-in duration-200 space-y-5">
+            <div className="px-5 pb-5 animate-in fade-in duration-200 space-y-4">
               {script.why_this_works.split('\n\n').map((paragraph, idx) => {
                 const trimmed = paragraph.trim();
                 
@@ -463,23 +463,22 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                   );
                 }
 
-                // Regular paragraph with inline markdown - split if very long
-                if (trimmed.length > 200) {
-                  const sentences = trimmed.split(/\.\s+/).filter(s => s.trim());
-                  if (sentences.length > 2) {
-                    return (
-                      <div key={idx} className="space-y-2 pl-2">
-                        {sentences.map((sentence, sIdx) => (
-                          <p key={sIdx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
-                            {renderMarkdown(sentence.trim() + (sentence.endsWith('.') ? '' : '.'))}
-                          </p>
-                        ))}
-                      </div>
-                    );
-                  }
+                // Regular paragraph - render with proper line breaks
+                // Split by single newlines within the paragraph for better readability
+                const lines = trimmed.split('\n').filter(l => l.trim());
+                if (lines.length > 1) {
+                  return (
+                    <div key={idx} className="space-y-2 pl-2">
+                      {lines.map((line, lineIdx) => (
+                        <p key={lineIdx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
+                          {renderMarkdown(line.trim())}
+                        </p>
+                      ))}
+                    </div>
+                  );
                 }
                 
-                // Regular short paragraph
+                // Single line paragraph
                 return (
                   <p key={idx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200 pl-2">
                     {renderMarkdown(trimmed)}
