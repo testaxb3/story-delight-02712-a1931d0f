@@ -34,6 +34,7 @@ export interface WhatToExpect {
 export interface CommonVariation {
   variation_scenario: string;
   variation_response: string;
+  why_this_works?: string;
 }
 
 /**

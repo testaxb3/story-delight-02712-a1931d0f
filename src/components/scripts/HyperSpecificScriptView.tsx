@@ -12,6 +12,7 @@ import {
   type WhatToExpect,
   type CommonVariation
 } from "@/types/script-structure";
+import { renderMarkdown } from "@/lib/markdownRenderer";
 
 type Script = Database["public"]["Tables"]["scripts"]["Row"];
 
@@ -201,33 +202,35 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
               <div className="space-y-3.5">
                 {script.what_doesnt_work.split('\n\n').map((paragraph, idx) => {
                   // Check if it's a "Why these backfire" summary paragraph
-                  if (paragraph.trim().startsWith('→ Why these backfire:')) {
+                  if (paragraph.trim().startsWith('→ Why these backfire:') || paragraph.trim().startsWith('**Why')) {
                     return (
                       <div key={idx} className="mt-4 pt-4 border-t-2 border-red-300/50 dark:border-red-700/50">
                         <p className="text-sm font-semibold text-red-900 dark:text-red-100 leading-relaxed">
-                          {paragraph.replace('→ Why these backfire:', '').trim()}
+                          {renderMarkdown(paragraph.replace('→ Why these backfire:', '').replace(/^\*\*|\*\*$/g, '').trim())}
                         </p>
                       </div>
                     );
                   }
 
-                  // Check if it's a bullet point (starts with ❌)
-                  if (paragraph.trim().startsWith('❌')) {
+                  // Check if it's a bullet point (starts with ❌ or •)
+                  if (paragraph.trim().startsWith('❌') || paragraph.trim().startsWith('•')) {
                     const lines = paragraph.split('\n');
-                    const mainText = lines[0].replace('❌', '').trim();
+                    const mainText = lines[0].replace(/^[❌•]\s*/, '').trim();
                     const explanation = lines.slice(1).join(' ').replace('→', '').trim();
 
                     return (
                       <div key={idx} className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-200 dark:border-red-800 shadow-sm">
                         <div className="flex items-start gap-3 mb-2">
-                          <span className="text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5">❌</span>
+                          <span className="text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5">
+                            {paragraph.trim().startsWith('❌') ? '❌' : '•'}
+                          </span>
                           <p className="text-base font-medium text-red-900 dark:text-red-100 leading-relaxed">
-                            {mainText}
+                            {renderMarkdown(mainText)}
                           </p>
                         </div>
                         {explanation && (
                           <p className="text-sm text-red-700 dark:text-red-300 ml-9 leading-relaxed italic">
-                            {explanation}
+                            {renderMarkdown(explanation)}
                           </p>
                         )}
                       </div>
@@ -237,7 +240,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                   // Regular paragraph
                   return (
                     <p key={idx} className="text-sm text-red-800 dark:text-red-200 leading-relaxed">
-                      {paragraph.trim()}
+                      {renderMarkdown(paragraph.trim())}
                     </p>
                   );
                 })}
@@ -355,28 +358,62 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
           {whyThisWorksExpanded && (
             <div className="px-5 pb-5 animate-in fade-in duration-200 space-y-4">
               {script.why_this_works.split('\n\n').map((paragraph, idx) => {
-                // Check if paragraph starts with **bold text**
-                const boldMatch = paragraph.match(/^\*\*(.+?)\*\*:?(.*)$/s);
+                const trimmed = paragraph.trim();
+                
+                // Check for numbered list item: "1. **Title** = explanation"
+                const numberedMatch = trimmed.match(/^(\d+)\.\s+\*\*(.+?)\*\*\s*[=:]\s*(.+)$/s);
+                if (numberedMatch) {
+                  return (
+                    <div key={idx} className="flex items-start gap-3">
+                      <span className="font-bold text-purple-600 dark:text-purple-400 shrink-0">
+                        {numberedMatch[1]}.
+                      </span>
+                      <div>
+                        <h4 className="text-base font-bold text-purple-900 dark:text-purple-100 inline">
+                          {numberedMatch[2]}
+                        </h4>
+                        <span className="text-sm text-purple-800 dark:text-purple-200"> = </span>
+                        <span className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
+                          {renderMarkdown(numberedMatch[3].trim())}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                }
 
-                if (boldMatch) {
+                // Check for bullet point: "• text"
+                if (trimmed.startsWith('•')) {
+                  return (
+                    <div key={idx} className="flex items-start gap-2">
+                      <span className="text-purple-600 dark:text-purple-400 shrink-0 mt-1">•</span>
+                      <p className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
+                        {renderMarkdown(trimmed.substring(1).trim())}
+                      </p>
+                    </div>
+                  );
+                }
+
+                // Check if paragraph starts with **bold text:** (subtitle)
+                const subtitleMatch = trimmed.match(/^\*\*(.+?)\*\*:(.*)$/s);
+                if (subtitleMatch) {
                   return (
                     <div key={idx}>
                       <h4 className="text-base font-bold text-purple-900 dark:text-purple-100 mb-2">
-                        {boldMatch[1]}
+                        {subtitleMatch[1]}
                       </h4>
-                      {boldMatch[2].trim() && (
+                      {subtitleMatch[2].trim() && (
                         <p className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
-                          {boldMatch[2].trim()}
+                          {renderMarkdown(subtitleMatch[2].trim())}
                         </p>
                       )}
                     </div>
                   );
                 }
 
-                // Regular paragraph
+                // Regular paragraph with inline markdown
                 return (
                   <p key={idx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
-                    {paragraph.trim()}
+                    {renderMarkdown(trimmed)}
                   </p>
                 );
               })}
@@ -409,7 +446,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                      'First Few Weeks:'}
                   </p>
                   <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
-                    {whatToExpect.first_30_seconds || whatToExpect.first_5_minutes || whatToExpect.first_few_days || whatToExpect.first_week || whatToExpect.first_few_weeks}
+                    {renderMarkdown(whatToExpect.first_30_seconds || whatToExpect.first_5_minutes || whatToExpect.first_few_days || whatToExpect.first_week || whatToExpect.first_few_weeks || '')}
                   </p>
                 </div>
               )}
@@ -428,7 +465,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                      'By X Weeks:'}
                   </p>
                   <p className="text-sm text-amber-900 dark:text-amber-100 leading-relaxed">
-                    {whatToExpect.by_90_seconds || whatToExpect.by_2_minutes || whatToExpect.by_3_minutes || whatToExpect.by_10_minutes || whatToExpect.by_week_2 || whatToExpect.by_week_3 || whatToExpect.by_2_months || whatToExpect.by_x_weeks}
+                    {renderMarkdown(whatToExpect.by_90_seconds || whatToExpect.by_2_minutes || whatToExpect.by_3_minutes || whatToExpect.by_10_minutes || whatToExpect.by_week_2 || whatToExpect.by_week_3 || whatToExpect.by_2_months || whatToExpect.by_x_weeks || '')}
                   </p>
                 </div>
               )}
@@ -439,7 +476,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                   {whatToExpect.dont_expect && Array.isArray(whatToExpect.dont_expect) && whatToExpect.dont_expect.map((item, idx) => (
                     <li key={idx} className="text-sm text-red-800 dark:text-red-200 flex items-start gap-2">
                       <span className="text-red-500 mt-0.5">•</span>
-                      <span>{item}</span>
+                      <span>{renderMarkdown(item)}</span>
                     </li>
                   ))}
                 </ul>
@@ -447,7 +484,9 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
 
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/40 dark:to-emerald-950/40 rounded-lg p-4 border-2 border-green-400 dark:border-green-600 shadow-sm">
                 <p className="text-xs font-bold text-green-700 dark:text-green-300 uppercase tracking-wide mb-2">✅ This Is Success:</p>
-                <p className="text-sm font-medium text-green-900 dark:text-green-100 leading-relaxed">{whatToExpect.this_is_success}</p>
+                <p className="text-sm font-medium text-green-900 dark:text-green-100 leading-relaxed">
+                  {renderMarkdown(whatToExpect.this_is_success || '')}
+                </p>
               </div>
             </div>
           </div>
@@ -482,11 +521,25 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
               <div className="px-5 pb-5 space-y-3 animate-in fade-in duration-200">
                 {commonVariations.map((variation, idx) => (
                   <div key={idx} className="bg-white/80 dark:bg-slate-800/80 rounded-lg p-4 backdrop-blur-sm border border-orange-200/50 dark:border-orange-700/50 shadow-sm">
-                    <p className="text-sm font-bold text-orange-900 dark:text-orange-100 mb-2">{variation.variation_scenario}</p>
+                    <p className="text-sm font-bold text-orange-900 dark:text-orange-100 mb-2">
+                      {renderMarkdown(variation.variation_scenario)}
+                    </p>
                     <div className="flex items-start gap-2 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/40 dark:to-emerald-950/40 rounded-lg p-3 border-l-4 border-green-500">
                       <MessageCircle className="w-4 h-4 text-green-600 dark:text-green-400 mt-0.5 shrink-0" />
-                      <p className="text-sm text-green-900 dark:text-green-100 leading-relaxed">"{variation.variation_response}"</p>
+                      <p className="text-sm text-green-900 dark:text-green-100 leading-relaxed">
+                        "{renderMarkdown(variation.variation_response)}"
+                      </p>
                     </div>
+                    {variation.why_this_works && (
+                      <div className="mt-3 pt-3 border-t border-orange-200/50 dark:border-orange-700/50">
+                        <p className="text-xs font-semibold text-orange-700 dark:text-orange-300 uppercase tracking-wide mb-1">
+                          Why This Works:
+                        </p>
+                        <p className="text-sm text-orange-800 dark:text-orange-200 leading-relaxed">
+                          {renderMarkdown(variation.why_this_works)}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -499,7 +552,9 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
       {script.parent_state_needed && (
         <div className="bg-slate-100 dark:bg-slate-900 rounded-lg p-4 border border-slate-300 dark:border-slate-700">
           <p className="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide mb-1">📍 Parent State Needed:</p>
-          <p className="text-sm text-slate-800 dark:text-slate-200">{script.parent_state_needed}</p>
+          <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed">
+            {renderMarkdown(script.parent_state_needed)}
+          </p>
         </div>
       )}
     </div>
