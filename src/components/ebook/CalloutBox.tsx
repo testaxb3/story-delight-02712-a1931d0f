@@ -104,15 +104,15 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
           </Badge>
 
           <div className="space-y-3 font-body text-base">
-            {content.split('\n').map((line, index) => {
-              if (!line.trim()) return null;
-
-              return (
-                <p key={index} className="text-foreground leading-relaxed m-0">
-                  {renderContent(line)}
-                </p>
-              );
-            })}
+            {content.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
+              <div key={paraIndex} className="space-y-1.5">
+                {paragraph.split('\n').filter(line => line.trim()).map((line, lineIndex) => (
+                  <p key={lineIndex} className="text-foreground leading-relaxed m-0">
+                    {renderContent(line)}
+                  </p>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </div>

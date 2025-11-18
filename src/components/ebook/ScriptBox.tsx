@@ -55,7 +55,11 @@ const renderContent = (content: string) => {
 };
 
 export const ScriptBox = ({ content }: ScriptBoxProps) => {
-  const lines = Array.isArray(content) ? content : [content];
+  // Handle both string and array content
+  const textContent = Array.isArray(content) ? content.join('\n') : content;
+  
+  // Split by double newlines for paragraphs, then split each paragraph by single newlines
+  const sections = textContent.split('\n\n').filter(section => section.trim());
   
   return (
     <div className="bg-secondary border-2 border-border rounded-2xl p-6 my-6 smooth-transition hover:shadow-md">
@@ -66,12 +70,20 @@ export const ScriptBox = ({ content }: ScriptBoxProps) => {
         </span>
       </div>
       
-      <div className="space-y-3 text-sm">
-        {lines.map((line, index) => (
-          <p key={index} className="text-foreground leading-relaxed border-l-4 border-primary pl-4">
-            {renderContent(line)}
-          </p>
-        ))}
+      <div className="space-y-4">
+        {sections.map((section, sectionIndex) => {
+          const lines = section.split('\n').filter(line => line.trim());
+          
+          return (
+            <div key={sectionIndex} className="space-y-2 border-l-4 border-primary pl-4">
+              {lines.map((line, lineIndex) => (
+                <p key={lineIndex} className="text-foreground leading-relaxed text-base">
+                  {renderContent(line)}
+                </p>
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
