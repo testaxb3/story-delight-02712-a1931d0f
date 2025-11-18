@@ -10,9 +10,10 @@ import { useAdminRateLimit } from '@/hooks/useAdminRateLimit';
 import { BonusData } from '@/components/bonuses/BonusCard';
 import { BonusCard } from '@/components/bonuses/BonusCard';
 import { BonusesTable } from './BonusesTable';
-import { BonusFormModal } from './BonusFormModal';
+import { SimplifiedBonusForm } from './SimplifiedBonusForm';
 import { OrphanedEbooksManager } from './OrphanedEbooksManager';
 import { AdminAuditLog } from './AdminAuditLog';
+import { supabase } from '@/integrations/supabase/client';
 import {
   useBonuses,
   useCreateBonus,
@@ -120,41 +121,73 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
     setShowFormModal(true);
   };
 
-  const handleSave = async (bonusData: any) => {
+  const handleSave = async (bonusData: any, ebookData?: { chapters: any[], markdownSource: string }) => {
     try {
-      const selectedEbookId = bonusData._selectedEbookId;
-
-      // Remove _selectedEbookId before saving to database
-      const { _selectedEbookId, ...cleanBonusData } = bonusData;
-
       let savedBonusId: string;
 
       if (editingBonus) {
         // Update existing
         await updateMutation.mutateAsync({
           id: editingBonus.id,
-          updates: cleanBonusData
+          updates: bonusData
         });
         savedBonusId = editingBonus.id;
+        toast.success('Bonus updated successfully!');
       } else {
         // Create new
-        const result = await createMutation.mutateAsync(cleanBonusData as Omit<BonusData, 'id'>);
+        const result = await createMutation.mutateAsync(bonusData as Omit<BonusData, 'id'>);
         savedBonusId = result.id;
-      }
 
-      // ✅ If ebook was selected, link it to the bonus
-      if (selectedEbookId && savedBonusId) {
-        try {
-          await updateEbook.mutateAsync({
-            id: selectedEbookId,
-            updates: {
-              bonus_id: savedBonusId,
-            },
-          });
-          toast.success('Bonus created and ebook linked successfully! ✅');
-        } catch (linkError) {
-          console.error('Error linking ebook:', linkError);
-          toast.error('Bonus created but error linking ebook');
+        // If this is an ebook bonus with markdown data, create the ebook in Supabase
+        if (ebookData && ebookData.chapters.length > 0) {
+          try {
+            // Create a slug from the title
+            const slug = bonusData.title
+              .toLowerCase()
+              .replace(/[^a-z0-9]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+
+            // Calculate reading stats
+            const totalWords = ebookData.markdownSource.split(/\s+/).length;
+            const estimatedTime = Math.ceil(totalWords / 200); // 200 words per minute
+
+            // Insert ebook into database
+            const { data: ebook, error: ebookError } = await supabase
+              .from('ebooks')
+              .insert({
+                title: bonusData.title,
+                subtitle: bonusData.description.substring(0, 200),
+                slug: slug,
+                content: ebookData.chapters,
+                markdown_source: ebookData.markdownSource,
+                total_chapters: ebookData.chapters.length,
+                total_words: totalWords,
+                estimated_reading_time: estimatedTime,
+                bonus_id: savedBonusId,
+                cover_color: '#8b5cf6',
+              })
+              .select()
+              .single();
+
+            if (ebookError) {
+              console.error('Error creating ebook:', ebookError);
+              toast.error('Bonus created but error creating ebook');
+            } else {
+              // Update bonus with ebook view URL
+              await updateMutation.mutateAsync({
+                id: savedBonusId,
+                updates: {
+                  viewUrl: `/ebook-v2/${ebook.id}`,
+                }
+              });
+              toast.success('Bonus and ebook created successfully! ✅');
+            }
+          } catch (ebookError) {
+            console.error('Error creating ebook:', ebookError);
+            toast.error('Bonus created but error creating ebook');
+          }
+        } else {
+          toast.success('Bonus created successfully!');
         }
       }
 
@@ -163,6 +196,7 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
       onContentChanged?.();
     } catch (error) {
       console.error('Error saving bonus:', error);
+      toast.error('Error saving bonus');
     }
   };
 
@@ -506,7 +540,7 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
       </Tabs>
 
       {/* Form Modal */}
-      <BonusFormModal
+      <SimplifiedBonusForm
         open={showFormModal}
         onOpenChange={setShowFormModal}
         bonus={editingBonus}
