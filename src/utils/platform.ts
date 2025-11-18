@@ -131,20 +131,21 @@ async function performIOSUpdate(): Promise<void> {
     // 4. Add a flag to prevent immediate re-check after reload
     sessionStorage.setItem('pwa_just_updated', 'true');
 
-    // 5. Hard reload without modifying URL (prevents 404 errors)
-    console.log('🔄 Reloading app with fresh cache...');
+    // 5. Redirect to root to avoid 404 on deep routes
+    console.log('🔄 Redirecting to root for clean update...');
 
-    // After clearing all caches and unregistering SW,
-    // a simple reload will fetch fresh content from network
-    // We use a small delay to ensure all cache operations complete
+    // SOLUÇÃO DEFINITIVA:
+    // Redirecionar para "/" garante que nunca teremos 404
+    // O vercel.json tem rewrites, mas esta é uma camada extra de segurança
+    // Após carregar, o React Router vai para a rota correta
     setTimeout(() => {
-      window.location.reload();
+      window.location.href = '/';
     }, 100);
 
   } catch (error) {
     console.error('❌ Error during iOS update:', error);
-    // Fallback: simple reload
-    window.location.reload();
+    // Fallback: redirect to root (never fails)
+    window.location.href = '/';
   }
 }
 
