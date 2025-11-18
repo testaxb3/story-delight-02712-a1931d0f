@@ -105,6 +105,8 @@ export async function performPlatformUpdate(): Promise<void> {
  */
 async function performIOSUpdate(): Promise<void> {
   try {
+    console.log('🍎 Starting iOS update process...');
+
     // 1. Clear all caches
     if ('caches' in window) {
       const cacheNames = await caches.keys();
@@ -126,12 +128,21 @@ async function performIOSUpdate(): Promise<void> {
     // 3. Clear localStorage session markers (keep user data)
     localStorage.removeItem('app_session_start');
 
-    // 4. Hard reload with cache bust
-    const cacheBuster = `?update=${Date.now()}`;
-    window.location.href = window.location.pathname + cacheBuster;
+    // 4. Add a flag to prevent immediate re-check after reload
+    sessionStorage.setItem('pwa_just_updated', 'true');
+
+    // 5. Hard reload without modifying URL (prevents 404 errors)
+    console.log('🔄 Reloading app with fresh cache...');
+
+    // After clearing all caches and unregistering SW,
+    // a simple reload will fetch fresh content from network
+    // We use a small delay to ensure all cache operations complete
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
 
   } catch (error) {
-    console.error('Error during iOS update:', error);
+    console.error('❌ Error during iOS update:', error);
     // Fallback: simple reload
     window.location.reload();
   }
