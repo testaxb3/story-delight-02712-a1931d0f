@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 
 interface CalloutBoxProps {
   type?: 'science' | 'try' | 'remember' | 'warning';
-  content: string;
+  content: string | { title?: string; body: string };
 }
 
 const calloutConfig = {
@@ -90,6 +90,14 @@ const renderContent = (content: string) => {
 export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
   const config = calloutConfig[type];
   const Icon = config.icon;
+  
+  // Handle both string and object content
+  const contentObj = typeof content === 'string' 
+    ? { body: content, title: undefined } 
+    : content;
+  
+  const displayTitle = contentObj.title || config.title;
+  const displayBody = contentObj.body;
 
   return (
     <div className={`my-8 p-8 rounded-2xl border-2 smooth-transition backdrop-blur-sm ${config.className}`}>
@@ -100,11 +108,11 @@ export const CalloutBox = ({ type = "remember", content }: CalloutBoxProps) => {
 
         <div className="flex-1 space-y-4">
           <Badge className={`${config.badgeClassName} px-4 py-1.5 text-xs tracking-wider uppercase`}>
-            {config.title}
+            {displayTitle}
           </Badge>
 
           <div className="space-y-3 font-body text-base">
-            {content.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
+            {displayBody.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
               <p key={paraIndex} className="text-foreground leading-relaxed">
                 {renderContent(paragraph)}
               </p>
