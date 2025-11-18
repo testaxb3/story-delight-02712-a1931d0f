@@ -1,0 +1,85 @@
+-- Insert The Meltdown Decoder V2 (Premium Reader Version)
+INSERT INTO ebooks (
+  title,
+  subtitle,
+  slug,
+  content,
+  total_chapters,
+  total_words,
+  estimated_reading_time,
+  cover_color,
+  metadata
+) VALUES (
+  'The Meltdown Decoder V2',
+  'What Your Child''s Behavior Is Really Telling You',
+  'meltdown-decoder-v2',
+  '[
+    {
+      "id": "intro",
+      "title": "Introduction",
+      "subtitle": "Why \"Just Stop\" Never Works",
+      "content": [
+        {"type": "paragraph", "content": "Your child is screaming because you cut their sandwich wrong. You''ve asked them to stop five times. They''re getting louder. You''re getting angrier. And somewhere in the back of your mind, you''re thinking, *\"Why can''t they just STOP?\"*"},
+        {"type": "callout", "calloutType": "science", "content": "**Here''s the truth nobody tells you**: They literally can''t.\n\nIt''s not because they''re manipulative, or spoiled, or \"playing you.\" It''s because their **brain is offline**—specifically, the part that controls logic, reasoning, and self-regulation."},
+        {"type": "heading", "level": 2, "content": "The Upstairs/Downstairs Brain"},
+        {"type": "paragraph", "content": "Dr. Dan Siegel''s model explains it perfectly:"},
+        {"type": "list", "content": ["**Upstairs brain** (Prefrontal Cortex): Logic, reasoning, impulse control, decision-making", "**Downstairs brain** (Amygdala + Limbic System): Emotions, fight-or-flight, survival instincts"]},
+        {"type": "callout", "calloutType": "remember", "content": "🧠 When your child is in meltdown mode, their **downstairs brain has taken over**. The upstairs brain (where logic lives) is completely offline.\n\nAsking them to \"just stop\" is like asking someone to do calculus during a panic attack."},
+        {"type": "heading", "level": 2, "content": "Why Traditional Discipline Backfires"},
+        {"type": "paragraph", "content": "Traditional consequences assume the upstairs brain is online:"},
+        {"type": "list", "content": ["*\"If you don''t stop screaming, no tablet tonight\"*", "*\"Count to three or you''re going to timeout\"*", "*\"I''m very disappointed in you\"*"]},
+        {"type": "callout", "calloutType": "warning", "content": "⚠️ **When the downstairs brain is in charge, these threats:**\n\n• **Aren''t processed** (the logic center is offline)\n• **Increase dysregulation** (more threats = more danger signals)\n• **Damage connection** (your child learns you''re not safe during hard moments)"},
+        {"type": "heading", "level": 2, "content": "What Actually Works: The Connection First Model"},
+        {"type": "paragraph", "content": "Before you can discipline, teach, or redirect, you must **regulate**."},
+        {"type": "callout", "calloutType": "try", "content": "✨ **The order MUST be:**\n\n1. **Connection** (safety signal to the nervous system)\n2. **Validation** (acknowledgment of their experience)\n3. **Command** (simple, clear direction)\n\nWe call this the **CVC Framework**, and you''ll master it in Chapter 3."},
+        {"type": "heading", "level": 2, "content": "Real Example: The \"Wrong\" Sandwich"},
+        {"type": "script", "content": ["**❌ Traditional Response (Doesn''t Work):**", "", "*\"That''s ridiculous. It''s the same sandwich. Stop crying right now or no dessert.\"*", "", "---", "", "**✅ CVC Response (Works):**", "", "**Connection**: *Kneel down, soft voice*", "→ *\"Hey buddy. Big feelings right now.\"*", "", "**Validation**: *Acknowledge their reality*", "→ *\"You wanted it cut triangles. I cut it squares. That feels really wrong.\"*", "", "**Command**: *Simple, actionable*", "→ *\"Let''s take three big breaths together. In through the nose...\"*"]},
+        {"type": "callout", "calloutType": "remember", "content": "💡 **Notice:** No logic. No explaining. No consequences. Just **regulation**.\n\nYou''re not teaching them a lesson right now—you''re teaching their nervous system that **you are safe**."},
+        {"type": "heading", "level": 2, "content": "The Neuroscience Nobody Tells You"},
+        {"type": "callout", "calloutType": "science", "content": "🔬 **Mirror neurons** mean your child''s nervous system **matches yours**:\n\n• You''re calm → They can start to calm\n• You''re escalating → They escalate faster\n\nYour regulation is **CONTAGIOUS**. This is why \"staying calm\" isn''t just good advice—it''s neurologically necessary."},
+        {"type": "callout", "calloutType": "try", "content": "**🎯 The Regulation Litmus Test:**\n\nCan your child answer a simple question correctly?\n\n• *\"What''s your name?\"*\n• *\"How old are you?\"*\n\nIf not, their upstairs brain is still offline. Keep regulating—don''t start teaching yet."}
+      ]
+    },
+    {
+      "id": "chapter-1",
+      "title": "Chapter 1",
+      "subtitle": "The Real Reason They''re \"Acting Out\"",
+      "content": [
+        {"type": "paragraph", "content": "Behavior is **communication**. Always."},
+        {"type": "paragraph", "content": "When your child refuses to get dressed, throws their plate, or melts down in the grocery store, they''re not *trying* to ruin your day. They''re communicating something their words can''t express."},
+        {"type": "callout", "calloutType": "remember", "content": "🧩 **The Golden Rule of Behavior:**\n\n*\"All behavior is communication. The question isn''t ''Why are they doing this to me?'' It''s ''What are they trying to tell me?''\"*"},
+        {"type": "heading", "level": 2, "content": "The 5 Hidden Messages Behind Challenging Behavior"},
+        {"type": "heading", "level": 3, "content": "1. Sensory Overload"},
+        {"type": "paragraph", "content": "**What it looks like:**"},
+        {"type": "list", "content": ["Covering ears in stores", "Refusing certain clothes (tags, seams)", "Meltdowns in crowded/loud places", "Hitting themselves or others"]},
+        {"type": "callout", "calloutType": "science", "content": "🔬 **The Science:** Neurodivergent children often have **sensory processing differences**. What feels like \"normal\" background noise to you might feel like a fire alarm to them.\n\nTheir nervous system is receiving **10x the input** without 10x the ability to filter it."},
+        {"type": "paragraph", "content": "**What they''re trying to say:** *\"This environment is physically painful. I need less input.\"*"},
+        {"type": "heading", "level": 3, "content": "2. Unmet Need"},
+        {"type": "paragraph", "content": "**What it looks like:**"},
+        {"type": "list", "content": ["Grabbing food aggressively", "Whining/clinging before meals", "Hyperactivity when they need movement", "Shutting down when tired"]},
+        {"type": "callout", "calloutType": "remember", "content": "💡 **H.A.L.T. Check:**\n\nBefore addressing behavior, ask:\n\n• **H**ungry?\n• **A**ngry?\n• **L**onely?\n• **T**ired?\n\nMeet the need FIRST. Then address the behavior."},
+        {"type": "heading", "level": 3, "content": "3. Lack of Control"},
+        {"type": "paragraph", "content": "**What it looks like:**"},
+        {"type": "list", "content": ["Power struggles over small things", "Refusing simple requests", "**\"You''re not the boss of me!\"**"]},
+        {"type": "callout", "calloutType": "science", "content": "🔬 **The Science:** Neurodivergent children often experience the world as **unpredictable and overwhelming**. Control-seeking behavior is their attempt to create safety.\n\n*\"If I can control the sandwich shape, maybe I can control the chaos I feel inside.\"*"},
+        {"type": "paragraph", "content": "**What they''re trying to say:** *\"My world feels out of control. I need to control SOMETHING.\"*"},
+        {"type": "heading", "level": 3, "content": "4. Communication Gaps"},
+        {"type": "paragraph", "content": "**What it looks like:**"},
+        {"type": "list", "content": ["Aggression when frustrated", "Shutting down when asked questions", "Repeating behavior after being told to stop"]},
+        {"type": "callout", "calloutType": "warning", "content": "⚠️ **The 7-Second Rule:**\n\nWhen dysregulated, children need **7+ seconds** to process any instruction.\n\nRepeating yourself faster doesn''t help—it **adds more overwhelm**."},
+        {"type": "heading", "level": 3, "content": "5. Nervous System Dysregulation"},
+        {"type": "paragraph", "content": "**What it looks like:**"},
+        {"type": "list", "content": ["Explosive reactions to small problems", "Can''t calm down even when need is met", "Behavior seems \"irrational\""]},
+        {"type": "callout", "calloutType": "science", "content": "🔬 **The Science:** Some children have a **lower threshold for stress**. Their nervous system moves from **calm → panic** faster than neurotypical children.\n\nThis is called a **narrow window of tolerance**."},
+        {"type": "heading", "level": 2, "content": "Decoding Your Child''s Behavior: The Detective Work"},
+        {"type": "paragraph", "content": "Use this framework to decode what''s really happening:"},
+        {"type": "callout", "calloutType": "try", "content": "**🔍 The Behavior Detective Framework:**\n\n1. **Observe:** What happened RIGHT before the behavior?\n2. **Pattern Check:** Is this happening at the same time of day? In the same location?\n3. **Body Cues:** Is their body showing signs of dysregulation? (Flushed face, tense muscles, rapid breathing)\n4. **Need Scan:** H.A.L.T. check—Hungry? Angry? Lonely? Tired?\n5. **Sensory Audit:** Is the environment too loud/bright/crowded?"}
+      ]
+    }
+  ]'::jsonb,
+  8,
+  7500,
+  30,
+  '#8b5cf6',
+  '{"version": "2.0", "format": "premium", "features": ["highlights", "callouts", "scripts", "tables"]}'::jsonb
+);
