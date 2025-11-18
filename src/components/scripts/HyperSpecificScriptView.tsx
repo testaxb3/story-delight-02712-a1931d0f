@@ -201,19 +201,32 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
               {/* Parse and format the what_doesnt_work content */}
               <div className="space-y-3.5">
                 {script.what_doesnt_work.split('\n\n').map((paragraph, idx) => {
+                  const trimmed = paragraph.trim();
+                  
                   // Check if it's a "Why these backfire" summary paragraph
-                  if (paragraph.trim().startsWith('→ Why these backfire:') || paragraph.trim().startsWith('**Why')) {
+                  if (trimmed.startsWith('→ Why these backfire:')) {
+                    const text = trimmed.replace('→ Why these backfire:', '').trim();
                     return (
                       <div key={idx} className="mt-4 pt-4 border-t-2 border-red-300/50 dark:border-red-700/50">
                         <p className="text-sm font-semibold text-red-900 dark:text-red-100 leading-relaxed">
-                          {renderMarkdown(paragraph.replace('→ Why these backfire:', '').replace(/^\*\*|\*\*$/g, '').trim())}
+                          {renderMarkdown(text)}
+                        </p>
+                      </div>
+                    );
+                  }
+                  
+                  if (trimmed.startsWith('**Why')) {
+                    return (
+                      <div key={idx} className="mt-4 pt-4 border-t-2 border-red-300/50 dark:border-red-700/50">
+                        <p className="text-sm font-semibold text-red-900 dark:text-red-100 leading-relaxed">
+                          {renderMarkdown(trimmed)}
                         </p>
                       </div>
                     );
                   }
 
                   // Check if it's a bullet point (starts with ❌ or •)
-                  if (paragraph.trim().startsWith('❌') || paragraph.trim().startsWith('•')) {
+                  if (trimmed.startsWith('❌') || trimmed.startsWith('•')) {
                     const lines = paragraph.split('\n');
                     const mainText = lines[0].replace(/^[❌•]\s*/, '').trim();
                     const explanation = lines.slice(1).join(' ').replace('→', '').trim();
@@ -222,7 +235,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                       <div key={idx} className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-200 dark:border-red-800 shadow-sm">
                         <div className="flex items-start gap-3 mb-2">
                           <span className="text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5">
-                            {paragraph.trim().startsWith('❌') ? '❌' : '•'}
+                            {trimmed.startsWith('❌') ? '❌' : '•'}
                           </span>
                           <p className="text-base font-medium text-red-900 dark:text-red-100 leading-relaxed">
                             {renderMarkdown(mainText)}
@@ -240,7 +253,7 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
                   // Regular paragraph
                   return (
                     <p key={idx} className="text-sm text-red-800 dark:text-red-200 leading-relaxed">
-                      {renderMarkdown(paragraph.trim())}
+                      {renderMarkdown(trimmed)}
                     </p>
                   );
                 })}
