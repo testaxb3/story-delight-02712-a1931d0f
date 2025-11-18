@@ -633,7 +633,7 @@ export function EbookCreationGuide() {
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
-                          <span>Set view_url: '/bonuses?ebook=[slug]'</span>
+                          <span>Set view_url: '/ebook-v2/[slug]' (use V2 reader route)</span>
                         </li>
                         <li className="flex items-start gap-2">
                           <CheckSquare className="w-4 h-4 mt-0.5 flex-shrink-0 text-purple-500" />
