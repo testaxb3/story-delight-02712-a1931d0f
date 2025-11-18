@@ -12,7 +12,8 @@ import {
   Brain,
   MessageSquare,
   CheckSquare,
-  ListChecks
+  ListChecks,
+  AlertTriangle
 } from 'lucide-react';
 import {
   ebookCategories,
@@ -463,21 +464,100 @@ export function EbookCreationGuide() {
             <div className="space-y-3">
               <h4 className="text-lg font-semibold flex items-center gap-2">
                 <MessageSquare className="w-5 h-5 text-primary" />
-                How to Request in Chat
+                How to Request in Chat (COMPLETE PROMPT TEMPLATE)
               </h4>
+              
               <Card className="p-4 bg-primary/10 border-primary">
-                <div className="space-y-3">
+                <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium mb-2">💬 Chat Format:</p>
-                    <code className="block p-3 bg-background rounded text-sm">
-                      "Create ebook: [category] for [profile] profile"
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      💬 Request Format:
+                    </p>
+                    <code className="block p-4 bg-background rounded text-xs whitespace-pre-wrap leading-relaxed">
+{`"Create ebook: [category] for [profile] profile
+
+PREPARATION CHECKLIST:
+✓ Review Writing Standards tab in src/components/Admin/EbookCreationGuide.tsx
+  • Study DO's and DON'Ts list (avoid generic AI phrases, use specific numbers)
+  • Review AI phrases to avoid section
+  • Analyze before/after writing examples for quality standards
+  • Understand callout types: REMEMBER, SCIENCE, WARNING, TRY
+
+✓ Review Templates tab for structure requirements
+  • Study 7-chapter template: Problem → Science → Framework → Scripts → Failures → Stories → Quick Ref
+  • Chapter formatting rules: H2 sections, 2-4 line paragraphs, callouts, script boxes
+  • Self-contained block requirements (no adjacent dependencies)
+
+✓ Study existing V2 ebooks in database
+  • Query: SELECT * FROM public.ebooks WHERE slug LIKE '%-v2'
+  • Examine JSON structure of content field {chapters: [...]}
+  • Analyze how callouts, scripts, tables, and formatting are implemented
+  • Study how line breaks are used within paragraphs for readability
+
+✓ Review rendering components to understand data structure
+  • src/components/ebook/v2/ChapterContentV2.tsx - Main content renderer
+  • src/components/ebook/CalloutBox.tsx - Callout block structure
+  • src/components/ebook/ScriptBox.tsx - Script block structure
+
+CONTENT CREATION GUIDELINES:
+• Write in engaging, best-seller book style (NOT dry instructional text)
+• Use specific numbers and real examples (NOT generic statements like "many parents")
+• Include micro-story opening in Chapter 1 to hook reader
+• Add 1-2 callouts per section using appropriate types based on content
+• Include script boxes with NEP scripts in strategy chapters
+• Ensure proper line breaks within paragraphs for readability
+• Bold key concepts, italic for emphasis, lists for processes
+• Write 1500-2000 words per chapter
+
+QUALITY VALIDATION (RUN BEFORE SUBMITTING):
+✓ Run through Checklist tab - verify all items pass
+✓ Verify all blocks are self-contained (callout content complete in one block)
+✓ Check JSON structure matches Reader V2 format exactly
+✓ Confirm no AI phrases or generic language
+✓ Validate category matches requested topic accurately
+✓ Ensure profile-specific content addresses that brain type's needs
+
+AUTO-COMPLETE AFTER CREATION:
+• Create migration to INSERT into public.ebooks with proper JSON structure
+• Auto-create bonus entry in public.bonuses (category: 'ebook')
+• Auto-link ebook to bonus via UPDATE ebooks SET bonus_id = [new_bonus_id]
+• No user intervention required for bonus creation"`}
                     </code>
                   </div>
-                  <div>
-                    <p className="text-sm font-medium mb-2">Example:</p>
-                    <code className="block p-3 bg-background rounded text-sm">
-                      "Create ebook: routines for INTENSE profile"
+
+                  <div className="pt-2 border-t">
+                    <p className="text-sm font-medium mb-2 flex items-center gap-2">
+                      📝 Complete Example:
+                    </p>
+                    <code className="block p-4 bg-background rounded text-xs whitespace-pre-wrap leading-relaxed">
+{`"Create ebook: bedtime routines for INTENSE profile
+
+[Include full PREPARATION CHECKLIST above]
+[Follow all CONTENT CREATION GUIDELINES]
+[Run QUALITY VALIDATION before inserting]
+[Auto-complete bonus creation and linking]"`}
                     </code>
+                  </div>
+
+                  <div className="pt-2 border-t space-y-2">
+                    <div className="flex items-start gap-2 p-2 bg-destructive/10 rounded">
+                      <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 flex-shrink-0" />
+                      <div className="text-xs">
+                        <strong className="text-destructive">CRITICAL:</strong> Always auto-create bonus + link after ebook creation. Without bonus link, ebook won't appear on bonuses page.
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 p-2 bg-yellow-500/10 rounded">
+                      <AlertTriangle className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs">
+                        <strong className="text-yellow-600">WARNING:</strong> Validate JSON structure before INSERT. Invalid structure causes rendering errors.
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 p-2 bg-green-500/10 rounded">
+                      <CheckSquare className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                      <div className="text-xs">
+                        <strong className="text-green-600">QUALITY:</strong> Run full Checklist tab validation before considering ebook complete.
+                      </div>
+                    </div>
                   </div>
                 </div>
               </Card>
