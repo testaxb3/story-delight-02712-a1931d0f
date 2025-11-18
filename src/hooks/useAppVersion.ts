@@ -85,97 +85,61 @@ export function useAppVersion() {
   const handleUpdate = async () => {
     if (!versionInfo) return;
 
-    // Check for infinite loop protection
-    const attemptCount = parseInt(localStorage.getItem(UPDATE_ATTEMPT_KEY) || '0', 10);
-
-    if (attemptCount >= MAX_UPDATE_ATTEMPTS) {
-      logger.error('Max update attempts reached. Preventing infinite loop.');
-      toast.error('Update failed after multiple attempts', {
-        description: 'Please clear your browser cache manually or contact support.',
-        duration: 10000,
-      });
-      // Clear the attempt counter after showing error
-      localStorage.removeItem(UPDATE_ATTEMPT_KEY);
-      return;
-    }
-
-    // Increment attempt counter
-    localStorage.setItem(UPDATE_ATTEMPT_KEY, String(attemptCount + 1));
-
     try {
-      // Show initial progress
-      const toastId = toast.loading('Preparing update...', {
-        description: 'Please wait while we update the app',
-      });
+      setChecking(true);
 
-      // Mark version as acknowledged FIRST (before any cache operations)
+      // Mark as acknowledged
       const currentVersion = `${versionInfo.version}-${versionInfo.build}`;
       localStorage.setItem(STORAGE_KEY, currentVersion);
 
-      // Acknowledge update in backend
-      toast.loading('Saving update status...', {
-        id: toastId,
-        description: 'Recording your update',
-      });
-
+      // Save to database
       await supabase.rpc('acknowledge_app_update');
 
-      // Clear attempt counter on success
+      // Remove the update attempt counter
       localStorage.removeItem(UPDATE_ATTEMPT_KEY);
 
-      // Show success message
-      toast.success('Update ready!', {
-        id: toastId,
-        description: 'Reloading application...',
-        duration: 1500,
+      toast.success('Updating app...', {
+        description: 'Please wait while we update the application.',
+        duration: 2000,
       });
 
-      // Aggressive cache clearing and service worker reset
-      setTimeout(async () => {
-        try {
-          // Clear all caches
-          if ('caches' in window) {
-            const cacheNames = await caches.keys();
-            await Promise.all(cacheNames.map(name => caches.delete(name)));
-          }
-          
-          // Unregister all service workers
-          if ('serviceWorker' in navigator) {
-            const registrations = await navigator.serviceWorker.getRegistrations();
-            await Promise.all(registrations.map(reg => reg.unregister()));
-          }
-          
-          // Hard reload with cache busting
-          window.location.href = window.location.origin + window.location.pathname + '?t=' + Date.now();
-        } catch (error) {
-          // Fallback: force reload anyway
+      // Wait for service worker to be ready and in control before reloading
+      if ('serviceWorker' in navigator) {
+        let reloadTimeout: NodeJS.Timeout;
+        
+        const handleControllerChange = () => {
+          clearTimeout(reloadTimeout);
+          // New service worker has taken control, safe to reload now
           window.location.reload();
+        };
+
+        // Register listener for when the new SW takes control
+        navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange, { once: true });
+
+        // Tell the waiting service worker to skip waiting and activate
+        const registration = await navigator.serviceWorker.getRegistration();
+        if (registration && registration.waiting) {
+          registration.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
-      }, 1500);
 
-    } catch (error) {
-      logger.error('Error during app update:', error);
-
-      // Check if we've exceeded max attempts
-      const newAttemptCount = parseInt(localStorage.getItem(UPDATE_ATTEMPT_KEY) || '0', 10);
-
-      if (newAttemptCount >= MAX_UPDATE_ATTEMPTS) {
-        toast.error('Update failed', {
-          description: 'Max retry attempts reached. Please refresh manually.',
-          duration: 10000,
-        });
-        localStorage.removeItem(UPDATE_ATTEMPT_KEY);
-        return; // Don't reload if max attempts reached
+        // Fallback: if controllerchange doesn't fire within 3 seconds, reload anyway
+        reloadTimeout = setTimeout(() => {
+          navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+          window.location.reload();
+        }, 3000);
+      } else {
+        // No service worker support, just reload
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
 
-      // Show error but don't reload automatically
+    } catch (error) {
+      logger.error('Error during update:', error);
       toast.error('Update failed', {
-        description: 'Please try again or refresh the page manually.',
-        duration: 5000,
+        description: 'Please try refreshing the page manually.',
       });
-
-      // Don't reload on error - let user retry manually
-      return;
+      setChecking(false);
     }
   };
 
