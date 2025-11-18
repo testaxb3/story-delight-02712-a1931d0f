@@ -84,8 +84,14 @@ const categoryConfig: Record<BonusCategory, {
 };
 
 export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
-  const config = categoryConfig[bonus.category as BonusCategory] || categoryConfig[BonusCategory.EBOOK];
-  const IconComponent = config.icon;
+  // Ensure valid category with robust fallback
+  const validCategory = (bonus.category && 
+    Object.values(BonusCategory).includes(bonus.category as BonusCategory)) 
+    ? (bonus.category as BonusCategory) 
+    : BonusCategory.EBOOK;
+  
+  const config = categoryConfig[validCategory];
+  const IconComponent = config?.icon || BookOpen;
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
 
@@ -125,7 +131,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
               />
             </>
           ) : (
-            <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${config.color} opacity-80`}>
+            <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${config?.color || 'from-blue-500 to-cyan-500'} opacity-80`}>
               <IconComponent className="w-20 h-20 text-white/90" />
             </div>
           )}
@@ -162,7 +168,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
 
           {/* Category badge */}
           <div className="absolute bottom-3 right-3">
-            <Badge className={cn(config.bgColor, config.textColor, "backdrop-blur-sm shadow-lg border-0")}>
+            <Badge className={cn(config?.bgColor || 'bg-blue-500/10', config?.textColor || 'text-blue-500', "backdrop-blur-sm shadow-lg border-0")}>
               <IconComponent className="w-3 h-3 mr-1" />
               {bonus.category.toUpperCase()}
             </Badge>
@@ -285,7 +291,7 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
                   <Button
                     className={cn(
                       "flex-1 group/btn transition-all duration-300",
-                      !bonus.completed && config.glowClass
+                      !bonus.completed && (config?.glowClass || '')
                     )}
                     onClick={() => onAction?.(bonus)}
                   >
