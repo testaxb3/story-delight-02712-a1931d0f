@@ -133,8 +133,13 @@ export function useAppVersion() {
       // Force a hard reload to bypass all caches
       // This is safer than manually clearing caches in PWA context
       setTimeout(() => {
-        // Use location.href assignment for hard reload that works in PWA
-        window.location.href = window.location.href;
+        // Send message to service worker to skip waiting and activate immediately
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+        
+        // Hard reload that bypasses cache
+        window.location.reload();
       }, 1500);
 
     } catch (error) {
