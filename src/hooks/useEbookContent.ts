@@ -42,9 +42,15 @@ export function useEbookContent(ebookId: string | undefined) {
       if (!data) return null;
       
       // Parse JSONB content to Chapter[]
-      const chapters: Chapter[] = Array.isArray(data.content) 
+      let rawChapters = Array.isArray(data.content) 
         ? (data.content as any) 
         : (data.content?.chapters || []);
+      
+      // Ensure each chapter has an id field
+      const chapters: Chapter[] = rawChapters.map((chapter: any, index: number) => ({
+        ...chapter,
+        id: chapter.id || chapter.number?.toString() || `chapter-${index + 1}`,
+      }));
       
       return {
         ...data,
