@@ -12,56 +12,72 @@ export function renderMarkdown(text: string): React.ReactNode[] {
   let key = 0;
 
   while (currentText.length > 0) {
-    // Check for bold: **text**
-    const boldMatch = currentText.match(/^\*\*(.+?)\*\*/);
-    if (boldMatch) {
-      elements.push(
-        <strong key={key++} className="font-semibold text-foreground">
-          {boldMatch[1]}
-        </strong>
-      );
-      currentText = currentText.slice(boldMatch[0].length);
-      continue;
+    // Find the next markdown pattern
+    const boldIndex = currentText.search(/\*\*(.+?)\*\*/);
+    const italicIndex = currentText.search(/[*_](.+?)[*_]/);
+    const codeIndex = currentText.search(/`(.+?)`/);
+
+    // Find which pattern comes first
+    const patterns = [
+      { index: boldIndex, type: 'bold' },
+      { index: italicIndex, type: 'italic' },
+      { index: codeIndex, type: 'code' }
+    ].filter(p => p.index !== -1).sort((a, b) => a.index - b.index);
+
+    // If no patterns found, add remaining text
+    if (patterns.length === 0) {
+      elements.push(currentText);
+      break;
     }
 
-    // Check for italic: *text* or _text_
-    const italicMatch = currentText.match(/^[*_](.+?)[*_]/);
-    if (italicMatch) {
-      elements.push(
-        <em key={key++} className="italic">
-          {italicMatch[1]}
-        </em>
-      );
-      currentText = currentText.slice(italicMatch[0].length);
-      continue;
+    const nextPattern = patterns[0];
+
+    // Add text before the pattern
+    if (nextPattern.index > 0) {
+      elements.push(currentText.substring(0, nextPattern.index));
     }
 
-    // Check for inline code: `code`
-    const codeMatch = currentText.match(/^`(.+?)`/);
-    if (codeMatch) {
-      elements.push(
-        <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
-          {codeMatch[1]}
-        </code>
-      );
-      currentText = currentText.slice(codeMatch[0].length);
-      continue;
-    }
-
-    // No markdown found, add regular character
-    const nextSpecialChar = currentText.search(/[*_`]/);
-    const textToAdd = nextSpecialChar === -1 
-      ? currentText 
-      : currentText.slice(0, nextSpecialChar);
+    // Process the pattern
+    const textAfterPrelude = currentText.substring(nextPattern.index);
     
-    if (textToAdd) {
-      elements.push(textToAdd);
-      currentText = currentText.slice(textToAdd.length);
-    } else {
-      // Edge case: special char that didn't match, just add it
-      elements.push(currentText[0]);
-      currentText = currentText.slice(1);
+    if (nextPattern.type === 'bold') {
+      const match = textAfterPrelude.match(/^\*\*(.+?)\*\*/);
+      if (match) {
+        elements.push(
+          <strong key={key++} className="font-semibold text-foreground">
+            {match[1]}
+          </strong>
+        );
+        currentText = textAfterPrelude.substring(match[0].length);
+        continue;
+      }
+    } else if (nextPattern.type === 'italic') {
+      const match = textAfterPrelude.match(/^[*_](.+?)[*_]/);
+      if (match) {
+        elements.push(
+          <em key={key++} className="italic">
+            {match[1]}
+          </em>
+        );
+        currentText = textAfterPrelude.substring(match[0].length);
+        continue;
+      }
+    } else if (nextPattern.type === 'code') {
+      const match = textAfterPrelude.match(/^`(.+?)`/);
+      if (match) {
+        elements.push(
+          <code key={key++} className="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">
+            {match[1]}
+          </code>
+        );
+        currentText = textAfterPrelude.substring(match[0].length);
+        continue;
+      }
     }
+
+    // If we get here, the pattern didn't match (edge case), skip one character
+    elements.push(currentText[0]);
+    currentText = currentText.substring(1);
   }
 
   return elements;
