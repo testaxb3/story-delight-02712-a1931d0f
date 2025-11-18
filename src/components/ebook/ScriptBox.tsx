@@ -62,10 +62,10 @@ export const ScriptBox = ({ content }: ScriptBoxProps) => {
   const sections = textContent.split('\n\n').filter(section => section.trim());
   
   return (
-    <div className="bg-secondary border-2 border-border rounded-2xl p-6 my-6 smooth-transition hover:shadow-md">
+    <div className="bg-accent/10 dark:bg-accent/5 border-2 border-accent/20 dark:border-accent/10 rounded-2xl p-6 my-6 smooth-transition hover:shadow-md">
       <div className="flex items-center gap-3 mb-4">
-        <MessageSquare className="w-5 h-5 text-primary" />
-        <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+        <MessageSquare className="w-5 h-5 text-accent-foreground" />
+        <span className="text-sm font-semibold text-accent-foreground/70 uppercase tracking-wider">
           Script
         </span>
       </div>
@@ -75,7 +75,7 @@ export const ScriptBox = ({ content }: ScriptBoxProps) => {
           const lines = section.split('\n').filter(line => line.trim());
           
           return (
-            <div key={sectionIndex} className="space-y-2 border-l-4 border-primary pl-4">
+            <div key={sectionIndex} className="space-y-2 border-l-4 border-accent/40 dark:border-accent/20 pl-4">
               {lines.map((line, lineIndex) => (
                 <p key={lineIndex} className="text-foreground leading-relaxed text-base">
                   {renderContent(line)}
