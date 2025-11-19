@@ -81,13 +81,6 @@ const EbookReaderV2Page = () => {
 
   return (
     <div className="relative">
-      {/* V2 Badge */}
-      <div className="fixed top-4 right-4 z-[60]">
-        <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-semibold">
-          Reader V2 (Beta)
-        </Badge>
-      </div>
-
       <EbookReaderV2
         chapters={finalChapters}
         initialChapter={initialChapter}
