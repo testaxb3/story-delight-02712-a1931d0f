@@ -5,13 +5,34 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { pdf } from '@react-pdf/renderer';
+import { MethodologyPDF } from '@/components/MethodologyPDF';
+import { toast } from 'sonner';
 
 export default function Methodology() {
   const { t } = useTranslation();
   
-  const handleDownloadPDF = () => {
-    // Usa a funcionalidade de impressão do navegador que gera PDFs melhores
-    window.print();
+  const handleDownloadPDF = async () => {
+    try {
+      toast.loading('Gerando PDF profissional...');
+      
+      // Gera o documento PDF
+      const blob = await pdf(<MethodologyPDF t={t} />).toBlob();
+      
+      // Cria URL e faz download
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'metodologia-nep-system.pdf';
+      link.click();
+      
+      // Limpa
+      URL.revokeObjectURL(url);
+      toast.success('PDF baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error('Erro ao gerar PDF');
+    }
   };
   
   return (
