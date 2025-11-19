@@ -5,34 +5,162 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import { pdf } from '@react-pdf/renderer';
-import { MethodologyPDF } from '@/components/MethodologyPDF';
-import { toast } from 'sonner';
 
 export default function Methodology() {
   const { t } = useTranslation();
   
-  const handleDownloadPDF = async () => {
-    try {
-      toast.loading('Gerando PDF profissional...');
-      
-      // Gera o documento PDF
-      const blob = await pdf(<MethodologyPDF t={t} />).toBlob();
-      
-      // Cria URL e faz download
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'metodologia-nep-system.pdf';
-      link.click();
-      
-      // Limpa
-      URL.revokeObjectURL(url);
-      toast.success('PDF baixado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      toast.error('Erro ao gerar PDF');
-    }
+  const handleDownloadHTML = () => {
+    const htmlContent = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${t.methodology.title}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #1f2937; background: #f9fafb; padding: 40px 20px; }
+    .container { max-width: 900px; margin: 0 auto; background: white; padding: 60px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    h1 { font-size: 2.5rem; color: #7c3aed; margin-bottom: 16px; text-align: center; }
+    .subtitle { font-size: 1.125rem; color: #6b7280; text-align: center; margin-bottom: 48px; }
+    h2 { font-size: 1.875rem; color: #1f2937; margin: 40px 0 20px; padding-bottom: 12px; border-bottom: 2px solid #7c3aed; }
+    h3 { font-size: 1.5rem; color: #374151; margin: 32px 0 16px; }
+    h4 { font-size: 1.25rem; color: #4b5563; margin: 24px 0 12px; font-weight: 600; }
+    p { margin-bottom: 16px; color: #374151; font-size: 1rem; }
+    ul, ol { margin: 16px 0 16px 24px; }
+    li { margin-bottom: 8px; color: #374151; }
+    .card { background: #f9fafb; padding: 24px; margin: 24px 0; border-radius: 6px; border-left: 4px solid #7c3aed; }
+    .profile-card { background: #f0f9ff; border-left-color: #3b82f6; }
+    .warning-card { background: #fef3c7; border-left-color: #f59e0b; }
+    .two-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin: 24px 0; }
+    .reference { margin: 16px 0; padding: 12px; background: #f9fafb; border-radius: 4px; font-size: 0.875rem; }
+    strong { color: #1f2937; font-weight: 600; }
+    @media print { body { padding: 0; } .container { box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>${t.methodology.title}</h1>
+    <p class="subtitle">${t.methodology.subtitle}</p>
+
+    <h2>${t.methodology.notGenericAI.title}</h2>
+    <div class="two-columns">
+      <div>
+        <h4>${t.methodology.notGenericAI.generic.title}</h4>
+        <ul>${t.methodology.notGenericAI.generic.items.map((item: string) => `<li>${item}</li>`).join('')}</ul>
+      </div>
+      <div>
+        <h4>${t.methodology.notGenericAI.ours.title}</h4>
+        <ul>${t.methodology.notGenericAI.ours.items.map((item: string) => `<li>${item}</li>`).join('')}</ul>
+      </div>
+    </div>
+
+    <h2>${t.methodology.neurologicalReality.title}</h2>
+    <p><em>${t.methodology.neurologicalReality.subtitle}</em></p>
+    
+    <div class="card">
+      <h3>${t.methodology.neurologicalReality.prefrontalCortex.title}</h3>
+      ${t.methodology.neurologicalReality.prefrontalCortex.content.map((text: string) => `<p>${text}</p>`).join('')}
+    </div>
+
+    <div class="card">
+      <h3>${t.methodology.neurologicalReality.amygdalaHijack.title}</h3>
+      ${t.methodology.neurologicalReality.amygdalaHijack.content.map((text: string) => `<p>${text}</p>`).join('')}
+    </div>
+
+    <div class="card">
+      <h3>${t.methodology.neurologicalReality.coRegulation.title}</h3>
+      ${t.methodology.neurologicalReality.coRegulation.content.map((text: string) => `<p>${text}</p>`).join('')}
+    </div>
+
+    <h2>${t.methodology.profiles.title}</h2>
+    <p><em>${t.methodology.profiles.subtitle}</em></p>
+
+    <div class="card profile-card">
+      <h3>${t.methodology.profiles.defiant.title}</h3>
+      <h4>${t.methodology.profiles.defiant.data}</h4>
+      <p>${t.methodology.profiles.defiant.dataContent}</p>
+      <p>${t.methodology.profiles.defiant.prevalence}</p>
+      <h4>${t.methodology.profiles.defiant.approach}</h4>
+      <p>${t.methodology.profiles.defiant.approachTitle}</p>
+      <ul>${t.methodology.profiles.defiant.approachPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+      <h4>${t.methodology.profiles.defiant.implications}</h4>
+      <ul>${t.methodology.profiles.defiant.implicationsPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card profile-card">
+      <h3>${t.methodology.profiles.intense.title}</h3>
+      <h4>${t.methodology.profiles.intense.data}</h4>
+      <p>${t.methodology.profiles.intense.dataContent}</p>
+      <h4>${t.methodology.profiles.intense.approach}</h4>
+      <p>${t.methodology.profiles.intense.approachTitle}</p>
+      <ul>${t.methodology.profiles.intense.approachPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+      <h4>${t.methodology.profiles.intense.implications}</h4>
+      <ul>${t.methodology.profiles.intense.implicationsPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+    </div>
+
+    <div class="card profile-card">
+      <h3>${t.methodology.profiles.distracted.title}</h3>
+      <h4>${t.methodology.profiles.distracted.data}</h4>
+      <p>${t.methodology.profiles.distracted.dataContent}</p>
+      <p>${t.methodology.profiles.distracted.prevalence}</p>
+      <h4>${t.methodology.profiles.distracted.approach}</h4>
+      <p>${t.methodology.profiles.distracted.approachTitle}</p>
+      <ul>${t.methodology.profiles.distracted.approachPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+      <h4>${t.methodology.profiles.distracted.implications}</h4>
+      <ul>${t.methodology.profiles.distracted.implicationsPoints.map((point: string) => `<li>${point}</li>`).join('')}</ul>
+    </div>
+
+    <h2>${t.methodology.scriptCreation.title}</h2>
+    <p><em>${t.methodology.scriptCreation.subtitle}</em></p>
+
+    <div class="card">
+      <h4>1. ${t.methodology.scriptCreation.step1.title}</h4>
+      <p>${t.methodology.scriptCreation.step1.content}</p>
+    </div>
+
+    <div class="card">
+      <h4>2. ${t.methodology.scriptCreation.step2.title}</h4>
+      <p>${t.methodology.scriptCreation.step2.content}</p>
+    </div>
+
+    <div class="card">
+      <h4>3. ${t.methodology.scriptCreation.step3.title}</h4>
+      <p>${t.methodology.scriptCreation.step3.content}</p>
+    </div>
+
+    <div class="card">
+      <h4>4. ${t.methodology.scriptCreation.step4.title}</h4>
+      <p>${t.methodology.scriptCreation.step4.content}</p>
+    </div>
+
+    <div class="card">
+      <h4>5. ${t.methodology.scriptCreation.step5.title}</h4>
+      <ul>${t.methodology.scriptCreation.step5.points.map((point: string) => `<li>✓ ${point}</li>`).join('')}</ul>
+    </div>
+
+    <h2>${t.methodology.references.title}</h2>
+    ${t.methodology.references.items.map((ref: any) => `
+      <div class="reference">
+        <strong>${ref.authors}</strong> (${ref.year}). <em>${ref.title}</em>.<br>
+        ${ref.details}
+      </div>
+    `).join('')}
+
+    <div class="card warning-card">
+      <h3>${t.methodology.disclaimer.title}</h3>
+      <p>${t.methodology.disclaimer.content}</p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'metodologia-neuroparenting.html';
+    link.click();
+    URL.revokeObjectURL(url);
   };
   
   return (
@@ -81,9 +209,9 @@ export default function Methodology() {
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             {t.methodology.subtitle}
           </p>
-          <Button onClick={handleDownloadPDF} className="gap-2 no-print">
+          <Button onClick={handleDownloadHTML} className="gap-2 no-print">
             <Download className="w-4 h-4" />
-            Baixar como PDF
+            Baixar como HTML
           </Button>
         </div>
 
