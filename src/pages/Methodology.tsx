@@ -2,15 +2,63 @@ import { MainLayout } from '@/components/Layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
+import { toast } from 'sonner';
 
 export default function Methodology() {
   const { t } = useTranslation();
   
+  const handleDownloadPDF = async () => {
+    try {
+      toast.loading('Gerando PDF...');
+      
+      const element = document.getElementById('methodology-content');
+      if (!element) return;
+
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+      });
+
+      const imgWidth = 210;
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save('metodologia-nep.pdf');
+      toast.success('PDF baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao gerar PDF:', error);
+      toast.error('Erro ao gerar PDF');
+    }
+  };
+  
   return (
     <MainLayout>
-      <div className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <div id="methodology-content" className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
         <div className="text-center space-y-4">
@@ -23,6 +71,10 @@ export default function Methodology() {
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             {t.methodology.subtitle}
           </p>
+          <Button onClick={handleDownloadPDF} className="gap-2">
+            <Download className="w-4 h-4" />
+            Baixar como PDF
+          </Button>
         </div>
 
         <Separator className="my-8" />
