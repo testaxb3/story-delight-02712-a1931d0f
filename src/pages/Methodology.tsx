@@ -5,59 +5,48 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { toast } from 'sonner';
 
 export default function Methodology() {
   const { t } = useTranslation();
   
-  const handleDownloadPDF = async () => {
-    try {
-      toast.loading('Gerando PDF...');
-      
-      const element = document.getElementById('methodology-content');
-      if (!element) return;
-
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-      });
-
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
-
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
-      pdf.save('metodologia-nep.pdf');
-      toast.success('PDF baixado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao gerar PDF:', error);
-      toast.error('Erro ao gerar PDF');
-    }
+  const handleDownloadPDF = () => {
+    // Usa a funcionalidade de impressão do navegador que gera PDFs melhores
+    window.print();
   };
   
   return (
-    <MainLayout>
+    <>
+      <style>{`
+        @media print {
+          /* Esconde navegação, rodapé e botões */
+          nav, footer, .no-print {
+            display: none !important;
+          }
+          
+          /* Otimiza para impressão */
+          body {
+            background: white !important;
+          }
+          
+          /* Evita quebras de página dentro de cards */
+          .print-card {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+          
+          /* Ajusta margens */
+          .container {
+            max-width: 100% !important;
+            padding: 20px !important;
+          }
+          
+          /* Remove sombras e bordas decorativas */
+          * {
+            box-shadow: none !important;
+          }
+        }
+      `}</style>
+      <MainLayout>
       <div id="methodology-content" className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
 
         {/* Header */}
@@ -71,7 +60,7 @@ export default function Methodology() {
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             {t.methodology.subtitle}
           </p>
-          <Button onClick={handleDownloadPDF} className="gap-2">
+          <Button onClick={handleDownloadPDF} className="gap-2 no-print">
             <Download className="w-4 h-4" />
             Baixar como PDF
           </Button>
@@ -80,7 +69,7 @@ export default function Methodology() {
         <Separator className="my-8" />
 
         {/* Critical Distinction */}
-        <Card className="border-2 border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-950/20">
+        <Card className="print-card border-2 border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-purple-600" />
@@ -114,7 +103,7 @@ export default function Methodology() {
         </Card>
 
         {/* Neurological Foundation */}
-        <Card>
+        <Card className="print-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Brain className="w-6 h-6 text-blue-600" />
@@ -161,7 +150,7 @@ export default function Methodology() {
         </Card>
 
         {/* Three Neurological Profiles */}
-        <Card>
+        <Card className="print-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <Users className="w-6 h-6 text-purple-600" />
@@ -288,7 +277,7 @@ export default function Methodology() {
         </Card>
 
         {/* Script Creation Methodology */}
-        <Card>
+        <Card className="print-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <FileCheck className="w-6 h-6 text-green-600" />
@@ -368,7 +357,7 @@ export default function Methodology() {
         </Card>
 
         {/* Academic References */}
-        <Card>
+        <Card className="print-card">
           <CardHeader>
             <div className="flex items-center gap-2">
               <BookOpen className="w-6 h-6 text-blue-600" />
@@ -390,7 +379,7 @@ export default function Methodology() {
         </Card>
 
         {/* Professional Disclaimer */}
-        <Card className="border-2 border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20">
+        <Card className="print-card border-2 border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20">
           <CardHeader>
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-amber-600" />
@@ -406,5 +395,6 @@ export default function Methodology() {
 
       </div>
     </MainLayout>
+    </>
   );
 }
