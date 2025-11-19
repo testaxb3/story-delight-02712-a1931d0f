@@ -35,6 +35,7 @@ const EbookReaderV2 = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 const ScriptRequests = lazy(() => import("./pages/ScriptRequests"));
+const GenerateWelcomePDF = lazy(() => import("./pages/GenerateWelcomePDF"));
 
 // Loading fallback component for Suspense
 const PageLoader = () => (
@@ -208,6 +209,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Methodology />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/generate-welcome-pdf"
+          element={
+            <ProtectedRoute>
+              <GenerateWelcomePDF />
             </ProtectedRoute>
           }
         />
