@@ -217,10 +217,25 @@ function BonusesContent() {
       }
     }
 
-    // If it's an ebook, use viewUrl directly
-    if (bonus.category === 'ebook' && bonus.viewUrl) {
-      navigate(bonus.viewUrl);
-      return;
+    // If it's an ebook
+    if (bonus.category === 'ebook') {
+      // Priority 1: Use viewUrl if available
+      if (bonus.viewUrl) {
+        navigate(bonus.viewUrl);
+        return;
+      }
+      
+      // Priority 2: Fallback - fetch ebook slug from database
+      const { data: ebook } = await supabase
+        .from('ebooks')
+        .select('slug')
+        .eq('bonus_id', bonus.id)
+        .single();
+      
+      if (ebook?.slug) {
+        navigate(`/ebook-v2/${ebook.slug}`);
+        return;
+      }
     }
 
     // Navigate using viewUrl (for PDFs, tools, etc.) or download
