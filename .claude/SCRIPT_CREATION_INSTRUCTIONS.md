@@ -150,9 +150,10 @@ Score each dimension 0-10. **MINIMUM 8/10 REQUIRED ON ALL DIMENSIONS.**
 - `what_to_say_examples` (not `examples` or `phrases`)
 
 ✅ `what_to_expect` uses:
-- `first_time` (not `initially` or `first_attempt`)
-- `after_week` (not `after_time` or `long_term`)
-- `dont_expect` (ARRAY, not `avoid` or `unrealistic`)
+- `first_30_seconds` (what happens immediately)
+- `by_2_minutes` (what happens after consistent use)
+- `this_is_success` (REQUIRED - describes the breakthrough moment to celebrate)
+- `dont_expect` (ARRAY of unrealistic expectations to avoid)
 
 ✅ `common_variations` uses:
 - `variation_scenario` (not `scenario` or `situation`)
