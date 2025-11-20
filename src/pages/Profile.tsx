@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'sonner';
 
 import { MainLayout } from '@/components/Layout/MainLayout';
+import { Footer } from '@/components/Layout/Footer';
 import { PWAInstallGuide } from '@/components/PWAInstallGuide';
 import { ProfileHeader } from '@/components/Profile/ProfileHeader';
 import { QuickActionsGrid } from '@/components/Profile/QuickActionsGrid';
@@ -268,8 +269,37 @@ export default function Profile() {
             logoutText={t.nav.logout}
             adminText={t.nav.adminPanel}
           />
+
+          {/* Legal Links */}
+          <Card className="mt-6">
+            <div className="p-6 space-y-4">
+              <h3 className="text-lg font-semibold text-foreground">Legal</h3>
+              <div className="flex flex-col gap-2">
+                <Link 
+                  to="/terms" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Terms of Service
+                </Link>
+                <Link 
+                  to="/privacy" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+                <Link 
+                  to="/refund-policy" 
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  Refund Policy
+                </Link>
+              </div>
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
+      
+      <Footer />
     </MainLayout>
   );
 }

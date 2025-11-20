@@ -23,6 +23,9 @@ const PWAOnboarding = lazy(() => import("./pages/PWAOnboarding"));
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
 const Scripts = lazy(() => import("./pages/Scripts"));
+const Terms = lazy(() => import("./pages/Terms"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Community = lazy(() => import("./pages/Community"));
 const Tracker = lazy(() => import("./pages/Tracker"));
@@ -220,6 +223,12 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
+        
+        {/* Legal Pages - Public */}
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>
