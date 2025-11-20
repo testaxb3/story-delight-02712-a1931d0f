@@ -63,14 +63,14 @@ export const useScriptRequests = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['script-requests'] });
-      toast.success('Request submitted successfully!', {
-        description: 'Our team will review your request soon.',
+      toast.success('Pedido enviado com sucesso!', {
+        description: 'Nossa equipe irá revisar seu pedido em breve.',
       });
     },
     onError: (error) => {
       console.error('Error creating script request:', error);
-      toast.error('Failed to submit request', {
-        description: 'Please try again later.',
+      toast.error('Falha ao enviar pedido', {
+        description: 'Por favor, tente novamente mais tarde.',
       });
     },
   });
@@ -90,20 +90,32 @@ export const useAdminScriptRequests = () => {
   const { data: requests, isLoading } = useQuery({
     queryKey: ['admin-script-requests'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Fetch script requests
+      const { data: requestsData, error: requestsError } = await supabase
         .from('script_requests')
-        .select(`
-          *,
-          profiles:user_id (
-            name,
-            email,
-            child_name
-          )
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (requestsError) throw requestsError;
+
+      // Fetch user profiles separately to avoid RLS join issues
+      const userIds = [...new Set(requestsData.map(r => r.user_id))];
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, name, email, child_name')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.warn('Could not fetch profiles:', profilesError);
+        return requestsData;
+      }
+
+      // Map profiles to requests
+      const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
+      return requestsData.map(request => ({
+        ...request,
+        profiles: profilesMap.get(request.user_id) || null,
+      }));
     },
   });
 
