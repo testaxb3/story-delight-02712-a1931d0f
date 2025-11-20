@@ -134,10 +134,10 @@ async function performIOSUpdate(): Promise<void> {
     // 5. Redirect to root to avoid 404 on deep routes
     console.log('🔄 Redirecting to root for clean update...');
 
-    // SOLUÇÃO DEFINITIVA:
-    // Redirecionar para "/" garante que nunca teremos 404
-    // O vercel.json tem rewrites, mas esta é uma camada extra de segurança
-    // Após carregar, o React Router vai para a rota correta
+    // DEFINITIVE SOLUTION:
+    // Redirecting to "/" ensures we never get a 404
+    // The vercel.json has rewrites, but this is an extra layer of security
+    // After loading, React Router will go to the correct route
     setTimeout(() => {
       window.location.href = '/';
     }, 100);

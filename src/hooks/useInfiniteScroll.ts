@@ -18,7 +18,7 @@ export const useInfiniteScroll = <TData, TError = Error>(
     ...options,
     queryFn: ({ pageParam = 0 }) => options.queryFn(pageParam as number),
     getNextPageParam: (lastPage, pages) => {
-      // Se a última página tem menos de 20 itens, não há mais páginas
+      // If the last page has fewer than 20 items, there are no more pages
       if (lastPage.length < 20) {
         return undefined;
       }
@@ -27,7 +27,7 @@ export const useInfiniteScroll = <TData, TError = Error>(
     initialPageParam: 0,
   });
 
-  // Carregar próxima página quando o usuário scrollar até o fim
+  // Load next page when user scrolls to the end
   useEffect(() => {
     if (inView && query.hasNextPage && !query.isFetchingNextPage) {
       query.fetchNextPage();
