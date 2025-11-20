@@ -103,77 +103,98 @@ Every script follows this proven 3-phrase sequence:
 
 ## SCRIPT CREATION PROCESS
 
-### Input Analysis:
+⚠️ **CRITICAL: Before creating ANY script, you MUST follow the Script Quality Elevation Framework**
+
+### MANDATORY PRE-CREATION WORKFLOW:
+
+**Step 1: Read Framework Documentation**
+- Read `.claude/SCRIPT_QUALITY_FRAMEWORK.md` COMPLETELY before starting
+- Review `examples/HYPER_SPECIFIC_SCRIPT_TEMPLATE_V2.sql` for structure
+
+**Step 2: Complete Pre-Creation Checklist**
+1. **Micro-Observation Test**: Visualize the scene. What do you SEE, HEAR, FEEL?
+2. **Uniqueness Test**: Is this 80%+ different from other scripts in the category?
+3. **Recognition Test**: Would a parent read the first paragraph and say "THIS IS MY LIFE"?
+
+**Step 3: Choose Structure Variation**
+- Choose 1 of 5 THE SITUATION structures (rotate, never repeat recent patterns)
+- Choose 1 of 3 WHAT DOESN'T WORK structures (vary across scripts)
+- Vary strategy step language (not always "Your move:", "The shift:")
+
+**Step 4: Input Analysis**
 When Gabriel asks for a script, extract:
 1. **Child's age** (adjust language complexity)
-2. **Brain type** (ADHD, Autism, Defiant, Anxious, Sensory, Neurotypical)
+2. **Brain type** (INTENSE, DISTRACTED, DEFIANT, UNIVERSAL)
 3. **Specific situation** (morning routine, dinner, bedtime, transitions, etc)
 4. **Time constraint** (rushing? or have time?)
 5. **Parent's emotional state** (calm, frustrated, exhausted?)
 
-### Output Format:
+**Step 5: Write Hyper-Specific Content**
 
-```
-🎯 NEP SCRIPT - [Situation Name]
-Age: X years | Brain Type: [Type] | Context: [Brief]
+MANDATORY INCLUSIONS in EVERY script:
+- 6+ observable micro-details (fists clenched, breathing fast, eyes darting)
+- Exact numbers/timings (45+ minutes, 7:14 AM, asked 4 times)
+- Quoted phrases (what child ACTUALLY says: "You NEVER let me do ANYTHING!")
+- Parent emotional/physical state (jaw clenched, heart racing, temples throb)
+- Environmental context (9:47 PM, lights dim, weighted blanket on bed)
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+**Step 6: Check Forbidden Patterns**
 
-1️⃣ CONNECTION (Calm, curious tone)
-"[Exact phrase]"
-⏱️ Pause 3-5 seconds
+IMMEDIATELY REWRITE if ANY of these appear:
+- ❌ "You tell your child [X]. They [Y]. You check back..."
+- ❌ "Your child is deep into [activity]. You say [warning]. They nod and say 'okay!'"
+- ❌ "This isn't defiance. This is [neurological explanation]."
+- ❌ "By [step X], you're [teaching/providing/creating]..."
+- ❌ "The [brain profile] brain [generic statement]..."
+- ❌ Starting with "It's [time]. You've [asked/told/tried] [X times]..."
+- ❌ Using "co-regulation", "nervous system", "dysregulation" more than once
 
-2️⃣ VALIDATION (Firm but empathetic)
-"[Exact phrase with 'It's hard... AND...']"
-⏱️ Pause 2-3 seconds
+**Step 7: Run Quality Scoring System**
 
-3️⃣ COMMAND (Confident, playful challenge)
-"[Exact phrase with choice/challenge]"
-⏱️ Expected cooperation: 30-60 seconds
+Score each dimension 0-10. **MINIMUM 8/10 REQUIRED ON ALL DIMENSIONS:**
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. **Specificity Score**: How many observable micro-details? (Count them)
+2. **Recognition Score**: Would parent say "THIS IS MY LIFE"?
+3. **Uniqueness Score**: 80%+ different from other scripts in category?
+4. **Actionability Score**: Can stressed parent at 7AM follow these instructions?
+5. **Naturalness Score**: Sounds like human talking, not AI therapy manual?
 
-🧠 WHY THIS WORKS:
-[1-2 sentences on neurological mechanism specific to this brain type]
+**IF ANY SCORE < 8/10 → REWRITE COMPLETELY**
 
-🆘 IF NOT WORKING AFTER 60 SECONDS:
-[Simple backup plan - ONE action only]
+**Step 8: Validate JSON Structure**
 
-⚠️ COMMON MISTAKES TO AVOID:
-[1-2 specific things parents do wrong in this situation]
+Ensure correct field names:
+- `strategy_steps`: use `step_number`, `step_title`, `step_explanation`, `what_to_say_examples`
+- `what_to_expect`: use `first_time`, `after_week`, `dont_expect` (as array)
+- `common_variations`: use `variation_scenario`, `variation_response`
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-```
+### Database Script Format (after passing Framework):
 
-### Brain Type Variations:
+### Brain Profile Adjustments:
 
-**ADHD:**
-- Use physical movement in command ("Race to the bathroom!")
-- Shorter validation (attention span)
-- High-energy challenges work
+**INTENSE (highly emotional, sensory-sensitive):**
+- Acknowledge physical sensations in THE SITUATION
+- Strategy steps must account for dysregulation
+- Include sensory regulation techniques
+- Expect longer de-escalation timeline
 
-**Autism:**
-- More predictable structure
-- Visual/concrete language
-- Avoid metaphors
-- Sensory considerations in command
+**DISTRACTED (ADHD, executive function challenges):**
+- Use physical movement, timers, visual anchors
+- Shorter validation phrases (attention span)
+- Competition and gamification work well
+- Address time blindness and hyperfocus explicitly
 
-**Defiant (ODD):**
+**DEFIANT (strong-willed, oppositional):**
 - Give control through choice (critical)
 - Competition > cooperation
 - "You're in charge of..." language
-- Avoid power struggles
+- Avoid power struggles and ultimatums
+- Frame boundaries as non-negotiable facts
 
-**Anxious:**
-- Extra validation time
-- Reassurance in connection
-- Smaller choices (not overwhelming)
-- "You can do hard things" framing
-
-**Sensory Processing:**
-- Acknowledge sensory input ("I see the tag bothers you...")
-- Offer sensory alternatives
-- Physical comfort in validation
+**UNIVERSAL (applies across brain types):**
+- Focus on developmental stage, not neurobiology
+- Avoid brain-type-specific language
+- Strategies that work regardless of wiring
 
 ## APP DEVELOPMENT FRAMEWORK
 
@@ -463,15 +484,22 @@ C) Discuss trade-offs first
 
 ### Scenario 1: Gabriel Asks for Script
 
-**Input:** "Create script for 6yo ADHD kid who won't get dressed for school, we're already late"
+**Input:** "Create script for screens category, DISTRACTED profile"
 
-**Your Process:**
-1. Extract info (age: 6, brain: ADHD, context: late, stress: high)
-2. Adjust for ADHD (movement, short, competitive)
-3. Account for time pressure (backup needs to be faster)
-4. Create script in format above
-5. Include ADHD-specific neurological why
-6. Backup plan that works in 10 seconds
+**Your MANDATORY Process:**
+1. ✅ Read `.claude/SCRIPT_QUALITY_FRAMEWORK.md` completely
+2. ✅ Review 3 existing DISTRACTED scripts in Screens category (check uniqueness)
+3. ✅ Choose 1 of 5 THE SITUATION structures (not used in recent scripts)
+4. ✅ Visualize the SPECIFIC moment (Micro-Observation Test)
+5. ✅ Write THE SITUATION with 6+ micro-details, exact timing, quoted phrases
+6. ✅ Check FORBIDDEN PATTERNS list (zero matches)
+7. ✅ Write WHAT DOESN'T WORK (choose 1 of 3 structures, vary from recent)
+8. ✅ Write STRATEGY STEPS with varied language (not always "Your move:")
+9. ✅ Run Quality Scoring System (must be 8+/10 on all 5 dimensions)
+10. ✅ Validate JSON structure (correct field names)
+11. ✅ Insert into database using Supabase migration
+
+**IF ANY STEP FAILS → REWRITE COMPLETELY**
 
 ### Scenario 2: Gabriel Wants Feature Improvement
 
