@@ -199,62 +199,56 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
           {whatDoesntWorkExpanded && (
             <div className="px-6 pb-6 animate-in fade-in duration-200">
               {/* Parse and format the what_doesnt_work content */}
-              <div className="space-y-3.5">
+              <div className="space-y-5">
                 {script.what_doesnt_work.split('\n\n').map((paragraph, idx) => {
                   const trimmed = paragraph.trim();
                   
-                  // Check if it's a "Why these backfire" summary paragraph
-                  if (trimmed.startsWith('→ Why these backfire:')) {
-                    const text = trimmed.replace('→ Why these backfire:', '').trim();
+                  // Check if it's a COMMON MISTAKE header (starts with **❌ COMMON MISTAKE)
+                  if (trimmed.startsWith('**❌ COMMON MISTAKE') || trimmed.startsWith('**❌ MISTAKE')) {
                     return (
-                      <div key={idx} className="mt-4 pt-4 border-t-2 border-red-300/50 dark:border-red-700/50">
-                        <p className="text-sm font-semibold text-red-900 dark:text-red-100 leading-relaxed">
-                          {renderMarkdown(text)}
+                      <div key={idx} className="bg-red-50/80 dark:bg-red-950/30 rounded-lg p-4 border-l-4 border-red-500">
+                        <h4 className="text-base font-bold text-red-900 dark:text-red-100 flex items-start gap-2">
+                          <span className="text-xl">❌</span>
+                          <span>{renderMarkdown(trimmed.replace(/^\*\*❌\s*/, ''))}</span>
+                        </h4>
+                      </div>
+                    );
+                  }
+                  
+                  // Check if it's "Why it fails" explanation
+                  if (trimmed.startsWith('**Why it fails:**')) {
+                    return (
+                      <div key={idx} className="ml-6 pl-4 border-l-2 border-red-300 dark:border-red-700">
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-200 leading-relaxed">
+                          {renderMarkdown(trimmed)}
                         </p>
                       </div>
                     );
                   }
                   
-                  if (trimmed.startsWith('**Why')) {
+                  // Check if it's "The neuroscience" explanation
+                  if (trimmed.startsWith('**The neuroscience:**')) {
                     return (
-                      <div key={idx} className="mt-4 pt-4 border-t-2 border-red-300/50 dark:border-red-700/50">
-                        <p className="text-sm font-semibold text-red-900 dark:text-red-100 leading-relaxed">
+                      <div key={idx} className="ml-6 pl-4 border-l-2 border-red-300 dark:border-red-700">
+                        <p className="text-sm font-semibold text-red-800 dark:text-red-200 leading-relaxed">
                           {renderMarkdown(trimmed)}
                         </p>
                       </div>
                     );
                   }
 
-                  // Check if it's a bullet point (starts with ❌ or •)
-                  if (trimmed.startsWith('❌') || trimmed.startsWith('•')) {
-                    const lines = paragraph.split('\n');
-                    const mainText = lines[0].replace(/^[❌•]\s*/, '').trim();
-                    const explanation = lines.slice(1).map(l => l.replace(/^→\s*/, '').trim()).filter(Boolean).join('\n');
-
-                    return (
-                      <div key={idx} className="bg-white/60 dark:bg-slate-900/60 rounded-lg p-4 border border-red-200 dark:border-red-800 shadow-sm">
-                        <div className="flex items-start gap-3 mb-2">
-                          <span className="text-red-600 dark:text-red-400 text-xl shrink-0 mt-0.5">
-                            {trimmed.startsWith('❌') ? '❌' : '•'}
-                          </span>
-                          <p className="text-base font-medium text-red-900 dark:text-red-100 leading-relaxed">
-                            {renderMarkdown(mainText)}
-                          </p>
-                        </div>
-                        {explanation && (
-                          <p className="text-sm text-red-700 dark:text-red-300 ml-9 leading-relaxed italic">
-                            {renderMarkdown(explanation)}
-                          </p>
-                        )}
-                      </div>
-                    );
+                  // Empty paragraphs (spacing between COMMON MISTAKES)
+                  if (trimmed === '') {
+                    return null;
                   }
 
-                  // Regular paragraph
+                  // Regular paragraph (description text)
                   return (
-                    <p key={idx} className="text-sm text-red-800 dark:text-red-200 leading-relaxed">
-                      {renderMarkdown(trimmed)}
-                    </p>
+                    <div key={idx} className="ml-6">
+                      <p className="text-sm text-red-700 dark:text-red-300 leading-relaxed italic">
+                        {renderMarkdown(trimmed)}
+                      </p>
+                    </div>
                   );
                 })}
               </div>
