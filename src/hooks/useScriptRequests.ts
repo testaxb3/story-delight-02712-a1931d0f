@@ -63,14 +63,14 @@ export const useScriptRequests = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['script-requests'] });
-      toast.success('Pedido enviado com sucesso!', {
-        description: 'Nossa equipe irá revisar seu pedido em breve.',
+      toast.success('Request submitted successfully!', {
+        description: 'Our team will review your request soon.',
       });
     },
     onError: (error) => {
       console.error('Error creating script request:', error);
-      toast.error('Falha ao enviar pedido', {
-        description: 'Por favor, tente novamente mais tarde.',
+      toast.error('Failed to submit request', {
+        description: 'Please try again later.',
       });
     },
   });
