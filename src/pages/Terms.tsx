@@ -228,12 +228,15 @@ export default function Terms() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scale className="h-5 w-5" />
-              10. Governing Law
+              10. Governing Law and Disputes
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-muted-foreground leading-relaxed">
-              These Terms of Service are governed by and construed in accordance with the laws of Brazil, without regard to conflict of law principles. Any disputes arising from these terms or your use of NEP System shall be subject to the exclusive jurisdiction of the courts of Brazil.
+              These Terms of Service shall be governed by and construed in accordance with international commercial law principles. In the event of any dispute arising from these terms or your use of NEP System, both parties agree to first attempt resolution through good faith negotiation.
+            </p>
+            <p className="text-muted-foreground leading-relaxed">
+              If negotiation is unsuccessful, disputes may be resolved through binding arbitration or the appropriate legal jurisdiction based on your country of residence.
             </p>
           </CardContent>
         </Card>
@@ -248,7 +251,7 @@ export default function Terms() {
             </p>
             <div className="bg-muted/50 p-4 rounded-lg">
               <p className="text-foreground font-semibold">NEP System Support</p>
-              <p className="text-muted-foreground">Email: support@nepsystem.com</p>
+              <p className="text-muted-foreground">Email: support@nepsystem.pro</p>
             </div>
           </CardContent>
         </Card>

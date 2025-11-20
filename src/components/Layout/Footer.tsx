@@ -43,9 +43,7 @@ export function Footer() {
           <div className="space-y-3">
             <h4 className="text-sm font-semibold text-foreground">Support</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
-              <p>Email: support@nepsystem.com</p>
-              <p>Privacy: privacy@nepsystem.com</p>
-              <p>Refunds: refunds@nepsystem.com</p>
+              <p>Email: support@nepsystem.pro</p>
             </div>
           </div>
         </div>
