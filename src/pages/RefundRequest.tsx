@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -158,11 +158,12 @@ export default function RefundRequest() {
                     <span className="font-bold text-primary">3.</span>
                     <span>Receive a response within 24 hours</span>
                   </li>
-                  <li className="flex items-start gap-2">
-                    <span className="font-bold text-primary">4.</span>
-                    <span>Refund processed in 5-7 business days</span>
-                  </li>
                 </ol>
+                <p className="text-xs text-muted-foreground mt-3">
+                  <Link to="/refund-policy" className="underline hover:text-foreground">
+                    Read our full Refund Policy
+                  </Link>
+                </p>
               </div>
 
               {/* Contact Support First */}
