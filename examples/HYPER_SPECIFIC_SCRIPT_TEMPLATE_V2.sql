@@ -88,6 +88,9 @@ INSERT INTO scripts (
   
   -- WHAT DOESN'T WORK (Common Mistakes)
   -- ⚠️ CRITICAL: Choose 1 of 3 structures from SCRIPT_QUALITY_FRAMEWORK.md
+  -- ⚠️ CRITICAL: Use \n\n (double line breaks) between ALL paragraphs and sections
+  -- ⚠️ CRITICAL: Use \n\n\n (triple line breaks) between each COMMON MISTAKE block
+  -- The component splits by \n\n - without these, text appears concatenated!
   -- Explain WHY these approaches backfire (neuroscience, not just "it's bad")
   what_doesnt_work,
   /* STRUCTURE OPTIONS (rotate these):

@@ -86,6 +86,12 @@ Scripts must be hyper-specific, recognizable moments that parents experience. Ge
 ✅ **Environmental Context**
 - Not "at bedtime" → "It's 9:47 PM. You started bedtime routine at 8:30. Lights are dim. Weighted blanket is on the bed."
 
+✅ **CRITICAL: Proper Line Breaks in what_doesnt_work**
+- Use `\n\n` (double line break) between EVERY paragraph and section
+- Between "Why it fails" and "The neuroscience" → `\n\n`
+- Between each COMMON MISTAKE block → `\n\n\n` (triple line break for spacing)
+- The component splits by `\n\n` - without these, text appears concatenated
+
 ### 5. CHECK FORBIDDEN PATTERNS (Every Script)
 
 **IMMEDIATELY REWRITE if ANY of these appear:**
@@ -216,6 +222,7 @@ Score each dimension 0-10. **MINIMUM 8/10 REQUIRED ON ALL DIMENSIONS.**
 - [ ] Included quoted phrases (what child actually says)
 - [ ] Described parent emotional/physical state
 - [ ] Included environmental context
+- [ ] CRITICAL: Validated `what_doesnt_work` has proper line breaks (`\n\n` between paragraphs, `\n\n\n` between COMMON MISTAKE blocks)
 - [ ] Chose 1 of 5 THE SITUATION structures (rotated)
 - [ ] Chose 1 of 3 WHAT DOESN'T WORK structures (varied)
 - [ ] Varied strategy step language (not always "Your move:")

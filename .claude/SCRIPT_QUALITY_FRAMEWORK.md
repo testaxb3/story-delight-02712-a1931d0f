@@ -187,6 +187,27 @@ they're in pure opposition mode.
 ❌ "In the car"  
 ✅ "You're in the Target parking lot. AC blasting. Car in park. Other families loading groceries. Your child is screaming in the back seat. Windows up."
 
+#### 7. CRITICAL: Proper Line Breaks in `what_doesnt_work`
+⚠️ **The rendering component splits by `\n\n` (double line breaks) to separate paragraphs.**
+
+❌ **WRONG** (single line break - text will concatenate):
+```
+**Why it fails:** Their brain isn't choosing to stop.\n
+**The neuroscience:** ADHD brains have 30-40% less activity...
+```
+
+✅ **CORRECT** (double line break - text separates properly):
+```
+**Why it fails:** Their brain isn't choosing to stop.\n\n
+**The neuroscience:** ADHD brains have 30-40% less activity...
+```
+
+**FORMATTING RULES:**
+- Use `\n\n` (double line break) between EVERY paragraph and section
+- Use `\n\n` between "Why it fails" and "The neuroscience"
+- Use `\n\n\n` (triple line break) between each COMMON MISTAKE block
+- Without proper line breaks, all text appears concatenated and unreadable
+
 ---
 
 ## Anti-Repetition Rules
