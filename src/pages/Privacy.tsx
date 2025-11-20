@@ -298,8 +298,8 @@ export default function Privacy() {
               If you have questions, concerns, or requests regarding your privacy or this policy, please contact:
             </p>
             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-              <p className="text-foreground font-semibold">NEP System Privacy Team</p>
-              <p className="text-muted-foreground">Email: privacy@nepsystem.com</p>
+              <p className="text-foreground font-semibold">NEP System Support</p>
+              <p className="text-muted-foreground">Email: support@nepsystem.pro</p>
               <p className="text-muted-foreground text-sm">We respond to all privacy inquiries within 30 days.</p>
             </div>
           </CardContent>

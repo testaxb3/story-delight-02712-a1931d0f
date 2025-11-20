@@ -17,9 +17,9 @@ export default function RefundPolicy() {
 
         <Alert>
           <CheckCircle2 className="h-4 w-4" />
-          <AlertTitle>30-Day Money-Back Guarantee</AlertTitle>
+          <AlertTitle>90-Day Money-Back Guarantee</AlertTitle>
           <AlertDescription>
-            We stand behind the quality of NEP System. If you're not satisfied within 30 days of purchase, you can request a full refund—no questions asked.
+            We stand behind the quality of NEP System. If you're not satisfied within 90 days of purchase, you can request a full refund—no questions asked.
           </AlertDescription>
         </Alert>
 
@@ -37,7 +37,7 @@ export default function RefundPolicy() {
                 You are eligible for a refund if:
               </h4>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>Your request is made within <strong>30 days of purchase</strong></li>
+                <li>Your request is made within <strong>90 days of purchase</strong></li>
                 <li>You purchased directly through our official channels</li>
                 <li>You have a valid purchase confirmation</li>
               </ul>
@@ -59,7 +59,7 @@ export default function RefundPolicy() {
               <AlertTitle>Refund Not Available:</AlertTitle>
               <AlertDescription>
                 <ul className="list-disc list-inside space-y-1 ml-2 mt-2">
-                  <li>More than 30 days have passed since purchase</li>
+                  <li>More than 90 days have passed since purchase</li>
                   <li>Account has been terminated for Terms of Service violations</li>
                   <li>Fraudulent chargebacks have been initiated</li>
                 </ul>
@@ -142,7 +142,7 @@ export default function RefundPolicy() {
             </p>
             <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
               <li>If you've extensively used the platform but still wish to request a refund</li>
-              <li>If you're outside the 30-day window but have extenuating circumstances</li>
+              <li>If you're outside the 90-day window but have extenuating circumstances</li>
               <li>If you only want to refund a specific component of a bundle purchase</li>
             </ul>
             <p className="text-muted-foreground leading-relaxed">
@@ -166,7 +166,7 @@ export default function RefundPolicy() {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Why You Should Always Request a Refund First</AlertTitle>
               <AlertDescription>
-                We offer a no-questions-asked 30-day refund policy for a reason: to protect YOU. If you're unsatisfied, simply request a refund through the app. It's fast, easy, and safe.
+                We offer a no-questions-asked 90-day refund policy for a reason: to protect YOU. If you're unsatisfied, simply request a refund through the app. It's fast, easy, and safe.
               </AlertDescription>
             </Alert>
 
@@ -272,12 +272,12 @@ export default function RefundPolicy() {
                 Common reasons for denial:
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>Request submitted more than 30 days after purchase</li>
+                <li>Request submitted more than 90 days after purchase</li>
                 <li>Account has been terminated for violating Terms of Service</li>
                 <li>Previous fraudulent chargeback initiated for the same purchase</li>
               </ul>
               <p className="text-muted-foreground leading-relaxed">
-                You have the right to appeal the decision by contacting our support team at refunds@nepsystem.com.
+                You have the right to appeal the decision by contacting our support team at support@nepsystem.pro.
               </p>
             </AccordionContent>
           </AccordionItem>
@@ -307,7 +307,7 @@ export default function RefundPolicy() {
                 Yes, you may re-purchase NEP System at any time. However:
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>The 30-day money-back guarantee may not apply to repeat purchases</li>
+                <li>The 90-day money-back guarantee may not apply to repeat purchases</li>
                 <li>We reserve the right to deny service to users who abuse the refund policy</li>
                 <li>Promotional pricing or discounts may not be available for re-purchases</li>
               </ul>
@@ -327,8 +327,8 @@ export default function RefundPolicy() {
               If you have questions about our refund policy or need assistance with a refund request:
             </p>
             <div className="bg-muted/50 p-4 rounded-lg space-y-2">
-              <p className="text-foreground font-semibold">NEP System Refunds Team</p>
-              <p className="text-muted-foreground">Email: refunds@nepsystem.com</p>
+              <p className="text-foreground font-semibold">NEP System Support</p>
+              <p className="text-muted-foreground">Email: support@nepsystem.pro</p>
               <p className="text-muted-foreground text-sm">Response time: Within 24-48 hours</p>
             </div>
           </CardContent>
