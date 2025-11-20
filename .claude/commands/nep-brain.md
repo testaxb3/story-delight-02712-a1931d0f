@@ -165,8 +165,10 @@ Score each dimension 0-10. **MINIMUM 8/10 REQUIRED ON ALL DIMENSIONS:**
 
 Ensure correct field names:
 - `strategy_steps`: use `step_number`, `step_title`, `step_explanation`, `what_to_say_examples`
-- `what_to_expect`: use `first_time`, `after_week`, `dont_expect` (as array)
+- `what_to_expect`: use `first_30_seconds`, `by_2_minutes`, `this_is_success` (REQUIRED), `dont_expect` (as array)
 - `common_variations`: use `variation_scenario`, `variation_response`
+
+**CRITICAL: `this_is_success` is MANDATORY - it defines the breakthrough moment parents celebrate.**
 
 ### Database Script Format (after passing Framework):
 

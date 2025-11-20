@@ -169,13 +169,14 @@ INSERT INTO scripts (
   must happen NOW (tablet goes away NOW) for the lesson to stick."
   */
   
-  -- WHAT TO EXPECT (Timeline + Realistic Outcomes)
-  -- ⚠️ CRITICAL: Stored as JSONB object with "first_time", "after_week", "dont_expect"
+  -- WHAT TO EXPECT (Timeline + Realistic Outcomes + Success Definition)
+  -- ⚠️ CRITICAL: Stored as JSONB object with "first_30_seconds", "by_2_minutes", "this_is_success", "dont_expect"
   what_to_expect,
   /* STRUCTURE (JSONB object):
   {
-    "first_time": "[What happens on first attempt - be realistic, not optimistic]",
-    "after_week": "[What happens after consistent use - measurable improvement]",
+    "first_30_seconds": "[What happens on first attempt - be realistic, not optimistic]",
+    "by_2_minutes": "[What happens after consistent use - measurable improvement]",
+    "this_is_success": "[REQUIRED - The breakthrough moment parents should celebrate. What does success actually look like?]",
     "dont_expect": [
       "[Unrealistic expectation 1]",
       "[Unrealistic expectation 2]",
@@ -185,8 +186,9 @@ INSERT INTO scripts (
   
   EXAMPLE:
   {
-    "first_time": "They'll test the boundary. Expect negotiation: \"Just ONE more minute!\" or \"The timer is broken!\" They might cry, argue, or go limp. This is normal — their brain is learning a new pattern.",
-    "after_week": "By day 5-7, they'll start pre-regulating. You'll see them glance at the timer without prompting. Tantrums get shorter (from 15 minutes to 5 minutes). They might even hand you the tablet before the timer beeps (rare but possible).",
+    "first_30_seconds": "They'll test the boundary. Expect negotiation: \"Just ONE more minute!\" or \"The timer is broken!\" They might cry, argue, or go limp. This is normal — their brain is learning a new pattern.",
+    "by_2_minutes": "By day 5-7, they'll start pre-regulating. You'll see them glance at the timer without prompting. Tantrums get shorter (from 15 minutes to 5 minutes). They might even hand you the tablet before the timer beeps (rare but possible).",
+    "this_is_success": "Your child puts down the tablet BEFORE the timer goes off and says: \"I''m done.\" That''s the breakthrough. Even if it takes 2 weeks to get there, that moment is the win.",
     "dont_expect": [
       "That they'll happily turn off screens without any resistance",
       "That they'll internalize time management after a few tries",
