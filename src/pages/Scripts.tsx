@@ -455,7 +455,7 @@ function ScriptsContent() {
 
   const handleSubmitFeedback = async () => {
     if (!selectedScript || !activeChild?.id || !user?.profileId) {
-      toast({ title: 'Selecione um script e um perfil infantil antes de enviar.' });
+      toast({ title: 'Please select a script and a child profile before submitting.' });
       return;
     }
 

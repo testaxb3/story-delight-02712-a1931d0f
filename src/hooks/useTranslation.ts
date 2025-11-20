@@ -19,9 +19,9 @@ const translations: Record<Language, TranslationKeys> = {
 export const useTranslation = create<TranslationStore>()(
   persist(
     (set, get) => ({
-      language: 'pt', // Default to Portuguese
+      language: 'en', // Default to English
       setLanguage: (lang: Language) => set({ language: lang, t: translations[lang] }),
-      t: translations['pt'],
+      t: translations['en'],
     }),
     {
       name: 'nep-language',
