@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
@@ -17,6 +16,9 @@ import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-rea
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import confetti from 'canvas-confetti';
+import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
+import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
+import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -664,42 +666,23 @@ export default function Quiz() {
                         {questions[currentQuestion].question}
                       </motion.h3>
 
-                      <RadioGroup
-                        value={answers[currentQuestion]}
-                        onValueChange={handleAnswer}
-                        className="space-y-3"
-                      >
+                      <div className="space-y-3">
                         {questions[currentQuestion].options.map((option, index) => (
                           <motion.div
                             key={option.value}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 * index }}
-                            whileHover={{ 
-                              scale: 1.02, 
-                              y: -4,
-                              boxShadow: "0 20px 40px rgba(155, 135, 245, 0.15)"
-                            }}
-                            whileTap={{ scale: 0.98 }}
                           >
-                            <Label
-                              htmlFor={option.value}
-                              className={cn(
-                                "flex items-center space-x-4 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300",
-                                "bg-card/60 backdrop-blur-xl",
-                                "hover:bg-card/80 hover:border-primary/50",
-                                "hover:shadow-[0_0_30px_rgba(155,135,245,0.2)]",
-                                answers[currentQuestion] === option.value
-                                  ? "bg-primary/10 border-primary shadow-lg shadow-primary/20 scale-[1.02]"
-                                  : "border-border/50"
-                              )}
-                            >
-                              <RadioGroupItem value={option.value} id={option.value} className="w-5 h-5" />
-                              <span className="text-base leading-relaxed flex-1">{option.label}</span>
-                            </Label>
+                            <QuizOptionCard
+                              value={option.value}
+                              label={option.label}
+                              isSelected={answers[currentQuestion] === option.value}
+                              onSelect={handleAnswer}
+                            />
                           </motion.div>
                         ))}
-                      </RadioGroup>
+                      </div>
                     </div>
 
                     <div className="flex gap-4 pt-4">
@@ -748,19 +731,26 @@ export default function Quiz() {
                 transition={{ duration: 0.3 }}
               >
                 {showCountdown ? (
-                  // Dramatic Countdown
-                  <div className="flex items-center justify-center min-h-[500px]">
-                    <motion.div
-                      key={countdown}
-                      initial={{ scale: 0, opacity: 0, rotate: -180 }}
-                      animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                      exit={{ scale: 0, opacity: 0, rotate: 180 }}
-                      transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                      className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
-                    >
-                      {countdown}
-                    </motion.div>
-                  </div>
+                  countdown > 0 ? (
+                    // Dramatic Countdown
+                    <div className="flex items-center justify-center min-h-[500px]">
+                      <motion.div
+                        key={countdown}
+                        initial={{ scale: 0, opacity: 0, rotate: -180 }}
+                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                        exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                        className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+                      >
+                        {countdown}
+                      </motion.div>
+                    </div>
+                  ) : (
+                    // Loading Screen
+                    <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-10 shadow-2xl min-h-[500px]">
+                      <QuizLoadingScreen />
+                    </div>
+                  )
                 ) : (
                   // Result Card with 3D Flip
                   <motion.div
@@ -839,9 +829,17 @@ export default function Quiz() {
                               <p className="text-xl text-muted-foreground mb-6">
                                 {brainTypeInfo[result.type].subtitle}
                               </p>
-                              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8">
                                 {brainTypeInfo[result.type].description}
                               </p>
+
+                              {/* Progress Rings */}
+                              <QuizResultRings 
+                                brainType={result.type}
+                                scriptsCount={45}
+                                videosCount={12}
+                                ebooksCount={3}
+                              />
                             </motion.div>
 
                             {savingProfile ? (
