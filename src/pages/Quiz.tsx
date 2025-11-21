@@ -643,20 +643,20 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
+                <div className="flex-1 pt-16 pb-20 px-6 flex flex-col justify-center">
+                  <div className="space-y-6">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-1 font-relative leading-tight">
                         Tell us about {childName}
                       </h2>
-                      <p className="text-gray-500 text-sm md:text-base">
+                      <p className="text-sm md:text-base text-gray-500 opacity-70">
                         This helps us personalize strategies for their developmental stage
                       </p>
                     </div>
 
-                    <div className="space-y-4">
-                      <div className="space-y-3">
-                        <Label className="text-left block font-medium text-black text-base">
+                    <div className="space-y-5 pt-2">
+                      <div className="space-y-4">
+                        <Label className="text-left block font-semibold text-black text-base">
                           How old is {childName}?
                         </Label>
                         <div className="flex items-center gap-4">
@@ -666,29 +666,26 @@ export default function Quiz() {
                             min={1}
                             max={18}
                             step={1}
-                            className="flex-1"
+                            className="flex-1 cursor-pointer"
                           />
-                          <div className="w-16 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
-                            <span className="text-2xl font-bold text-black">{childAge}</span>
+                          <div className="w-20 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center shadow-sm">
+                            <span className="text-3xl font-bold text-black">{childAge}</span>
                           </div>
                         </div>
-                        <p className="text-xs text-gray-500">Age: {childAge} years old</p>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button 
-                      onClick={handleDetailsComplete}
-                      size="lg"
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-xl"
-                    >
-                      Continue
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 z-50">
+                  <Button 
+                    onClick={handleDetailsComplete}
+                    size="lg"
+                    className="w-full h-[56px] text-base font-semibold rounded-2xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all"
+                  >
+                    Continue
+                  </Button>
                 </div>
               </motion.div>
             ) : quizStep === 'goals' ? (
