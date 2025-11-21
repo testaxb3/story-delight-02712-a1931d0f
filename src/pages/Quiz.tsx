@@ -552,21 +552,21 @@ export default function Quiz() {
                 {showCountdown ? (
                   countdown > 0 ? (
                     // Dramatic Countdown
-                    <div className="flex items-center justify-center min-h-[500px]">
+                    <div className="flex items-center justify-center min-h-[300px] md:min-h-[500px]">
                       <motion.div
                         key={countdown}
                         initial={{ scale: 0, opacity: 0, rotate: -180 }}
                         animate={{ scale: 1, opacity: 1, rotate: 0 }}
                         exit={{ scale: 0, opacity: 0, rotate: 180 }}
                         transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-relative"
+                        className="text-7xl md:text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-relative"
                       >
                         {countdown}
                       </motion.div>
                     </div>
                   ) : (
                     // Loading Screen
-                    <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-10 shadow-2xl min-h-[500px]">
+                    <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-2xl min-h-[400px] md:min-h-[500px]">
                       <QuizLoadingScreen />
                     </div>
                   )
@@ -578,7 +578,7 @@ export default function Quiz() {
                     transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                     style={{ perspective: 1000 }}
                   >
-                    <div className="backdrop-blur-2xl bg-gradient-to-br from-card via-card to-primary/5 border-4 border-primary/30 rounded-3xl p-10 shadow-[0_0_80px_rgba(155,135,245,0.3)] relative overflow-hidden">
+                    <div className="backdrop-blur-2xl bg-gradient-to-br from-card via-card to-primary/5 border-2 md:border-4 border-primary/30 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-10 shadow-[0_0_80px_rgba(155,135,245,0.3)] relative overflow-hidden">
                       {/* Animated background particles */}
                       <div className="absolute inset-0 overflow-hidden pointer-events-none">
                         {Array.from({ length: 25 }).map((_, i) => (
@@ -603,7 +603,7 @@ export default function Quiz() {
                         ))}
                       </div>
 
-                      <div className="text-center space-y-8 relative z-10">
+                      <div className="text-center space-y-4 md:space-y-8 relative z-10">
                         {result && (
                           <>
                             {/* Celebration Lottie Animation */}
@@ -611,12 +611,12 @@ export default function Quiz() {
                               initial={{ scale: 0, opacity: 0 }}
                               animate={{ scale: 1, opacity: 1 }}
                               transition={{ duration: 0.6, type: "spring", bounce: 0.5 }}
-                              className="mx-auto mb-6"
+                              className="mx-auto mb-3 md:mb-6"
                             >
                               <LottieIcon
                                 animationData={fingerHeartDark}
                                 isActive={true}
-                                size={160}
+                                size={window.innerWidth < 768 ? 100 : 160}
                                 loop={true}
                                 autoplay={true}
                               />
@@ -627,11 +627,11 @@ export default function Quiz() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.3 }}
                             >
-                              <Badge className="mb-6 text-lg px-6 py-2 rounded-full">{childName}</Badge>
+                              <Badge className="mb-3 md:mb-6 text-sm md:text-lg px-4 md:px-6 py-1.5 md:py-2 rounded-full">{childName}</Badge>
 
                               <motion.h2
                                 className={cn(
-                                  "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent font-relative",
+                                  "text-3xl md:text-5xl font-bold mb-2 md:mb-4 bg-gradient-to-r bg-clip-text text-transparent font-relative",
                                   brainTypeInfo[result.type].gradient
                                 )}
                                 animate={{
@@ -641,10 +641,10 @@ export default function Quiz() {
                               >
                                 {brainTypeInfo[result.type].title}
                               </motion.h2>
-                              <p className="text-xl text-muted-foreground mb-6">
+                              <p className="text-base md:text-xl text-muted-foreground mb-3 md:mb-6 px-2">
                                 {brainTypeInfo[result.type].subtitle}
                               </p>
-                              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-8">
+                              <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-4 md:mb-8 px-2">
                                 {brainTypeInfo[result.type].description}
                               </p>
 
@@ -659,27 +659,27 @@ export default function Quiz() {
 
                             {savingProfile ? (
                               <motion.div 
-                                className="bg-muted/20 backdrop-blur-sm rounded-2xl p-6 border border-border/30"
+                                className="bg-muted/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 border border-border/30"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                               >
                                 <div className="flex items-center justify-center gap-3">
-                                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                  <p className="text-muted-foreground">Saving profile...</p>
+                                  <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                  <p className="text-sm md:text-base text-muted-foreground">Saving profile...</p>
                                 </div>
                               </motion.div>
                             ) : saveError ? (
                               <motion.div 
-                                className="bg-destructive/10 border-2 border-destructive/20 rounded-2xl p-6"
+                                className="bg-destructive/10 border-2 border-destructive/20 rounded-xl md:rounded-2xl p-4 md:p-6"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                               >
-                                <p className="text-destructive font-medium">{saveError}</p>
+                                <p className="text-sm md:text-base text-destructive font-medium">{saveError}</p>
                               </motion.div>
                             ) : null}
 
                             <motion.div 
-                              className="pt-4"
+                              className="pt-2 md:pt-4"
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.8 }}
@@ -695,15 +695,16 @@ export default function Quiz() {
                                   size="lg" 
                                   onClick={handleGoToDashboard}
                                   disabled={savingProfile || completingQuiz}
-                                  className="relative group overflow-hidden w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50 font-relative"
+                                  className="relative group overflow-hidden w-full h-12 md:h-16 text-base md:text-xl rounded-xl md:rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50 font-relative"
                                 >
                                   <span className="relative z-10 flex items-center justify-center gap-2">
                                     {completingQuiz ? (
                                       <span className="animate-pulse">Finalizing...</span>
                                     ) : (
                                       <>
-                                        See My Personalized Dashboard
-                                        <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                                        <span className="hidden sm:inline">See My Personalized Dashboard</span>
+                                        <span className="sm:hidden">See My Dashboard</span>
+                                        <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" />
                                       </>
                                     )}
                                   </span>

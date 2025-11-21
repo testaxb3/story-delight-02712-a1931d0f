@@ -43,7 +43,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-12 space-y-8"
+      className="flex flex-col items-center justify-center min-h-[50vh] md:min-h-[60vh] px-4 py-8 md:py-12 space-y-6 md:space-y-8"
     >
       {/* Celebration Lottie */}
       <motion.div
@@ -54,7 +54,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
         <LottieIcon
           animationData={clapDark}
           isActive={true}
-          size={120}
+          size={window.innerWidth < 768 ? 80 : 120}
           loop={false}
           autoplay={true}
         />
@@ -65,7 +65,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-4xl md:text-5xl font-black text-center text-black dark:text-white max-w-2xl font-relative"
+        className="text-3xl md:text-4xl lg:text-5xl font-black text-center text-black dark:text-white max-w-2xl font-relative px-4"
       >
         {title}
       </motion.h1>
@@ -75,7 +75,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="text-lg md:text-xl text-gray-500 dark:text-gray-400 text-center max-w-xl"
+        className="text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 text-center max-w-xl px-4"
       >
         {subtitle}
       </motion.p>
@@ -86,20 +86,20 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
-          className="w-full max-w-md h-64 mt-8"
+          className="w-full max-w-md h-48 md:h-64 mt-6 md:mt-8 px-4"
         >
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={progressData}>
               <XAxis
                 dataKey="day"
                 stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 12 }}
+                tick={{ fill: '#6b7280', fontSize: window.innerWidth < 768 ? 10 : 12 }}
                 axisLine={false}
                 tickLine={false}
               />
               <YAxis
                 stroke="#9ca3af"
-                tick={{ fill: '#6b7280', fontSize: 12 }}
+                tick={{ fill: '#6b7280', fontSize: window.innerWidth < 768 ? 10 : 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={(value) => `${value}%`}
@@ -116,13 +116,13 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
                 type="monotone"
                 dataKey="progress"
                 stroke="#000"
-                strokeWidth={3}
-                dot={{ fill: '#000', r: 6 }}
-                activeDot={{ r: 8 }}
+                strokeWidth={window.innerWidth < 768 ? 2 : 3}
+                dot={{ fill: '#000', r: window.innerWidth < 768 ? 4 : 6 }}
+                activeDot={{ r: window.innerWidth < 768 ? 6 : 8 }}
               />
             </LineChart>
           </ResponsiveContainer>
-          <p className="text-center text-sm text-gray-500 mt-4">
+          <p className="text-center text-xs md:text-sm text-gray-500 mt-3 md:mt-4">
             Expected progress with NEP System
           </p>
         </motion.div>
@@ -137,7 +137,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
         <Button
           onClick={onContinue}
           size="lg"
-          className="rounded-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-200 px-12 py-6 text-lg font-semibold font-relative"
+          className="rounded-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-200 px-8 md:px-12 py-5 md:py-6 text-base md:text-lg font-semibold font-relative"
         >
           Continue
         </Button>

@@ -53,18 +53,18 @@ export const QuizLoadingScreen = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-16 py-12 md:py-20">
+    <div className="flex flex-col items-center justify-center space-y-8 md:space-y-16 py-8 md:py-12 lg:py-20">
       {/* Lottie Animation */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-8"
+        className="mb-4 md:mb-8"
       >
         <LottieIcon
           animationData={weightTransitionDark}
           isActive={true}
-          size={200}
+          size={window.innerWidth < 768 ? 150 : 200}
           loop={true}
           autoplay={true}
         />
@@ -76,7 +76,7 @@ export const QuizLoadingScreen = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="text-9xl md:text-[12rem] font-black text-black dark:text-white tracking-tighter font-relative">
+        <div className="text-7xl md:text-9xl lg:text-[12rem] font-black text-black dark:text-white tracking-tighter font-relative">
           {percentage}%
         </div>
       </motion.div>
@@ -94,27 +94,27 @@ export const QuizLoadingScreen = () => {
       </div>
 
       {/* Checklist - Minimalist */}
-      <div className="w-full max-w-md space-y-6 px-4">
+      <div className="w-full max-w-md space-y-4 md:space-y-6 px-4">
         {checklist.map((item, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1, duration: 0.3 }}
-            className="flex items-center gap-4"
+            className="flex items-center gap-3 md:gap-4"
           >
             {/* Icon - Black & White only */}
             <div className="flex-shrink-0">
               {item.completed ? (
-                <CheckCircle2 className="w-6 h-6 text-black dark:text-white" strokeWidth={2} />
+                <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-black dark:text-white" strokeWidth={2} />
               ) : (
-                <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-700" />
+                <div className="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 border-gray-300 dark:border-gray-700" />
               )}
             </div>
 
             {/* Text */}
             <span
-              className={`text-base font-medium transition-colors ${
+              className={`text-sm md:text-base font-medium transition-colors ${
                 item.completed 
                   ? 'text-black dark:text-white' 
                   : 'text-gray-400 dark:text-gray-600'
