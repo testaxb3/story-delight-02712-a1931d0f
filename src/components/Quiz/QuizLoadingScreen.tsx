@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { LottieIcon } from '@/components/LottieIcon';
+import weightTransitionDark from '@/assets/lottie/calai/your_weight_transition_dark.json';
 
 interface ChecklistItem {
   text: string;
@@ -52,13 +54,29 @@ export const QuizLoadingScreen = () => {
 
   return (
     <div className="flex flex-col items-center justify-center space-y-16 py-12 md:py-20">
-      {/* Giant Percentage - BLACK & WHITE */}
+      {/* Lottie Animation */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-8"
+      >
+        <LottieIcon
+          animationData={weightTransitionDark}
+          isActive={true}
+          size={200}
+          loop={true}
+          autoplay={true}
+        />
+      </motion.div>
+
+      {/* Giant Percentage - BLACK & WHITE with Relative Font */}
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <div className="text-9xl md:text-[12rem] font-black text-black dark:text-white tracking-tighter">
+        <div className="text-9xl md:text-[12rem] font-black text-black dark:text-white tracking-tighter font-relative">
           {percentage}%
         </div>
       </motion.div>

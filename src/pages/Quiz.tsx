@@ -19,6 +19,8 @@ import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
 import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
 import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
+import { LottieIcon } from '@/components/LottieIcon';
+import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -408,7 +410,7 @@ export default function Quiz() {
                 <div className="max-w-xl mx-auto">
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-3xl md:text-4xl font-bold text-black mb-3">
+                      <h2 className="text-3xl md:text-4xl font-bold text-black mb-3 font-relative">
                         Discover Your Child's Brain Profile
                       </h2>
                       <p className="text-gray-500 text-base md:text-lg">
@@ -449,7 +451,7 @@ export default function Quiz() {
                         onClick={handleStartQuiz}
                         disabled={!isValidChildName(childName)}
                         size="lg"
-                        className="w-full h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors"
+                        className="w-full h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors font-relative"
                       >
                         Continue
                       </Button>
@@ -485,7 +487,7 @@ export default function Quiz() {
 
                 <div className="space-y-6">
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-black mb-3">
+                    <h3 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
                       {questions[currentQuestion].question}
                     </h3>
                     <p className="text-gray-500 text-sm md:text-base">
@@ -557,7 +559,7 @@ export default function Quiz() {
                         animate={{ scale: 1, opacity: 1, rotate: 0 }}
                         exit={{ scale: 0, opacity: 0, rotate: 180 }}
                         transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+                        className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-relative"
                       >
                         {countdown}
                       </motion.div>
@@ -604,24 +606,20 @@ export default function Quiz() {
                       <div className="text-center space-y-8 relative z-10">
                         {result && (
                           <>
-                            {/* Pulsing Badge Icon */}
+                            {/* Celebration Lottie Animation */}
                             <motion.div
-                              animate={{ 
-                                scale: [1, 1.05, 1],
-                                boxShadow: [
-                                  "0 0 20px rgba(155, 135, 245, 0.3)",
-                                  "0 0 40px rgba(155, 135, 245, 0.6)",
-                                  "0 0 20px rgba(155, 135, 245, 0.3)"
-                                ]
-                              }}
-                              transition={{ duration: 2, repeat: Infinity }}
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ duration: 0.6, type: "spring", bounce: 0.5 }}
+                              className="mx-auto mb-6"
                             >
-                              <div className={cn(
-                                "w-40 h-40 rounded-full flex items-center justify-center mx-auto shadow-2xl mb-6",
-                                `bg-gradient-to-br ${brainTypeInfo[result.type].gradient}`
-                              )}>
-                                <Sparkles className="w-20 h-20 text-white" />
-                              </div>
+                              <LottieIcon
+                                animationData={fingerHeartDark}
+                                isActive={true}
+                                size={160}
+                                loop={true}
+                                autoplay={true}
+                              />
                             </motion.div>
 
                             <motion.div
@@ -633,7 +631,7 @@ export default function Quiz() {
 
                               <motion.h2
                                 className={cn(
-                                  "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent",
+                                  "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent font-relative",
                                   brainTypeInfo[result.type].gradient
                                 )}
                                 animate={{
@@ -697,7 +695,7 @@ export default function Quiz() {
                                   size="lg" 
                                   onClick={handleGoToDashboard}
                                   disabled={savingProfile || completingQuiz}
-                                  className="relative group overflow-hidden w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50"
+                                  className="relative group overflow-hidden w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50 font-relative"
                                 >
                                   <span className="relative z-10 flex items-center justify-center gap-2">
                                     {completingQuiz ? (

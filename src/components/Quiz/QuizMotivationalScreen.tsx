@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { LottieIcon } from '@/components/LottieIcon';
+import clapDark from '@/assets/lottie/calai/clap_dark.json';
 
 interface QuizMotivationalScreenProps {
   milestone: 25 | 50 | 75;
@@ -43,12 +45,27 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
       transition={{ duration: 0.5 }}
       className="flex flex-col items-center justify-center min-h-[60vh] px-4 py-12 space-y-8"
     >
-      {/* Title */}
+      {/* Celebration Lottie */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.5 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1, duration: 0.5, type: "spring" }}
+      >
+        <LottieIcon
+          animationData={clapDark}
+          isActive={true}
+          size={120}
+          loop={false}
+          autoplay={true}
+        />
+      </motion.div>
+
+      {/* Title with Relative Font */}
       <motion.h1
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-4xl md:text-5xl font-black text-center text-black dark:text-white max-w-2xl"
+        className="text-4xl md:text-5xl font-black text-center text-black dark:text-white max-w-2xl font-relative"
       >
         {title}
       </motion.h1>
@@ -120,7 +137,7 @@ export const QuizMotivationalScreen = ({ milestone, onContinue }: QuizMotivation
         <Button
           onClick={onContinue}
           size="lg"
-          className="rounded-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-200 px-12 py-6 text-lg font-semibold"
+          className="rounded-full bg-black hover:bg-gray-800 text-white dark:bg-white dark:text-black dark:hover:bg-gray-200 px-12 py-6 text-lg font-semibold font-relative"
         >
           Continue
         </Button>
