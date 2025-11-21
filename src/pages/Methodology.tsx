@@ -200,18 +200,19 @@ export default function Methodology() {
 
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <GraduationCap className="w-8 h-8 text-purple-600" />
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4">
+            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               {t.methodology.title}
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
             {t.methodology.subtitle}
           </p>
-          <Button onClick={handleDownloadHTML} className="gap-2 no-print">
+          <Button onClick={handleDownloadHTML} className="gap-2 no-print text-sm sm:text-base">
             <Download className="w-4 h-4" />
-            Baixar como HTML
+            <span className="hidden sm:inline">Baixar como HTML</span>
+            <span className="sm:hidden">Download</span>
           </Button>
         </div>
 

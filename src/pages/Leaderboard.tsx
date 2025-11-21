@@ -18,8 +18,8 @@ export default function Leaderboard() {
     <AnimatedPage>
       <div className="min-h-screen bg-background p-6">
         <div className="max-w-4xl mx-auto space-y-6">
-          <h1 className="text-4xl font-bold mb-2">Leaderboard</h1>
-          <p className="text-muted-foreground mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Leaderboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mb-8">
             Top NEP practitioners this month
           </p>
 
