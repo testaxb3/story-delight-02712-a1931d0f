@@ -1,7 +1,5 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { LottieIcon } from '@/components/LottieIcon';
-import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
 
 interface RecommendationItem {
   text: string;
@@ -9,7 +7,6 @@ interface RecommendationItem {
 }
 
 export const QuizLoadingScreen = () => {
-  const [phase, setPhase] = useState<'welcome' | 'loading'>('welcome');
   const [percentage, setPercentage] = useState(0);
   const [currentTask, setCurrentTask] = useState('Customizing parenting plan...');
   const [recommendations, setRecommendations] = useState<RecommendationItem[]>([
@@ -21,17 +18,6 @@ export const QuizLoadingScreen = () => {
   ]);
 
   useEffect(() => {
-    // Welcome phase for 2 seconds
-    const welcomeTimer = setTimeout(() => {
-      setPhase('loading');
-    }, 2000);
-
-    return () => clearTimeout(welcomeTimer);
-  }, []);
-
-  useEffect(() => {
-    if (phase !== 'loading') return;
-
     // Animate percentage from 0 to 100
     const duration = 3000;
     const steps = 100;
@@ -72,77 +58,15 @@ export const QuizLoadingScreen = () => {
     }, interval);
 
     return () => clearInterval(percentTimer);
-  }, [phase]);
+  }, []);
 
   return (
-    <AnimatePresence mode="wait">
-      {phase === 'welcome' ? (
-        // Welcome Screen with Hand
-        <motion.div
-          key="welcome"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] py-12 md:py-16 space-y-8 md:space-y-10"
-        >
-          {/* Hand Lottie */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.6, type: "spring" }}
-          >
-            <LottieIcon
-              animationData={fingerHeartDark}
-              isActive={true}
-              size={window.innerWidth < 768 ? 120 : 180}
-              loop={true}
-              autoplay={true}
-            />
-          </motion.div>
-
-          {/* Text */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-center space-y-4 md:space-y-5 px-6"
-          >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black dark:text-white font-relative leading-tight">
-              Thank you for trusting us
-            </h2>
-            <p className="text-base md:text-lg text-gray-500 dark:text-gray-400">
-              Now let's personalize NEP System for you...
-            </p>
-          </motion.div>
-
-          {/* Privacy Note */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="text-center space-y-2 px-6 pt-4 md:pt-8"
-          >
-            <div className="w-12 h-12 mx-auto bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-3">
-              <span className="text-2xl">🔒</span>
-            </div>
-            <p className="text-xs md:text-sm font-semibold text-black dark:text-white">
-              Your privacy and security matter to us.
-            </p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
-              We promise to always keep your personal information private and secure.
-            </p>
-          </motion.div>
-        </motion.div>
-      ) : (
-        // Loading Screen with Percentage
-        <motion.div
-          key="loading"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] py-12 md:py-16 space-y-8 md:space-y-10"
-        >
+    <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] py-12 md:py-16 space-y-8 md:space-y-10"
+      >
           {/* Giant Percentage */}
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -217,8 +141,6 @@ export const QuizLoadingScreen = () => {
               </motion.div>
             ))}
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
   );
 };
