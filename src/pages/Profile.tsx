@@ -133,30 +133,35 @@ export default function Profile() {
   const handleChildInfoUpdate = async () => {
     if (!activeChild?.id) return;
 
-    const updates: any = {};
-    let hasChanges = false;
-
-    if (childAge && childAge !== activeChild.age) {
-      updates.age = typeof childAge === 'number' ? childAge : parseInt(String(childAge), 10);
-      hasChanges = true;
+    // Parse and validate age
+    const ageValue = typeof childAge === 'number' ? childAge : (childAge === '' ? null : parseInt(String(childAge), 10));
+    
+    // Validate age
+    if (ageValue !== null && (ageValue < 1 || ageValue > 18 || isNaN(ageValue))) {
+      toast.error('Please enter a valid age between 1 and 18');
+      return;
     }
 
-    if (!hasChanges) return;
+    // Check if there are actual changes
+    if (ageValue === activeChild.age) {
+      return;
+    }
 
     setSavingChild(true);
     const { error } = await supabase
       .from('child_profiles')
-      .update(updates)
+      .update({ age: ageValue })
       .eq('id', activeChild.id);
 
     setSavingChild(false);
 
     if (error) {
-      toast.error('Failed to update child info');
+      console.error('Error updating child age:', error);
+      toast.error('Failed to update age');
       return;
     }
 
-    toast.success('Child info updated!');
+    toast.success('Age updated successfully!');
     await refreshChildren();
   };
 
@@ -221,6 +226,7 @@ export default function Profile() {
             activeChild={activeChild}
             currentBrain={currentBrain}
             onSetActiveChild={setActiveChild}
+            onRefreshChildren={refreshChildren}
           />
 
           {/* Recent Activity - Compact */}
