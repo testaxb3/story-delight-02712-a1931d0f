@@ -604,62 +604,71 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="min-h-screen flex flex-col"
               >
-                <div className="max-w-xl mx-auto space-y-6 relative">
-                  {/* Page Number */}
-                  <div className="absolute top-0 left-0 z-10">
-                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black dark:text-white">2</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
-                      Tell us about {childName}
-                    </h2>
-                    <p className="text-gray-500 text-sm md:text-base">
-                      This helps us personalize strategies for their developmental stage
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="space-y-3">
-                      <Label className="text-left block font-medium text-black text-base">
-                        How old is {childName}?
-                      </Label>
-                      <div className="flex items-center gap-4">
-                        <Slider
-                          value={[childAge]}
-                          onValueChange={(value) => setChildAge(value[0])}
-                          min={1}
-                          max={18}
-                          step={1}
-                          className="flex-1"
-                        />
-                        <div className="w-16 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
-                          <span className="text-2xl font-bold text-black">{childAge}</span>
-                        </div>
-                      </div>
-                      <p className="text-xs text-gray-500">Age: {childAge} years old</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    <Button
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                    {/* Back Button */}
+                    <button
                       onClick={() => setQuizStep('name')}
-                      variant="outline"
-                      size="lg"
-                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                     >
-                      <ArrowLeft className="mr-2 w-5 h-5" />
-                      Back
-                    </Button>
+                      <ArrowLeft className="w-5 h-5 text-black" />
+                    </button>
+                    
+                    {/* Page Number */}
+                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black">2</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pt-20 pb-24 px-4">
+                  <div className="max-w-xl mx-auto space-y-6">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                        Tell us about {childName}
+                      </h2>
+                      <p className="text-gray-500 text-sm md:text-base">
+                        This helps us personalize strategies for their developmental stage
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="space-y-3">
+                        <Label className="text-left block font-medium text-black text-base">
+                          How old is {childName}?
+                        </Label>
+                        <div className="flex items-center gap-4">
+                          <Slider
+                            value={[childAge]}
+                            onValueChange={(value) => setChildAge(value[0])}
+                            min={1}
+                            max={18}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <div className="w-16 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+                            <span className="text-2xl font-bold text-black">{childAge}</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500">Age: {childAge} years old</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fixed Bottom Button */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
+                  <div className="max-w-2xl mx-auto">
                     <Button 
                       onClick={handleDetailsComplete}
                       size="lg"
-                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 font-relative"
+                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-xl"
                     >
                       Continue
-                      <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </div>
                 </div>
@@ -671,73 +680,82 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="min-h-screen flex flex-col"
               >
-                <div className="max-w-xl mx-auto space-y-6 relative">
-                  {/* Page Number */}
-                  <div className="absolute top-0 left-0 z-10">
-                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black dark:text-white">3</span>
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                    {/* Back Button */}
+                    <button
+                      onClick={() => setQuizStep('details')}
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5 text-black" />
+                    </button>
+                    
+                    {/* Page Number */}
+                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black">3</span>
                     </div>
                   </div>
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
-                      What do you most want to improve?
-                    </h2>
-                    <p className="text-gray-500 text-sm md:text-base">
-                      Select all that apply - we'll prioritize these in your plan
-                    </p>
-                  </div>
+                </div>
 
-                  <div className="space-y-3">
-                    {[
-                      { value: 'tantrums', label: 'Tantrums & Meltdowns', emoji: '😤' },
-                      { value: 'sleep', label: 'Sleep Routine', emoji: '😴' },
-                      { value: 'eating', label: 'Eating & Mealtimes', emoji: '🍽️' },
-                      { value: 'focus', label: 'Focus & Concentration', emoji: '🎯' },
-                      { value: 'family', label: 'Family Relationships', emoji: '❤️' },
-                      { value: 'transitions', label: 'Transitions & Changes', emoji: '🔄' },
-                      { value: 'school', label: 'School Behavior', emoji: '📚' }
-                    ].map((goal) => (
-                      <div
-                        key={goal.value}
-                        onClick={() => toggleParentGoal(goal.value)}
-                        className={cn(
-                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
-                          parentGoals.includes(goal.value)
-                            ? "border-black bg-black text-white"
-                            : "border-gray-200 bg-white hover:border-gray-300"
-                        )}
-                      >
-                        <div className="flex items-center gap-3">
-                          <Checkbox
-                            checked={parentGoals.includes(goal.value)}
-                            className="pointer-events-none"
-                          />
-                          <span className="text-2xl">{goal.emoji}</span>
-                          <span className="font-medium">{goal.label}</span>
+                {/* Content */}
+                <div className="flex-1 pt-20 pb-24 px-4">
+                  <div className="max-w-xl mx-auto space-y-6">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                        What do you most want to improve?
+                      </h2>
+                      <p className="text-gray-500 text-sm md:text-base">
+                        Select all that apply - we'll prioritize these in your plan
+                      </p>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        { value: 'tantrums', label: 'Tantrums & Meltdowns', emoji: '😤' },
+                        { value: 'sleep', label: 'Sleep Routine', emoji: '😴' },
+                        { value: 'eating', label: 'Eating & Mealtimes', emoji: '🍽️' },
+                        { value: 'focus', label: 'Focus & Concentration', emoji: '🎯' },
+                        { value: 'family', label: 'Family Relationships', emoji: '❤️' },
+                        { value: 'transitions', label: 'Transitions & Changes', emoji: '🔄' },
+                        { value: 'school', label: 'School Behavior', emoji: '📚' }
+                      ].map((goal) => (
+                        <div
+                          key={goal.value}
+                          onClick={() => toggleParentGoal(goal.value)}
+                          className={cn(
+                            "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                            parentGoals.includes(goal.value)
+                              ? "border-black bg-black text-white"
+                              : "border-gray-200 bg-white hover:border-gray-300"
+                          )}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              checked={parentGoals.includes(goal.value)}
+                              className="pointer-events-none"
+                            />
+                            <span className="text-2xl">{goal.emoji}</span>
+                            <span className="font-medium">{goal.label}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
                   </div>
+                </div>
 
-                  <div className="flex gap-4 pt-4">
-                    <Button
-                      onClick={() => setQuizStep('details')}
-                      variant="outline"
-                      size="lg"
-                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
-                    >
-                      <ArrowLeft className="mr-2 w-5 h-5" />
-                      Back
-                    </Button>
+                {/* Fixed Bottom Button */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
+                  <div className="max-w-2xl mx-auto">
                     <Button 
                       onClick={handleGoalsComplete}
                       size="lg"
                       disabled={parentGoals.length === 0}
-                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative"
+                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-xl"
                     >
                       Continue
-                      <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </div>
                 </div>
@@ -749,39 +767,45 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="min-h-screen flex flex-col"
               >
-                <div className="relative">
-                  {/* Page Number */}
-                  <div className="absolute top-4 left-4 z-10">
-                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black dark:text-white">4</span>
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                    {/* Back Button */}
+                    <button
+                      onClick={() => setQuizStep('goals')}
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                    >
+                      <ArrowLeft className="w-5 h-5 text-black" />
+                    </button>
+                    
+                    {/* Page Number */}
+                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black">4</span>
                     </div>
                   </div>
-                  
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pt-14 pb-24">
                   <QuizSpeedSlider
                     value={resultSpeed}
                     onChange={setResultSpeed}
                   />
                 </div>
-                
-                <div className="flex gap-4 pt-8 max-w-xl mx-auto px-4">
-                  <Button
-                    onClick={() => setQuizStep('goals')}
-                    variant="outline"
-                    size="lg"
-                    className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
-                  >
-                    <ArrowLeft className="mr-2 w-5 h-5" />
-                    Back
-                  </Button>
-                  <Button 
-                    onClick={handleSpeedComplete}
-                    size="lg"
-                    className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 font-relative"
-                  >
-                    Continue
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
+
+                {/* Fixed Bottom Button */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
+                  <div className="max-w-2xl mx-auto">
+                    <Button 
+                      onClick={handleSpeedComplete}
+                      size="lg"
+                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-xl"
+                    >
+                      Continue
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ) : quizStep === 'challenge' ? (
@@ -791,112 +815,121 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="min-h-screen flex flex-col"
               >
-                <div className="max-w-xl mx-auto space-y-6 relative">
-                  {/* Page Number */}
-                  <div className="absolute top-0 left-0 z-10">
-                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black dark:text-white">6</span>
-                    </div>
-                  </div>
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
-                      How challenging has it been?
-                    </h2>
-                    <p className="text-gray-500 text-sm md:text-base">
-                      Help us understand your current situation
-                    </p>
-                  </div>
-
-                  <div className="space-y-6">
-                    <div className="space-y-3">
-                      <Label className="text-left block font-medium text-black text-base">
-                        Challenge Level
-                      </Label>
-                      <div className="space-y-4">
-                        <div className="flex items-center gap-4">
-                          <Slider
-                            value={[challengeLevel]}
-                            onValueChange={(value) => setChallengeLevel(value[0])}
-                            min={1}
-                            max={10}
-                            step={1}
-                            className="flex-1"
-                          />
-                          <div className="w-16 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-                            <span className="text-2xl font-bold text-white">{challengeLevel}</span>
-                          </div>
-                        </div>
-                        <div className="flex justify-between text-xs text-gray-500">
-                          <span>1 - Manageable</span>
-                          <span>10 - Overwhelming</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-left block font-medium text-black text-base">
-                        How long have you been facing this?
-                      </Label>
-                      <div className="grid grid-cols-2 gap-3">
-                        {['weeks', 'months', 'years', 'always'].map((duration) => (
-                          <div
-                            key={duration}
-                            onClick={() => setChallengeDuration(duration)}
-                            className={cn(
-                              "p-4 rounded-xl border-2 cursor-pointer transition-all text-center",
-                              challengeDuration === duration
-                                ? "border-black bg-black text-white"
-                                : "border-gray-200 bg-white hover:border-gray-300"
-                            )}
-                          >
-                            <span className="font-medium capitalize">{duration}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-left block font-medium text-black text-base">
-                        What have you already tried? (Optional)
-                      </Label>
-                      <div className="grid grid-cols-2 gap-2">
-                        {['time_out', 'rewards', 'consequences', 'ignoring', 'talking', 'other_methods'].map((approach) => (
-                          <div
-                            key={approach}
-                            onClick={() => toggleApproach(approach)}
-                            className={cn(
-                              "p-3 rounded-lg border cursor-pointer transition-all text-center text-sm",
-                              triedApproaches.includes(approach)
-                                ? "border-black bg-black/5"
-                                : "border-gray-200 bg-white hover:border-gray-300"
-                            )}
-                          >
-                            <span className="capitalize">{approach.replace('_', ' ')}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 pt-4">
-                    <Button
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                    {/* Back Button */}
+                    <button
                       onClick={() => setQuizStep('speed')}
-                      variant="outline"
-                      size="lg"
-                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
                     >
-                      <ArrowLeft className="mr-2 w-5 h-5" />
-                      Back
-                    </Button>
+                      <ArrowLeft className="w-5 h-5 text-black" />
+                    </button>
+                    
+                    {/* Page Number */}
+                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black">6</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pt-20 pb-24 px-4">
+                  <div className="max-w-xl mx-auto space-y-6">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                        How challenging has it been?
+                      </h2>
+                      <p className="text-gray-500 text-sm md:text-base">
+                        Help us understand your current situation
+                      </p>
+                    </div>
+
+                    <div className="space-y-6">
+                      <div className="space-y-3">
+                        <Label className="text-left block font-medium text-black text-base">
+                          Challenge Level
+                        </Label>
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-4">
+                            <Slider
+                              value={[challengeLevel]}
+                              onValueChange={(value) => setChallengeLevel(value[0])}
+                              min={1}
+                              max={10}
+                              step={1}
+                              className="flex-1"
+                            />
+                            <div className="w-16 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                              <span className="text-2xl font-bold text-white">{challengeLevel}</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between text-xs text-gray-500">
+                            <span>1 - Manageable</span>
+                            <span>10 - Overwhelming</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="text-left block font-medium text-black text-base">
+                          How long have you been facing this?
+                        </Label>
+                        <div className="grid grid-cols-2 gap-3">
+                          {['weeks', 'months', 'years', 'always'].map((duration) => (
+                            <div
+                              key={duration}
+                              onClick={() => setChallengeDuration(duration)}
+                              className={cn(
+                                "p-4 rounded-xl border-2 cursor-pointer transition-all text-center",
+                                challengeDuration === duration
+                                  ? "border-black bg-black text-white"
+                                  : "border-gray-200 bg-white hover:border-gray-300"
+                              )}
+                            >
+                              <span className="font-medium capitalize">{duration}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <Label className="text-left block font-medium text-black text-base">
+                          What have you already tried? (Optional)
+                        </Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {['time_out', 'rewards', 'consequences', 'ignoring', 'talking', 'other_methods'].map((approach) => (
+                            <div
+                              key={approach}
+                              onClick={() => toggleApproach(approach)}
+                              className={cn(
+                                "p-3 rounded-lg border cursor-pointer transition-all text-center text-sm",
+                                triedApproaches.includes(approach)
+                                  ? "border-black bg-black/5"
+                                  : "border-gray-200 bg-white hover:border-gray-300"
+                              )}
+                            >
+                              <span className="capitalize">{approach.replace('_', ' ')}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Fixed Bottom Button */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
+                  <div className="max-w-2xl mx-auto">
                     <Button 
                       onClick={handleChallengeComplete}
                       size="lg"
                       disabled={!challengeDuration}
-                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative"
+                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-xl"
                     >
                       Start Quiz
-                      <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </div>
                 </div>
