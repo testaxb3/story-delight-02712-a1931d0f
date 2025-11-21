@@ -1143,19 +1143,19 @@ function CommunityContent() {
             background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)',
           }}
         >
-          <div className="relative z-10 flex items-center justify-between">
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h1 className="text-3xl font-black text-white mb-2">Community</h1>
-              <p className="text-white/90 text-sm font-medium">Connect, share wins, and grow together 🚀</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-white mb-1 sm:mb-2">Community</h1>
+              <p className="text-white/90 text-xs sm:text-sm font-medium">Connect, share wins, and grow together 🚀</p>
             </div>
             <Button
               variant="secondary"
               size="sm"
               onClick={() => setShowGuidelines(true)}
-              className="gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30"
+              className="self-start sm:self-center gap-2 bg-white/20 hover:bg-white/30 text-white border-white/30"
             >
               <Info className="w-4 h-4" />
-              Guidelines
+              <span className="text-xs sm:text-sm">Guidelines</span>
             </Button>
           </div>
           

@@ -556,7 +556,7 @@ function ScriptsContent() {
       )}
 
       <div className="space-y-6">
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <ScriptsHeader
             totalScripts={brainScopedScripts.length}
             usedToday={used.size}
@@ -565,10 +565,10 @@ function ScriptsContent() {
           />
           <Button
             onClick={() => setRequestScriptModalOpen(true)}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all"
           >
             <MessageCircleHeart className="w-4 h-4 mr-2" />
-            Request Script
+            <span>Request Script</span>
           </Button>
         </div>
 

@@ -126,15 +126,15 @@ export default function Notifications() {
     <MainLayout>
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
             <div>
-              <h1 className="text-2xl font-bold">Notifications</h1>
+              <h1 className="text-xl sm:text-2xl font-bold">Notifications</h1>
               {unreadCount > 0 && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   {unreadCount} unread {unreadCount === 1 ? 'notification' : 'notifications'}
                 </p>
               )}
@@ -142,9 +142,9 @@ export default function Notifications() {
           </div>
 
           {unreadCount > 0 && (
-            <Button variant="outline" size="sm" onClick={markAllAsRead} className="gap-2">
+            <Button variant="outline" size="sm" onClick={markAllAsRead} className="gap-2 w-full sm:w-auto">
               <Check className="w-4 h-4" />
-              Mark all as read
+              <span className="text-xs sm:text-sm">Mark all as read</span>
             </Button>
           )}
         </div>

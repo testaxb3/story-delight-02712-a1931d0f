@@ -88,62 +88,62 @@ export default function ScriptRequests() {
     <MainLayout>
       <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold">My Script Requests</h1>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold">My Script Requests</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">
               Track your personalized script requests
             </p>
           </div>
           <Button
             onClick={() => setRequestModalOpen(true)}
-            className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg"
           >
             <MessageCircleHeart className="w-4 h-4 mr-2" />
-            New Request
+            <span className="sm:inline">New Request</span>
           </Button>
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Requests
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+                Total
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{requests?.length || 0}</div>
+              <div className="text-xl sm:text-2xl font-bold">{requests?.length || 0}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Pending
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
+              <div className="text-xl sm:text-2xl font-bold text-yellow-600">{pendingCount}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                In Review
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+                Review
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{inReviewCount}</div>
+              <div className="text-xl sm:text-2xl font-bold text-blue-600">{inReviewCount}</div>
             </CardContent>
           </Card>
           <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Completed
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">
+                Done
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{completedCount}</div>
+              <div className="text-xl sm:text-2xl font-bold text-green-600">{completedCount}</div>
             </CardContent>
           </Card>
         </div>
@@ -156,21 +156,21 @@ export default function ScriptRequests() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="all" className="w-full">
-              <TabsList className="grid w-full grid-cols-5">
-                <TabsTrigger value="all">
-                  All ({requests?.length || 0})
+              <TabsList className="grid w-full grid-cols-5 h-auto p-1">
+                <TabsTrigger value="all" className="text-[10px] sm:text-sm px-1 sm:px-3 py-2">
+                  All<br className="sm:hidden"/><span className="hidden sm:inline"> </span>({requests?.length || 0})
                 </TabsTrigger>
-                <TabsTrigger value="pending">
-                  Pending ({pendingCount})
+                <TabsTrigger value="pending" className="text-[10px] sm:text-sm px-1 sm:px-3 py-2">
+                  <span className="hidden sm:inline">Pending</span><span className="sm:hidden">⏳</span><br className="sm:hidden"/>({pendingCount})
                 </TabsTrigger>
-                <TabsTrigger value="in_review">
-                  In Review ({inReviewCount})
+                <TabsTrigger value="in_review" className="text-[10px] sm:text-sm px-1 sm:px-3 py-2">
+                  <span className="hidden sm:inline">Review</span><span className="sm:hidden">👀</span><br className="sm:hidden"/>({inReviewCount})
                 </TabsTrigger>
-                <TabsTrigger value="completed">
-                  Completed ({completedCount})
+                <TabsTrigger value="completed" className="text-[10px] sm:text-sm px-1 sm:px-3 py-2">
+                  <span className="hidden sm:inline">Done</span><span className="sm:hidden">✅</span><br className="sm:hidden"/>({completedCount})
                 </TabsTrigger>
-                <TabsTrigger value="rejected">
-                  Rejected
+                <TabsTrigger value="rejected" className="text-[10px] sm:text-sm px-1 sm:px-3 py-2">
+                  <span className="hidden sm:inline">Rejected</span><span className="sm:hidden">❌</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -198,7 +198,7 @@ export default function ScriptRequests() {
                         return (
                           <Card key={request.id} className="overflow-hidden">
                             <CardHeader className="pb-3">
-                              <div className="flex items-start justify-between">
+                              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                                 <div className="space-y-1 flex-1">
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <Badge className={STATUS_COLORS[request.status as keyof typeof STATUS_COLORS]}>
@@ -225,9 +225,10 @@ export default function ScriptRequests() {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => setSelectedRequest(request)}
+                                  className="w-full sm:w-auto"
                                 >
                                   <Eye className="h-4 w-4 mr-2" />
-                                  View Details
+                                  <span className="text-xs sm:text-sm">View Details</span>
                                 </Button>
                               </div>
                             </CardHeader>

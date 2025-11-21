@@ -90,8 +90,8 @@ export default function Library() {
     <MainLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold mb-2">Bonuses</h1>
-          <p className="text-muted-foreground">Resources updated directly from admin panel</p>
+          <h1 className="text-xl sm:text-2xl font-bold mb-2">Bonuses</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Resources updated directly from admin panel</p>
         </div>
 
         {/* Important Notice */}

@@ -352,16 +352,16 @@ function TrackerContent() {
         </div>
 
         <div className="relative z-10 space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
                 My Plan for {activeChild.name}
               </h1>
-              <p className="text-muted-foreground mt-1">
+              <p className="text-sm sm:text-base text-muted-foreground mt-1">
                 Brain profile: <span className="font-semibold text-foreground">{activeChild.brain_profile}</span>
               </p>
             </div>
-            <Badge className="bg-gradient-to-r from-primary to-primary/80 text-white px-4 py-2 rounded-xl shadow-lg shadow-primary/20">
+            <Badge className="self-start sm:self-center bg-gradient-to-r from-primary to-primary/80 text-white px-3 sm:px-4 py-1.5 sm:py-2 text-sm sm:text-base rounded-xl shadow-lg shadow-primary/20 whitespace-nowrap">
               Day {planCompleted ? TOTAL_DAYS : nextDay} of {TOTAL_DAYS}
             </Badge>
           </div>
