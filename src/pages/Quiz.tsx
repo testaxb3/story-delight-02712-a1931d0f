@@ -618,32 +618,34 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                   {/* Progress Bar */}
-                  <div className="relative h-1.5 bg-gray-200">
-                    <div className="h-full bg-black" style={{ width: '14%' }} />
+                  <div className="relative h-2 bg-gray-200">
+                    <div className="h-full bg-black transition-all duration-300" style={{ width: '14%' }} />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-between">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('name')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">2</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">2</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-24 px-6">
+                {/* Content - adjusted for fixed header (h-2 + h-16 = 72px) */}
+                <div className="flex-1 pt-20 pb-6 px-6 mt-[72px]">
                   <div className="space-y-6">
                     <div className="space-y-1">
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-1 font-relative leading-tight">
@@ -678,11 +680,11 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-4 z-50">
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
                   <Button 
                     onClick={handleDetailsComplete}
                     size="lg"
-                    className="w-full h-[56px] text-base font-semibold rounded-2xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all"
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all active:scale-[0.98]"
                   >
                     Continue
                   </Button>
