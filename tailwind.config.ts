@@ -17,6 +17,7 @@ export default {
         'display': ['"Playfair Display"', 'Georgia', 'serif'], // For ebook headings
         'serif': ['Lora', 'Georgia', 'serif'], // For ebook body text
         'sans': ['Inter', 'system-ui', 'sans-serif'], // For UI elements
+        'relative': ['Relative', 'system-ui', 'sans-serif'], // CalAI premium font
       },
       fontSize: {
         'ebook-body': ['18px', { lineHeight: '1.9', letterSpacing: '0.01em' }],
