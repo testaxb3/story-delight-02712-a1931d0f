@@ -11,6 +11,8 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChildProfilesProvider } from "./contexts/ChildProfilesContext";
 import { initOneSignal } from "./lib/onesignal";
 import { initAnalytics } from "./lib/analytics";
+import { usePageTracking } from "./hooks/usePageTracking";
+import { useErrorTracking } from "./hooks/useErrorTracking";
 
 // PERFORMANCE OPTIMIZATION: Eager load critical pages
 import Auth from "./pages/Auth";
@@ -69,6 +71,9 @@ const queryClient = new QueryClient({
 });
 
 function AppContent() {
+  usePageTracking();
+  useErrorTracking();
+  
   useEffect(() => {
     // Initialize analytics immediately on app load
     initAnalytics();
