@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { MainLayout } from '@/components/Layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
@@ -497,11 +496,8 @@ export default function Quiz() {
   ];
 
   return (
-    <MainLayout hideBottomNav hideSideNav hideTopBar>
-      <div className="min-h-screen relative overflow-hidden">
-
-        <div className="relative z-10">
-          <AnimatePresence mode="wait">
+    <div className="min-h-screen bg-white">
+      <AnimatePresence mode="wait">
             {/* Special screens with keys for AnimatePresence */}
             {showFinalCelebration && result ? (
               <div key="final-celebration">
@@ -537,24 +533,26 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                   {/* Progress Bar */}
-                  <div className="relative h-1 bg-gray-200">
-                    <div className="h-full bg-black" style={{ width: '7%' }} />
+                  <div className="relative h-2 bg-gray-200">
+                    <div className="h-full bg-black transition-all duration-300" style={{ width: '7%' }} />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-end">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-end">
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">1</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">1</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-6">
+                <div className="flex-1 pt-24 pb-28 px-6">
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-3xl md:text-4xl font-bold text-black mb-2 font-relative">
@@ -598,17 +596,15 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button
-                      onClick={handleStartQuiz}
-                      disabled={!isValidChildName(childName)}
-                      size="lg"
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors font-relative shadow-xl"
-                    >
-                      Continue
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+                  <Button
+                    onClick={handleStartQuiz}
+                    disabled={!isValidChildName(childName)}
+                    size="lg"
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    Continue
+                  </Button>
                 </div>
               </motion.div>
             ) : quizStep === 'details' ? (
@@ -697,32 +693,34 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                   {/* Progress Bar */}
-                  <div className="relative h-1 bg-gray-200">
-                    <div className="h-full bg-black" style={{ width: '21%' }} />
+                  <div className="relative h-2 bg-gray-200">
+                    <div className="h-full bg-black transition-all duration-300" style={{ width: '21%' }} />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-between">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('details')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">3</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">3</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-6">
+                <div className="flex-1 pt-24 pb-28 px-6">
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
@@ -768,17 +766,15 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button 
-                      onClick={handleGoalsComplete}
-                      size="lg"
-                      disabled={parentGoals.length === 0}
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-xl"
-                    >
-                      Continue
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+                  <Button 
+                    onClick={handleGoalsComplete}
+                    size="lg"
+                    disabled={parentGoals.length === 0}
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    Continue
+                  </Button>
                 </div>
               </motion.div>
             ) : quizStep === 'speed' ? (
@@ -788,32 +784,34 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                   {/* Progress Bar */}
-                  <div className="relative h-1 bg-gray-200">
-                    <div className="h-full bg-black" style={{ width: '28%' }} />
+                  <div className="relative h-2 bg-gray-200">
+                    <div className="h-full bg-black transition-all duration-300" style={{ width: '28%' }} />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-between">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('goals')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">4</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">4</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20">
+                <div className="flex-1 pt-24 pb-28">
                   <QuizSpeedSlider
                     value={resultSpeed}
                     onChange={setResultSpeed}
@@ -821,16 +819,14 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button 
-                      onClick={handleSpeedComplete}
-                      size="lg"
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-xl"
-                    >
-                      Continue
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+                  <Button 
+                    onClick={handleSpeedComplete}
+                    size="lg"
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    Continue
+                  </Button>
                 </div>
               </motion.div>
             ) : quizStep === 'challenge' ? (
@@ -840,32 +836,34 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
                   {/* Progress Bar */}
-                  <div className="relative h-1 bg-gray-200">
-                    <div className="h-full bg-black" style={{ width: '42%' }} />
+                  <div className="relative h-2 bg-gray-200">
+                    <div className="h-full bg-black transition-all duration-300" style={{ width: '42%' }} />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-between">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('speed')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">6</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">6</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-6">
+                <div className="flex-1 pt-24 pb-28 px-6">
                   <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
@@ -950,17 +948,15 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button 
-                      onClick={handleChallengeComplete}
-                      size="lg"
-                      disabled={!challengeDuration}
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-xl"
-                    >
-                      Start Quiz
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+                  <Button 
+                    onClick={handleChallengeComplete}
+                    size="lg"
+                    disabled={!challengeDuration}
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    Start Quiz
+                  </Button>
                 </div>
               </motion.div>
             ) : quizStep === 'questions' && !showResult ? (
@@ -970,11 +966,12 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
+                className="min-h-screen flex flex-col bg-white"
               >
-                {/* Header: Progress Bar + Back Button + Page Number */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="relative h-1 bg-gray-200">
+                {/* Header with Progress Bar */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+                  {/* Progress Bar */}
+                  <div className="relative h-2 bg-gray-200">
                     <motion.div 
                       className="h-full bg-black"
                       initial={{ width: 0 }}
@@ -982,27 +979,30 @@ export default function Quiz() {
                       transition={{ duration: 0.3 }}
                     />
                   </div>
-                  <div className="px-4 h-14 flex items-center justify-between">
+                  
+                  {/* Header Navigation */}
+                  <div className="px-6 h-16 flex items-center justify-between">
                     {/* Back Button */}
-                    {currentQuestion > 0 && (
+                    {currentQuestion > 0 ? (
                       <button
                         onClick={handlePrevious}
-                        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                       >
                         <ArrowLeft className="w-5 h-5 text-black" />
                       </button>
+                    ) : (
+                      <div className="w-10" />
                     )}
-                    {currentQuestion === 0 && <div className="w-10" />}
                     
                     {/* Page Number */}
-                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black">{7 + currentQuestion}</span>
+                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-sm font-bold text-black">{7 + currentQuestion}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-20 pb-24 px-6">
+                <div className="flex-1 pt-24 pb-28 px-6">
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
@@ -1034,17 +1034,15 @@ export default function Quiz() {
                 </div>
 
                 {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div>
-                    <Button
-                      onClick={handleNext}
-                      disabled={!answers[currentQuestion]}
-                      size="lg"
-                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors font-relative shadow-xl"
-                    >
-                      {currentQuestion < questions.length - 1 ? 'Continue' : 'See Results'}
-                    </Button>
-                  </div>
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+                  <Button
+                    onClick={handleNext}
+                    disabled={!answers[currentQuestion]}
+                    size="lg"
+                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
+                  >
+                    {currentQuestion < questions.length - 1 ? 'Continue' : 'See Results'}
+                  </Button>
                 </div>
               </motion.div>
             ) : showResult && showCountdown ? (
@@ -1114,8 +1112,6 @@ export default function Quiz() {
               </div>
             ) : null}
           </AnimatePresence>
-        </div>
-      </div>
-    </MainLayout>
+    </div>
   );
 }
