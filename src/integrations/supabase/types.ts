@@ -320,38 +320,59 @@ export type Database = {
       child_profiles: {
         Row: {
           age: number | null
+          age_exact: number | null
           brain_profile: string
+          challenge_duration: string | null
+          challenge_level: number | null
           created_at: string
+          development_phase: string | null
+          family_context: string[] | null
           id: string
           is_active: boolean
           name: string
           notes: string | null
+          parent_goals: string[] | null
           parent_id: string
           photo_url: string | null
+          tried_approaches: string[] | null
           updated_at: string | null
         }
         Insert: {
           age?: number | null
+          age_exact?: number | null
           brain_profile: string
+          challenge_duration?: string | null
+          challenge_level?: number | null
           created_at?: string
+          development_phase?: string | null
+          family_context?: string[] | null
           id?: string
           is_active?: boolean
           name: string
           notes?: string | null
+          parent_goals?: string[] | null
           parent_id: string
           photo_url?: string | null
+          tried_approaches?: string[] | null
           updated_at?: string | null
         }
         Update: {
           age?: number | null
+          age_exact?: number | null
           brain_profile?: string
+          challenge_duration?: string | null
+          challenge_level?: number | null
           created_at?: string
+          development_phase?: string | null
+          family_context?: string[] | null
           id?: string
           is_active?: boolean
           name?: string
           notes?: string | null
+          parent_goals?: string[] | null
           parent_id?: string
           photo_url?: string | null
+          tried_approaches?: string[] | null
           updated_at?: string | null
         }
         Relationships: [
