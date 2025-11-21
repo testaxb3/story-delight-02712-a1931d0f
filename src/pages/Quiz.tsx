@@ -472,8 +472,6 @@ export default function Quiz() {
                     </div>
                   </div>
                 </div>
-                  </div>
-                </div>
               </motion.div>
             ) : !showResult ? (
               <motion.div
@@ -483,108 +481,71 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="max-w-xl mx-auto">
-                  {/* Progress bar */}
-                  <div className="mb-8">
-                    <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
-                      <motion.div 
-                        className="h-full bg-black"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </div>
+                {/* Progress bar */}
+                <div className="mb-8">
+                  <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
+                    <motion.div 
+                      className="h-full bg-black"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progress}%` }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-black mb-3">
+                      {questions[currentQuestion].question}
+                    </h3>
+                    <p className="text-gray-500 text-sm md:text-base">
+                      This will be used to calibrate your custom plan.
+                    </p>
                   </div>
 
-                  <div className="space-y-6">
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <motion.div
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ type: "spring", stiffness: 200 }}
-                          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-4 py-2 rounded-full font-bold text-sm shadow-lg shadow-primary/30"
-                        >
-                          Question {currentQuestion + 1} of {questions.length}
-                        </motion.div>
-                        <span className="text-primary font-semibold text-lg">
-                          {Math.round(progress)}%
-                        </span>
-                      </div>
-                      <div className="relative h-3 bg-muted/30 rounded-full overflow-hidden shadow-inner">
-                        <motion.div
-                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full shadow-lg"
-                          initial={{ width: 0 }}
-                          animate={{ width: `${progress}%` }}
-                          transition={{ duration: 0.5, ease: "easeOut" }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-6">
-                      <motion.h3 
-                        className="text-2xl font-semibold leading-relaxed"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                      >
-                        {questions[currentQuestion].question}
-                      </motion.h3>
-
-                      <div className="space-y-3">
-                        {questions[currentQuestion].options.map((option, index) => (
-                          <motion.div
-                            key={option.value}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
-                          >
-                            <QuizOptionCard
-                              value={option.value}
-                              label={option.label}
-                              isSelected={answers[currentQuestion] === option.value}
-                              onSelect={handleAnswer}
-                            />
-                          </motion.div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 pt-4">
-                      {currentQuestion > 0 && (
-                        <motion.div
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex-1"
-                        >
-                          <Button
-                            onClick={handlePrevious}
-                            variant="outline"
-                            size="lg"
-                            className="w-full h-12 rounded-2xl border-2 group backdrop-blur-sm"
-                          >
-                            <ArrowLeft className="mr-2 w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
-                            Previous
-                          </Button>
-                        </motion.div>
-                      )}
-                      
+                  <div className="space-y-3">
+                    {questions[currentQuestion].options.map((option, index) => (
                       <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className={currentQuestion > 0 ? 'flex-1' : 'w-full'}
+                        key={option.value}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.05 * index }}
                       >
-                        <Button
-                          onClick={handleNext}
-                          disabled={!answers[currentQuestion]}
-                          size="lg"
-                          className="w-full h-12 rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-lg shadow-primary/20 transition-all duration-300 group"
-                        >
-                          {currentQuestion < questions.length - 1 ? 'Next' : 'See Results'}
-                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                        </Button>
+                        <QuizOptionCard
+                          value={option.value}
+                          label={option.label}
+                          isSelected={answers[currentQuestion] === option.value}
+                          onSelect={handleAnswer}
+                        />
                       </motion.div>
-                    </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    {currentQuestion > 0 && (
+                      <Button
+                        onClick={handlePrevious}
+                        variant="outline"
+                        size="lg"
+                        className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                      >
+                        <ArrowLeft className="mr-2 w-5 h-5" />
+                        Previous
+                      </Button>
+                    )}
+                    
+                    <Button
+                      onClick={handleNext}
+                      disabled={!answers[currentQuestion]}
+                      size="lg"
+                      className={cn(
+                        "h-14 rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors",
+                        currentQuestion > 0 ? 'flex-1' : 'w-full'
+                      )}
+                    >
+                      {currentQuestion < questions.length - 1 ? 'Continue' : 'See Results'}
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
                   </div>
                 </div>
               </motion.div>
