@@ -326,7 +326,9 @@ export default function Quiz() {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
-      // Last question - show Pre-Loading screen
+      // Last question - calculate result first, then show Pre-Loading screen
+      const calculatedResult = calculateResult();
+      setResult(calculatedResult);
       setShowPreLoading(true);
     }
   };
@@ -343,13 +345,14 @@ export default function Quiz() {
   const handlePreLoadingContinue = async () => {
     setShowPreLoading(false);
     
-    // Calculate result and save profile
-    const calculatedResult = calculateResult();
-    setResult(calculatedResult);
+    // Result already calculated, just show countdown and save profile
     setShowResult(true);
     setShowCountdown(true);
     setCountdown(3);
-    await persistChildProfile(calculatedResult.type);
+    
+    if (result) {
+      await persistChildProfile(result.type);
+    }
   };
 
   const handlePrevious = () => {
