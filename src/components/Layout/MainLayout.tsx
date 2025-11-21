@@ -14,7 +14,7 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false, hideSideNav = false }: MainLayoutProps) {
   return (
-    <div className={`min-h-screen bg-background transition-colors duration-300 ${!hideSideNav ? 'pb-20 md:pb-0 pt-16 md:pl-20 lg:pl-24' : 'pt-16'}`}>
+    <div className={`min-h-screen transition-colors duration-300 ${!hideSideNav ? 'pb-20 md:pb-0 pt-16 md:pl-20 lg:pl-24' : 'pt-16'}`}>
       {!hideTopBar && <TopBar />}
       {!hideSideNav && <SideNav />}
       <main className={
