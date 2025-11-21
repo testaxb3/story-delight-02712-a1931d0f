@@ -18,6 +18,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
 import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
+import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -68,6 +69,8 @@ export default function Quiz() {
   const [countdown, setCountdown] = useState(3);
   const [showCountdown, setShowCountdown] = useState(false);
   const [nameError, setNameError] = useState(false);
+  const [showMotivational, setShowMotivational] = useState(false);
+  const [motivationalMilestone, setMotivationalMilestone] = useState<25 | 50 | 75>(25);
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
@@ -225,7 +228,17 @@ export default function Quiz() {
     }
     
     if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
+      const nextQuestion = currentQuestion + 1;
+      const progress = ((nextQuestion + 1) / questions.length) * 100;
+      
+      // Check if we hit a milestone
+      if (progress === 25 || progress === 50 || progress === 75) {
+        setMotivationalMilestone(progress as 25 | 50 | 75);
+        setShowMotivational(true);
+        setCurrentQuestion(nextQuestion);
+      } else {
+        setCurrentQuestion(nextQuestion);
+      }
     } else {
       const calculatedResult = calculateResult();
       setResult(calculatedResult);
@@ -234,6 +247,10 @@ export default function Quiz() {
       setCountdown(3);
       await persistChildProfile(calculatedResult.type);
     }
+  };
+
+  const handleContinueFromMotivational = () => {
+    setShowMotivational(false);
   };
 
   const handlePrevious = () => {
@@ -441,6 +458,12 @@ export default function Quiz() {
                 </div>
               </motion.div>
             ) : !showResult ? (
+              showMotivational ? (
+                <QuizMotivationalScreen
+                  milestone={motivationalMilestone}
+                  onContinue={handleContinueFromMotivational}
+                />
+              ) : (
               <motion.div
                 key={`question-${currentQuestion}`}
                 initial={{ opacity: 0, y: 10 }}
@@ -516,6 +539,7 @@ export default function Quiz() {
                   </div>
                 </div>
               </motion.div>
+              )
             ) : (
               <motion.div
                 key="result"
