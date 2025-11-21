@@ -19,8 +19,11 @@ import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
 import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
 import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
+import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
 import { LottieIcon } from '@/components/LottieIcon';
 import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
+import { Slider } from '@/components/ui/slider';
+import { Checkbox } from '@/components/ui/checkbox';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -73,6 +76,15 @@ export default function Quiz() {
   const [nameError, setNameError] = useState(false);
   const [showMotivational, setShowMotivational] = useState(false);
   const [motivationalMilestone, setMotivationalMilestone] = useState<25 | 50 | 75>(25);
+  
+  // Enhanced quiz data
+  const [childAge, setChildAge] = useState<number>(5);
+  const [parentGoals, setParentGoals] = useState<string[]>([]);
+  const [challengeLevel, setChallengeLevel] = useState<number>(5);
+  const [challengeDuration, setChallengeDuration] = useState<string>('');
+  const [triedApproaches, setTriedApproaches] = useState<string[]>([]);
+  const [quizStep, setQuizStep] = useState<'name' | 'details' | 'goals' | 'challenge' | 'questions'>('name');
+  
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
@@ -135,12 +147,54 @@ export default function Quiz() {
     }
     
     setNameError(false);
+    setQuizStep('details'); // Move to details collection
+  };
+
+  const handleDetailsComplete = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    setQuizStep('goals');
+  };
+
+  const handleGoalsComplete = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    if (parentGoals.length === 0) {
+      toast.error('Please select at least one goal');
+      return;
+    }
+    setQuizStep('challenge');
+  };
+
+  const handleChallengeComplete = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    if (!challengeDuration) {
+      toast.error('Please select how long you have been facing this challenge');
+      return;
+    }
     setAnswers({});
     setCurrentQuestion(0);
     setShowResult(false);
     setResult(null);
     setHasStarted(true);
     setSaveError(null);
+    setQuizStep('questions');
+  };
+
+  const toggleParentGoal = (goal: string) => {
+    setParentGoals(prev => 
+      prev.includes(goal) ? prev.filter(g => g !== goal) : [...prev, goal]
+    );
+  };
+
+  const toggleApproach = (approach: string) => {
+    setTriedApproaches(prev =>
+      prev.includes(approach) ? prev.filter(a => a !== approach) : [...prev, approach]
+    );
   };
 
   const calculateResult = (): { type: BrainProfile; score: number } => {
@@ -149,6 +203,14 @@ export default function Quiz() {
       type: result.type,
       score: result.score
     };
+  };
+
+  const getDevelopmentPhase = (age: number): string => {
+    if (age < 2) return 'baby';
+    if (age < 4) return 'toddler';
+    if (age < 10) return 'child';
+    if (age < 13) return 'preteen';
+    return 'teen';
   };
 
   const persistChildProfile = async (brainType: BrainProfile): Promise<boolean> => {
@@ -192,7 +254,13 @@ export default function Quiz() {
           name: sanitizedName,
           brain_profile: brainType,
           parent_id: user.profileId,
-          is_active: true
+          is_active: true,
+          age_exact: childAge,
+          development_phase: getDevelopmentPhase(childAge),
+          parent_goals: parentGoals,
+          challenge_level: challengeLevel,
+          challenge_duration: challengeDuration,
+          tried_approaches: triedApproaches
         })
         .select()
         .single();
@@ -399,7 +467,7 @@ export default function Quiz() {
 
         <div className="max-w-2xl mx-auto relative z-10">
           <AnimatePresence mode="wait">
-            {!hasStarted ? (
+            {quizStep === 'name' ? (
               <motion.div
                 key="intro"
                 initial={{ opacity: 0, y: 10 }}
@@ -459,7 +527,251 @@ export default function Quiz() {
                   </div>
                 </div>
               </motion.div>
-            ) : !showResult ? (
+            ) : quizStep === 'details' ? (
+              <motion.div
+                key="details"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="max-w-xl mx-auto space-y-6">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      Tell us about {childName}
+                    </h2>
+                    <p className="text-gray-500 text-sm md:text-base">
+                      This helps us personalize strategies for their developmental stage
+                    </p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="space-y-3">
+                      <Label className="text-left block font-medium text-black text-base">
+                        How old is {childName}?
+                      </Label>
+                      <div className="flex items-center gap-4">
+                        <Slider
+                          value={[childAge]}
+                          onValueChange={(value) => setChildAge(value[0])}
+                          min={1}
+                          max={18}
+                          step={1}
+                          className="flex-1"
+                        />
+                        <div className="w-16 h-14 rounded-xl bg-gray-100 flex items-center justify-center">
+                          <span className="text-2xl font-bold text-black">{childAge}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500">Age: {childAge} years old</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => setQuizStep('name')}
+                      variant="outline"
+                      size="lg"
+                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                    >
+                      <ArrowLeft className="mr-2 w-5 h-5" />
+                      Back
+                    </Button>
+                    <Button 
+                      onClick={handleDetailsComplete}
+                      size="lg"
+                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 font-relative"
+                    >
+                      Continue
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : quizStep === 'goals' ? (
+              <motion.div
+                key="goals"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="max-w-xl mx-auto space-y-6">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      What do you most want to improve?
+                    </h2>
+                    <p className="text-gray-500 text-sm md:text-base">
+                      Select all that apply - we'll prioritize these in your plan
+                    </p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      { value: 'tantrums', label: 'Tantrums & Meltdowns', emoji: '😤' },
+                      { value: 'sleep', label: 'Sleep Routine', emoji: '😴' },
+                      { value: 'eating', label: 'Eating & Mealtimes', emoji: '🍽️' },
+                      { value: 'focus', label: 'Focus & Concentration', emoji: '🎯' },
+                      { value: 'family', label: 'Family Relationships', emoji: '❤️' },
+                      { value: 'transitions', label: 'Transitions & Changes', emoji: '🔄' },
+                      { value: 'school', label: 'School Behavior', emoji: '📚' }
+                    ].map((goal) => (
+                      <div
+                        key={goal.value}
+                        onClick={() => toggleParentGoal(goal.value)}
+                        className={cn(
+                          "p-4 rounded-xl border-2 cursor-pointer transition-all",
+                          parentGoals.includes(goal.value)
+                            ? "border-black bg-black text-white"
+                            : "border-gray-200 bg-white hover:border-gray-300"
+                        )}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Checkbox
+                            checked={parentGoals.includes(goal.value)}
+                            className="pointer-events-none"
+                          />
+                          <span className="text-2xl">{goal.emoji}</span>
+                          <span className="font-medium">{goal.label}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => setQuizStep('details')}
+                      variant="outline"
+                      size="lg"
+                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                    >
+                      <ArrowLeft className="mr-2 w-5 h-5" />
+                      Back
+                    </Button>
+                    <Button 
+                      onClick={handleGoalsComplete}
+                      size="lg"
+                      disabled={parentGoals.length === 0}
+                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative"
+                    >
+                      Continue
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : quizStep === 'challenge' ? (
+              <motion.div
+                key="challenge"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="max-w-xl mx-auto space-y-6">
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      How challenging has it been?
+                    </h2>
+                    <p className="text-gray-500 text-sm md:text-base">
+                      Help us understand your current situation
+                    </p>
+                  </div>
+
+                  <div className="space-y-6">
+                    <div className="space-y-3">
+                      <Label className="text-left block font-medium text-black text-base">
+                        Challenge Level
+                      </Label>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-4">
+                          <Slider
+                            value={[challengeLevel]}
+                            onValueChange={(value) => setChallengeLevel(value[0])}
+                            min={1}
+                            max={10}
+                            step={1}
+                            className="flex-1"
+                          />
+                          <div className="w-16 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                            <span className="text-2xl font-bold text-white">{challengeLevel}</span>
+                          </div>
+                        </div>
+                        <div className="flex justify-between text-xs text-gray-500">
+                          <span>1 - Manageable</span>
+                          <span>10 - Overwhelming</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-left block font-medium text-black text-base">
+                        How long have you been facing this?
+                      </Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {['weeks', 'months', 'years', 'always'].map((duration) => (
+                          <div
+                            key={duration}
+                            onClick={() => setChallengeDuration(duration)}
+                            className={cn(
+                              "p-4 rounded-xl border-2 cursor-pointer transition-all text-center",
+                              challengeDuration === duration
+                                ? "border-black bg-black text-white"
+                                : "border-gray-200 bg-white hover:border-gray-300"
+                            )}
+                          >
+                            <span className="font-medium capitalize">{duration}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-left block font-medium text-black text-base">
+                        What have you already tried? (Optional)
+                      </Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {['time_out', 'rewards', 'consequences', 'ignoring', 'talking', 'other_methods'].map((approach) => (
+                          <div
+                            key={approach}
+                            onClick={() => toggleApproach(approach)}
+                            className={cn(
+                              "p-3 rounded-lg border cursor-pointer transition-all text-center text-sm",
+                              triedApproaches.includes(approach)
+                                ? "border-black bg-black/5"
+                                : "border-gray-200 bg-white hover:border-gray-300"
+                            )}
+                          >
+                            <span className="capitalize">{approach.replace('_', ' ')}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 pt-4">
+                    <Button
+                      onClick={() => setQuizStep('goals')}
+                      variant="outline"
+                      size="lg"
+                      className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                    >
+                      <ArrowLeft className="mr-2 w-5 h-5" />
+                      Back
+                    </Button>
+                    <Button 
+                      onClick={handleChallengeComplete}
+                      size="lg"
+                      disabled={!challengeDuration}
+                      className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative"
+                    >
+                      Start Quiz
+                      <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            ) : !hasStarted ? (
               showMotivational ? (
                 <QuizMotivationalScreen
                   milestone={motivationalMilestone}
@@ -648,12 +960,12 @@ export default function Quiz() {
                                 {brainTypeInfo[result.type].description}
                               </p>
 
-                              {/* Progress Rings */}
-                              <QuizResultRings 
+                              {/* Progress Rings and Enhanced Results */}
+                              <QuizEnhancedResults
                                 brainType={result.type}
-                                scriptsCount={45}
-                                videosCount={12}
-                                ebooksCount={3}
+                                childName={childName}
+                                challengeLevel={challengeLevel}
+                                parentGoals={parentGoals}
                               />
                             </motion.div>
 
