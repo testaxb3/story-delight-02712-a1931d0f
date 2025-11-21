@@ -541,7 +541,7 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-end">
+                  <div className="px-4 h-14 flex items-center justify-end">
                     {/* Page Number */}
                     <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-xs font-bold text-black">1</span>
@@ -550,8 +550,8 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-4">
+                <div className="flex-1 pt-14 pb-20 px-6">
+                  <div className="space-y-4">
                     <div>
                       <h2 className="text-3xl md:text-4xl font-bold text-black mb-2 font-relative">
                         Discover Your Child's Brain Profile
@@ -595,8 +595,8 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
-                    <Button 
+                  <div>
+                    <Button
                       onClick={handleStartQuiz}
                       disabled={!isValidChildName(childName)}
                       size="lg"
@@ -618,7 +618,7 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                  <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('name')}
@@ -635,8 +635,8 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-4">
+                <div className="flex-1 pt-14 pb-20 px-6">
+                  <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         Tell us about {childName}
@@ -672,7 +672,7 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
+                  <div>
                     <Button 
                       onClick={handleDetailsComplete}
                       size="lg"
@@ -694,7 +694,7 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                  <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('details')}
@@ -711,8 +711,8 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-4">
+                <div className="flex-1 pt-14 pb-20 px-6">
+                  <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         What do you most want to improve?
@@ -758,7 +758,7 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
+                  <div>
                     <Button 
                       onClick={handleGoalsComplete}
                       size="lg"
@@ -781,7 +781,7 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                  <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('goals')}
@@ -807,7 +807,7 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
+                  <div>
                     <Button 
                       onClick={handleSpeedComplete}
                       size="lg"
@@ -829,7 +829,7 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                  <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('speed')}
@@ -846,8 +846,8 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-4">
+                <div className="flex-1 pt-14 pb-20 px-6">
+                  <div className="space-y-4">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         How challenging has it been?
@@ -932,7 +932,7 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
+                  <div>
                     <Button 
                       onClick={handleChallengeComplete}
                       size="lg"
@@ -963,7 +963,7 @@ export default function Quiz() {
                       transition={{ duration: 0.3 }}
                     />
                   </div>
-                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+                  <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     {currentQuestion > 0 && (
                       <button
@@ -983,8 +983,8 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-20 pb-24 px-4">
-                  <div className="max-w-2xl mx-auto space-y-6">
+                <div className="flex-1 pt-20 pb-24 px-6">
+                  <div className="space-y-6">
                     <div>
                       <h3 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
                         {questions[currentQuestion].question}
@@ -1016,7 +1016,7 @@ export default function Quiz() {
 
                 {/* Fixed Bottom Button */}
                 <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
-                  <div className="max-w-2xl mx-auto">
+                  <div>
                     <Button
                       onClick={handleNext}
                       disabled={!answers[currentQuestion]}
