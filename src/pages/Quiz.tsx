@@ -1034,13 +1034,13 @@ export default function Quiz() {
                       <p className="text-sm text-red-500">{saveError}</p>
                     )}
                     
-                    <button
+                    <Button
                       onClick={handleGoToDashboard}
                       disabled={savingProfile || completingQuiz}
-                      className="w-full max-w-md h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl disabled:opacity-50"
+                      className="w-full max-w-md h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl disabled:opacity-50 shadow-xl hover:shadow-2xl transition-shadow"
                     >
                       {completingQuiz ? 'Finalizing...' : 'See My Dashboard'}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

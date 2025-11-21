@@ -31,11 +31,23 @@ const goalMessages = {
     stat: "88% of children show improved concentration",
     color: "text-[#8b5cf6]"
   },
-  relationships: {
-    title: "Stronger relationships",
+  family: {
+    title: "Stronger family bonds",
     subtitle: "start happening sooner than you expect!",
     stat: "93% of families feel more connected after 3 weeks",
     color: "text-[#eab308]"
+  },
+  transitions: {
+    title: "Smoother transitions",
+    subtitle: "are totally achievable with the right strategies!",
+    stat: "86% of parents report easier daily transitions in 2 weeks",
+    color: "text-[#06b6d4]"
+  },
+  school: {
+    title: "Better school behavior",
+    subtitle: "is within reach with consistent support!",
+    stat: "82% of children show improved school behavior in 3 weeks",
+    color: "text-[#10b981]"
   }
 };
 

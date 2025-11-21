@@ -15,6 +15,9 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
     onContinue();
   };
 
+  // Progress: 50% (mid-quiz break after 5 questions out of 10)
+  const progress = 50;
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -23,6 +26,18 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
       transition={{ duration: 0.4 }}
       className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black px-6 py-12 relative"
     >
+      {/* Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50">
+        <div className="h-1 bg-gray-200 dark:bg-gray-800">
+          <motion.div
+            className="h-full bg-black dark:bg-white"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.5 }}
+          />
+        </div>
+      </div>
+
       {/* Page Number */}
       <div className="fixed top-4 left-4 z-50">
         <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
@@ -61,9 +76,12 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
           Now let's personalize NEP System for you...
         </p>
 
-        <div className="pt-4 pb-2">
-          <p className="text-sm text-gray-500 dark:text-gray-500">
-            🔒 Your data is private and secure
+        <div className="pt-6 pb-2 bg-gray-50 dark:bg-gray-900 rounded-2xl px-6 py-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">
+            Your privacy and security matter to us.
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+            We promise to always keep your personal information private and secure.
           </p>
         </div>
       </motion.div>
@@ -77,7 +95,7 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
       >
         <Button
           onClick={handleContinue}
-          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl"
+          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
         >
           Continue
         </Button>
