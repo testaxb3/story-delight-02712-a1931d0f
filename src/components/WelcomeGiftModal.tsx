@@ -171,7 +171,7 @@ export function WelcomeGiftModal({ open, onClose }: WelcomeGiftModalProps) {
           <Button
             onClick={handleStartTransformation}
             size="lg"
-            className="w-full h-12 sm:h-14 md:h-16 text-sm sm:text-base md:text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-xl hover:shadow-2xl transition-all duration-300 animate-pulse"
+            className="w-full h-12 sm:h-14 md:h-16 text-sm sm:text-base md:text-xl font-bold bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
           >
             <span className="hidden sm:inline">Let's Discover Your Child's Brain Type! 🚀</span>
             <span className="sm:hidden">Start Brain Profile Quiz! 🚀</span>

@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import confetti from 'canvas-confetti';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -63,6 +64,9 @@ export default function Quiz() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [completingQuiz, setCompletingQuiz] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const [showCountdown, setShowCountdown] = useState(false);
+  const [nameError, setNameError] = useState(false);
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const { refreshChildren, setActiveChild } = useChildProfiles();
@@ -87,15 +91,70 @@ export default function Quiz() {
     }
   }, [hasStarted, user]);
 
+  // Confetti trigger on progress milestones
+  useEffect(() => {
+    if (hasStarted && !showResult && currentQuestion > 0) {
+      const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+      if (progressPercent % 25 === 0 && progressPercent !== 100) {
+        confetti({ 
+          particleCount: 30, 
+          spread: 50, 
+          origin: { y: 0.3 },
+          colors: ['#9b87f5', '#D6BCFA', '#FFD700']
+        });
+      }
+    }
+  }, [currentQuestion, hasStarted, showResult]);
+
+  // Dramatic countdown before result reveal
+  useEffect(() => {
+    if (showResult && showCountdown) {
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            setShowCountdown(false);
+            // MASSIVE CONFETTI EXPLOSION
+            confetti({ 
+              particleCount: 200, 
+              spread: 180, 
+              origin: { y: 0.5 },
+              colors: ['#9b87f5', '#D6BCFA', '#FFD700', '#FFA500'],
+              startVelocity: 45,
+              scalar: 1.2
+            });
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 800);
+      return () => clearInterval(timer);
+    }
+  }, [showResult, showCountdown]);
+
   const handleAnswer = (value: string) => {
+    // Mini confetti on click
+    confetti({ 
+      particleCount: 20, 
+      spread: 40, 
+      origin: { x: 0.5, y: 0.6 },
+      colors: ['#9b87f5', '#D6BCFA']
+    });
+    
+    // Haptic feedback (mobile)
+    if (navigator.vibrate) {
+      navigator.vibrate(30);
+    }
+    
     setAnswers(prev => ({ ...prev, [currentQuestion]: value }));
   };
 
   const handleStartQuiz = () => {
     if (!isValidChildName(childName)) {
+      setNameError(true);
       toast.error(`Child's name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters.`);
       return;
     }
+    setNameError(false);
     setAnswers({});
     setCurrentQuestion(0);
     setShowResult(false);
@@ -191,6 +250,8 @@ export default function Quiz() {
       const calculatedResult = calculateResult();
       setResult(calculatedResult);
       setShowResult(true);
+      setShowCountdown(true);
+      setCountdown(3);
       await persistChildProfile(calculatedResult.type);
     }
   };
@@ -208,7 +269,6 @@ export default function Quiz() {
 
     if (user?.profileId) {
       try {
-        // ✅ FIX: Step 1 - Update database FIRST (profiles table is source of truth)
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
@@ -224,7 +284,6 @@ export default function Quiz() {
           return;
         }
 
-        // Step 2: Update user_progress (secondary, can fail)
         await supabase
           .from('user_progress')
           .update({ quiz_completed: true })
@@ -233,7 +292,6 @@ export default function Quiz() {
             if (error) logger.warn('user_progress update failed; proceeding anyway:', error);
           });
 
-        // ✅ FIX: Step 3 - Optimistically update cache FIRST for immediate UI updates
         queryClient.setQueryData(['user-profile', user.profileId], (old: any) => {
           if (!old) return old;
           return {
@@ -243,27 +301,20 @@ export default function Quiz() {
           };
         });
 
-        // Step 4: Invalidate ALL related caches to trigger refetch
         queryClient.invalidateQueries({ queryKey: ['user-profile', user.profileId] });
         queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
 
-        // Step 5: Set sessionStorage flag for 5-minute bypass (increased from 2min)
         sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
 
-        // ✅ FIX: Step 6 - Wait for refresh to complete BEFORE navigating
-        // refreshUser() now includes 300ms safety delay internally
         await Promise.all([
           refreshChildren(),
           refreshUser()
         ]);
 
-        // ✅ FIX: Step 7 - Extended delay to ensure state propagation (100ms → 500ms)
-        // This gives React Query more time to update cache and components to re-render
         await new Promise(resolve => setTimeout(resolve, 500));
 
         toast.success('Profile created successfully!');
 
-        // Step 8: Check if should show PWA onboarding (mobile users only)
         const shouldShowPWAOnboarding = () => {
           const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
           const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
@@ -284,10 +335,8 @@ export default function Quiz() {
         return;
       }
     } else {
-      // Set sessionStorage even without profileId
       sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
       
-      // Check if should show PWA onboarding (mobile users only)
       const shouldShowPWAOnboarding = () => {
         const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
         const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
@@ -332,9 +381,18 @@ export default function Quiz() {
 
   const progress = hasStarted ? ((currentQuestion + 1) / questions.length) * 100 : 0;
 
+  const questionGradients = [
+    'from-primary/5 via-accent/5 to-primary/5',
+    'from-intense/5 via-distracted/5 to-defiant/5',
+    'from-accent/5 via-primary/10 to-accent/5',
+    'from-primary/10 via-accent/5 to-primary/5',
+    'from-distracted/5 via-intense/5 to-primary/5'
+  ];
+
   return (
     <MainLayout hideBottomNav hideSideNav hideTopBar>
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4 relative overflow-hidden">
+        {/* Animated background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
             className="absolute top-20 left-10 w-72 h-72 bg-primary/10 rounded-full blur-3xl"
@@ -361,6 +419,27 @@ export default function Quiz() {
               delay: 1
             }}
           />
+          
+          {/* Floating sparkles */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1 h-1 bg-primary/40 rounded-full"
+              style={{
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                scale: [0, 1, 0],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: Math.random() * 3,
+              }}
+            />
+          ))}
         </div>
 
         <div className="max-w-2xl mx-auto relative z-10">
@@ -373,13 +452,14 @@ export default function Quiz() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="bg-card/80 border border-border/50 rounded-3xl p-10 shadow-2xl">
+                <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-10 shadow-2xl">
                   <div className="text-center space-y-8">
+                    {/* 3D Animated Brain Icon with Glow */}
                     <motion.div 
-                      className="w-24 h-24 bg-gradient-to-br from-primary to-primary/70 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-primary/20"
+                      className="relative w-24 h-24 mx-auto"
                       animate={{ 
                         scale: [1, 1.05, 1],
-                        rotate: [0, 5, -5, 0]
+                        rotateY: [0, 10, -10, 0]
                       }}
                       transition={{ 
                         duration: 4,
@@ -387,13 +467,38 @@ export default function Quiz() {
                         ease: "easeInOut"
                       }}
                     >
-                      <Brain className="w-12 h-12 text-primary-foreground" />
+                      <motion.div
+                        className="absolute inset-0 bg-primary/30 rounded-3xl blur-xl"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.3, 0.6, 0.3]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      />
+                      <div className="relative w-24 h-24 bg-gradient-to-br from-primary to-primary/70 rounded-3xl flex items-center justify-center shadow-lg shadow-primary/30">
+                        <Brain className="w-12 h-12 text-primary-foreground" />
+                      </div>
                     </motion.div>
 
                     <div>
-                      <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
+                      {/* Animated Gradient Text */}
+                      <motion.h2 
+                        className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent"
+                        animate={{ 
+                          backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] 
+                        }}
+                        transition={{ 
+                          duration: 5, 
+                          repeat: Infinity,
+                          ease: "linear"
+                        }}
+                      >
                         Discover Your Child's Brain Profile
-                      </h2>
+                      </motion.h2>
                       <p className="text-muted-foreground text-lg leading-relaxed">
                         A scientifically-designed assessment to understand your child's unique neurodevelopmental patterns
                       </p>
@@ -437,21 +542,46 @@ export default function Quiz() {
                         <Label htmlFor="childName" className="text-left block font-medium text-foreground text-base">
                           What's your child's name?
                         </Label>
-                        <Input
-                          id="childName"
-                          type="text"
-                          placeholder="Enter child's name"
-                          value={childName}
-                          onChange={(e) => setChildName(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && isValidChildName(childName)) {
-                              handleStartQuiz();
-                            }
-                          }}
-                          className="h-14 px-6 text-lg rounded-2xl border-2 focus:border-primary transition-all duration-300"
-                          maxLength={MAX_NAME_LENGTH}
-                          autoComplete="off"
-                        />
+                        <motion.div
+                          animate={nameError ? {
+                            x: [0, -10, 10, -10, 10, 0],
+                          } : {}}
+                          transition={{ duration: 0.4 }}
+                        >
+                          <div className="relative">
+                            <Input
+                              id="childName"
+                              type="text"
+                              placeholder="Enter child's name"
+                              value={childName}
+                              onChange={(e) => {
+                                setChildName(e.target.value);
+                                setNameError(false);
+                              }}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && isValidChildName(childName)) {
+                                  handleStartQuiz();
+                                }
+                              }}
+                              className={cn(
+                                "h-14 px-6 text-lg rounded-2xl border-2 transition-all duration-300",
+                                "focus:border-primary focus:ring-4 focus:ring-primary/20",
+                                nameError && "border-destructive focus:border-destructive focus:ring-destructive/20"
+                              )}
+                              maxLength={MAX_NAME_LENGTH}
+                              autoComplete="off"
+                            />
+                            {isValidChildName(childName) && (
+                              <motion.div
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                className="absolute right-4 top-1/2 -translate-y-1/2"
+                              >
+                                <CheckCircle2 className="w-5 h-5 text-primary" />
+                              </motion.div>
+                            )}
+                          </div>
+                        </motion.div>
                       </div>
 
                       <motion.div
@@ -462,10 +592,24 @@ export default function Quiz() {
                           onClick={handleStartQuiz}
                           disabled={!isValidChildName(childName)}
                           size="lg"
-                          className="w-full h-14 text-lg rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300 group"
+                          className="relative w-full h-14 text-lg rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-lg shadow-primary/30 transition-all duration-300 group"
                         >
-                          Start Assessment
-                          <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                          <span className="relative z-10 flex items-center justify-center gap-2">
+                            Start Assessment
+                            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
+                          </span>
+                          
+                          {/* Animated shine effect */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                            animate={{ x: ['-100%', '200%'] }}
+                            transition={{ 
+                              duration: 2, 
+                              repeat: Infinity, 
+                              repeatDelay: 1,
+                              ease: "easeInOut"
+                            }}
+                          />
                         </Button>
                       </motion.div>
                     </div>
@@ -475,25 +619,34 @@ export default function Quiz() {
             ) : !showResult ? (
               <motion.div
                 key={`question-${currentQuestion}`}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0, x: 100, rotateY: 20 }}
+                animate={{ opacity: 1, x: 0, rotateY: 0 }}
+                exit={{ opacity: 0, x: -100, rotateY: -20 }}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="bg-card/80 border border-border/50 rounded-3xl p-8 shadow-2xl">
+                <div className={cn(
+                  "bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-8 shadow-2xl",
+                  "bg-gradient-to-br",
+                  questionGradients[currentQuestion % questionGradients.length]
+                )}>
                   <div className="space-y-8">
                     <div className="space-y-3">
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground font-medium">
+                      <div className="flex justify-between items-center">
+                        <motion.div
+                          initial={{ scale: 0, rotate: -180 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", stiffness: 200 }}
+                          className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-accent text-primary-foreground px-4 py-2 rounded-full font-bold text-sm shadow-lg shadow-primary/30"
+                        >
                           Question {currentQuestion + 1} of {questions.length}
-                        </span>
-                        <span className="text-primary font-semibold">
+                        </motion.div>
+                        <span className="text-primary font-semibold text-lg">
                           {Math.round(progress)}%
                         </span>
                       </div>
-                      <div className="relative h-2 bg-muted/30 rounded-full overflow-hidden">
+                      <div className="relative h-3 bg-muted/30 rounded-full overflow-hidden shadow-inner">
                         <motion.div
-                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-primary/70 rounded-full"
+                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary via-accent to-primary rounded-full shadow-lg"
                           initial={{ width: 0 }}
                           animate={{ width: `${progress}%` }}
                           transition={{ duration: 0.5, ease: "easeOut" }}
@@ -502,32 +655,43 @@ export default function Quiz() {
                     </div>
 
                     <div className="space-y-6">
-                      <h3 className="text-2xl font-semibold leading-relaxed">
+                      <motion.h3 
+                        className="text-2xl font-semibold leading-relaxed"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                      >
                         {questions[currentQuestion].question}
-                      </h3>
+                      </motion.h3>
 
                       <RadioGroup
                         value={answers[currentQuestion]}
                         onValueChange={handleAnswer}
                         className="space-y-3"
                       >
-                        {questions[currentQuestion].options.map((option) => (
+                        {questions[currentQuestion].options.map((option, index) => (
                           <motion.div
                             key={option.value}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3 }}
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.99 }}
+                            transition={{ delay: 0.1 * index }}
+                            whileHover={{ 
+                              scale: 1.02, 
+                              y: -4,
+                              boxShadow: "0 20px 40px rgba(155, 135, 245, 0.15)"
+                            }}
+                            whileTap={{ scale: 0.98 }}
                           >
                             <Label
                               htmlFor={option.value}
                               className={cn(
                                 "flex items-center space-x-4 p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300",
-                                "hover:bg-muted/20 hover:border-primary/50",
+                                "bg-card/60 backdrop-blur-xl",
+                                "hover:bg-card/80 hover:border-primary/50",
+                                "hover:shadow-[0_0_30px_rgba(155,135,245,0.2)]",
                                 answers[currentQuestion] === option.value
-                                  ? "bg-primary/10 border-primary shadow-lg shadow-primary/10"
-                                  : "bg-card/50 border-border/50"
+                                  ? "bg-primary/10 border-primary shadow-lg shadow-primary/20 scale-[1.02]"
+                                  : "border-border/50"
                               )}
                             >
                               <RadioGroupItem value={option.value} id={option.value} className="w-5 h-5" />
@@ -549,7 +713,7 @@ export default function Quiz() {
                             onClick={handlePrevious}
                             variant="outline"
                             size="lg"
-                            className="w-full h-12 rounded-2xl border-2 group"
+                            className="w-full h-12 rounded-2xl border-2 group backdrop-blur-sm"
                           >
                             <ArrowLeft className="mr-2 w-5 h-5 group-hover:-translate-x-1 transition-transform duration-300" />
                             Previous
@@ -566,7 +730,7 @@ export default function Quiz() {
                           onClick={handleNext}
                           disabled={!answers[currentQuestion]}
                           size="lg"
-                          className="w-full h-12 rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300 group"
+                          className="w-full h-12 rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-lg shadow-primary/20 transition-all duration-300 group"
                         >
                           {currentQuestion < questions.length - 1 ? 'Next' : 'See Results'}
                           <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
@@ -579,106 +743,206 @@ export default function Quiz() {
             ) : (
               <motion.div
                 key="result"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
               >
-                <div className="backdrop-blur-2xl bg-card/80 border border-border/50 rounded-3xl p-10 shadow-2xl shadow-primary/10">
-                  <div className="text-center space-y-8">
-                    {result && (
-                      <>
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ 
-                            type: "spring",
-                            stiffness: 200,
-                            damping: 15,
-                            delay: 0.2
-                          }}
-                        >
-                          <div className={cn(
-                            "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl mb-6",
-                            `bg-gradient-to-br ${brainTypeInfo[result.type].gradient}`
-                          )}>
-                            <Sparkles className="w-16 h-16 text-white" />
-                          </div>
-                        </motion.div>
-
-                        <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <Badge className="mb-4 text-lg px-6 py-2 rounded-full">{childName}</Badge>
-                          <h2 className={cn(
-                            "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent",
-                            brainTypeInfo[result.type].gradient
-                          )}>
-                            {brainTypeInfo[result.type].title}
-                          </h2>
-                          <p className="text-xl text-muted-foreground mb-6">
-                            {brainTypeInfo[result.type].subtitle}
-                          </p>
-                          <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-                            {brainTypeInfo[result.type].description}
-                          </p>
-                        </motion.div>
-
-                        {savingProfile ? (
-                          <motion.div 
-                            className="bg-muted/20 backdrop-blur-sm rounded-2xl p-6 border border-border/30"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                          >
-                            <div className="flex items-center justify-center gap-3">
-                              <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                              <p className="text-muted-foreground">Saving profile...</p>
-                            </div>
-                          </motion.div>
-                        ) : saveError ? (
-                          <motion.div 
-                            className="bg-destructive/10 border-2 border-destructive/20 rounded-2xl p-6"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                          >
-                            <p className="text-destructive font-medium">{saveError}</p>
-                          </motion.div>
-                        ) : null}
-
-                        <motion.div 
-                          className="pt-4"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.6 }}
-                        >
-                          <motion.div
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                          >
-                            <Button 
-                              size="lg" 
-                              onClick={handleGoToDashboard}
-                              disabled={savingProfile || completingQuiz}
-                              className="w-full h-14 text-lg rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/20 transition-all duration-300 group disabled:opacity-50"
-                            >
-                              {completingQuiz ? (
-                                <>
-                                  <span className="animate-pulse">Finalizing...</span>
-                                </>
-                              ) : (
-                                <>
-                                  Go to Dashboard
-                                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
-                                </>
-                              )}
-                            </Button>
-                          </motion.div>
-                        </motion.div>
-                      </>
-                    )}
+                {showCountdown ? (
+                  // Dramatic Countdown
+                  <div className="flex items-center justify-center min-h-[500px]">
+                    <motion.div
+                      key={countdown}
+                      initial={{ scale: 0, opacity: 0, rotate: -180 }}
+                      animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                      exit={{ scale: 0, opacity: 0, rotate: 180 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                      className="text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent"
+                    >
+                      {countdown}
+                    </motion.div>
                   </div>
-                </div>
+                ) : (
+                  // Result Card with 3D Flip
+                  <motion.div
+                    initial={{ rotateY: 90, scale: 0.8 }}
+                    animate={{ rotateY: 0, scale: 1 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    style={{ perspective: 1000 }}
+                  >
+                    <div className="backdrop-blur-2xl bg-gradient-to-br from-card via-card to-primary/5 border-4 border-primary/30 rounded-3xl p-10 shadow-[0_0_80px_rgba(155,135,245,0.3)] relative overflow-hidden">
+                      {/* Animated background particles */}
+                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        {Array.from({ length: 25 }).map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-2 h-2 bg-primary/30 rounded-full"
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                            }}
+                            animate={{
+                              x: [0, Math.random() * 100 - 50],
+                              y: [0, Math.random() * 100 - 50],
+                              opacity: [0, 1, 0],
+                            }}
+                            transition={{
+                              duration: 3 + Math.random() * 2,
+                              repeat: Infinity,
+                              delay: Math.random() * 2,
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="text-center space-y-8 relative z-10">
+                        {result && (
+                          <>
+                            {/* Pulsing Badge Icon */}
+                            <motion.div
+                              animate={{ 
+                                scale: [1, 1.05, 1],
+                                boxShadow: [
+                                  "0 0 20px rgba(155, 135, 245, 0.3)",
+                                  "0 0 40px rgba(155, 135, 245, 0.6)",
+                                  "0 0 20px rgba(155, 135, 245, 0.3)"
+                                ]
+                              }}
+                              transition={{ duration: 2, repeat: Infinity }}
+                            >
+                              <div className={cn(
+                                "w-40 h-40 rounded-full flex items-center justify-center mx-auto shadow-2xl mb-6",
+                                `bg-gradient-to-br ${brainTypeInfo[result.type].gradient}`
+                              )}>
+                                <Sparkles className="w-20 h-20 text-white" />
+                              </div>
+                            </motion.div>
+
+                            <motion.div
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.3 }}
+                            >
+                              <Badge className="mb-4 text-lg px-6 py-2 rounded-full">{childName}</Badge>
+                              
+                              {/* Score Ring */}
+                              <div className="relative w-32 h-32 mx-auto mb-6">
+                                <svg className="transform -rotate-90 w-32 h-32">
+                                  <circle
+                                    cx="64" cy="64" r="56"
+                                    stroke="currentColor"
+                                    strokeWidth="8"
+                                    fill="none"
+                                    className="text-muted/20"
+                                  />
+                                  <motion.circle
+                                    cx="64" cy="64" r="56"
+                                    stroke="currentColor"
+                                    strokeWidth="8"
+                                    fill="none"
+                                    className="text-primary"
+                                    initial={{ strokeDasharray: "0 352" }}
+                                    animate={{ 
+                                      strokeDasharray: `${(result.score / 100) * 352} 352` 
+                                    }}
+                                    transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
+                                  />
+                                </svg>
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <span className="text-3xl font-bold">{result.score}%</span>
+                                </div>
+                              </div>
+
+                              <motion.h2 
+                                className={cn(
+                                  "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent",
+                                  brainTypeInfo[result.type].gradient
+                                )}
+                                animate={{
+                                  scale: [1, 1.02, 1]
+                                }}
+                                transition={{ duration: 2, repeat: Infinity }}
+                              >
+                                {brainTypeInfo[result.type].title}
+                              </motion.h2>
+                              <p className="text-xl text-muted-foreground mb-6">
+                                {brainTypeInfo[result.type].subtitle}
+                              </p>
+                              <p className="text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+                                {brainTypeInfo[result.type].description}
+                              </p>
+                            </motion.div>
+
+                            {savingProfile ? (
+                              <motion.div 
+                                className="bg-muted/20 backdrop-blur-sm rounded-2xl p-6 border border-border/30"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                              >
+                                <div className="flex items-center justify-center gap-3">
+                                  <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                                  <p className="text-muted-foreground">Saving profile...</p>
+                                </div>
+                              </motion.div>
+                            ) : saveError ? (
+                              <motion.div 
+                                className="bg-destructive/10 border-2 border-destructive/20 rounded-2xl p-6"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                              >
+                                <p className="text-destructive font-medium">{saveError}</p>
+                              </motion.div>
+                            ) : null}
+
+                            <motion.div 
+                              className="pt-4"
+                              initial={{ opacity: 0, y: 20 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.8 }}
+                            >
+                              <motion.div
+                                whileHover={{ 
+                                  scale: 1.02,
+                                  boxShadow: "0 30px 60px rgba(155, 135, 245, 0.4)"
+                                }}
+                                whileTap={{ scale: 0.98 }}
+                              >
+                                <Button 
+                                  size="lg" 
+                                  onClick={handleGoToDashboard}
+                                  disabled={savingProfile || completingQuiz}
+                                  className="relative group overflow-hidden w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50"
+                                >
+                                  <span className="relative z-10 flex items-center justify-center gap-2">
+                                    {completingQuiz ? (
+                                      <span className="animate-pulse">Finalizing...</span>
+                                    ) : (
+                                      <>
+                                        See My Personalized Dashboard
+                                        <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform duration-300" />
+                                      </>
+                                    )}
+                                  </span>
+                                  
+                                  {/* Animated shine effect */}
+                                  <motion.div
+                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                                    animate={{ x: ['-100%', '200%'] }}
+                                    transition={{ 
+                                      duration: 2, 
+                                      repeat: Infinity, 
+                                      repeatDelay: 1,
+                                      ease: "easeInOut"
+                                    }}
+                                  />
+                                </Button>
+                              </motion.div>
+                            </motion.div>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>
