@@ -498,7 +498,7 @@ export default function Quiz() {
 
   return (
     <MainLayout hideBottomNav hideSideNav hideTopBar>
-      <div className="min-h-screen bg-white relative overflow-hidden">
+      <div className="min-h-screen relative overflow-hidden">
 
         <div className="relative z-10">
           <AnimatePresence mode="wait">
