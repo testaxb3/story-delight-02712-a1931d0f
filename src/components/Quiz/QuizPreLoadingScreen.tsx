@@ -28,12 +28,17 @@ export const QuizPreLoadingScreen = ({ brainType, onContinue }: QuizPreLoadingSc
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black px-6 py-12 relative"
+      className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black px-6 py-12 pt-20 relative"
     >
-      {/* Page Number */}
-      <div className="fixed top-4 left-4 z-50">
-        <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-          <span className="text-xs font-bold text-black dark:text-white">18</span>
+      {/* Header with Progress Bar */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
+        <div className="relative h-1 bg-gray-200 dark:bg-gray-800">
+          <div className="h-full bg-black dark:bg-white" style={{ width: '86%' }} />
+        </div>
+        <div className="px-4 h-14 flex items-center justify-end">
+          <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold text-black dark:text-white">18</span>
+          </div>
         </div>
       </div>
 
