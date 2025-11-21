@@ -537,15 +537,14 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <div className="h-full bg-black transition-all duration-300" style={{ width: '7%' }} />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-end">
+                  <div className="px-6 h-[72px] flex items-center justify-end gap-4">
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '7%' }} />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">1</span>
                     </div>
                   </div>
@@ -618,23 +617,22 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <div className="h-full bg-black transition-all duration-300" style={{ width: '14%' }} />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-between">
+                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('name')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
+                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '14%' }} />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">2</span>
                     </div>
                   </div>
@@ -697,23 +695,22 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <div className="h-full bg-black transition-all duration-300" style={{ width: '21%' }} />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-between">
+                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('details')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
+                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '21%' }} />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">3</span>
                     </div>
                   </div>
@@ -788,23 +785,22 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <div className="h-full bg-black transition-all duration-300" style={{ width: '28%' }} />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-between">
+                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('goals')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
+                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '28%' }} />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">4</span>
                     </div>
                   </div>
@@ -840,23 +836,22 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <div className="h-full bg-black transition-all duration-300" style={{ width: '42%' }} />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-between">
+                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
                     {/* Back Button */}
                     <button
                       onClick={() => setQuizStep('speed')}
-                      className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
+                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                     >
                       <ArrowLeft className="w-5 h-5 text-black" />
                     </button>
                     
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '42%' }} />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">6</span>
                     </div>
                   </div>
@@ -970,32 +965,31 @@ export default function Quiz() {
               >
                 {/* Header with Progress Bar */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  {/* Progress Bar */}
-                  <div className="relative h-2 bg-gray-200">
-                    <motion.div 
-                      className="h-full bg-black"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
-                      transition={{ duration: 0.3 }}
-                    />
-                  </div>
-                  
-                  {/* Header Navigation */}
-                  <div className="px-6 h-16 flex items-center justify-between">
+                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
                     {/* Back Button */}
                     {currentQuestion > 0 ? (
                       <button
                         onClick={handlePrevious}
-                        className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
+                        className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
                       >
                         <ArrowLeft className="w-5 h-5 text-black" />
                       </button>
                     ) : (
-                      <div className="w-10" />
+                      <div className="w-10 flex-shrink-0" />
                     )}
                     
+                    {/* Progress Bar */}
+                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
+                      <motion.div 
+                        className="h-full bg-black rounded-full"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${progress}%` }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </div>
+                    
                     {/* Page Number */}
-                    <div className="w-9 h-9 bg-black/10 rounded-full flex items-center justify-center">
+                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold text-black">{7 + currentQuestion}</span>
                     </div>
                   </div>
