@@ -103,7 +103,7 @@ export const QuizResultRings = ({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-6 sm:gap-8 mb-8">
+    <div className="grid grid-cols-2 gap-3 md:gap-6 mb-6 md:mb-8">
       {rings.map((ring, index) => {
         const percentage = (ring.value / ring.maxValue) * 100;
         const circumference = 2 * Math.PI * 45;
@@ -130,9 +130,9 @@ export const QuizResultRings = ({
               style={{ backgroundColor: ring.color }}
             />
 
-            <div className="relative bg-card/50 backdrop-blur-sm rounded-2xl p-6 border border-border/30 hover:border-border/60 transition-all">
+            <div className="relative bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/30 hover:border-border/60 transition-all">
               {/* SVG Ring */}
-              <div className="relative w-28 h-28 mx-auto mb-4">
+              <div className="relative w-20 h-20 md:w-28 md:h-28 mx-auto mb-2 md:mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                   {/* Background circle */}
                   <circle
@@ -162,19 +162,19 @@ export const QuizResultRings = ({
 
                 {/* Icon in center */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Icon className="w-10 h-10" style={{ color: ring.color }} />
+                  <Icon className="w-7 h-7 md:w-10 md:h-10" style={{ color: ring.color }} />
                 </div>
               </div>
 
               {/* Value and Label */}
               <div className="text-center">
                 <motion.div 
-                  className="text-3xl font-bold mb-1"
+                  className="text-2xl md:text-3xl font-bold mb-0.5 md:mb-1"
                   style={{ color: ring.color }}
                 >
                   {ring.label === 'Complete' ? `${animatedValue}%` : animatedValue}
                 </motion.div>
-                <div className="text-sm text-muted-foreground font-medium">
+                <div className="text-xs md:text-sm text-muted-foreground font-medium">
                   {ring.label}
                 </div>
               </div>
