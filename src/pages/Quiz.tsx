@@ -822,37 +822,9 @@ export default function Quiz() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.3 }}
                             >
-                              <Badge className="mb-4 text-lg px-6 py-2 rounded-full">{childName}</Badge>
-                              
-                              {/* Score Ring */}
-                              <div className="relative w-32 h-32 mx-auto mb-6">
-                                <svg className="transform -rotate-90 w-32 h-32">
-                                  <circle
-                                    cx="64" cy="64" r="56"
-                                    stroke="currentColor"
-                                    strokeWidth="8"
-                                    fill="none"
-                                    className="text-muted/20"
-                                  />
-                                  <motion.circle
-                                    cx="64" cy="64" r="56"
-                                    stroke="currentColor"
-                                    strokeWidth="8"
-                                    fill="none"
-                                    className="text-primary"
-                                    initial={{ strokeDasharray: "0 352" }}
-                                    animate={{ 
-                                      strokeDasharray: `${(result.score / 100) * 352} 352` 
-                                    }}
-                                    transition={{ duration: 2, ease: "easeOut", delay: 0.5 }}
-                                  />
-                                </svg>
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                  <span className="text-3xl font-bold">{result.score}%</span>
-                                </div>
-                              </div>
+                              <Badge className="mb-6 text-lg px-6 py-2 rounded-full">{childName}</Badge>
 
-                              <motion.h2 
+                              <motion.h2
                                 className={cn(
                                   "text-5xl font-bold mb-4 bg-gradient-to-r bg-clip-text text-transparent",
                                   brainTypeInfo[result.type].gradient
