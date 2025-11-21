@@ -18,10 +18,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
 import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
-import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
 import { QuizSpeedSlider } from '@/components/Quiz/QuizSpeedSlider';
 import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
+import { QuizThankYouScreen } from '@/components/Quiz/QuizThankYouScreen';
+import { QuizPreLoadingScreen } from '@/components/Quiz/QuizPreLoadingScreen';
+import { QuizPostSpeedMotivationalScreen } from '@/components/Quiz/QuizPostSpeedMotivationalScreen';
 import { LottieIcon } from '@/components/LottieIcon';
 import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
 import { Slider } from '@/components/ui/slider';
@@ -76,8 +78,9 @@ export default function Quiz() {
   const [countdown, setCountdown] = useState(3);
   const [showCountdown, setShowCountdown] = useState(false);
   const [nameError, setNameError] = useState(false);
-  const [showMotivational, setShowMotivational] = useState(false);
-  const [motivationalMilestone, setMotivationalMilestone] = useState<25 | 50 | 75>(25);
+  const [showThankYou, setShowThankYou] = useState(false);
+  const [showPreLoading, setShowPreLoading] = useState(false);
+  const [showPostSpeedMotivational, setShowPostSpeedMotivational] = useState(false);
   
   // Enhanced quiz data
   const [childAge, setChildAge] = useState<number>(5);
@@ -176,6 +179,11 @@ export default function Quiz() {
     if (navigator.vibrate) {
       navigator.vibrate(15);
     }
+    setShowPostSpeedMotivational(true);
+  };
+
+  const handlePostSpeedMotivationalContinue = () => {
+    setShowPostSpeedMotivational(false);
     setQuizStep('challenge');
   };
 
@@ -309,30 +317,35 @@ export default function Quiz() {
       navigator.vibrate(10);
     }
     
+    // Show Thank You screen after 5th question (index 4)
+    if (currentQuestion === 4) {
+      setShowThankYou(true);
+      setCurrentQuestion(5);
+      return;
+    }
+
     if (currentQuestion < questions.length - 1) {
-      const nextQuestion = currentQuestion + 1;
-      const progress = ((nextQuestion + 1) / questions.length) * 100;
-      
-      // Check if we hit a milestone
-      if (progress === 25 || progress === 50 || progress === 75) {
-        setMotivationalMilestone(progress as 25 | 50 | 75);
-        setShowMotivational(true);
-        setCurrentQuestion(nextQuestion);
-      } else {
-        setCurrentQuestion(nextQuestion);
-      }
+      setCurrentQuestion(prev => prev + 1);
     } else {
-      const calculatedResult = calculateResult();
-      setResult(calculatedResult);
-      setShowResult(true);
-      setShowCountdown(true);
-      setCountdown(3);
-      await persistChildProfile(calculatedResult.type);
+      // Last question - show Pre-Loading screen
+      setShowPreLoading(true);
     }
   };
 
-  const handleContinueFromMotivational = () => {
-    setShowMotivational(false);
+  const handleThankYouContinue = () => {
+    setShowThankYou(false);
+  };
+
+  const handlePreLoadingContinue = async () => {
+    setShowPreLoading(false);
+    
+    // Calculate result and save profile
+    const calculatedResult = calculateResult();
+    setResult(calculatedResult);
+    setShowResult(true);
+    setShowCountdown(true);
+    setCountdown(3);
+    await persistChildProfile(calculatedResult.type);
   };
 
   const handlePrevious = () => {
@@ -484,7 +497,35 @@ export default function Quiz() {
 
         <div className="max-w-2xl mx-auto relative z-10">
           <AnimatePresence mode="wait">
-            {quizStep === 'name' ? (
+            {/* New screens */}
+            {showFinalCelebration && result && (
+              <QuizFinalCelebration
+                brainType={result.type}
+                onComplete={handleCelebrationComplete}
+              />
+            )}
+
+            {showPostSpeedMotivational && (
+              <QuizPostSpeedMotivationalScreen
+                selectedGoals={parentGoals}
+                onContinue={handlePostSpeedMotivationalContinue}
+              />
+            )}
+
+            {showThankYou && (
+              <QuizThankYouScreen
+                onContinue={handleThankYouContinue}
+              />
+            )}
+
+            {showPreLoading && result && (
+              <QuizPreLoadingScreen
+                brainType={result.type}
+                onContinue={handlePreLoadingContinue}
+              />
+            )}
+
+            {!showFinalCelebration && !showPostSpeedMotivational && !showThankYou && !showPreLoading && quizStep === 'name' ? (
               <motion.div
                 key="intro"
                 initial={{ opacity: 0, y: 10 }}
@@ -492,8 +533,15 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="max-w-xl mx-auto">
-                  <div className="space-y-6">
+                <div className="max-w-xl mx-auto relative">
+                  {/* Page Number */}
+                  <div className="absolute top-0 left-0 z-10">
+                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black dark:text-white">1</span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-6 pt-10">
                     <div>
                       <h2 className="text-3xl md:text-4xl font-bold text-black mb-3 font-relative">
                         Discover Your Child's Brain Profile
@@ -552,7 +600,13 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="max-w-xl mx-auto space-y-6">
+                <div className="max-w-xl mx-auto space-y-6 relative">
+                  {/* Page Number */}
+                  <div className="absolute top-0 left-0 z-10">
+                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black dark:text-white">2</span>
+                    </div>
+                  </div>
                   <div>
                     <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
                       Tell us about {childName}
@@ -613,7 +667,13 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="max-w-xl mx-auto space-y-6">
+                <div className="max-w-xl mx-auto space-y-6 relative">
+                  {/* Page Number */}
+                  <div className="absolute top-0 left-0 z-10">
+                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black dark:text-white">3</span>
+                    </div>
+                  </div>
                   <div>
                     <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
                       What do you most want to improve?
@@ -685,10 +745,19 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <QuizSpeedSlider
-                  value={resultSpeed}
-                  onChange={setResultSpeed}
-                />
+                <div className="relative">
+                  {/* Page Number */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black dark:text-white">4</span>
+                    </div>
+                  </div>
+                  
+                  <QuizSpeedSlider
+                    value={resultSpeed}
+                    onChange={setResultSpeed}
+                  />
+                </div>
                 
                 <div className="flex gap-4 pt-8 max-w-xl mx-auto px-4">
                   <Button
@@ -718,7 +787,13 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="max-w-xl mx-auto space-y-6">
+                <div className="max-w-xl mx-auto space-y-6 relative">
+                  {/* Page Number */}
+                  <div className="absolute top-0 left-0 z-10">
+                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black dark:text-white">6</span>
+                    </div>
+                  </div>
                   <div>
                     <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
                       How challenging has it been?
@@ -822,13 +897,6 @@ export default function Quiz() {
                 </div>
               </motion.div>
             ) : quizStep === 'questions' && !showResult ? (
-              showMotivational ? (
-              <QuizMotivationalScreen
-                milestone={motivationalMilestone}
-                brainType={result?.type}
-                onContinue={handleContinueFromMotivational}
-              />
-              ) : (
               <motion.div
                 key={`question-${currentQuestion}`}
                 initial={{ opacity: 0, y: 10 }}
@@ -836,6 +904,13 @@ export default function Quiz() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
               >
+                {/* Page Number */}
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-black dark:text-white">{7 + currentQuestion}</span>
+                  </div>
+                </div>
+
                 {/* Progress bar */}
                 <div className="mb-8">
                   <div className="h-1 bg-gray-200 rounded-full overflow-hidden">
@@ -904,196 +979,72 @@ export default function Quiz() {
                   </div>
                 </div>
               </motion.div>
-              )
-            ) : (
+            ) : showResult && showCountdown ? (
               <motion.div
-                key="result"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
+                key="countdown"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.1 }}
+                transition={{ duration: 0.5 }}
+                className="flex items-center justify-center min-h-[60vh] relative"
               >
-                {showCountdown ? (
-                  countdown > 0 ? (
-                    // Dramatic Countdown
-                    <div className="flex items-center justify-center min-h-[300px] md:min-h-[500px]">
-                      <motion.div
-                        key={countdown}
-                        initial={{ scale: 0, opacity: 0, rotate: -180 }}
-                        animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                        exit={{ scale: 0, opacity: 0, rotate: 180 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 15 }}
-                        className="text-7xl md:text-9xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent font-relative"
-                      >
-                        {countdown}
-                      </motion.div>
-                    </div>
-                  ) : (
-                    // Loading Screen
-                    <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-3xl p-6 md:p-10 shadow-2xl min-h-[400px] md:min-h-[500px]">
-                      <QuizLoadingScreen />
-                    </div>
-                  )
-                ) : (
-                  // Result Card with 3D Flip
+                {/* Page Number */}
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-black dark:text-white">20</span>
+                  </div>
+                </div>
+
+                <div className="text-center">
                   <motion.div
-                    initial={{ rotateY: 90, scale: 0.8 }}
-                    animate={{ rotateY: 0, scale: 1 }}
-                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    style={{ perspective: 1000 }}
+                    key={countdown}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 1.5, opacity: 0 }}
+                    transition={{ duration: 0.5, type: "spring" }}
                   >
-                    <div className="backdrop-blur-2xl bg-gradient-to-br from-card via-card to-primary/5 border-2 md:border-4 border-primary/30 rounded-2xl md:rounded-3xl p-4 md:p-8 lg:p-10 shadow-[0_0_80px_rgba(155,135,245,0.3)] relative overflow-hidden">
-                      {/* Animated background particles */}
-                      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                        {Array.from({ length: 25 }).map((_, i) => (
-                          <motion.div
-                            key={i}
-                            className="absolute w-2 h-2 bg-primary/30 rounded-full"
-                            style={{
-                              left: `${Math.random() * 100}%`,
-                              top: `${Math.random() * 100}%`,
-                            }}
-                            animate={{
-                              x: [0, Math.random() * 100 - 50],
-                              y: [0, Math.random() * 100 - 50],
-                              opacity: [0, 1, 0],
-                            }}
-                            transition={{
-                              duration: 3 + Math.random() * 2,
-                              repeat: Infinity,
-                              delay: Math.random() * 2,
-                            }}
-                          />
-                        ))}
-                      </div>
-
-                      <div className="text-center space-y-4 md:space-y-8 relative z-10">
-                        {result && (
-                          <>
-                            {/* Celebration Lottie Animation */}
-                            <motion.div
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ duration: 0.6, type: "spring", bounce: 0.5 }}
-                              className="mx-auto mb-3 md:mb-6"
-                            >
-                              <LottieIcon
-                                animationData={fingerHeartDark}
-                                isActive={true}
-                                size={window.innerWidth < 768 ? 100 : 160}
-                                loop={true}
-                                autoplay={true}
-                              />
-                            </motion.div>
-
-                            <motion.div
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.3 }}
-                            >
-                              <Badge className="mb-3 md:mb-6 text-sm md:text-lg px-4 md:px-6 py-1.5 md:py-2 rounded-full">{childName}</Badge>
-
-                              <motion.h2
-                                className={cn(
-                                  "text-3xl md:text-5xl font-bold mb-2 md:mb-4 bg-gradient-to-r bg-clip-text text-transparent font-relative",
-                                  brainTypeInfo[result.type].gradient
-                                )}
-                                animate={{
-                                  scale: [1, 1.02, 1]
-                                }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                              >
-                                {brainTypeInfo[result.type].title}
-                              </motion.h2>
-                              <p className="text-base md:text-xl text-muted-foreground mb-3 md:mb-6 px-2">
-                                {brainTypeInfo[result.type].subtitle}
-                              </p>
-                              <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto mb-4 md:mb-8 px-2">
-                                {brainTypeInfo[result.type].description}
-                              </p>
-
-                              {/* Progress Rings and Enhanced Results */}
-                              <QuizEnhancedResults
-                                brainType={result.type}
-                                childName={childName}
-                                challengeLevel={challengeLevel}
-                                parentGoals={parentGoals}
-                              />
-                            </motion.div>
-
-                            {savingProfile ? (
-                              <motion.div 
-                                className="bg-muted/20 backdrop-blur-sm rounded-xl md:rounded-2xl p-4 md:p-6 border border-border/30"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                              >
-                                <div className="flex items-center justify-center gap-3">
-                                  <div className="w-4 h-4 md:w-5 md:h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                                  <p className="text-sm md:text-base text-muted-foreground">Saving profile...</p>
-                                </div>
-                              </motion.div>
-                            ) : saveError ? (
-                              <motion.div 
-                                className="bg-destructive/10 border-2 border-destructive/20 rounded-xl md:rounded-2xl p-4 md:p-6"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                              >
-                                <p className="text-sm md:text-base text-destructive font-medium">{saveError}</p>
-                              </motion.div>
-                            ) : null}
-
-                            <motion.div 
-                              className="pt-2 md:pt-4"
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: 0.8 }}
-                            >
-                              <motion.div
-                                whileHover={{ 
-                                  scale: 1.02,
-                                  boxShadow: "0 30px 60px rgba(155, 135, 245, 0.4)"
-                                }}
-                                whileTap={{ scale: 0.98 }}
-                              >
-                                <Button 
-                                  size="lg" 
-                                  onClick={handleGoToDashboard}
-                                  disabled={savingProfile || completingQuiz}
-                                  className="relative group overflow-hidden w-full h-12 md:h-16 text-base md:text-xl rounded-xl md:rounded-2xl bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-2xl transition-all duration-300 disabled:opacity-50 font-relative"
-                                >
-                                  <span className="relative z-10 flex items-center justify-center gap-2">
-                                    {completingQuiz ? (
-                                      <span className="animate-pulse">Finalizing...</span>
-                                    ) : (
-                                      <>
-                                        <span className="hidden sm:inline">See My Personalized Dashboard</span>
-                                        <span className="sm:hidden">See My Dashboard</span>
-                                        <ArrowRight className="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-1 transition-transform duration-300" />
-                                      </>
-                                    )}
-                                  </span>
-                                  
-                                  {/* Animated shine effect */}
-                                  <motion.div
-                                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                                    animate={{ x: ['-100%', '200%'] }}
-                                    transition={{ 
-                                      duration: 2, 
-                                      repeat: Infinity, 
-                                      repeatDelay: 1,
-                                      ease: "easeInOut"
-                                    }}
-                                  />
-                                </Button>
-                              </motion.div>
-                            </motion.div>
-                          </>
-                        )}
-                      </div>
+                    <div className="text-[12rem] md:text-[15rem] font-black text-black dark:text-white font-relative leading-none">
+                      {countdown}
                     </div>
                   </motion.div>
-                )}
+                </div>
               </motion.div>
-            )}
+            ) : showResult && !showCountdown && result ? (
+              <div className="relative">
+                {/* Page Number */}
+                <div className="absolute top-4 left-4 z-10">
+                  <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+                    <span className="text-xs font-bold text-black dark:text-white">21</span>
+                  </div>
+                </div>
+
+                <div className="space-y-8">
+                  <QuizEnhancedResults
+                    brainType={result.type}
+                    childName={childName}
+                    challengeLevel={challengeLevel}
+                    parentGoals={parentGoals}
+                  />
+
+                  <div className="flex flex-col items-center gap-4 mt-8">
+                    {savingProfile && (
+                      <p className="text-sm text-gray-500">Saving profile...</p>
+                    )}
+                    {saveError && (
+                      <p className="text-sm text-red-500">{saveError}</p>
+                    )}
+                    
+                    <button
+                      onClick={handleGoToDashboard}
+                      disabled={savingProfile || completingQuiz}
+                      className="w-full max-w-md h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl disabled:opacity-50"
+                    >
+                      {completingQuiz ? 'Finalizing...' : 'See My Dashboard'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : null}
           </AnimatePresence>
         </div>
       </div>
