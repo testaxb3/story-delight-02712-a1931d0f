@@ -69,68 +69,75 @@ export const QuizPostSpeedMotivationalScreen = ({ selectedGoals, onContinue }: Q
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black px-6 py-12 relative"
+      className="min-h-screen flex flex-col bg-white dark:bg-black"
     >
-      {/* Page Number */}
-      <div className="fixed top-4 left-4 z-50">
-        <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-          <span className="text-xs font-bold text-black dark:text-white">5</span>
+      {/* Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-end">
+          {/* Page Number */}
+          <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold text-black dark:text-white">5</span>
+          </div>
         </div>
       </div>
 
       {/* Content */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="text-center space-y-8 max-w-2xl"
-      >
-        {/* Main Message */}
-        <div className="space-y-2">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black dark:text-white font-relative leading-tight">
-            <span className={message.color}>{message.title}</span>
-            <br />
-            <span className="text-black dark:text-white">{message.subtitle}</span>
-          </h2>
-        </div>
-
-        {/* Statistic */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 pt-20 pb-24">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
-          className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 md:p-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="text-center space-y-8 max-w-2xl"
         >
-          <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
-            {message.stat}
-          </p>
+          {/* Main Message */}
+          <div className="space-y-2">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black dark:text-white font-relative leading-tight">
+              <span className={message.color}>{message.title}</span>
+              <br />
+              <span className="text-black dark:text-white">{message.subtitle}</span>
+            </h2>
+          </div>
+
+          {/* Statistic */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.5 }}
+            className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6 md:p-8"
+          >
+            <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
+              {message.stat}
+            </p>
+          </motion.div>
+
+          {/* Encouragement */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.5 }}
+            className="text-sm md:text-base text-gray-500 dark:text-gray-500"
+          >
+            You're making the right choice for your family 💙
+          </motion.p>
         </motion.div>
+      </div>
 
-        {/* Encouragement */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.5 }}
-          className="text-sm md:text-base text-gray-500 dark:text-gray-500"
+      {/* Fixed Bottom Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 p-4 z-50">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8, duration: 0.5 }}
+          className="max-w-2xl mx-auto"
         >
-          You're making the right choice for your family 💙
-        </motion.p>
-      </motion.div>
-
-      {/* Continue Button */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
-        className="mt-12 w-full max-w-md"
-      >
-        <Button
-          onClick={handleContinue}
-          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
-        >
-          Continue
-        </Button>
-      </motion.div>
+          <Button
+            onClick={handleContinue}
+            className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
+          >
+            Continue
+          </Button>
+        </motion.div>
+      </div>
     </motion.div>
   );
 };
