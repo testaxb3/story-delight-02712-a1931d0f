@@ -645,7 +645,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content - adjusted for fixed header (h-2 + h-16 = 72px) */}
-                <div className="flex-1 pt-20 pb-6 px-6 mt-[72px]">
+                <div className="flex-1 pt-24 pb-28 px-6">
                   <div className="space-y-6">
                     <div className="space-y-1">
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-1 font-relative leading-tight">
