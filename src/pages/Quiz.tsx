@@ -15,7 +15,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Sparkles, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
-import confetti from 'canvas-confetti';
 import { QuizResultRings } from '@/components/Quiz/QuizResultRings';
 import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
@@ -93,21 +92,6 @@ export default function Quiz() {
     }
   }, [hasStarted, user]);
 
-  // Confetti trigger on progress milestones
-  useEffect(() => {
-    if (hasStarted && !showResult && currentQuestion > 0) {
-      const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
-      if (progressPercent % 25 === 0 && progressPercent !== 100) {
-        confetti({ 
-          particleCount: 30, 
-          spread: 50, 
-          origin: { y: 0.3 },
-          colors: ['#9b87f5', '#D6BCFA', '#FFD700']
-        });
-      }
-    }
-  }, [currentQuestion, hasStarted, showResult]);
-
   // Dramatic countdown before result reveal
   useEffect(() => {
     if (showResult && showCountdown) {
@@ -115,15 +99,6 @@ export default function Quiz() {
         setCountdown(prev => {
           if (prev <= 1) {
             setShowCountdown(false);
-            // MASSIVE CONFETTI EXPLOSION
-            confetti({ 
-              particleCount: 200, 
-              spread: 180, 
-              origin: { y: 0.5 },
-              colors: ['#9b87f5', '#D6BCFA', '#FFD700', '#FFA500'],
-              startVelocity: 45,
-              scalar: 1.2
-            });
             return 0;
           }
           return prev - 1;
@@ -134,14 +109,6 @@ export default function Quiz() {
   }, [showResult, showCountdown]);
 
   const handleAnswer = (value: string) => {
-    // Mini confetti on click
-    confetti({ 
-      particleCount: 20, 
-      spread: 40, 
-      origin: { x: 0.5, y: 0.6 },
-      colors: ['#9b87f5', '#D6BCFA']
-    });
-    
     // Haptic feedback (mobile)
     if (navigator.vibrate) {
       navigator.vibrate(30);
