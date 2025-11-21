@@ -126,7 +126,7 @@ export const QuizPostSpeedMotivationalScreen = ({ selectedGoals, onContinue }: Q
       >
         <Button
           onClick={handleContinue}
-          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl"
+          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
         >
           Continue
         </Button>

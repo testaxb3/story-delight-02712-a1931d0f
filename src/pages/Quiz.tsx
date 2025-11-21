@@ -333,7 +333,12 @@ export default function Quiz() {
   };
 
   const handleThankYouContinue = () => {
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
     setShowThankYou(false);
+    // currentQuestion is already set to 5 (next question) in handleNext
   };
 
   const handlePreLoadingContinue = async () => {
@@ -497,35 +502,35 @@ export default function Quiz() {
 
         <div className="max-w-2xl mx-auto relative z-10">
           <AnimatePresence mode="wait">
-            {/* New screens */}
-            {showFinalCelebration && result && (
-              <QuizFinalCelebration
-                brainType={result.type}
-                onComplete={handleCelebrationComplete}
-              />
-            )}
-
-            {showPostSpeedMotivational && (
-              <QuizPostSpeedMotivationalScreen
-                selectedGoals={parentGoals}
-                onContinue={handlePostSpeedMotivationalContinue}
-              />
-            )}
-
-            {showThankYou && (
-              <QuizThankYouScreen
-                onContinue={handleThankYouContinue}
-              />
-            )}
-
-            {showPreLoading && result && (
-              <QuizPreLoadingScreen
-                brainType={result.type}
-                onContinue={handlePreLoadingContinue}
-              />
-            )}
-
-            {!showFinalCelebration && !showPostSpeedMotivational && !showThankYou && !showPreLoading && quizStep === 'name' ? (
+            {/* Special screens with keys for AnimatePresence */}
+            {showFinalCelebration && result ? (
+              <div key="final-celebration">
+                <QuizFinalCelebration
+                  brainType={result.type}
+                  onComplete={handleCelebrationComplete}
+                />
+              </div>
+            ) : showPostSpeedMotivational ? (
+              <div key="post-speed-motivational">
+                <QuizPostSpeedMotivationalScreen
+                  selectedGoals={parentGoals}
+                  onContinue={handlePostSpeedMotivationalContinue}
+                />
+              </div>
+            ) : showThankYou ? (
+              <div key="thank-you">
+                <QuizThankYouScreen
+                  onContinue={handleThankYouContinue}
+                />
+              </div>
+            ) : showPreLoading && result ? (
+              <div key="pre-loading">
+                <QuizPreLoadingScreen
+                  brainType={result.type}
+                  onContinue={handlePreLoadingContinue}
+                />
+              </div>
+            ) : quizStep === 'name' ? (
               <motion.div
                 key="intro"
                 initial={{ opacity: 0, y: 10 }}
@@ -1048,14 +1053,6 @@ export default function Quiz() {
           </AnimatePresence>
         </div>
       </div>
-      
-      {/* Final Celebration Modal */}
-      {showFinalCelebration && result && (
-        <QuizFinalCelebration
-          brainType={result.type}
-          onComplete={handleCelebrationComplete}
-        />
-      )}
     </MainLayout>
   );
 }
