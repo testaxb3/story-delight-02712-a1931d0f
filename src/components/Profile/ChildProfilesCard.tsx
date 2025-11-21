@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Brain } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Brain, Pencil, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getBrainTypeIcon } from '@/lib/brainTypes';
 import { getBrainDescription } from '@/lib/profileUtils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import type { ChildProfile } from '@/contexts/ChildProfilesContext';
 
 interface ChildProfilesCardProps {
@@ -21,6 +25,44 @@ export function ChildProfilesCard({
   onSetActiveChild,
 }: ChildProfilesCardProps) {
   const navigate = useNavigate();
+  const [editingAge, setEditingAge] = useState<string | null>(null);
+  const [tempAge, setTempAge] = useState<number | ''>('');
+  const [saving, setSaving] = useState(false);
+
+  const handleStartEdit = (childId: string, currentAge: number | null) => {
+    setEditingAge(childId);
+    setTempAge(currentAge ?? '');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingAge(null);
+    setTempAge('');
+  };
+
+  const handleSaveAge = async (childId: string) => {
+    if (tempAge === '' || tempAge < 1 || tempAge > 18) {
+      toast.error('Please enter a valid age (1-18)');
+      return;
+    }
+
+    setSaving(true);
+    const { error } = await supabase
+      .from('child_profiles')
+      .update({ age: tempAge })
+      .eq('id', childId);
+
+    setSaving(false);
+
+    if (error) {
+      toast.error('Failed to update age');
+      return;
+    }
+
+    toast.success('Age updated!');
+    setEditingAge(null);
+    setTempAge('');
+    window.location.reload(); // Refresh to show updated data
+  };
 
   return (
     <Card className="p-6 bg-gradient-to-br from-purple-500/10 to-purple-600/10 dark:from-purple-950/30 dark:to-purple-900/30 border-purple-500/20 dark:border-purple-700/50 shadow-lg animate-in fade-in slide-in-from-bottom-5 duration-500 transition-colors">
@@ -46,33 +88,89 @@ export function ChildProfilesCard({
       <div className="space-y-2 mb-4">
         {childProfiles.length > 0 ? (
           childProfiles.map((child, index) => (
-            <button
+            <div
               key={child.id}
-              onClick={() => onSetActiveChild(child.id)}
-              className={`w-full flex items-center justify-between rounded-lg border px-4 py-3 transition-all duration-300 animate-in fade-in slide-in-from-left-2 ${
+              className={`w-full rounded-lg border px-4 py-3 transition-all duration-300 animate-in fade-in slide-in-from-left-2 ${
                 activeChild?.id === child.id
                   ? 'bg-primary dark:bg-primary/90 text-white border-primary dark:border-primary/70 shadow dark:shadow-primary/20'
-                  : 'bg-white/70 dark:bg-slate-800/40 text-foreground hover:bg-white dark:hover:bg-slate-800/60 dark:border-slate-700/50'
+                  : 'bg-white/70 dark:bg-slate-800/40 text-foreground dark:border-slate-700/50'
               }`}
               style={{ animationDelay: `${index * 75}ms` }}
             >
-              <div className="text-left">
-                <p className="text-sm font-semibold">{child.name}</p>
-                <p className="text-xs opacity-80">
-                  {getBrainTypeIcon(child.brain_profile)} {child.brain_profile}
-                  {child.age && ` • ${child.age} years`}
-                </p>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => onSetActiveChild(child.id)}
+                  className="flex-1 text-left"
+                >
+                  <p className="text-sm font-semibold">{child.name}</p>
+                  <p className="text-xs opacity-80">
+                    {getBrainTypeIcon(child.brain_profile)} {child.brain_profile}
+                    {child.age && ` • ${child.age} years`}
+                  </p>
+                </button>
+                <div className="flex items-center gap-2">
+                  {editingAge === child.id ? (
+                    <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
+                      <Input
+                        type="number"
+                        value={tempAge}
+                        onChange={(e) => setTempAge(e.target.value ? parseInt(e.target.value) : '')}
+                        className={`w-16 h-7 text-xs ${
+                          activeChild?.id === child.id
+                            ? 'bg-white/20 border-white/30 text-white placeholder:text-white/60'
+                            : ''
+                        }`}
+                        placeholder="Age"
+                        min="1"
+                        max="18"
+                        disabled={saving}
+                      />
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={() => handleSaveAge(child.id)}
+                        disabled={saving}
+                      >
+                        <Check className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0"
+                        onClick={handleCancelEdit}
+                        disabled={saving}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-7 w-7 p-0 opacity-70 hover:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleStartEdit(child.id, child.age);
+                        }}
+                      >
+                        <Pencil className="w-3 h-3" />
+                      </Button>
+                      {activeChild?.id === child.id ? (
+                        <Badge variant="secondary" className="bg-white/30 dark:bg-white/20 text-white border-white/30 dark:border-white/20">
+                          Active
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="border-primary/30 dark:border-primary/50 text-primary dark:text-primary-foreground">
+                          Switch
+                        </Badge>
+                      )}
+                    </>
+                  )}
+                </div>
               </div>
-              {activeChild?.id === child.id ? (
-                <Badge variant="secondary" className="bg-white/30 dark:bg-white/20 text-white border-white/30 dark:border-white/20">
-                  Active
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="border-primary/30 dark:border-primary/50 text-primary dark:text-primary-foreground">
-                  Switch
-                </Badge>
-              )}
-            </button>
+            </div>
           ))
         ) : (
           <div className="rounded-lg border border-dashed border-purple-300 dark:border-purple-700 bg-white/60 dark:bg-purple-950/20 p-4 text-sm text-muted-foreground transition-colors">
