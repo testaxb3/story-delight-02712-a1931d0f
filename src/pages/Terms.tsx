@@ -6,7 +6,7 @@ import { AlertTriangle, Shield, BookOpen, Users, Scale } from "lucide-react";
 
 export default function Terms() {
   return (
-    <MainLayout hideBottomNav={true}>
+    <MainLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-foreground">Terms of Service</h1>
