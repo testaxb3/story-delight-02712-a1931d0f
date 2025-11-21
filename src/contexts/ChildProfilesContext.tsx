@@ -66,7 +66,7 @@ export function ChildProfilesProvider({ children }: { children: ReactNode }) {
     try {
       const { data, error } = await supabase
         .from('child_profiles')
-        .select('id, name, brain_profile, created_at')
+        .select('id, name, brain_profile, created_at, photo_url, age')
         .eq('parent_id', user.profileId)
         .order('created_at', { ascending: true });
 
@@ -81,6 +81,8 @@ export function ChildProfilesProvider({ children }: { children: ReactNode }) {
         name: child.name,
         brain_profile: child.brain_profile as ChildProfile['brain_profile'],
         created_at: child.created_at,
+        photo_url: child.photo_url,
+        age: child.age,
       }));
 
       setChildProfiles(formatted);

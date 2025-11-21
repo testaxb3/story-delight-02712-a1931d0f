@@ -16,6 +16,7 @@ interface ChildProfilesCardProps {
   activeChild: ChildProfile | null;
   currentBrain: string;
   onSetActiveChild: (childId: string) => void;
+  onRefreshChildren: () => Promise<void>;
 }
 
 export function ChildProfilesCard({
@@ -23,6 +24,7 @@ export function ChildProfilesCard({
   activeChild,
   currentBrain,
   onSetActiveChild,
+  onRefreshChildren,
 }: ChildProfilesCardProps) {
   const navigate = useNavigate();
   const [editingAge, setEditingAge] = useState<string | null>(null);
@@ -40,7 +42,10 @@ export function ChildProfilesCard({
   };
 
   const handleSaveAge = async (childId: string) => {
-    if (tempAge === '' || tempAge < 1 || tempAge > 18) {
+    // Validate age
+    const ageValue = typeof tempAge === 'number' ? tempAge : parseInt(String(tempAge), 10);
+    
+    if (!tempAge || ageValue < 1 || ageValue > 18 || isNaN(ageValue)) {
       toast.error('Please enter a valid age (1-18)');
       return;
     }
@@ -48,20 +53,21 @@ export function ChildProfilesCard({
     setSaving(true);
     const { error } = await supabase
       .from('child_profiles')
-      .update({ age: tempAge })
+      .update({ age: ageValue })
       .eq('id', childId);
 
     setSaving(false);
 
     if (error) {
+      console.error('Error updating age:', error);
       toast.error('Failed to update age');
       return;
     }
 
-    toast.success('Age updated!');
+    toast.success('Age updated successfully!');
     setEditingAge(null);
     setTempAge('');
-    window.location.reload(); // Refresh to show updated data
+    await onRefreshChildren();
   };
 
   return (

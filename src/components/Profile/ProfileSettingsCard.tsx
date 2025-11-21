@@ -86,25 +86,39 @@ export function ProfileSettingsCard({
                 <Label htmlFor="child-age" className="text-sm">
                   Child's age
                 </Label>
-                <Input
-                  id="child-age"
-                  type="number"
-                  placeholder="5"
-                  className="mt-1"
-                  value={childAge}
-                  onChange={(e) =>
-                    onChildAgeChange(e.target.value ? parseInt(e.target.value) : '')
-                  }
-                  onBlur={onChildInfoUpdate}
-                  min="1"
-                  max="18"
-                />
+                <div className="relative">
+                  <Input
+                    id="child-age"
+                    type="number"
+                    placeholder="5"
+                    className="mt-1"
+                    value={childAge}
+                    onChange={(e) =>
+                      onChildAgeChange(e.target.value ? parseInt(e.target.value) : '')
+                    }
+                    onBlur={onChildInfoUpdate}
+                    min="1"
+                    max="18"
+                    disabled={savingChild}
+                  />
+                  {savingChild && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 mt-0.5">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Age helps personalize scripts and recommendations
+                </p>
               </div>
             </>
           )}
 
           {savingChild && activeChild && (
-            <p className="text-xs text-green-600">Saving...</p>
+            <div className="flex items-center gap-2 text-sm text-primary">
+              <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <span>Saving changes...</span>
+            </div>
           )}
         </div>
 
