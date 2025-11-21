@@ -43,31 +43,33 @@ export function ChildProfilesCard({
 
   const handleSaveAge = async (childId: string) => {
     // Validate age
-    const ageValue = typeof tempAge === 'number' ? tempAge : parseInt(String(tempAge), 10);
+    const ageValue = tempAge === '' ? null : Number(tempAge);
     
-    if (!tempAge || ageValue < 1 || ageValue > 18 || isNaN(ageValue)) {
+    if (ageValue === null || isNaN(ageValue) || ageValue < 1 || ageValue > 18) {
       toast.error('Please enter a valid age (1-18)');
       return;
     }
 
     setSaving(true);
-    const { error } = await supabase
-      .from('child_profiles')
-      .update({ age: ageValue })
-      .eq('id', childId);
+    
+    try {
+      const { error } = await supabase
+        .from('child_profiles')
+        .update({ age: ageValue, updated_at: new Date().toISOString() })
+        .eq('id', childId);
 
-    setSaving(false);
+      if (error) throw error;
 
-    if (error) {
+      toast.success('Age updated successfully!');
+      setEditingAge(null);
+      setTempAge('');
+      await onRefreshChildren();
+    } catch (error) {
       console.error('Error updating age:', error);
-      toast.error('Failed to update age');
-      return;
+      toast.error('Failed to update age. Please try again.');
+    } finally {
+      setSaving(false);
     }
-
-    toast.success('Age updated successfully!');
-    setEditingAge(null);
-    setTempAge('');
-    await onRefreshChildren();
   };
 
   return (
