@@ -10,11 +10,19 @@ interface QuizOptionCardProps {
 }
 
 export const QuizOptionCard = ({ value, label, isSelected, onSelect }: QuizOptionCardProps) => {
+  const handleClick = () => {
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+    onSelect(value);
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => onSelect(value)}
+      onClick={handleClick}
       className={cn(
         "relative cursor-pointer rounded-2xl p-6 transition-all duration-300",
         "border-2 min-h-[80px] flex items-center justify-between",

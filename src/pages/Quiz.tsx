@@ -156,6 +156,12 @@ export default function Quiz() {
       toast.error(`Child's name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters.`);
       return;
     }
+    
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    
     setNameError(false);
     setAnswers({});
     setCurrentQuestion(0);
@@ -246,6 +252,11 @@ export default function Quiz() {
   };
 
   const handleNext = async () => {
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+    
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(prev => prev + 1);
     } else {
@@ -259,6 +270,11 @@ export default function Quiz() {
   };
 
   const handlePrevious = () => {
+    // Haptic feedback
+    if (navigator.vibrate) {
+      navigator.vibrate(10);
+    }
+    
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1);
     }
