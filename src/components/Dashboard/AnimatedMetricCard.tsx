@@ -50,33 +50,38 @@ export const AnimatedMetricCard = ({
         }}
       />
 
-      <div className="flex items-center gap-3 relative z-10">
-        {/* Animated Icon */}
-        <motion.div
-          className={`p-2 rounded-lg ${gradient}`}
-          whileHover={{ rotate: [0, -10, 10, -10, 0] }}
-          transition={{ duration: 0.5 }}
-        >
-          <Icon className="w-5 h-5 text-white" />
-        </motion.div>
-
-        {/* Content */}
-        <div className="flex-1">
+      <div className="flex flex-col gap-3 relative z-10">
+        {/* Top row: Icon and Value */}
+        <div className="flex items-center gap-3">
+          {/* Animated Icon */}
           <motion.div
-            className="text-2xl font-black"
+            className={`p-2.5 rounded-lg ${gradient} shrink-0`}
+            whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+            transition={{ duration: 0.5 }}
+          >
+            <Icon className="w-6 h-6 text-white" />
+          </motion.div>
+
+          {/* Value */}
+          <motion.div
+            className="text-3xl font-black"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: delay + 0.2, type: "spring" }}
           >
             {value}
           </motion.div>
-          <div className="text-xs text-muted-foreground">{label}</div>
+        </div>
+
+        {/* Bottom: Label and Subtitle */}
+        <div className="space-y-1">
+          <div className="text-sm font-medium text-muted-foreground">{label}</div>
           {subtitle && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ delay: delay + 0.3 }}
-              className="text-xs text-primary mt-1"
+              className="text-xs text-primary/80 leading-snug"
             >
               {subtitle}
             </motion.div>
