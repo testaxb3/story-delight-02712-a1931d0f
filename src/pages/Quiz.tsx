@@ -623,7 +623,7 @@ export default function Quiz() {
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
                   {/* Progress Bar */}
-                  <div className="relative h-1 bg-gray-200">
+                  <div className="relative h-1.5 bg-gray-200">
                     <div className="h-full bg-black" style={{ width: '14%' }} />
                   </div>
                   <div className="px-4 h-14 flex items-center justify-between">
@@ -643,7 +643,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-16 pb-20 px-6 flex flex-col justify-center">
+                <div className="flex-1 pt-24 pb-24 px-6">
                   <div className="space-y-6">
                     <div className="space-y-1">
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-1 font-relative leading-tight">
