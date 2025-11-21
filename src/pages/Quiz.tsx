@@ -263,9 +263,20 @@ export default function Quiz() {
 
         toast.success('Profile created successfully!');
 
-        // Step 8: Navigate to root dashboard (now data is guaranteed fresh)
-        // ✅ FIX: Use '/' instead of '/dashboard' (route was consolidated)
-        navigate('/', { replace: true, state: { quizJustCompleted: true } });
+        // Step 8: Check if should show PWA onboarding (mobile users only)
+        const shouldShowPWAOnboarding = () => {
+          const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+          const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
+          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+          
+          return isMobile && !isInstalled && !completedOnboarding;
+        };
+
+        if (shouldShowPWAOnboarding()) {
+          navigate('/onboarding', { replace: true });
+        } else {
+          navigate('/', { replace: true, state: { quizJustCompleted: true } });
+        }
       } catch (error) {
         logger.error('Failed to update quiz completion:', error);
         toast.error('An error occurred. Please try again.');
@@ -275,8 +286,21 @@ export default function Quiz() {
     } else {
       // Set sessionStorage even without profileId
       sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-      // ✅ FIX: Use '/' instead of '/dashboard' (route was consolidated)
-      navigate('/', { replace: true, state: { quizJustCompleted: true } });
+      
+      // Check if should show PWA onboarding (mobile users only)
+      const shouldShowPWAOnboarding = () => {
+        const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+        const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        
+        return isMobile && !isInstalled && !completedOnboarding;
+      };
+
+      if (shouldShowPWAOnboarding()) {
+        navigate('/onboarding', { replace: true });
+      } else {
+        navigate('/', { replace: true, state: { quizJustCompleted: true } });
+      }
     }
   };
 

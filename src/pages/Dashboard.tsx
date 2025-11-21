@@ -119,11 +119,22 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // PWA Install prompt disabled - we now show onboarding after signup at /onboarding
-  // Users can still install PWA from browser menu
-  const checkPWAInstall = () => {
-    // Disabled - onboarding page handles PWA installation guide
-  };
+  // PWA Install prompt - discretely shows for desktop/returning users
+  useEffect(() => {
+    const checkPWAInstall = () => {
+      const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
+      const dismissed = localStorage.getItem('pwa_install_dismissed');
+      const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
+      
+      // Only show if not installed, not dismissed, and hasn't completed onboarding
+      if (!isInstalled && !dismissed && !completedOnboarding) {
+        // Show after 5 seconds on Dashboard
+        setTimeout(() => setShowPWAPrompt(true), 5000);
+      }
+    };
+    
+    checkPWAInstall();
+  }, []);
 
   const getName = () => {
     return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Friend';
@@ -397,6 +408,24 @@ export default function Dashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* PWA Install Components */}
+      <PWAInstallPrompt
+        open={showPWAPrompt}
+        onOpenGuide={() => {
+          setShowPWAPrompt(false);
+          setShowPWAGuide(true);
+        }}
+        onClose={() => {
+          setShowPWAPrompt(false);
+          localStorage.setItem('pwa_install_dismissed', 'true');
+        }}
+      />
+      
+      <PWAInstallGuide
+        open={showPWAGuide}
+        onClose={() => setShowPWAGuide(false)}
+      />
     </MainLayout>
   );
 }
