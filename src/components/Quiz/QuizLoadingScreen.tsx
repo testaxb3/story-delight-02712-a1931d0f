@@ -84,7 +84,7 @@ export const QuizLoadingScreen = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-8 md:py-12 space-y-6 md:space-y-8"
+          className="flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] py-12 md:py-16 space-y-8 md:space-y-10"
         >
           {/* Hand Lottie */}
           <motion.div
@@ -106,12 +106,12 @@ export const QuizLoadingScreen = () => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="text-center space-y-3 md:space-y-4 px-4"
+            className="text-center space-y-4 md:space-y-5 px-6"
           >
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-black dark:text-white font-relative">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black dark:text-white font-relative leading-tight">
               Thank you for trusting us
             </h2>
-            <p className="text-sm md:text-base text-gray-500 dark:text-gray-400">
+            <p className="text-base md:text-lg text-gray-500 dark:text-gray-400">
               Now let's personalize NEP System for you...
             </p>
           </motion.div>
@@ -141,16 +141,16 @@ export const QuizLoadingScreen = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="flex flex-col items-center justify-center min-h-[400px] md:min-h-[500px] py-8 md:py-12 space-y-6 md:space-y-8"
+          className="flex flex-col items-center justify-center min-h-[500px] md:min-h-[600px] py-12 md:py-16 space-y-8 md:space-y-10"
         >
           {/* Giant Percentage */}
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.5 }}
-            className="text-center"
+            className="text-center mb-4 md:mb-6"
           >
-            <div className="text-7xl md:text-8xl lg:text-9xl font-black text-black dark:text-white tracking-tight font-relative">
+            <div className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black text-black dark:text-white tracking-tight font-relative leading-none">
               {percentage}%
             </div>
           </motion.div>
@@ -160,14 +160,14 @@ export const QuizLoadingScreen = () => {
             key={currentTask}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-xl md:text-2xl font-bold text-black dark:text-white text-center font-relative px-4"
+            className="text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white text-center font-relative px-6 max-w-2xl leading-tight"
           >
             We're setting everything up for you
           </motion.h3>
 
           {/* Progress Bar with Gradient */}
-          <div className="w-full max-w-md px-6">
-            <div className="h-2 md:h-3 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+          <div className="w-full max-w-2xl px-6 md:px-8 my-4 md:my-6">
+            <div className="h-3 md:h-4 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
               <motion.div
                 className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full"
                 initial={{ width: "0%" }}
@@ -182,14 +182,14 @@ export const QuizLoadingScreen = () => {
             key={currentTask}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-sm md:text-base text-gray-500 dark:text-gray-400 text-center px-4"
+            className="text-base md:text-lg text-gray-500 dark:text-gray-400 text-center px-6 max-w-xl"
           >
             {currentTask}
           </motion.p>
 
           {/* Daily Recommendations List */}
-          <div className="w-full max-w-md space-y-3 md:space-y-4 px-6 pt-4">
-            <h4 className="text-base md:text-lg font-bold text-black dark:text-white mb-3 md:mb-4">
+          <div className="w-full max-w-2xl space-y-4 md:space-y-5 px-6 md:px-8 pt-6 md:pt-8">
+            <h4 className="text-lg md:text-xl font-bold text-black dark:text-white mb-4 md:mb-6">
               Daily recommendation for
             </h4>
             {recommendations.map((item, index) => (
@@ -198,11 +198,11 @@ export const QuizLoadingScreen = () => {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 + 0.5, duration: 0.4 }}
-                className="flex items-center justify-between"
+                className="flex items-center justify-between py-1"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-black dark:text-white text-lg">•</span>
-                  <span className="text-sm md:text-base text-black dark:text-white">
+                <div className="flex items-center gap-3">
+                  <span className="text-black dark:text-white text-xl">•</span>
+                  <span className="text-base md:text-lg text-black dark:text-white">
                     {item.text}
                   </span>
                 </div>
@@ -210,7 +210,7 @@ export const QuizLoadingScreen = () => {
                   key={`${item.text}-${item.percentage}`}
                   initial={{ scale: 0.8, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className="text-sm md:text-base font-bold text-primary"
+                  className="text-base md:text-lg font-bold text-primary"
                 >
                   {item.percentage}%
                 </motion.span>
