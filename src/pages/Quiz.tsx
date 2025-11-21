@@ -625,10 +625,10 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-16 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-6">
+                <div className="flex-1 pt-14 pb-20 px-4">
+                  <div className="max-w-xl mx-auto space-y-4">
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         Tell us about {childName}
                       </h2>
                       <p className="text-gray-500 text-sm md:text-base">
@@ -701,10 +701,10 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-16 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-6">
+                <div className="flex-1 pt-14 pb-20 px-4">
+                  <div className="max-w-xl mx-auto space-y-4">
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         What do you most want to improve?
                       </h2>
                       <p className="text-gray-500 text-sm md:text-base">
@@ -788,7 +788,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-16 pb-20">
+                <div className="flex-1 pt-14 pb-20">
                   <QuizSpeedSlider
                     value={resultSpeed}
                     onChange={setResultSpeed}
@@ -836,10 +836,10 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-16 pb-20 px-4">
-                  <div className="max-w-xl mx-auto space-y-6">
+                <div className="flex-1 pt-14 pb-20 px-4">
+                  <div className="max-w-xl mx-auto space-y-4">
                     <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
+                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
                         How challenging has it been?
                       </h2>
                       <p className="text-gray-500 text-sm md:text-base">
