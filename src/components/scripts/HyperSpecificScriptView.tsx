@@ -162,13 +162,9 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
 
           {theSituationExpanded && (
             <div className="px-6 pb-6 animate-in fade-in duration-200">
-              <div className="space-y-3">
-                {script.the_situation.split('\n\n').map((paragraph, idx) => (
-                  <p key={idx} className="text-base leading-relaxed text-slate-800 dark:text-slate-200">
-                    {renderMarkdown(paragraph.trim())}
-                  </p>
-                ))}
-              </div>
+              <p className="text-base leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-line">
+                {renderMarkdown(script.the_situation)}
+              </p>
             </div>
           )}
         </div>
@@ -363,122 +359,12 @@ export const HyperSpecificScriptView = ({ script, crisisMode }: HyperSpecificScr
           </button>
 
           {whyThisWorksExpanded && (
-            <div className="px-5 pb-5 animate-in fade-in duration-200 space-y-4">
-              {script.why_this_works.split('\n\n').map((paragraph, idx) => {
-                const trimmed = paragraph.trim();
-                
-                // Check for numbered list item: "1. **Title** = explanation"
-                const numberedMatch = trimmed.match(/^(\d+)\.\s+\*\*(.+?)\*\*\s*[=:]\s*(.+)$/s);
-                if (numberedMatch) {
-                  const explanation = numberedMatch[3].trim();
-                  // Split explanation by bullet points or numbered sub-items
-                  const explanationParts = explanation.split(/\s*[•→]\s+/).filter(p => p.trim());
-                  
-                  return (
-                    <div key={idx} className="bg-purple-50/50 dark:bg-purple-950/20 rounded-lg p-4 border border-purple-200/50 dark:border-purple-800/50">
-                      <div className="flex items-start gap-3 mb-3">
-                        <span className="font-bold text-lg text-purple-600 dark:text-purple-400 shrink-0">
-                          {numberedMatch[1]}.
-                        </span>
-                        <div className="flex-1">
-                          <h4 className="text-base font-bold text-purple-900 dark:text-purple-100 mb-2">
-                            {numberedMatch[2]}
-                          </h4>
-                          <div className="space-y-2">
-                            {explanationParts.map((part, partIdx) => (
-                              <p key={partIdx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200 pl-4">
-                                {partIdx > 0 && <span className="text-purple-500 dark:text-purple-400 mr-2">•</span>}
-                                {renderMarkdown(part.trim())}
-                              </p>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
-
-                // Check for bullet point: "• text"
-                if (trimmed.startsWith('•')) {
-                  // Split long bullet text by sub-bullets or sentences
-                  const bulletText = trimmed.substring(1).trim();
-                  const sentences = bulletText.split(/\s*[→•]\s+/).filter(s => s.trim());
-                  
-                  if (sentences.length > 1) {
-                    return (
-                      <div key={idx} className="bg-purple-50/30 dark:bg-purple-950/10 rounded-lg p-3 border-l-4 border-purple-400 dark:border-purple-600">
-                        <div className="space-y-2">
-                          <p className="text-sm leading-relaxed text-purple-800 dark:text-purple-200 font-medium">
-                            {renderMarkdown(sentences[0].trim())}
-                          </p>
-                          {sentences.slice(1).map((sentence, sIdx) => (
-                            <p key={sIdx} className="text-sm leading-relaxed text-purple-700 dark:text-purple-300 pl-4">
-                              <span className="text-purple-500 dark:text-purple-400 mr-2">→</span>
-                              {renderMarkdown(sentence.trim())}
-                            </p>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  }
-                  
-                  return (
-                    <div key={idx} className="flex items-start gap-2 pl-2">
-                      <span className="text-purple-600 dark:text-purple-400 shrink-0 mt-1">•</span>
-                      <p className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
-                        {renderMarkdown(bulletText)}
-                      </p>
-                    </div>
-                  );
-                }
-
-                // Check if paragraph starts with **bold text:** (subtitle)
-                const subtitleMatch = trimmed.match(/^\*\*(.+?)\*\*:(.*)$/s);
-                if (subtitleMatch) {
-                  const content = subtitleMatch[2].trim();
-                  const contentParts = content ? content.split(/\s*[•→]\s+/).filter(p => p.trim()) : [];
-                  
-                  return (
-                    <div key={idx} className="bg-purple-50/30 dark:bg-purple-950/10 rounded-lg p-4 border-l-4 border-purple-300 dark:border-purple-700">
-                      <h4 className="text-base font-bold text-purple-900 dark:text-purple-100 mb-3">
-                        {subtitleMatch[1]}
-                      </h4>
-                      {contentParts.length > 0 && (
-                        <div className="space-y-2">
-                          {contentParts.map((part, partIdx) => (
-                            <p key={partIdx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200 pl-4">
-                              {partIdx > 0 && <span className="text-purple-500 dark:text-purple-400 mr-2">•</span>}
-                              {renderMarkdown(part.trim())}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
-
-                // Regular paragraph - render with proper line breaks
-                // Split by single newlines within the paragraph for better readability
-                const lines = trimmed.split('\n').filter(l => l.trim());
-                if (lines.length > 1) {
-                  return (
-                    <div key={idx} className="space-y-2 pl-2">
-                      {lines.map((line, lineIdx) => (
-                        <p key={lineIdx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200">
-                          {renderMarkdown(line.trim())}
-                        </p>
-                      ))}
-                    </div>
-                  );
-                }
-                
-                // Single line paragraph
-                return (
-                  <p key={idx} className="text-sm leading-relaxed text-purple-800 dark:text-purple-200 pl-2">
-                    {renderMarkdown(trimmed)}
-                  </p>
-                );
-              })}
+            <div className="px-5 pb-5 animate-in fade-in duration-200">
+              <div className="prose prose-purple dark:prose-invert max-w-none">
+                <div className="text-base leading-loose text-purple-800 dark:text-purple-200 whitespace-pre-line">
+                  {renderMarkdown(script.why_this_works)}
+                </div>
+              </div>
             </div>
           )}
         </div>
