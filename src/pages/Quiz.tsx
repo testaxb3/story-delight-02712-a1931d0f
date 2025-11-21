@@ -409,7 +409,7 @@ export default function Quiz() {
 
   return (
     <MainLayout hideBottomNav hideSideNav hideTopBar>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-12 px-4 relative overflow-hidden">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 py-4 md:py-12 px-4 relative overflow-hidden">
         {/* Animated background blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div 
@@ -470,11 +470,11 @@ export default function Quiz() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
               >
-                <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-10 shadow-2xl">
-                  <div className="text-center space-y-8">
+                <div className="bg-card/80 backdrop-blur-xl border border-border/50 rounded-3xl p-6 md:p-10 shadow-2xl">
+                  <div className="text-center space-y-4 md:space-y-8">
                     {/* 3D Animated Brain Icon with Glow */}
                     <motion.div 
-                      className="relative w-24 h-24 mx-auto"
+                      className="relative w-16 h-16 md:w-24 md:h-24 mx-auto"
                       animate={{ 
                         scale: [1, 1.05, 1],
                         rotateY: [0, 10, -10, 0]
@@ -497,15 +497,15 @@ export default function Quiz() {
                           ease: "easeInOut"
                         }}
                       />
-                      <div className="relative w-24 h-24 bg-gradient-to-br from-primary to-primary/70 rounded-3xl flex items-center justify-center shadow-lg shadow-primary/30">
-                        <Brain className="w-12 h-12 text-primary-foreground" />
+                      <div className="relative w-16 h-16 md:w-24 md:h-24 bg-gradient-to-br from-primary to-primary/70 rounded-3xl flex items-center justify-center shadow-lg shadow-primary/30">
+                        <Brain className="w-8 h-8 md:w-12 md:h-12 text-primary-foreground" />
                       </div>
                     </motion.div>
 
                     <div>
                       {/* Animated Gradient Text */}
                       <motion.h2 
-                        className="text-4xl font-bold mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent"
+                        className="text-2xl md:text-4xl font-bold mb-2 md:mb-4 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent"
                         animate={{ 
                           backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] 
                         }}
@@ -517,47 +517,47 @@ export default function Quiz() {
                       >
                         Discover Your Child's Brain Profile
                       </motion.h2>
-                      <p className="text-muted-foreground text-lg leading-relaxed">
+                      <p className="text-muted-foreground text-sm md:text-lg leading-relaxed">
                         A scientifically-designed assessment to understand your child's unique neurodevelopmental patterns
                       </p>
                     </div>
                     
-                    <div className="bg-muted/20 backdrop-blur-sm rounded-2xl p-8 space-y-4 text-left border border-border/30">
-                      <h3 className="font-semibold text-lg flex items-center gap-2">
-                        <Sparkles className="w-5 h-5 text-primary" />
+                    <div className="bg-muted/20 backdrop-blur-sm rounded-2xl p-4 md:p-8 space-y-3 md:space-y-4 text-left border border-border/30">
+                      <h3 className="font-semibold text-base md:text-lg flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                         What to expect:
                       </h3>
-                      <ul className="space-y-4 text-muted-foreground">
-                        <li className="flex items-start gap-3">
+                      <ul className="space-y-2 md:space-y-4 text-muted-foreground">
+                        <li className="flex items-start gap-2 md:gap-3">
                           <div className="mt-0.5">
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                            <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                           </div>
-                          <span className="leading-relaxed">15 carefully crafted questions based on NEP System neuroscience</span>
+                          <span className="text-sm md:text-base leading-relaxed">15 carefully crafted questions based on NEP System neuroscience</span>
                         </li>
-                        <li className="flex items-start gap-3">
+                        <li className="flex items-start gap-2 md:gap-3">
                           <div className="mt-0.5">
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                            <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                           </div>
-                          <span className="leading-relaxed">Takes approximately 5-7 minutes to complete</span>
+                          <span className="text-sm md:text-base leading-relaxed">Takes approximately 5-7 minutes to complete</span>
                         </li>
-                        <li className="flex items-start gap-3">
+                        <li className="flex items-start gap-2 md:gap-3">
                           <div className="mt-0.5">
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                            <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                           </div>
-                          <span className="leading-relaxed">Identifies whether your child is Intense, Distracted, or Defiant</span>
+                          <span className="text-sm md:text-base leading-relaxed">Identifies whether your child is Intense, Distracted, or Defiant</span>
                         </li>
-                        <li className="flex items-start gap-3">
+                        <li className="flex items-start gap-2 md:gap-3">
                           <div className="mt-0.5">
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                            <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                           </div>
-                          <span className="leading-relaxed">Personalized scripts and strategies based on results</span>
+                          <span className="text-sm md:text-base leading-relaxed">Personalized scripts and strategies based on results</span>
                         </li>
                       </ul>
                     </div>
 
-                    <div className="space-y-6 pt-4">
-                      <div className="space-y-3">
-                        <Label htmlFor="childName" className="text-left block font-medium text-foreground text-base">
+                    <div className="space-y-4 md:space-y-6 pt-2 md:pt-4">
+                      <div className="space-y-2 md:space-y-3">
+                        <Label htmlFor="childName" className="text-left block font-medium text-foreground text-sm md:text-base">
                           What's your child's name?
                         </Label>
                         <motion.div
@@ -582,7 +582,7 @@ export default function Quiz() {
                                 }
                               }}
                               className={cn(
-                                "h-14 px-6 text-lg rounded-2xl border-2 transition-all duration-300",
+                                "h-12 md:h-14 px-4 md:px-6 text-base md:text-lg rounded-2xl border-2 transition-all duration-300",
                                 "focus:border-primary focus:ring-4 focus:ring-primary/20",
                                 nameError && "border-destructive focus:border-destructive focus:ring-destructive/20"
                               )}
@@ -610,7 +610,7 @@ export default function Quiz() {
                           onClick={handleStartQuiz}
                           disabled={!isValidChildName(childName)}
                           size="lg"
-                          className="relative w-full h-14 text-lg rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-lg shadow-primary/30 transition-all duration-300 group"
+                          className="relative w-full h-12 md:h-14 text-base md:text-lg rounded-2xl overflow-hidden bg-gradient-to-r from-primary via-accent to-primary hover:from-primary/90 hover:via-accent/90 hover:to-primary/90 shadow-lg shadow-primary/30 transition-all duration-300 group"
                         >
                           <span className="relative z-10 flex items-center justify-center gap-2">
                             Start Assessment
