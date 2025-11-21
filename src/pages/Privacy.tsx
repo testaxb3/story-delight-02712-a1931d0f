@@ -6,7 +6,7 @@ import { Shield, Lock, Eye, Database, Users, Mail, Download } from "lucide-react
 
 export default function Privacy() {
   return (
-    <MainLayout hideBottomNav={true}>
+    <MainLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-foreground">Privacy Policy</h1>

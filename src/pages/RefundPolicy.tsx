@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 
 export default function RefundPolicy() {
   return (
-    <MainLayout hideBottomNav={true}>
+    <MainLayout>
       <div className="max-w-4xl mx-auto space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-foreground">Refund Policy</h1>
