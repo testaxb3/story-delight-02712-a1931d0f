@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { CheckCircle2, Loader2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 
 interface ChecklistItem {
   text: string;
@@ -51,38 +51,23 @@ export const QuizLoadingScreen = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-12 py-12">
-      {/* Giant Percentage */}
+    <div className="flex flex-col items-center justify-center space-y-16 py-12 md:py-20">
+      {/* Giant Percentage - BLACK & WHITE */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
+        initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="relative"
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        {/* Glow effect */}
-        <motion.div
-          className="absolute inset-0 bg-primary/30 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-
-        <div className="relative text-8xl md:text-9xl font-black bg-gradient-to-br from-primary via-accent to-primary bg-clip-text text-transparent">
+        <div className="text-9xl md:text-[12rem] font-black text-black dark:text-white tracking-tighter">
           {percentage}%
         </div>
       </motion.div>
 
-      {/* Progress Bar */}
-      <div className="w-full max-w-md">
-        <div className="h-3 bg-muted/30 rounded-full overflow-hidden">
+      {/* Progress Bar - BLACK */}
+      <div className="w-full max-w-md px-4">
+        <div className="h-2 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
           <motion.div
-            className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full"
+            className="h-full bg-black dark:bg-white rounded-full"
             initial={{ width: "0%" }}
             animate={{ width: `${percentage}%` }}
             transition={{ duration: 0.3 }}
@@ -90,35 +75,31 @@ export const QuizLoadingScreen = () => {
         </div>
       </div>
 
-      {/* Checklist */}
-      <div className="w-full max-w-md space-y-4">
+      {/* Checklist - Minimalist */}
+      <div className="w-full max-w-md space-y-6 px-4">
         {checklist.map((item, index) => (
           <motion.div
             key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.15, duration: 0.4 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.3 }}
             className="flex items-center gap-4"
           >
-            {/* Icon */}
+            {/* Icon - Black & White only */}
             <div className="flex-shrink-0">
               {item.completed ? (
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                >
-                  <CheckCircle2 className="w-6 h-6 text-primary" />
-                </motion.div>
+                <CheckCircle2 className="w-6 h-6 text-black dark:text-white" strokeWidth={2} />
               ) : (
-                <Loader2 className="w-6 h-6 text-muted-foreground/50 animate-spin" />
+                <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-700" />
               )}
             </div>
 
             {/* Text */}
             <span
               className={`text-base font-medium transition-colors ${
-                item.completed ? 'text-foreground' : 'text-muted-foreground'
+                item.completed 
+                  ? 'text-black dark:text-white' 
+                  : 'text-gray-400 dark:text-gray-600'
               }`}
             >
               {item.text}
