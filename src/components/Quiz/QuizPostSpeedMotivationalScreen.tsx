@@ -73,7 +73,11 @@ export const QuizPostSpeedMotivationalScreen = ({ selectedGoals, onContinue }: Q
     >
       {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-end">
+        {/* Progress Bar */}
+        <div className="relative h-1 bg-gray-200 dark:bg-gray-800">
+          <div className="h-full bg-black dark:bg-white" style={{ width: '35%' }} />
+        </div>
+        <div className="px-4 h-14 flex items-center justify-end">
           {/* Page Number */}
           <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold text-black dark:text-white">5</span>

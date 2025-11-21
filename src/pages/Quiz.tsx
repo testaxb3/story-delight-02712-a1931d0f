@@ -541,6 +541,10 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  {/* Progress Bar */}
+                  <div className="relative h-1 bg-gray-200">
+                    <div className="h-full bg-black" style={{ width: '7%' }} />
+                  </div>
                   <div className="px-4 h-14 flex items-center justify-end">
                     {/* Page Number */}
                     <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
@@ -618,6 +622,10 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  {/* Progress Bar */}
+                  <div className="relative h-1 bg-gray-200">
+                    <div className="h-full bg-black" style={{ width: '14%' }} />
+                  </div>
                   <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
@@ -694,6 +702,10 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  {/* Progress Bar */}
+                  <div className="relative h-1 bg-gray-200">
+                    <div className="h-full bg-black" style={{ width: '21%' }} />
+                  </div>
                   <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
@@ -781,6 +793,10 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  {/* Progress Bar */}
+                  <div className="relative h-1 bg-gray-200">
+                    <div className="h-full bg-black" style={{ width: '28%' }} />
+                  </div>
                   <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button
@@ -829,6 +845,10 @@ export default function Quiz() {
               >
                 {/* Header */}
                 <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  {/* Progress Bar */}
+                  <div className="relative h-1 bg-gray-200">
+                    <div className="h-full bg-black" style={{ width: '42%' }} />
+                  </div>
                   <div className="px-4 h-14 flex items-center justify-between">
                     {/* Back Button */}
                     <button

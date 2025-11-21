@@ -36,7 +36,7 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
             transition={{ duration: 0.5 }}
           />
         </div>
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-end">
+        <div className="px-4 h-14 flex items-center justify-end">
           {/* Page Number */}
           <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
             <span className="text-xs font-bold text-black dark:text-white">12</span>
@@ -94,7 +94,6 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.5 }}
-          className="max-w-2xl mx-auto"
         >
           <Button
             onClick={handleContinue}
