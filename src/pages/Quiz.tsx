@@ -771,7 +771,7 @@ export default function Quiz() {
                   </div>
                 </div>
               </motion.div>
-            ) : !hasStarted ? (
+            ) : quizStep === 'questions' && !showResult ? (
               showMotivational ? (
                 <QuizMotivationalScreen
                   milestone={motivationalMilestone}
