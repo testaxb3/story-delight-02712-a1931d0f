@@ -625,7 +625,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-20 pb-24 px-4">
+                <div className="flex-1 pt-16 pb-20 px-4">
                   <div className="max-w-xl mx-auto space-y-6">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
@@ -701,7 +701,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-20 pb-24 px-4">
+                <div className="flex-1 pt-16 pb-20 px-4">
                   <div className="max-w-xl mx-auto space-y-6">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
@@ -788,7 +788,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-14 pb-24">
+                <div className="flex-1 pt-16 pb-20">
                   <QuizSpeedSlider
                     value={resultSpeed}
                     onChange={setResultSpeed}
@@ -836,7 +836,7 @@ export default function Quiz() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 pt-20 pb-24 px-4">
+                <div className="flex-1 pt-16 pb-20 px-4">
                   <div className="max-w-xl mx-auto space-y-6">
                     <div>
                       <h2 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
