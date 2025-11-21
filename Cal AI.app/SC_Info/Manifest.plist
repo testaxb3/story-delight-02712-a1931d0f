@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SinfPaths</key>
+	<array>
+		<string>SC_Info/Cal AI.sinf</string>
+	</array>
+	<key>SinfReplicationPaths</key>
+	<array>
+		<string>Frameworks/AdjustSigSdk.framework/SC_Info/AdjustSigSdk.sinf</string>
+		<string>Frameworks/FBAEMKit.framework/SC_Info/FBAEMKit.sinf</string>
+		<string>Frameworks/FBSDKCoreKit.framework/SC_Info/FBSDKCoreKit.sinf</string>
+		<string>Frameworks/FBSDKCoreKit_Basics.framework/SC_Info/FBSDKCoreKit_Basics.sinf</string>
+		<string>Frameworks/FirebaseAnalytics.framework/SC_Info/FirebaseAnalytics.sinf</string>
+		<string>Frameworks/FirebaseFirestoreInternal.framework/SC_Info/FirebaseFirestoreInternal.sinf</string>
+		<string>Frameworks/GoogleAdsOnDeviceConversion.framework/SC_Info/GoogleAdsOnDeviceConversion.sinf</string>
+		<string>Frameworks/GoogleAppMeasurement.framework/SC_Info/GoogleAppMeasurement.sinf</string>
+		<string>Frameworks/GoogleAppMeasurementIdentitySupport.framework/SC_Info/GoogleAppMeasurementIdentitySupport.sinf</string>
+		<string>Frameworks/absl.framework/SC_Info/absl.sinf</string>
+		<string>Frameworks/grpc.framework/SC_Info/grpc.sinf</string>
+		<string>Frameworks/grpcpp.framework/SC_Info/grpcpp.sinf</string>
+		<string>Frameworks/openssl_grpc.framework/SC_Info/openssl_grpc.sinf</string>
+		<string>PlugIns/CalAIWidgetExtension.appex/SC_Info/CalAIWidgetExtension.sinf</string>
+		<string>Watch/Cal AI.app/SC_Info/Cal AI.sinf</string>
+		<string>SC_Info/Cal AI.sinf</string>
+	</array>
+</dict>
+</plist>
