@@ -23,6 +23,7 @@ import { getBrainTypeIcon } from '@/lib/brainTypes';
 import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useVideos } from '@/hooks/useVideos';
+import { trackFeatureDiscovery, trackReturnVisit } from '@/lib/analytics-advanced';
 
 // Premium Dashboard Components
 import { HeroRecommendation } from '@/components/Dashboard/HeroRecommendation';
@@ -34,7 +35,7 @@ import { ThisWeeksWins } from '@/components/Dashboard/ThisWeeksWins';
 import { RecentScriptUsage } from '@/components/Dashboard/RecentScriptUsage';
 import { PersonalizedInsights } from '@/components/Dashboard/PersonalizedInsights';
 import { AnimatedMetricCard } from '@/components/Dashboard/AnimatedMetricCard';
-import { LoadingDashboard } from '@/components/Dashboard/LoadingDashboard';
+import { DashboardSkeletonV2 } from '@/components/Skeletons/DashboardSkeletonV2';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -253,7 +254,7 @@ export default function Dashboard() {
       
       {/* Show premium loading state on initial load */}
       {isInitialLoading ? (
-        <LoadingDashboard />
+        <DashboardSkeletonV2 />
       ) : (
         <div className="space-y-8 pb-8">
         {/* Hero Recommendation - Your Next Win */}
