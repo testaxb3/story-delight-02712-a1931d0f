@@ -20,6 +20,8 @@ import { QuizOptionCard } from '@/components/Quiz/QuizOptionCard';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
 import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
+import { QuizSpeedSlider } from '@/components/Quiz/QuizSpeedSlider';
+import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
 import { LottieIcon } from '@/components/LottieIcon';
 import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
 import { Slider } from '@/components/ui/slider';
@@ -83,7 +85,9 @@ export default function Quiz() {
   const [challengeLevel, setChallengeLevel] = useState<number>(5);
   const [challengeDuration, setChallengeDuration] = useState<string>('');
   const [triedApproaches, setTriedApproaches] = useState<string[]>([]);
-  const [quizStep, setQuizStep] = useState<'name' | 'details' | 'goals' | 'challenge' | 'questions'>('name');
+  const [resultSpeed, setResultSpeed] = useState<'slow' | 'balanced' | 'intensive'>('balanced');
+  const [quizStep, setQuizStep] = useState<'name' | 'details' | 'goals' | 'speed' | 'challenge' | 'questions'>('name');
+  const [showFinalCelebration, setShowFinalCelebration] = useState(false);
   
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
@@ -164,6 +168,13 @@ export default function Quiz() {
     if (parentGoals.length === 0) {
       toast.error('Please select at least one goal');
       return;
+    }
+    setQuizStep('speed'); // Move to speed selection
+  };
+
+  const handleSpeedComplete = () => {
+    if (navigator.vibrate) {
+      navigator.vibrate(15);
     }
     setQuizStep('challenge');
   };
@@ -260,7 +271,8 @@ export default function Quiz() {
           parent_goals: parentGoals,
           challenge_level: challengeLevel,
           challenge_duration: challengeDuration,
-          tried_approaches: triedApproaches
+          tried_approaches: triedApproaches,
+          result_speed: resultSpeed
         })
         .select()
         .single();
@@ -337,6 +349,11 @@ export default function Quiz() {
   const handleGoToDashboard = async () => {
     if (savingProfile || completingQuiz) return;
 
+    // Show final celebration before navigation
+    setShowFinalCelebration(true);
+  };
+
+  const handleCelebrationComplete = async () => {
     setCompletingQuiz(true);
 
     if (user?.profileId) {
@@ -660,6 +677,39 @@ export default function Quiz() {
                   </div>
                 </div>
               </motion.div>
+            ) : quizStep === 'speed' ? (
+              <motion.div
+                key="speed"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.3 }}
+              >
+                <QuizSpeedSlider
+                  value={resultSpeed}
+                  onChange={setResultSpeed}
+                />
+                
+                <div className="flex gap-4 pt-8 max-w-xl mx-auto px-4">
+                  <Button
+                    onClick={() => setQuizStep('goals')}
+                    variant="outline"
+                    size="lg"
+                    className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
+                  >
+                    <ArrowLeft className="mr-2 w-5 h-5" />
+                    Back
+                  </Button>
+                  <Button 
+                    onClick={handleSpeedComplete}
+                    size="lg"
+                    className="flex-1 h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 font-relative"
+                  >
+                    Continue
+                    <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </div>
+              </motion.div>
             ) : quizStep === 'challenge' ? (
               <motion.div
                 key="challenge"
@@ -751,7 +801,7 @@ export default function Quiz() {
 
                   <div className="flex gap-4 pt-4">
                     <Button
-                      onClick={() => setQuizStep('goals')}
+                      onClick={() => setQuizStep('speed')}
                       variant="outline"
                       size="lg"
                       className="flex-1 h-14 rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-black"
@@ -773,10 +823,11 @@ export default function Quiz() {
               </motion.div>
             ) : quizStep === 'questions' && !showResult ? (
               showMotivational ? (
-                <QuizMotivationalScreen
-                  milestone={motivationalMilestone}
-                  onContinue={handleContinueFromMotivational}
-                />
+              <QuizMotivationalScreen
+                milestone={motivationalMilestone}
+                brainType={result?.type}
+                onContinue={handleContinueFromMotivational}
+              />
               ) : (
               <motion.div
                 key={`question-${currentQuestion}`}
@@ -1046,6 +1097,14 @@ export default function Quiz() {
           </AnimatePresence>
         </div>
       </div>
+      
+      {/* Final Celebration Modal */}
+      {showFinalCelebration && result && (
+        <QuizFinalCelebration
+          brainType={result.type}
+          onComplete={handleCelebrationComplete}
+        />
+      )}
     </MainLayout>
   );
 }

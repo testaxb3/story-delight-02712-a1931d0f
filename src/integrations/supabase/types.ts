@@ -334,6 +334,7 @@ export type Database = {
           parent_goals: string[] | null
           parent_id: string
           photo_url: string | null
+          result_speed: string | null
           tried_approaches: string[] | null
           updated_at: string | null
         }
@@ -353,6 +354,7 @@ export type Database = {
           parent_goals?: string[] | null
           parent_id: string
           photo_url?: string | null
+          result_speed?: string | null
           tried_approaches?: string[] | null
           updated_at?: string | null
         }
@@ -372,6 +374,7 @@ export type Database = {
           parent_goals?: string[] | null
           parent_id?: string
           photo_url?: string | null
+          result_speed?: string | null
           tried_approaches?: string[] | null
           updated_at?: string | null
         }

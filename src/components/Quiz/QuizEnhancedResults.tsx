@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { QuizResultRings } from './QuizResultRings';
 import { Sparkles, TrendingUp, Users, Target } from 'lucide-react';
+import { QuizProgressTimeline } from './QuizProgressTimeline';
 
 interface QuizEnhancedResultsProps {
   brainType: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -260,6 +261,9 @@ export const QuizEnhancedResults = ({
           </div>
         </div>
       </motion.div>
+
+      {/* Long-Term Progress Timeline */}
+      <QuizProgressTimeline brainType={brainType} />
 
       {/* Challenge Level Context (if provided) */}
       {challengeLevel && challengeLevel >= 7 && (
