@@ -84,6 +84,7 @@ describe('ChildProfilesContext', () => {
       notes: null,
       photo_url: null,
       updated_at: null,
+      result_speed: 'balanced',
     };
 
     act(() => {
