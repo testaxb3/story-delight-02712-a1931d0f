@@ -498,9 +498,9 @@ export default function Quiz() {
 
   return (
     <MainLayout hideBottomNav hideSideNav hideTopBar>
-      <div className="min-h-screen bg-white py-4 md:py-8 px-4 relative overflow-hidden">
+      <div className="min-h-screen bg-white relative overflow-hidden">
 
-        <div className="max-w-2xl mx-auto relative z-10">
+        <div className="relative z-10">
           <AnimatePresence mode="wait">
             {/* Special screens with keys for AnimatePresence */}
             {showFinalCelebration && result ? (
