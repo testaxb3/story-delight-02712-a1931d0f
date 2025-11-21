@@ -537,18 +537,23 @@ export default function Quiz() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.3 }}
+                className="min-h-screen flex flex-col"
               >
-                <div className="max-w-xl mx-auto relative">
-                  {/* Page Number */}
-                  <div className="absolute top-0 left-0 z-10">
-                    <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-black dark:text-white">1</span>
+                {/* Header */}
+                <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+                  <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-end">
+                    {/* Page Number */}
+                    <div className="w-8 h-8 bg-black/10 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-black">1</span>
                     </div>
                   </div>
-                  
-                  <div className="space-y-6 pt-10">
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 pt-14 pb-20 px-4">
+                  <div className="max-w-xl mx-auto space-y-4">
                     <div>
-                      <h2 className="text-3xl md:text-4xl font-bold text-black mb-3 font-relative">
+                      <h2 className="text-3xl md:text-4xl font-bold text-black mb-2 font-relative">
                         Discover Your Child's Brain Profile
                       </h2>
                       <p className="text-gray-500 text-base md:text-lg">
@@ -556,7 +561,7 @@ export default function Quiz() {
                       </p>
                     </div>
 
-                    <div className="space-y-6 pt-4">
+                    <div className="space-y-4 pt-4">
                       <div className="space-y-3">
                         <Label htmlFor="childName" className="text-left block font-medium text-black text-base">
                           What's your child's name?
@@ -584,16 +589,21 @@ export default function Quiz() {
                           autoComplete="off"
                         />
                       </div>
-
-                      <Button 
-                        onClick={handleStartQuiz}
-                        disabled={!isValidChildName(childName)}
-                        size="lg"
-                        className="w-full h-14 text-base font-medium rounded-2xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors font-relative"
-                      >
-                        Continue
-                      </Button>
                     </div>
+                  </div>
+                </div>
+
+                {/* Fixed Bottom Button */}
+                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4 z-50">
+                  <div className="max-w-2xl mx-auto">
+                    <Button 
+                      onClick={handleStartQuiz}
+                      disabled={!isValidChildName(childName)}
+                      size="lg"
+                      className="w-full h-14 text-base font-medium rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 transition-colors font-relative shadow-xl"
+                    >
+                      Continue
+                    </Button>
                   </div>
                 </div>
               </motion.div>
