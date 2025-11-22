@@ -86,70 +86,41 @@ export default function AddGroupLogo() {
     setCreating(true);
 
     try {
-      // Get auth session with detailed logging
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-      
-      console.log('=== Auth Debug Info ===');
-      console.log('Session exists:', !!session);
-      console.log('Session error:', sessionError);
-      
-      if (sessionError || !session?.user) {
-        console.error('Auth session error:', sessionError);
-        toast.error('Please log in again');
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        console.error('Auth error:', authError);
+        toast.error('Authentication error');
         setCreating(false);
         return;
       }
 
-      console.log('User ID:', session.user.id);
-      console.log('Group name:', groupName);
-      console.log('Selected emoji index:', selectedEmoji);
-      console.log('Uploaded image:', uploadedImage);
-
-      // Prepare community data
-      const communityData = {
-        name: groupName,
-        logo_emoji: uploadedImage ? null : (selectedEmoji !== null ? EMOJI_OPTIONS[selectedEmoji].emoji : EMOJI_OPTIONS[0].emoji),
-        logo_url: uploadedImage,
-        created_by: session.user.id,
-      };
-
-      console.log('Community data to insert:', communityData);
-
       // Create community
       const { data: community, error: communityError } = await supabase
         .from('communities')
-        .insert(communityData)
+        .insert({
+          name: groupName,
+          logo_emoji: uploadedImage ? null : (selectedEmoji !== null ? EMOJI_OPTIONS[selectedEmoji].emoji : EMOJI_OPTIONS[0].emoji),
+          logo_url: uploadedImage,
+          created_by: authUser.id,
+        })
         .select()
         .single();
 
-      console.log('Community insert result:', { community, error: communityError });
-
       if (communityError) {
-        console.error('Community creation failed:', {
-          message: communityError.message,
-          details: communityError.details,
-          hint: communityError.hint,
-          code: communityError.code,
-        });
+        console.error('Community error:', communityError);
         toast.error('Failed to create community: ' + communityError.message);
         setCreating(false);
         return;
       }
 
-      console.log('Community created successfully:', community);
-
       // Add creator as leader
-      const memberData = {
-        community_id: community.id,
-        user_id: session.user.id,
-        role: 'leader',
-      };
-
-      console.log('Member data to insert:', memberData);
-
       const { error: memberError } = await supabase
         .from('community_members')
-        .insert(memberData);
+        .insert({
+          community_id: community.id,
+          user_id: authUser.id,
+          role: 'leader',
+        });
 
       if (memberError) {
         console.error('Member error:', memberError);
@@ -158,11 +129,10 @@ export default function AddGroupLogo() {
         return;
       }
 
-      console.log('Member added successfully');
       toast.success('Community created successfully!');
       navigate('/community/feed', { state: { communityId: community.id } });
     } catch (error) {
-      console.error('Unexpected error:', error);
+      console.error('Error creating community:', error);
       toast.error('Failed to create community');
     } finally {
       setCreating(false);
