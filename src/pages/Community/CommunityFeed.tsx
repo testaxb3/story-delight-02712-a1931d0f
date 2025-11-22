@@ -150,9 +150,15 @@ export default function CommunityFeed() {
       .eq('community_id', currentCommunity.id)
       .order('role', { ascending: true });
 
-    if (!error && data) {
-      setMembers(data as any);
+    if (error) {
+      console.error('Error loading members:', error);
+      toast.error(`❌ Error loading members: ${error.message}`);
+      return;
     }
+
+    console.log('Members loaded:', data);
+    setMembers(data as any);
+    toast.success(`✅ ${data?.length || 0} members loaded`);
   };
 
   const loadPosts = async () => {
@@ -479,15 +485,18 @@ export default function CommunityFeed() {
           )}
 
           {/* Members Leaderboard */}
-          <div className="flex gap-4 overflow-x-auto pb-2 px-1">
-            {members
-              .sort((a, b) => {
-                // Leaders first, then by streak (currently 0 for all)
-                if (a.role === 'leader' && b.role !== 'leader') return -1;
-                if (a.role !== 'leader' && b.role === 'leader') return 1;
-                return 0;
-              })
-              .map((member, index) => (
+          {members.length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold mb-3 px-1">Community Members</h3>
+              <div className="flex gap-4 overflow-x-auto pb-2 px-1">
+                {members
+                  .sort((a, b) => {
+                    // Leaders first, then by streak (currently 0 for all)
+                    if (a.role === 'leader' && b.role !== 'leader') return -1;
+                    if (a.role !== 'leader' && b.role === 'leader') return 1;
+                    return 0;
+                  })
+                  .map((member, index) => (
               <div key={member.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                 <div className="relative">
                   {member.role === 'leader' && (
@@ -516,8 +525,10 @@ export default function CommunityFeed() {
                   {member.profiles?.name?.split(' ')[0] || 'User'}
                 </span>
               </div>
-            ))}
-          </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Posts Feed */}
           <div className="space-y-4">
