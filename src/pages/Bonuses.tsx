@@ -53,6 +53,7 @@ function BonusesContent() {
   const { 
     data: bonusesResponse, 
     isLoading, 
+    isFetching,
     error 
   } = useBonuses({
     category: activeCategory !== "all" ? activeCategory : undefined,
@@ -104,30 +105,10 @@ function BonusesContent() {
     setSortBy("newest");
     setCurrentPage(0);
   };
-  
-  // Filter and sort bonuses (progress is now automatically synced by database)
-  const filteredAndSortedBonuses = useMemo(() => {
-    // Start with all bonuses (progress already included from database)
-    let filtered = [...allBonuses];
 
-    // Filter by category
-    if (activeCategory !== 'all') {
-      filtered = filtered.filter(b => b.category === activeCategory);
-    }
-
-    // Filter by search
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        b =>
-          b.title.toLowerCase().includes(query) ||
-          b.description.toLowerCase().includes(query) ||
-          b.tags?.some(tag => tag.toLowerCase().includes(query))
-      );
-    }
-
-    // Sort bonuses
-    const sorted = [...filtered];
+  // Sort bonuses client-side (data already filtered by backend)
+  const sortedBonuses = useMemo(() => {
+    const sorted = [...allBonuses];
     switch (sortBy) {
       case 'newest':
         return sorted.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
@@ -142,12 +123,12 @@ function BonusesContent() {
       default:
         return sorted;
     }
-  }, [allBonuses, activeCategory, searchQuery, sortBy]);
+  }, [allBonuses, sortBy]);
 
   // PERFORMANCE: Memoize filtered lists to prevent recalculation
   const inProgressBonuses = useMemo(() => 
-    allBonuses.filter(b => b.progress && b.progress > 0 && b.progress < 100 && !b.locked),
-    [allBonuses]
+    sortedBonuses.filter(b => b.progress && b.progress > 0 && b.progress < 100 && !b.locked),
+    [sortedBonuses]
   );
 
   // State for reading time
@@ -180,11 +161,11 @@ function BonusesContent() {
   }, [user?.id]);
 
   const stats = useMemo(() => ({
-    totalBonuses: allBonuses.length,
-    unlockedBonuses: allBonuses.filter(b => !b.locked).length,
-    completedBonuses: allBonuses.filter(b => b.completed).length,
+    totalBonuses: sortedBonuses.length,
+    unlockedBonuses: sortedBonuses.filter(b => !b.locked).length,
+    completedBonuses: sortedBonuses.filter(b => b.completed).length,
     totalTimeSpent
-  }), [allBonuses, totalTimeSpent]);
+  }), [sortedBonuses, totalTimeSpent]);
 
   // Helper to check if URL is YouTube
   const isYouTubeUrl = (url: string) => {
@@ -242,15 +223,15 @@ function BonusesContent() {
     }
   };
 
-  // PERFORMANCE: Memoize split bonus lists
+  // PERFORMANCE: Memoize split bonus lists (data already filtered by backend)
   const unlockedBonuses = useMemo(() => 
-    filteredAndSortedBonuses.filter(b => !b.locked),
-    [filteredAndSortedBonuses]
+    sortedBonuses.filter(b => !b.locked),
+    [sortedBonuses]
   );
   
   const lockedBonuses = useMemo(() => 
-    filteredAndSortedBonuses.filter(b => b.locked),
-    [filteredAndSortedBonuses]
+    sortedBonuses.filter(b => b.locked),
+    [sortedBonuses]
   );
 
   // Loading state with premium skeleton - only show on initial load
@@ -397,7 +378,12 @@ function BonusesContent() {
 
           {/* Unlocked Bonuses Grid */}
           {unlockedBonuses.length > 0 && (
-            <div>
+            <motion.div
+              key={`unlocked-${activeCategory}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2 }}
+            >
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-white">Available Now</h2>
                 <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
@@ -418,12 +404,18 @@ function BonusesContent() {
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Locked Bonuses Section */}
           {lockedBonuses.length > 0 && (
-            <div className="mt-8">
+            <motion.div
+              key={`locked-${activeCategory}`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+              className="mt-8"
+            >
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
                 <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
@@ -444,11 +436,11 @@ function BonusesContent() {
                   />
                 ))}
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Empty State */}
-          {filteredAndSortedBonuses.length === 0 && (
+          {sortedBonuses.length === 0 && !isFetching && (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
                 <div className="w-16 h-16 bg-[#2C2C2E] rounded-full flex items-center justify-center mx-auto mb-4">
