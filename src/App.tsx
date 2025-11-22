@@ -24,7 +24,7 @@ import NotFound from "./pages/NotFound";
 const PWAOnboarding = lazy(() => import("./pages/PWAOnboarding"));
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
-const Scripts = lazy(() => import("./pages/ScriptsCalAI"));
+const Scripts = lazy(() => import("./pages/Scripts"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
