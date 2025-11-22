@@ -1119,6 +1119,7 @@ export type Database = {
           brain_profile: string | null
           child_name: string | null
           comments_count: number
+          community_onboarding_completed: boolean | null
           created_at: string
           email: string | null
           followers_count: number
@@ -1143,6 +1144,7 @@ export type Database = {
           brain_profile?: string | null
           child_name?: string | null
           comments_count?: number
+          community_onboarding_completed?: boolean | null
           created_at?: string
           email?: string | null
           followers_count?: number
@@ -1167,6 +1169,7 @@ export type Database = {
           brain_profile?: string | null
           child_name?: string | null
           comments_count?: number
+          community_onboarding_completed?: boolean | null
           created_at?: string
           email?: string | null
           followers_count?: number
@@ -3068,6 +3071,7 @@ export type Database = {
           brain_profile: string | null
           child_name: string | null
           comments_count: number
+          community_onboarding_completed: boolean | null
           created_at: string
           email: string | null
           followers_count: number
