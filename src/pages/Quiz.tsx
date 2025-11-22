@@ -457,13 +457,7 @@ export default function Quiz() {
     );
   }
 
-  if (completingQuiz) {
-    return (
-      <div className="fixed inset-0 bg-white dark:bg-black flex items-center justify-center">
-        <QuizLoadingScreen />
-      </div>
-    );
-  }
+  // Removed duplicate QuizLoadingScreen - already handled in showLoading state
 
   if (showFinalCelebration && result) {
     return (

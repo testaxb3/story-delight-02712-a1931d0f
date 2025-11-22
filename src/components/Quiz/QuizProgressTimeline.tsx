@@ -33,93 +33,126 @@ export const QuizProgressTimeline = ({ brainType }: QuizProgressTimelineProps) =
       {/* Title */}
       <div className="text-center space-y-2">
         <h3 className="text-xl md:text-2xl font-bold text-foreground font-relative">
-          NEP System creates long-term results
+          Long-term progress: NEP vs Traditional
         </h3>
         <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
-          Challenge level comparison over 6 months
+          Challenge level over 6 months
         </p>
       </div>
 
-      {/* Chart */}
-      <div className="w-full h-64 md:h-80 bg-card/30 rounded-xl p-4 md:p-6 border border-border/30">
+      {/* Enhanced Chart with Gradient */}
+      <div className="w-full h-64 md:h-80 bg-gradient-to-br from-card/50 to-accent/10 rounded-2xl p-4 md:p-6 border-2 border-border/20 shadow-lg">
         <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={timelineData}>
+          <LineChart data={timelineData} margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
+            {/* Remove grid for cleaner look */}
+            <defs>
+              <linearGradient id={`gradient-${brainType}`} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={nepColor} stopOpacity={0.3} />
+                <stop offset="95%" stopColor={nepColor} stopOpacity={0} />
+              </linearGradient>
+            </defs>
+            
             <XAxis
               dataKey="week"
-              stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }}
-              axisLine={{ stroke: 'hsl(var(--border))' }}
+              stroke="transparent"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 12 : 14, fontWeight: 600 }}
+              axisLine={false}
               tickLine={false}
-              label={{
-                value: 'Weeks',
-                position: 'insideBottom',
-                offset: -5,
-                style: { fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }
-              }}
             />
             <YAxis
-              stroke="hsl(var(--muted-foreground))"
-              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }}
-              axisLine={{ stroke: 'hsl(var(--border))' }}
+              stroke="transparent"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 12 : 14, fontWeight: 600 }}
+              axisLine={false}
               tickLine={false}
               domain={[0, 10]}
-              label={{
-                value: 'Challenge Level',
-                angle: -90,
-                position: 'insideLeft',
-                style: { fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }
-              }}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
-                border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
-                fontSize: window.innerWidth < 768 ? '12px' : '14px'
+                border: '2px solid hsl(var(--border))',
+                borderRadius: '12px',
+                fontSize: window.innerWidth < 768 ? '13px' : '15px',
+                fontWeight: 600,
+                padding: '12px'
               }}
-              labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
-              formatter={(value: number) => [`Level ${value}`, '']}
+              labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold', marginBottom: '4px' }}
+              formatter={(value: number, name: string) => [
+                `Level ${value}`,
+                name === 'nep' ? 'NEP System' : 'Traditional'
+              ]}
             />
             <Legend
-              wrapperStyle={{ fontSize: window.innerWidth < 768 ? '12px' : '14px' }}
+              wrapperStyle={{ fontSize: window.innerWidth < 768 ? 13 : 15, fontWeight: 600, paddingTop: '16px' }}
               iconType="line"
+              iconSize={20}
             />
+            
+            {/* NEP Line with gradient fill */}
             <Line
               type="monotone"
               dataKey="nep"
               name="NEP System"
               stroke={nepColor}
-              strokeWidth={window.innerWidth < 768 ? 3 : 4}
-              dot={{ fill: nepColor, r: window.innerWidth < 768 ? 5 : 6 }}
-              activeDot={{ r: window.innerWidth < 768 ? 7 : 8 }}
+              strokeWidth={window.innerWidth < 768 ? 4 : 5}
+              dot={{ fill: nepColor, r: window.innerWidth < 768 ? 6 : 8, strokeWidth: 3, stroke: '#fff' }}
+              activeDot={{ r: window.innerWidth < 768 ? 8 : 10, strokeWidth: 4 }}
+              fill={`url(#gradient-${brainType})`}
             />
+            
+            {/* Traditional Line */}
             <Line
               type="monotone"
               dataKey="traditional"
-              name="Traditional approach"
+              name="Traditional"
               stroke="#ef4444"
-              strokeWidth={window.innerWidth < 768 ? 2 : 3}
-              strokeDasharray="5 5"
-              dot={{ fill: '#ef4444', r: window.innerWidth < 768 ? 4 : 5 }}
-              activeDot={{ r: window.innerWidth < 768 ? 6 : 7 }}
+              strokeWidth={window.innerWidth < 768 ? 3 : 4}
+              strokeDasharray="6 4"
+              dot={{ fill: '#ef4444', r: window.innerWidth < 768 ? 5 : 6, strokeWidth: 2, stroke: '#fff' }}
+              activeDot={{ r: window.innerWidth < 768 ? 7 : 8, strokeWidth: 3 }}
             />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Statistics */}
+      {/* Key Insights with Annotations */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="text-center space-y-2 pt-2"
+        className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
       >
-        <p className="text-sm md:text-base font-semibold text-foreground">
-          83% of parents maintain improvements even 6 months later
-        </p>
+        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
+          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 2</div>
+          <div className="text-xs md:text-sm text-muted-foreground">First improvements visible</div>
+        </div>
+        
+        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
+          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 8</div>
+          <div className="text-xs md:text-sm text-muted-foreground">Clear behavior changes</div>
+        </div>
+        
+        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
+          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 24</div>
+          <div className="text-xs md:text-sm text-muted-foreground">Long-term stability achieved</div>
+        </div>
+      </motion.div>
+
+      {/* Enhanced Statistics */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.4 }}
+        className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 md:p-6 border border-border/30 text-center space-y-3"
+      >
+        <div className="flex items-center justify-center gap-2">
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: nepColor }} />
+          <p className="text-sm md:text-base font-bold text-foreground">
+            83% of parents maintain improvements even 6 months later
+          </p>
+        </div>
         <p className="text-xs md:text-sm text-muted-foreground max-w-xl mx-auto">
-          Unlike traditional approaches that often lead to regression, NEP System's 
-          neuroscience-based strategies create lasting behavioral changes
+          Unlike traditional approaches that often regress, NEP System's neuroscience-based 
+          strategies create <strong>lasting behavioral changes</strong> through brain-type specific approaches
         </p>
       </motion.div>
     </motion.div>
