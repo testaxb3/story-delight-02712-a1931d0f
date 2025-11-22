@@ -77,120 +77,124 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col font-relative">
       {/* Header with back button */}
-      <div className="flex-none pt-[calc(env(safe-area-inset-top)+16px)] px-6 pb-4">
+      <div className="flex-none pt-[calc(env(safe-area-inset-top)+16px)] px-4 md:px-6 pb-4">
         <button
           onClick={() => navigate('/')}
-          className="w-10 h-10 flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+          className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors tap-feedback"
+          aria-label="Go back"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 pb-24">
-        <div className="w-full max-w-md space-y-8">
-          {/* Title */}
-          <div className="text-left space-y-2">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
-            </h1>
-            <p className="text-base text-gray-500 dark:text-gray-400">
-              {isSignUp
-                ? 'Enter your details to get started'
-                : 'Sign in to continue'}
+      <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-24">
+        <div className="w-full max-w-md">
+          {/* Card Container */}
+          <div className="bg-card rounded-3xl p-6 md:p-8 shadow-lg border border-border">
+            {/* Title */}
+            <div className="text-center space-y-3 mb-8">
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
+                {isSignUp ? 'Create Account' : 'Welcome Back'}
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground">
+                {isSignUp
+                  ? 'Enter your details to get started'
+                  : 'Sign in to continue your journey'}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label htmlFor="email" className="text-sm font-medium text-foreground block">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-12 bg-muted border-border rounded-xl text-base placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="password" className="text-sm font-medium text-foreground block">
+                    Password
+                  </label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="h-12 bg-muted border-border rounded-xl text-base placeholder:text-muted-foreground focus:ring-2 focus:ring-primary"
+                    required
+                  />
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-14 bg-primary text-primary-foreground hover:bg-primary/90 text-base font-bold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed tap-feedback shadow-md"
+              >
+                {loading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  isSignUp ? 'Continue' : 'Sign In'
+                )}
+              </Button>
+            </form>
+
+            {/* Toggle */}
+            <div className="text-center mt-6">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors tap-feedback"
+              >
+                {isSignUp
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"}
+              </button>
+            </div>
+
+            {/* Purchase Link */}
+            {isSignUp && (
+              <div className="pt-6 mt-6 border-t border-border">
+                <p className="text-xs text-muted-foreground mb-3 text-center">
+                  Need access to NEP System?
+                </p>
+                <a
+                  href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-full py-3 px-4 text-center text-sm font-medium text-foreground bg-muted hover:bg-muted/80 rounded-xl transition-all tap-feedback"
+                >
+                  Purchase Access →
+                </a>
+              </div>
+            )}
+
+            {/* Terms */}
+            <p className="text-xs text-center text-muted-foreground mt-6">
+              By continuing, you agree to our{" "}
+              <Link to="/terms" className="underline hover:text-foreground transition-colors">
+                Terms
+              </Link>{" "}
+              and{" "}
+              <Link to="/privacy" className="underline hover:text-foreground transition-colors">
+                Privacy Policy
+              </Link>
             </p>
           </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-900 dark:text-white">
-                  Email
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-12 bg-gray-100 dark:bg-gray-800 border-0 rounded-xl text-base placeholder:text-gray-400"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-gray-900 dark:text-white">
-                  Password
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="h-12 bg-gray-100 dark:bg-gray-800 border-0 rounded-xl text-base placeholder:text-gray-400"
-                  required
-                />
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full h-14 bg-gray-900 dark:bg-white text-white dark:text-gray-900 hover:bg-gray-800 dark:hover:bg-gray-100 text-base font-bold rounded-xl transition-all disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400"
-            >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                isSignUp ? 'Continue' : 'Sign In'
-              )}
-            </Button>
-          </form>
-
-          {/* Toggle */}
-          <div className="text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              {isSignUp
-                ? 'Already have an account? Sign in'
-                : "Don't have an account? Sign up"}
-            </button>
-          </div>
-
-          {/* Purchase Link */}
-          {isSignUp && (
-            <div className="pt-6 border-t border-gray-200 dark:border-gray-800">
-              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 text-center">
-                Need access to Cal AI?
-              </p>
-              <a
-                href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block w-full py-3 px-4 text-center text-sm font-medium text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-xl transition-all"
-              >
-                Purchase Access →
-              </a>
-            </div>
-          )}
-
-          {/* Terms */}
-          <p className="text-xs text-center text-gray-400">
-            By continuing, you agree to our{" "}
-            <Link to="/terms" className="underline hover:text-gray-600">
-              Terms
-            </Link>{" "}
-            and{" "}
-            <Link to="/privacy" className="underline hover:text-gray-600">
-              Privacy Policy
-            </Link>
-          </p>
         </div>
       </div>
     </div>
