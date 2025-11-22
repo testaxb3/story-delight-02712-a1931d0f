@@ -50,15 +50,17 @@ export default function BonusesCalAI() {
       return bonus.thumbnail;
     }
     
-    // Try to find the most recent image for this bonus in Storage
-    // This is a temporary solution - ideally thumbnails should have correct Storage paths in DB
+    // If it starts with /, remove it for Supabase Storage path
+    const cleanPath = bonus.thumbnail.startsWith('/') 
+      ? bonus.thumbnail.substring(1) 
+      : bonus.thumbnail;
+    
+    // Build Supabase Storage public URL
     const { data } = supabase.storage
       .from('community-posts')
-      .getPublicUrl(`ebook-covers/placeholder.png`);
+      .getPublicUrl(cleanPath);
     
-    // For now, just return the thumbnail path as-is
-    // The images should be in public/ folder
-    return bonus.thumbnail;
+    return data.publicUrl;
   };
 
   const handleBonusClick = (bonus: BonusRow) => {
@@ -184,9 +186,9 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-[3/4] transition-all hover:scale-[1.02]">
-                        {bonus.thumbnail ? (
+                        {getThumbnailUrl(bonus) ? (
                           <img
-                            src={bonus.thumbnail}
+                            src={getThumbnailUrl(bonus)!}
                             alt={bonus.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
@@ -245,10 +247,10 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-video transition-all hover:scale-[1.02]">
-                        {bonus.thumbnail ? (
+                        {getThumbnailUrl(bonus) ? (
                           <>
                             <img
-                              src={bonus.thumbnail}
+                              src={getThumbnailUrl(bonus)!}
                               alt={bonus.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {
