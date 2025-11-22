@@ -364,17 +364,22 @@ function BonusesContent() {
           )}
 
           {/* Category Tabs and Filters */}
-          <BonusesCategoryTabs
-            activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            categories={categories}
-          />
+          <div className="relative">
+            {isFetching && (
+              <div className="absolute -top-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
+            )}
+            <BonusesCategoryTabs
+              activeCategory={activeCategory}
+              onCategoryChange={setActiveCategory}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+              viewMode={viewMode}
+              onViewModeChange={setViewMode}
+              categories={categories}
+            />
+          </div>
 
           {/* Unlocked Bonuses Grid */}
           {unlockedBonuses.length > 0 && (
