@@ -10,7 +10,7 @@ type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
 
 export default function EditProfile() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -182,6 +182,7 @@ export default function EditProfile() {
 
       if (error) throw error;
 
+      await refreshUser();
       toast.success('Profile updated successfully');
       navigate('/community');
     } catch (error) {
@@ -291,13 +292,18 @@ export default function EditProfile() {
               value={username}
               onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
               placeholder=" "
-              className="peer w-full h-14 px-4 pr-12 bg-transparent border border-[#333] rounded-xl text-white focus:outline-none focus:border-gray-500 transition-colors"
+              disabled={!!originalUsername}
+              className="peer w-full h-14 px-4 pr-12 bg-transparent border border-[#333] rounded-xl text-white focus:outline-none focus:border-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <label className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 transition-all pointer-events-none peer-focus:top-2 peer-focus:text-xs peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs">
               Username
             </label>
             <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              {getUsernameIcon()}
+              {originalUsername ? (
+                <span className="text-xs text-gray-500">Permanent</span>
+              ) : (
+                getUsernameIcon()
+              )}
             </div>
           </div>
         </div>
