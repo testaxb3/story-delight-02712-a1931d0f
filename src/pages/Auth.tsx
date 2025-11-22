@@ -102,32 +102,6 @@ export default function Auth() {
       }} />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in">
-        {/* Premium Social Proof Badge */}
-        <div className="flex justify-center mb-8">
-          <div className="group relative inline-flex items-center gap-3 bg-card/95 backdrop-blur-2xl px-6 py-3 rounded-full border border-border shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
-            <div className="flex -space-x-3 relative">
-              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-primary/30">
-                <img src="/avatar-1.webp" alt="" className="w-full h-full object-cover" />
-              </div>
-              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-accent/30">
-                <img src="/avatar-2.webp" alt="" className="w-full h-full object-cover" />
-              </div>
-              <div className="w-8 h-8 rounded-full border-2 border-card overflow-hidden ring-2 ring-primary/30">
-                <img src="/avatar-3.webp" alt="" className="w-full h-full object-cover" />
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2 relative">
-              <span className="text-sm font-semibold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                1.2k+ parents transformed their families
-              </span>
-              <CheckCircle2 className="w-5 h-5 text-primary animate-pulse" />
-            </div>
-          </div>
-        </div>
-
         {/* Premium Glass Card */}
         <div className="auth-glass group relative overflow-hidden">
           {/* Animated Glow Border */}
