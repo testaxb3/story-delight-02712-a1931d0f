@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Video, Flame, Target, Calendar, Plus } from 'lucide-react';
+import { BookOpen, Video, Flame, Calendar } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { UnifiedStatsCard } from '@/components/Dashboard/UnifiedStatsCard';
+import { FABButton } from '@/components/Dashboard/FABButton';
 import { cn } from '@/lib/utils';
-import { useMemo } from 'react';
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
@@ -80,27 +81,12 @@ export default function DashboardCalAI() {
           </div>
         </div>
 
-        {/* Main Stats Cards Grid */}
+        {/* Unified Stats Card */}
         <div className="px-6 mb-8">
-          <div className="grid grid-cols-2 gap-4">
-            {/* Scripts Available Card */}
-            <div className="bg-card rounded-[24px] p-6 min-h-[180px] flex flex-col justify-between">
-              <BookOpen className="w-8 h-8 text-foreground/40" />
-              <div>
-                <p className="text-5xl font-bold mb-1.5">{scriptsAvailable}</p>
-                <p className="text-sm text-muted-foreground font-medium">Scripts Available</p>
-              </div>
-            </div>
-
-            {/* Scripts Used Card */}
-            <div className="bg-card rounded-[24px] p-6 min-h-[180px] flex flex-col justify-between">
-              <Target className="w-8 h-8 text-foreground/40" />
-              <div>
-                <p className="text-5xl font-bold mb-1.5">{scriptsUsed}</p>
-                <p className="text-sm text-muted-foreground font-medium">Scripts Used</p>
-              </div>
-            </div>
-          </div>
+          <UnifiedStatsCard 
+            scriptsUsed={scriptsUsed}
+            scriptsTotal={scriptsAvailable}
+          />
         </div>
 
         {/* Tracker Card - Horizontal */}
@@ -131,45 +117,58 @@ export default function DashboardCalAI() {
           <div className="w-6 h-2 rounded-full bg-foreground" />
         </div>
 
-        {/* Recently Added Section */}
+        {/* Recently Added Section with Thumbnails */}
         <div className="px-6 pb-32">
           <h2 className="text-xl font-bold mb-4 font-relative">Recently added</h2>
           <div className="space-y-3">
             <div 
-              className="bg-card rounded-[24px] p-5 cursor-pointer active:scale-[0.98] transition-transform"
+              className="bg-card rounded-[24px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
               onClick={() => navigate('/scripts')}
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <BookOpen className="w-6 h-6 text-accent" />
+              <div className="flex">
+                {/* Thumbnail */}
+                <div className="w-24 h-24 bg-gradient-to-br from-accent/20 to-accent/5 flex items-center justify-center flex-shrink-0">
+                  <BookOpen className="w-10 h-10 text-accent" />
                 </div>
-                <div className="flex-1 min-w-0">
+                {/* Content */}
+                <div className="flex-1 p-4 min-w-0">
                   <h3 className="font-bold text-sm mb-1 truncate">New Bedtime Scripts</h3>
                   <p className="text-xs text-muted-foreground truncate">
                     {scriptsAvailable} scripts for {activeChild?.brain_profile || 'your'} profile
                   </p>
+                  <div className="mt-2 inline-block px-2 py-0.5 bg-accent/10 rounded text-[10px] text-accent font-medium">
+                    NEW
+                  </div>
                 </div>
               </div>
             </div>
             
             <div 
-              className="bg-card rounded-[24px] p-5 cursor-pointer active:scale-[0.98] transition-transform"
+              className="bg-card rounded-[24px] overflow-hidden cursor-pointer active:scale-[0.98] transition-transform"
               onClick={() => navigate('/videos')}
             >
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <Video className="w-6 h-6 text-accent" />
+              <div className="flex">
+                {/* Thumbnail */}
+                <div className="w-24 h-24 bg-gradient-to-br from-blue-500/20 to-blue-500/5 flex items-center justify-center flex-shrink-0">
+                  <Video className="w-10 h-10 text-blue-500" />
                 </div>
-                <div className="flex-1 min-w-0">
+                {/* Content */}
+                <div className="flex-1 p-4 min-w-0">
                   <h3 className="font-bold text-sm mb-1 truncate">Video Library</h3>
                   <p className="text-xs text-muted-foreground truncate">
                     Expert guidance and strategies
                   </p>
+                  <div className="mt-2 inline-block px-2 py-0.5 bg-blue-500/10 rounded text-[10px] text-blue-500 font-medium">
+                    UPDATED
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* FAB Button */}
+        <FABButton onClick={() => navigate('/scripts')} />
       </div>
     </MainLayout>
   );
