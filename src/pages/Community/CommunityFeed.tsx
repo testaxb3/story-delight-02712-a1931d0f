@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, Users, Plus, Share2, MessageCircle, 
-  Copy, Flame, Check 
+  Copy, Flame, Check, Camera, X 
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -76,10 +76,13 @@ export default function CommunityFeed() {
   const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState('');
+  const [postImageFile, setPostImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [postScript, setPostScript] = useState('');
   const [postDuration, setPostDuration] = useState('');
   const [postResult, setPostResult] = useState<'success' | 'partial' | 'needs_practice'>('success');
   const [posting, setPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user?.profileId) {
@@ -224,6 +227,13 @@ export default function CommunityFeed() {
     setPosting(true);
 
     try {
+      // Upload image if exists
+      let imageUrl: string | null = null;
+      if (postImageFile) {
+        toast.info('📤 Uploading image...');
+        imageUrl = await uploadImageToStorage();
+      }
+
       const { error } = await supabase
         .from('group_posts')
         .insert({
@@ -231,7 +241,7 @@ export default function CommunityFeed() {
           user_id: user.profileId,
           title: postTitle.trim(),
           content: postContent.trim() || null,
-          image_url: postImage.trim() || null,
+          image_url: imageUrl,
           script_used: postScript.trim() || null,
           duration_minutes: postDuration ? parseInt(postDuration) : null,
           result_type: postResult,
@@ -240,9 +250,16 @@ export default function CommunityFeed() {
       if (error) throw error;
 
       toast.success('✅ Post created!');
+      
+      // Clean up
+      if (postImage.startsWith('blob:')) {
+        URL.revokeObjectURL(postImage);
+      }
+      
       setPostTitle('');
       setPostContent('');
       setPostImage('');
+      setPostImageFile(null);
       setPostScript('');
       setPostDuration('');
       setPostResult('success');
@@ -257,6 +274,78 @@ export default function CommunityFeed() {
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  };
+
+  const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('❌ Please select a valid image (JPEG, PNG, WebP, or GIF)');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('❌ Image must be less than 5MB');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(file);
+      setPostImage(previewUrl);
+      setPostImageFile(file);
+      toast.success('✅ Image ready to upload');
+    } catch (error: any) {
+      toast.error(`❌ Error: ${error.message}`);
+      setPostImage('');
+      setPostImageFile(null);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    if (postImage.startsWith('blob:')) {
+      URL.revokeObjectURL(postImage);
+    }
+    setPostImage('');
+    setPostImageFile(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const uploadImageToStorage = async (): Promise<string | null> => {
+    if (!postImageFile || !user?.profileId) return null;
+
+    try {
+      const fileExt = postImageFile.name.split('.').pop();
+      const fileName = `${user.profileId}/${Date.now()}.${fileExt}`;
+
+      const { data, error } = await supabase.storage
+        .from('community-posts')
+        .upload(fileName, postImageFile, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('community-posts')
+        .getPublicUrl(data.path);
+
+      return publicUrl;
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      throw error;
+    }
   };
 
   return (
@@ -540,14 +629,45 @@ export default function CommunityFeed() {
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Photo URL (optional)</label>
-                <input
-                  type="text"
-                  value={postImage}
-                  onChange={(e) => setPostImage(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
-                />
+                <label className="text-sm font-medium mb-2 block">Photo (optional)</label>
+                
+                {!postImage ? (
+                  <>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                      onChange={handleImageSelect}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingImage}
+                      className="w-full px-4 py-3 border border-border rounded-lg flex items-center justify-center gap-2 hover:bg-muted transition-colors disabled:opacity-50"
+                    >
+                      <Camera className="w-5 h-5" />
+                      <span className="text-sm font-medium">
+                        {uploadingImage ? 'Processing...' : 'Add Photo'}
+                      </span>
+                    </button>
+                  </>
+                ) : (
+                  <div className="relative">
+                    <img
+                      src={postImage}
+                      alt="Preview"
+                      className="w-full h-48 object-cover rounded-lg border border-border"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-2 right-2 w-8 h-8 bg-black/70 hover:bg-black/90 rounded-full flex items-center justify-center transition-colors"
+                    >
+                      <X className="w-5 h-5 text-white" />
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div>
