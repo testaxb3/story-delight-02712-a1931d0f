@@ -123,13 +123,7 @@ export default function CommunityFeed() {
   };
 
   const loadPosts = async () => {
-    if (!currentCommunity) {
-      console.log('loadPosts: No current community');
-      return;
-    }
-
-    console.log('=== LOAD POSTS ===');
-    console.log('Loading posts for community:', currentCommunity.id);
+    if (!currentCommunity) return;
 
     const { data, error } = await supabase
       .from('group_posts')
@@ -137,15 +131,8 @@ export default function CommunityFeed() {
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
-    console.log('loadPosts result - data:', data);
-    console.log('loadPosts result - error:', error);
-    console.log('Posts count:', data?.length || 0);
-
     if (!error && data) {
       setPosts(data as any);
-      console.log('Posts set to state');
-    } else if (error) {
-      console.error('Error loading posts:', error);
     }
   };
 
@@ -185,52 +172,27 @@ export default function CommunityFeed() {
   };
 
   const handleCreatePost = async () => {
-    console.log('=== CREATE POST DEBUG (CommunityFeed) ===');
-    console.log('postContent:', postContent);
-    console.log('postContent.trim():', postContent.trim());
-    console.log('currentCommunity:', currentCommunity);
-    console.log('user?.profileId:', user?.profileId);
-    
-    if (!postContent.trim() || !currentCommunity || !user?.profileId) {
-      console.log('VALIDATION FAILED - returning');
-      console.log('!postContent.trim():', !postContent.trim());
-      console.log('!currentCommunity:', !currentCommunity);
-      console.log('!user?.profileId:', !user?.profileId);
-      return;
-    }
+    if (!postContent.trim() || !currentCommunity || !user?.profileId) return;
 
-    console.log('Starting post creation...');
     setPosting(true);
 
     try {
-      console.log('Inserting into group_posts with data:', {
-        community_id: currentCommunity.id,
-        user_id: user.profileId,
-        content: postContent.trim(),
-      });
-      
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('group_posts')
         .insert({
           community_id: currentCommunity.id,
           user_id: user.profileId,
           content: postContent.trim(),
-        })
-        .select();
-
-      console.log('Insert result - data:', data);
-      console.log('Insert result - error:', error);
+        });
 
       if (error) throw error;
 
-      console.log('Post created successfully!');
       toast.success('Post created!');
       setPostContent('');
       setShowPostModal(false);
-      loadPosts();
+      await loadPosts();
     } catch (error) {
-      console.error('Error creating post:', error);
-      toast.error('Failed to create post: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      toast.error('Failed to create post');
     } finally {
       setPosting(false);
     }
