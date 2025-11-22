@@ -479,24 +479,26 @@ export default function Quiz() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-black">
       {/* Progress Bar & Header */}
       {showProgressBar && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
-          <div className="px-4 h-14 flex items-center gap-4">
-            {showBackButton && (
-              <button
-                onClick={handlePrevious}
-                className="w-10 h-10 flex items-center justify-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-            )}
-            
-            <div className="flex-1 h-[2px] bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-black dark:bg-white"
-                initial={{ width: 0 }}
-                animate={{ width: `${progressPercentage}%` }}
-                transition={{ duration: 0.3 }}
-              />
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-background">
+          <div className="pt-safe-area-top">
+            <div className="px-6 h-16 flex items-center gap-4">
+              {showBackButton && (
+                <button
+                  onClick={handlePrevious}
+                  className="w-10 h-10 flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0"
+                >
+                  <ArrowLeft className="w-6 h-6" />
+                </button>
+              )}
+
+              <div className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gray-900 dark:bg-white rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progressPercentage}%` }}
+                  transition={{ duration: 0.3, ease: "easeOut" }}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -571,7 +573,7 @@ export default function Quiz() {
 
       {/* Fixed Bottom Button */}
       {!showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showPostSpeedMotivational && !showPreLoading && !showLoading && !showEnhancedResults && !showMotivationalMilestone && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 px-4 py-4 z-50">
+        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-background px-6 pb-8 pt-4 z-50">
           <Button
             onClick={quizStep === 'speed' ? () => {
               setShowPostSpeedMotivational(true);
