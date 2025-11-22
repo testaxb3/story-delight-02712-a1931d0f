@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Plus, Moon, Sun, MessageCircleHeart } from 'lucide-react';
+import { ChevronDown, Plus, MessageCircleHeart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,13 +15,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
-import { useTheme } from '@/contexts/ThemeContext';
 
 export function TopBar() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { activeChild, childProfiles, setActiveChild, onboardingRequired } = useChildProfiles();
-  const { theme, toggleTheme } = useTheme();
 
   const profileInitials = useMemo(() => {
     if (user?.user_metadata?.full_name) {
@@ -144,21 +142,6 @@ export function TopBar() {
             className="rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
           >
             <MessageCircleHeart className="h-5 w-5 transition-transform" />
-          </Button>
-
-          {/* Theme toggle button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="rounded-full bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110"
-          >
-            {theme === 'dark' ? (
-              <Sun className="h-5 w-5 transition-transform" />
-            ) : (
-              <Moon className="h-5 w-5 transition-transform" />
-            )}
           </Button>
 
           <button
