@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { TopBar } from '@/components/Navigation/TopBar';
-import { BottomNav } from '@/components/Navigation/BottomNav';
+import { BottomNavCalAI } from '@/components/Navigation/BottomNavCalAI';
 import { SideNav } from '@/components/Navigation/SideNav';
 
 interface MainLayoutProps {
@@ -19,7 +19,7 @@ export function MainLayout({ children, hideTopBar = false, noPaddingTop = false,
       <main className="w-full h-full m-0 p-0">
         {children}
       </main>
-      {!hideBottomNav && <BottomNav />}
+      {!hideBottomNav && <BottomNavCalAI />}
     </div>
   );
 }
