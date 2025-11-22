@@ -171,8 +171,7 @@
   }
 
   body {
-    @apply text-foreground transition-colors duration-300;
-    background: white;
+    @apply bg-background text-foreground transition-colors duration-300;
     /* Mobile optimizations */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
