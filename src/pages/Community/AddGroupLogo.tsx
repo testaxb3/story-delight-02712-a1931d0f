@@ -86,6 +86,13 @@ export default function AddGroupLogo() {
     setCreating(true);
 
     try {
+      // Get auth user ID (not profile ID)
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
+        toast.error('Authentication error');
+        return;
+      }
+
       // Create community
       const { data: community, error: communityError } = await supabase
         .from('communities')
@@ -93,14 +100,14 @@ export default function AddGroupLogo() {
           name: groupName,
           logo_emoji: uploadedImage ? null : EMOJI_OPTIONS[selectedEmoji || 0].emoji,
           logo_url: uploadedImage,
-          created_by: user.profileId,
+          created_by: authUser.id,
         })
         .select()
         .single();
 
       if (communityError) throw communityError;
 
-      // Add creator as leader
+      // Add creator as leader (use profile ID for community_members)
       const { error: memberError } = await supabase
         .from('community_members')
         .insert({

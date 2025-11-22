@@ -35,7 +35,8 @@ export default function CommunityCalAI() {
       .eq('id', user.profileId)
       .single();
 
-    const onboardingComplete = profile?.community_onboarding_completed || false;
+    // User has completed onboarding if they have name and photo, OR if the flag is set
+    const onboardingComplete = (profile?.name && profile?.photo_url) || profile?.community_onboarding_completed || false;
     setHasCompletedOnboarding(onboardingComplete);
 
     // Check if user belongs to any community
