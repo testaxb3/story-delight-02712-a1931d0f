@@ -31,7 +31,8 @@ const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Community = lazy(() => import("./pages/Community"));
 const Tracker = lazy(() => import("./pages/Tracker"));
-const Profile = lazy(() => import("./pages/Profile"));
+const Profile = lazy(() => import("./pages/ProfileCalAI"));
+const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 const Videos = lazy(() => import("./pages/Videos"));
 const Library = lazy(() => import("./pages/Library"));
 const Bonuses = lazy(() => import("./pages/Bonuses"));
@@ -161,6 +162,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile/edit"
+          element={
+            <ProtectedRoute>
+              <ProfileEdit />
             </ProtectedRoute>
           }
         />
