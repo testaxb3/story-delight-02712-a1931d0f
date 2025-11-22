@@ -96,6 +96,17 @@ export default function ProfileCalAI() {
           />
         </Card>
 
+        {/* Community */}
+        <SectionTitle>Community</SectionTitle>
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a]">
+          <MenuItem
+            icon={Users}
+            title="Join Community"
+            subtitle="Connect with other parents"
+            onClick={() => navigate('/community')}
+          />
+        </Card>
+
         {/* Invite Friends */}
         <SectionTitle>Invite Friends</SectionTitle>
         <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a]">
