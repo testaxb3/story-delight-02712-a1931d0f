@@ -486,24 +486,24 @@ export default function Quiz() {
       {/* Progress Bar & Header */}
       {showProgressBar && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
-          <div className="px-4 h-14 flex items-center">
+          <div className="px-4 h-14 flex items-center gap-4">
             {showBackButton && (
               <button
                 onClick={handlePrevious}
-                className="w-10 h-10 flex items-center justify-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                className="w-10 h-10 flex items-center justify-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-          </div>
-          
-          <div className="h-[2px] bg-gray-200 dark:bg-gray-800">
-            <motion.div
-              className="h-full bg-black dark:bg-white"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 0.3 }}
-            />
+            
+            <div className="flex-1 h-[2px] bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-black dark:bg-white"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 0.3 }}
+              />
+            </div>
           </div>
         </div>
       )}
