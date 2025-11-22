@@ -5,11 +5,12 @@ import {
   Globe, Users, Target, Flag, Clock, 
   Mail, Megaphone, RefreshCw, FileText, 
   Shield, Instagram, MessageCircle, Twitter,
-  LogOut, UserX, ChevronRight, Moon, Sun
+  LogOut, UserX, ChevronRight, Moon, Sun, DollarSign
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils';
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { isAdmin } = useAdminStatus();
   const navigate = useNavigate();
   const [lastSync] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
 
@@ -74,7 +76,7 @@ export default function ProfileCalAI() {
         <h1 className="text-4xl font-bold mb-6">Profile</h1>
 
         {/* User Name Card */}
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a]">
           <MenuItem
             icon={User}
             title="Tap to set name"
@@ -96,7 +98,7 @@ export default function ProfileCalAI() {
 
         {/* Invite Friends */}
         <SectionTitle>Invite Friends</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a]">
           <MenuItem
             icon={UserPlus}
             title="Refer a friend and earn $10"
@@ -107,7 +109,14 @@ export default function ProfileCalAI() {
 
         {/* Account Section */}
         <SectionTitle>Account</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50 divide-y divide-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a] divide-y divide-[#2a2a2a]">
+          {isAdmin && (
+            <MenuItem
+              icon={Shield}
+              title="Admin Panel"
+              onClick={() => navigate('/admin')}
+            />
+          )}
           <MenuItem
             icon={CreditCard}
             title="Personal Details"
@@ -134,7 +143,7 @@ export default function ProfileCalAI() {
 
         {/* Goals & Tracking */}
         <SectionTitle>Goals & Tracking</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50 divide-y divide-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a] divide-y divide-[#2a2a2a]">
           <MenuItem
             icon={Target}
             title="Edit Your Goals"
@@ -160,7 +169,7 @@ export default function ProfileCalAI() {
           <span className="text-sm text-muted-foreground">How to add?</span>
         </div>
         <div className="grid grid-cols-3 gap-3 mb-4">
-          <Card className="aspect-square p-4 flex flex-col items-center justify-center bg-card/50 backdrop-blur border-border/50">
+          <Card className="aspect-square p-4 flex flex-col items-center justify-center bg-[#1a1a1a] border-[#2a2a2a]">
             <p className="text-3xl font-bold">11</p>
             <p className="text-xs text-muted-foreground mt-1">Day Streak</p>
           </Card>
@@ -168,7 +177,7 @@ export default function ProfileCalAI() {
             <div className="text-4xl mb-1">🔥</div>
             <p className="text-3xl font-bold text-accent">0</p>
           </Card>
-          <Card className="aspect-square p-4 flex flex-col items-center justify-center bg-card/50 backdrop-blur border-border/50">
+          <Card className="aspect-square p-4 flex flex-col items-center justify-center bg-[#1a1a1a] border-[#2a2a2a]">
             <p className="text-3xl font-bold">5</p>
             <p className="text-xs text-muted-foreground mt-1">Scripts Used</p>
           </Card>
@@ -176,7 +185,7 @@ export default function ProfileCalAI() {
 
         {/* Support & Legal */}
         <SectionTitle>Support & Legal</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50 divide-y divide-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a] divide-y divide-[#2a2a2a]">
           <MenuItem
             icon={Megaphone}
             title="Request a Feature"
@@ -186,6 +195,11 @@ export default function ProfileCalAI() {
             icon={Mail}
             title="Support Email"
             onClick={() => window.location.href = 'mailto:support@nepsystem.pro'}
+          />
+          <MenuItem
+            icon={DollarSign}
+            title="Request Refund"
+            onClick={() => navigate('/refund-request')}
           />
           <button
             className="w-full flex items-center justify-between p-4 hover:bg-muted/5"
@@ -212,7 +226,7 @@ export default function ProfileCalAI() {
 
         {/* Follow Us */}
         <SectionTitle>Follow Us</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50 divide-y divide-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a] divide-y divide-[#2a2a2a]">
           <MenuItem
             icon={Instagram}
             title="Instagram"
@@ -232,7 +246,7 @@ export default function ProfileCalAI() {
 
         {/* Account Actions */}
         <SectionTitle>Account Actions</SectionTitle>
-        <Card className="mb-4 overflow-hidden bg-card/50 backdrop-blur border-border/50 divide-y divide-border/50">
+        <Card className="mb-4 overflow-hidden bg-[#1a1a1a] border-[#2a2a2a] divide-y divide-[#2a2a2a]">
           <MenuItem
             icon={LogOut}
             title="Logout"
