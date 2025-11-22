@@ -172,28 +172,52 @@ export default function CommunityFeed() {
   };
 
   const handleCreatePost = async () => {
-    if (!postContent.trim() || !currentCommunity || !user?.profileId) return;
+    console.log('=== CREATE POST DEBUG (CommunityFeed) ===');
+    console.log('postContent:', postContent);
+    console.log('postContent.trim():', postContent.trim());
+    console.log('currentCommunity:', currentCommunity);
+    console.log('user?.profileId:', user?.profileId);
+    
+    if (!postContent.trim() || !currentCommunity || !user?.profileId) {
+      console.log('VALIDATION FAILED - returning');
+      console.log('!postContent.trim():', !postContent.trim());
+      console.log('!currentCommunity:', !currentCommunity);
+      console.log('!user?.profileId:', !user?.profileId);
+      return;
+    }
 
+    console.log('Starting post creation...');
     setPosting(true);
 
     try {
-      const { error } = await supabase
+      console.log('Inserting into group_posts with data:', {
+        community_id: currentCommunity.id,
+        user_id: user.profileId,
+        content: postContent.trim(),
+      });
+      
+      const { data, error } = await supabase
         .from('group_posts')
         .insert({
           community_id: currentCommunity.id,
           user_id: user.profileId,
           content: postContent.trim(),
-        });
+        })
+        .select();
+
+      console.log('Insert result - data:', data);
+      console.log('Insert result - error:', error);
 
       if (error) throw error;
 
+      console.log('Post created successfully!');
       toast.success('Post created!');
       setPostContent('');
       setShowPostModal(false);
       loadPosts();
     } catch (error) {
       console.error('Error creating post:', error);
-      toast.error('Failed to create post');
+      toast.error('Failed to create post: ' + (error instanceof Error ? error.message : 'Unknown error'));
     } finally {
       setPosting(false);
     }
