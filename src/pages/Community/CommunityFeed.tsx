@@ -142,23 +142,37 @@ export default function CommunityFeed() {
   };
 
   const loadMembers = async () => {
-    if (!currentCommunity) return;
+    if (!currentCommunity) {
+      console.log('❌ No currentCommunity - skipping loadMembers');
+      return;
+    }
 
+    console.log('🔄 Loading members for community:', currentCommunity.id);
+    
     const { data, error } = await supabase
       .from('community_members')
       .select('id, user_id, role, profiles(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('role', { ascending: true });
 
+    console.log('📊 Members query result:', { data, error, count: data?.length });
+
     if (error) {
-      console.error('Error loading members:', error);
-      toast.error(`❌ Error loading members: ${error.message}`);
+      console.error('❌ Error loading members:', error);
+      toast.error(`Error loading members: ${error.message}`);
       return;
     }
 
-    console.log('Members loaded:', data);
+    if (!data || data.length === 0) {
+      console.warn('⚠️ No members found for community:', currentCommunity.id);
+      toast.error('No members found');
+      setMembers([]);
+      return;
+    }
+
+    console.log('✅ Members loaded successfully:', data);
     setMembers(data as any);
-    toast.success(`✅ ${data?.length || 0} members loaded`);
+    toast.success(`${data.length} members loaded`);
   };
 
   const loadPosts = async () => {
@@ -485,18 +499,20 @@ export default function CommunityFeed() {
           )}
 
           {/* Members Leaderboard */}
-          {members.length > 0 && (
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-3 px-1">Community Members</h3>
-              <div className="flex gap-4 overflow-x-auto pb-2 px-1">
-                {members
-                  .sort((a, b) => {
-                    // Leaders first, then by streak (currently 0 for all)
-                    if (a.role === 'leader' && b.role !== 'leader') return -1;
-                    if (a.role !== 'leader' && b.role === 'leader') return 1;
-                    return 0;
-                  })
-                  .map((member, index) => (
+          {(() => {
+            console.log('🎯 Rendering leaderboard check:', { membersLength: members.length, members });
+            return members.length > 0 ? (
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-3 px-1">Community Members ({members.length})</h3>
+                <div className="flex gap-4 overflow-x-auto pb-2 px-1">
+                  {members
+                    .sort((a, b) => {
+                      // Leaders first, then by streak (currently 0 for all)
+                      if (a.role === 'leader' && b.role !== 'leader') return -1;
+                      if (a.role !== 'leader' && b.role === 'leader') return 1;
+                      return 0;
+                    })
+                    .map((member, index) => (
               <div key={member.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                 <div className="relative">
                   {member.role === 'leader' && (
@@ -524,11 +540,12 @@ export default function CommunityFeed() {
                 <span className="text-xs text-muted-foreground max-w-[70px] truncate text-center">
                   {member.profiles?.name?.split(' ')[0] || 'User'}
                 </span>
-              </div>
-                ))}
-              </div>
-            </div>
-          )}
+                  </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null;
+            })()}
 
           {/* Posts Feed */}
           <div className="space-y-4">
