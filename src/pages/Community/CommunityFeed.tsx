@@ -85,27 +85,43 @@ export default function CommunityFeed() {
   }, [currentCommunity]);
 
   const loadCommunities = async () => {
-    if (!user?.profileId) return;
-
-    const { data, error } = await supabase
-      .from('community_members')
-      .select('community_id, communities(id, name, logo_emoji, logo_url, invite_code)')
-      .eq('user_id', user.profileId);
-
-    if (error) {
-      console.error('Error loading communities:', error);
+    if (!user?.profileId) {
+      toast.error('❌ User not found');
       return;
     }
 
-    const communityList = data.map((item: any) => item.communities).filter(Boolean);
+    const { data, error } = await supabase
+      .from('community_members')
+      .select('community_id, communities!inner(id, name, logo_emoji, logo_url, invite_code)')
+      .eq('user_id', user.profileId);
+
+    if (error) {
+      toast.error(`❌ Error loading communities: ${error.message}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      toast.error('❌ No communities found');
+      return;
+    }
+
+    const communityList = data
+      .map((item: any) => item.communities)
+      .filter(Boolean);
+    
+    if (communityList.length === 0) {
+      toast.error('❌ No community data');
+      return;
+    }
+
     setCommunities(communityList);
     
-    if (communityId) {
-      const selected = communityList.find((c: Community) => c.id === communityId);
-      setCurrentCommunity(selected || communityList[0] || null);
-    } else {
-      setCurrentCommunity(communityList[0] || null);
-    }
+    const selectedCommunity = communityId 
+      ? communityList.find((c: Community) => c.id === communityId) || communityList[0]
+      : communityList[0];
+    
+    setCurrentCommunity(selectedCommunity);
+    toast.success(`✅ Loaded: ${selectedCommunity.name}`);
   };
 
   const loadMembers = async () => {
@@ -123,26 +139,24 @@ export default function CommunityFeed() {
   };
 
   const loadPosts = async () => {
-    console.log('[loadPosts] Starting...', { currentCommunity });
     if (!currentCommunity) {
-      console.log('[loadPosts] No currentCommunity - ABORTING');
+      toast.error('❌ No community selected');
       return;
     }
 
-    console.log('[loadPosts] Fetching posts for community:', currentCommunity.id);
     const { data, error } = await supabase
       .from('group_posts')
       .select('id, content, script_used, created_at, user_id, profiles(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
-    console.log('[loadPosts] Result:', { data, error, dataLength: data?.length });
-    if (!error && data) {
-      console.log('[loadPosts] Setting posts state with', data.length, 'posts');
-      setPosts(data as any);
-    } else if (error) {
-      console.error('[loadPosts] ERROR:', error);
+    if (error) {
+      toast.error(`❌ Error loading posts: ${error.message}`);
+      return;
     }
+
+    setPosts((data || []) as any);
+    toast.success(`✅ Loaded ${data?.length || 0} posts`);
   };
 
   const checkLeaderStatus = async () => {
@@ -181,21 +195,24 @@ export default function CommunityFeed() {
   };
 
   const handleCreatePost = async () => {
-    console.log('[handleCreatePost] START', { 
-      postContent: postContent.trim(), 
-      currentCommunity, 
-      userId: user?.profileId 
-    });
+    if (!postContent.trim()) {
+      toast.error('❌ Post cannot be empty');
+      return;
+    }
     
-    if (!postContent.trim() || !currentCommunity || !user?.profileId) {
-      console.log('[handleCreatePost] Validation failed - ABORTING');
+    if (!currentCommunity) {
+      toast.error('❌ No community selected');
+      return;
+    }
+    
+    if (!user?.profileId) {
+      toast.error('❌ User not found');
       return;
     }
 
     setPosting(true);
 
     try {
-      console.log('[handleCreatePost] Inserting post...');
       const { error } = await supabase
         .from('group_posts')
         .insert({
@@ -206,17 +223,12 @@ export default function CommunityFeed() {
 
       if (error) throw error;
 
-      console.log('[handleCreatePost] Post inserted successfully');
-      toast.success('Post created!');
+      toast.success('✅ Post created!');
       setPostContent('');
       setShowPostModal(false);
-      
-      console.log('[handleCreatePost] Calling loadPosts...');
       await loadPosts();
-      console.log('[handleCreatePost] loadPosts completed');
-    } catch (error) {
-      console.error('[handleCreatePost] ERROR:', error);
-      toast.error('Failed to create post');
+    } catch (error: any) {
+      toast.error(`❌ Failed: ${error.message}`);
     } finally {
       setPosting(false);
     }
