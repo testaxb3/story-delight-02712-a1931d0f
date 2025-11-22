@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { LottieIcon } from '@/components/LottieIcon';
 import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
+import fingerHeartLight from '@/assets/lottie/calai/finger_heart_light.json';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
 
 interface QuizPreLoadingScreenProps {
@@ -15,6 +17,7 @@ const brainTypeGradients = {
 };
 
 export const QuizPreLoadingScreen = ({ brainType, onContinue }: QuizPreLoadingScreenProps) => {
+  const { theme } = useTheme();
   const handleContinue = () => {
     if (navigator.vibrate) {
       navigator.vibrate(15);
@@ -69,7 +72,7 @@ export const QuizPreLoadingScreen = ({ brainType, onContinue }: QuizPreLoadingSc
           className="relative z-10"
         >
           <LottieIcon
-            animationData={fingerHeartDark}
+            animationData={theme === 'dark' ? fingerHeartDark : fingerHeartLight}
             isActive={true}
             size={window.innerWidth < 768 ? 140 : 180}
             loop={true}
