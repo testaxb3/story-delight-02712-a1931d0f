@@ -78,19 +78,8 @@ export default function Auth() {
 
   return (
     <div className="h-screen bg-background flex flex-col font-relative overflow-hidden">
-      {/* Header with back button */}
-      <div className="flex-none pt-[calc(env(safe-area-inset-top)+16px)] px-4 md:px-6 pb-4">
-        <button
-          onClick={() => navigate('/')}
-          className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors tap-feedback"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-      </div>
-
       {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-4 md:px-6 overflow-y-auto pb-[calc(env(safe-area-inset-bottom)+16px)]">
+      <div className="flex-1 flex items-center justify-center px-4 md:px-6 overflow-y-auto py-8 pb-[calc(env(safe-area-inset-bottom)+16px)]">
         <div className="w-full max-w-md">
           {/* Card Container */}
           <div className="bg-card rounded-3xl p-6 md:p-8 shadow-lg border border-border">
