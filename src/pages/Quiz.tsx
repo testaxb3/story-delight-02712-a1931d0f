@@ -360,7 +360,7 @@ export default function Quiz() {
   }
 
   if (showThankYou) {
-    return <QuizThankYouScreen onContinue={() => navigate('/dashboard')} />;
+    return <QuizThankYouScreen onContinue={() => navigate('/')} />;
   }
 
   return (
