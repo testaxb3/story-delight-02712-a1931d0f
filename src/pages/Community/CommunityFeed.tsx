@@ -2,8 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, Users, Plus, Share2, MessageCircle, 
-  Copy, Flame, Check, Camera, X 
+  Copy, Flame, Check, Camera, X, Crown
 } from 'lucide-react';
+import { PostReactionsSheet } from '@/components/Community/PostReactionsSheet';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -83,6 +84,8 @@ export default function CommunityFeed() {
   const [postResult, setPostResult] = useState<'success' | 'partial' | 'needs_practice'>('success');
   const [posting, setPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
+  const [showReactionsSheet, setShowReactionsSheet] = useState(false);
 
   useEffect(() => {
     if (user?.profileId) {
@@ -276,6 +279,25 @@ export default function CommunityFeed() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
+  const handleOpenReactions = (postId: string) => {
+    setSelectedPostId(postId);
+    setShowReactionsSheet(true);
+  };
+
+  const handleAddReaction = async (emoji: string) => {
+    if (!selectedPostId || !user?.profileId) return;
+    
+    // TODO: Implement reaction logic in database
+    console.log('Add reaction:', emoji, 'to post:', selectedPostId);
+  };
+
+  const handleAddComment = async (content: string) => {
+    if (!selectedPostId || !user?.profileId) return;
+    
+    // TODO: Implement comment logic in database
+    console.log('Add comment:', content, 'to post:', selectedPostId);
+  };
+
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -457,28 +479,40 @@ export default function CommunityFeed() {
           )}
 
           {/* Members Leaderboard */}
-          <div className="flex gap-3 overflow-x-auto pb-2">
-            {members.map((member) => (
-              <div key={member.id} className="flex flex-col items-center gap-1 flex-shrink-0">
+          <div className="flex gap-4 overflow-x-auto pb-2 px-1">
+            {members
+              .sort((a, b) => {
+                // Leaders first, then by streak (currently 0 for all)
+                if (a.role === 'leader' && b.role !== 'leader') return -1;
+                if (a.role !== 'leader' && b.role === 'leader') return 1;
+                return 0;
+              })
+              .map((member, index) => (
+              <div key={member.id} className="flex flex-col items-center gap-2 flex-shrink-0">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold">
+                  {member.role === 'leader' && (
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 z-10">
+                      <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                    </div>
+                  )}
+                  <div className={cn(
+                    "w-[70px] h-[70px] rounded-full flex items-center justify-center font-bold text-lg",
+                    member.role === 'leader' 
+                      ? "bg-gradient-to-br from-yellow-400 to-yellow-600" 
+                      : "bg-gradient-to-br from-purple-500 to-purple-600"
+                  )}>
                     {member.profiles?.photo_url ? (
                       <img src={member.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
                     ) : (
                       getInitials(member.profiles?.name || 'U')
                     )}
                   </div>
-                  {member.role === 'leader' && (
-                    <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center text-xs">
-                      👑
-                    </div>
-                  )}
                 </div>
-                <div className="flex items-center gap-1">
-                  <Flame className="w-4 h-4 text-orange-500" />
-                  <span className="text-sm font-semibold">0</span>
+                <div className="flex items-center gap-1 bg-muted px-2 py-1 rounded-full">
+                  <Flame className="w-3.5 h-3.5 text-orange-500" />
+                  <span className="text-xs font-bold">0</span>
                 </div>
-                <span className="text-xs text-muted-foreground max-w-[60px] truncate">
+                <span className="text-xs text-muted-foreground max-w-[70px] truncate text-center">
                   {member.profiles?.name?.split(' ')[0] || 'User'}
                 </span>
               </div>
@@ -577,11 +611,17 @@ export default function CommunityFeed() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    <button className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors">
+                    <button 
+                      onClick={() => handleOpenReactions(post.id)}
+                      className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+                    >
                       <span className="text-lg">😊</span>
                       <span className="text-sm font-medium">React</span>
                     </button>
-                    <button className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors">
+                    <button 
+                      onClick={() => handleOpenReactions(post.id)}
+                      className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors"
+                    >
                       <MessageCircle className="w-4 h-4" />
                       <span className="text-sm font-medium">Comment</span>
                     </button>
@@ -745,6 +785,17 @@ export default function CommunityFeed() {
             </Button>
           </DialogContent>
         </Dialog>
+
+        {/* Reactions/Comments Bottom Sheet */}
+        <PostReactionsSheet
+          open={showReactionsSheet}
+          onOpenChange={setShowReactionsSheet}
+          postId={selectedPostId || ''}
+          userAvatar={user?.profileId ? undefined : undefined}
+          userName={user?.profileId ? 'User' : undefined}
+          onAddReaction={handleAddReaction}
+          onAddComment={handleAddComment}
+        />
       </div>
     </MainLayout>
   );
