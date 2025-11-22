@@ -177,6 +177,7 @@ export default function EditProfile() {
           name: fullName,
           username: username.trim().toLowerCase(),
           photo_url: photoUrl || null,
+          community_onboarding_completed: true,
         })
         .eq('id', user.profileId);
 
