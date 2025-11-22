@@ -61,9 +61,17 @@ function BonusesContent() {
     pageSize: PAGE_SIZE,
   });
 
-  const allBonuses = (bonusesResponse as any)?.data || [];
-  const totalBonuses = (bonusesResponse as any)?.total || 0;
-  const totalPages = (bonusesResponse as any)?.totalPages || 0;
+  const allBonuses = bonusesResponse?.data || [];
+  const totalBonuses = bonusesResponse?.total || 0;
+  const totalPages = bonusesResponse?.totalPages || 0;
+  const categoryCounts = bonusesResponse?.categoryCounts || {
+    all: 0,
+    video: 0,
+    ebook: 0,
+    tool: 0,
+    template: 0,
+    session: 0,
+  };
 
   // Update URL when filters change
   useEffect(() => {
@@ -80,18 +88,6 @@ function BonusesContent() {
   useEffect(() => {
     setCurrentPage(0);
   }, [activeCategory, searchQuery]);
-
-  // Calculate category counts (from total, not just current page)
-  const categoryCounts = useMemo(() => {
-    return {
-      all: totalBonuses,
-      video: allBonuses.filter(b => b.category === BonusCategory.VIDEO).length,
-      ebook: allBonuses.filter(b => b.category === BonusCategory.EBOOK).length,
-      tool: allBonuses.filter(b => b.category === BonusCategory.TOOL).length,
-      template: allBonuses.filter(b => b.category === BonusCategory.TEMPLATE).length,
-      session: allBonuses.filter(b => b.category === BonusCategory.SESSION).length,
-    };
-  }, [allBonuses, totalBonuses]);
 
   // Categories configuration
   const categories = [
