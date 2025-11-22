@@ -32,7 +32,7 @@ export default function DashboardCalAI() {
   });
 
   return (
-    <MainLayout hideSideNav hideBottomNav>
+    <MainLayout hideSideNav>
       <div className="min-h-screen bg-background text-foreground">
         {/* Cal AI Header - Logo + Streak */}
         <header className="px-6 py-6 flex items-center justify-between">
@@ -170,50 +170,6 @@ export default function DashboardCalAI() {
             </div>
           </div>
         </div>
-
-        {/* Cal AI Bottom Nav - Floating with blur */}
-        <nav className="fixed bottom-6 left-6 right-6 z-50 md:hidden">
-          <div className="bg-card/80 backdrop-blur-xl rounded-full px-4 py-3 shadow-xl border border-white/5">
-            <div className="flex justify-between items-center">
-              <button
-                onClick={() => navigate('/')}
-                className="flex flex-col items-center justify-center w-14 h-14 rounded-full bg-foreground text-background transition-all"
-              >
-                <div className="w-6 h-6 flex items-center justify-center">
-                  <div className="w-2 h-2 bg-background rounded-full" />
-                </div>
-              </button>
-
-              <button
-                onClick={() => navigate('/scripts')}
-                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
-              >
-                <BookOpen className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={() => navigate('/videos')}
-                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
-              >
-                <Video className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={() => navigate('/bonuses')}
-                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
-              >
-                <BookOpen className="w-6 h-6" />
-              </button>
-
-              <button
-                onClick={() => navigate('/profile')}
-                className="flex items-center justify-center w-12 h-12 rounded-full bg-foreground text-background transition-all"
-              >
-                <Plus className="w-6 h-6" />
-              </button>
-            </div>
-          </div>
-        </nav>
       </div>
     </MainLayout>
   );
