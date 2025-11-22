@@ -34,9 +34,18 @@ export default function DashboardCalAI() {
 
   return (
     <MainLayout hideSideNav>
-      <div className="min-h-screen bg-background text-foreground">
-        {/* Cal AI Header - Logo + Streak */}
-        <header className="px-6 py-6 flex items-center justify-between">
+      {/* Edge-to-edge background */}
+      <div className="fixed inset-0 bg-gradient-to-b from-[#1a1a2e] via-[#0d0d0d] to-[#0d0d0d] -z-10" />
+      
+      <div className="min-h-screen text-foreground">
+        {/* Cal AI Header with Safe Area - Logo + Streak */}
+        <header 
+          className="px-6 flex items-center justify-between"
+          style={{ 
+            paddingTop: `calc(env(safe-area-inset-top, 0px) + 1.5rem)`,
+            paddingBottom: '1.5rem'
+          }}
+        >
           <h1 className="text-3xl font-bold font-relative tracking-tight">NEP</h1>
           <div className="flex items-center gap-2 bg-card px-5 py-2.5 rounded-full shadow-sm">
             <Flame className="w-5 h-5 text-accent" />
