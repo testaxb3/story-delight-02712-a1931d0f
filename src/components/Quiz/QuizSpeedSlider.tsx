@@ -6,7 +6,7 @@ import slothAnimation from '@/assets/lottie/calai/sloth.json';
 import rabbitAnimation from '@/assets/lottie/calai/rabbit.json';
 import pantherAnimation from '@/assets/lottie/calai/panther.json';
 
-interface QuizSpeedSliderProps {
+export interface QuizSpeedSliderProps {
   value: 'slow' | 'balanced' | 'intensive';
   onChange: (value: 'slow' | 'balanced' | 'intensive') => void;
 }
