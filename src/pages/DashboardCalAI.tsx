@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { useScriptsByProfile } from '@/hooks/useScriptsByProfile';
 import { UnifiedStatsCard } from '@/components/Dashboard/UnifiedStatsCard';
 import { FABButton } from '@/components/Dashboard/FABButton';
 import { cn } from '@/lib/utils';
@@ -13,8 +14,9 @@ export default function DashboardCalAI() {
   const navigate = useNavigate();
   const { activeChild } = useChildProfiles();
   const { data: dashboardStats } = useDashboardStats();
+  const { data: scriptsForProfile } = useScriptsByProfile(activeChild?.brain_profile);
 
-  const scriptsAvailable = dashboardStats?.totalScripts ?? 0;
+  const scriptsAvailable = scriptsForProfile ?? 0;
   const scriptsUsed = dashboardStats?.uniqueScriptsUsed ?? 0;
   const currentStreak = Math.max(dashboardStats?.totalTrackerEntries ?? 0, 1);
 
