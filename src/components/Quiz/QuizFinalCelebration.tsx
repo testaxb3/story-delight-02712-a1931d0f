@@ -19,10 +19,10 @@ const brainTypeGradients = {
 export const QuizFinalCelebration = ({ brainType, onComplete }: QuizFinalCelebrationProps) => {
   const { theme } = useTheme();
   useEffect(() => {
-    // Auto-navigate after 2.5 seconds
+    // Auto-navigate after 3 seconds - tempo para animação completa
     const timer = setTimeout(() => {
       onComplete();
-    }, 2500);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [onComplete]);

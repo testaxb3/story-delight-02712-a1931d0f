@@ -96,7 +96,7 @@ export default function Quiz() {
       const timer = setTimeout(() => {
         setCompletingQuiz(false);
         setShowFinalCelebration(true);
-      }, 2000);
+      }, 3500); // Aumentado de 2000ms para 3500ms
       return () => clearTimeout(timer);
     }
   }, [completingQuiz]);
