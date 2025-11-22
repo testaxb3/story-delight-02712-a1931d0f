@@ -1,108 +1,143 @@
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Users } from 'lucide-react';
+import { Heart, Brain, Star, Users as UsersIcon, Home, Sparkles } from 'lucide-react';
 
 interface CommunityLandingProps {
   onCreateCommunity: () => void;
   onJoinCommunity: () => void;
 }
 
-// Mock posts data for landing page
-const MOCK_POSTS = [
+// Placeholder community image cards for hero section
+const COMMUNITY_IMAGES = [
   {
     id: '1',
-    author: 'Maria',
-    initials: 'M',
+    gradient: 'from-purple-500 to-purple-600',
+    icon: Heart,
+    author: 'Maria S.',
+    initials: 'MS',
     profile: 'INTENSE',
-    content: 'Just used the bedtime script with amazing results! My son fell asleep in 15 minutes instead of 2 hours 🎉',
   },
   {
     id: '2',
-    author: 'John',
-    initials: 'J',
+    gradient: 'from-orange-500 to-orange-600',
+    icon: Brain,
+    author: 'John D.',
+    initials: 'JD',
     profile: 'DEFIANT',
-    content: 'The tantrum script really works! We had our first peaceful grocery trip in months.',
   },
   {
     id: '3',
-    author: 'Sarah',
-    initials: 'S',
+    gradient: 'from-blue-500 to-blue-600',
+    icon: Star,
+    author: 'Sarah M.',
+    initials: 'SM',
     profile: 'DISTRACTED',
-    content: 'Morning routine script changed our lives. No more rushing and stress!',
   },
   {
     id: '4',
-    author: 'Mike',
-    initials: 'M',
+    gradient: 'from-pink-500 to-pink-600',
+    icon: UsersIcon,
+    author: 'Mike L.',
+    initials: 'ML',
     profile: 'INTENSE',
-    content: 'Thank you for the screen time script. The meltdowns are finally manageable.',
+  },
+  {
+    id: '5',
+    gradient: 'from-green-500 to-green-600',
+    icon: Home,
+    author: 'Anna K.',
+    initials: 'AK',
+    profile: 'DEFIANT',
+  },
+  {
+    id: '6',
+    gradient: 'from-yellow-500 to-yellow-600',
+    icon: Sparkles,
+    author: 'Tom R.',
+    initials: 'TR',
+    profile: 'DISTRACTED',
   },
 ];
 
 export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: CommunityLandingProps) {
   return (
-    <div className="min-h-screen bg-[#0a0a0a] px-4 py-8 pb-24">
-      <div className="max-w-2xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 mb-6">
-            <Users className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold mb-4 text-white">
+    <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
+      {/* Top Section - Image Grid (60% of viewport) */}
+      <div className="h-[60vh] relative overflow-hidden">
+        {/* Grid of placeholder images */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2 h-full">
+          {COMMUNITY_IMAGES.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <div
+                key={item.id}
+                className="relative rounded-2xl overflow-hidden group cursor-pointer"
+              >
+                {/* Gradient background with icon */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
+                  <IconComponent className="w-16 h-16 text-white/30" />
+                </div>
+                
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors" />
+
+                {/* User info at bottom */}
+                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                  <Avatar className="w-8 h-8 ring-2 ring-white/20">
+                    <AvatarFallback className="bg-black/50 text-white text-xs font-medium backdrop-blur-sm">
+                      {item.initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-1">
+                    <p className="text-white text-xs font-medium drop-shadow-lg">
+                      {item.author}
+                    </p>
+                    <Badge
+                      variant="secondary"
+                      className="text-[10px] h-4 px-1.5 bg-black/40 text-white border-white/20 backdrop-blur-sm"
+                    >
+                      {item.profile}
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Bottom Section - Content and CTAs (40% of viewport) */}
+      <div className="flex-1 bg-[#0d0d0d] flex flex-col items-center justify-center px-6 py-12">
+        <div className="max-w-md w-full text-center">
+          {/* Title */}
+          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white leading-tight">
             Parenting is easier together 💪
           </h1>
-          <p className="text-lg text-gray-400 mb-8">
+
+          {/* Subtitle */}
+          <p className="text-lg text-gray-400 mb-10">
             Join a community and see how other parents are using NEP scripts
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+          <div className="flex flex-col gap-3">
             <Button
-              variant="outline"
               size="lg"
               onClick={onCreateCommunity}
-              className="flex-1 bg-transparent border-2 border-white/20 text-white hover:bg-white/10"
+              className="w-full h-14 text-base bg-white text-black hover:bg-white/90 rounded-full font-medium"
             >
               Create New Community
             </Button>
             <Button
+              variant="outline"
               size="lg"
               onClick={onJoinCommunity}
-              className="flex-1 bg-white text-black hover:bg-white/90"
+              className="w-full h-14 text-base bg-transparent border-2 border-gray-700 text-white hover:bg-white/5 rounded-full font-medium"
             >
               Join Existing Community
             </Button>
           </div>
-        </div>
-
-        {/* Posts Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {MOCK_POSTS.map((post) => (
-            <Card
-              key={post.id}
-              className="p-5 bg-[#1a1a1a] border-[#2a2a2a] hover:border-[#3a3a3a] transition-all cursor-pointer"
-            >
-              <div className="flex items-start gap-3 mb-3">
-                <Avatar className="w-10 h-10">
-                  <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
-                    {post.initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-white text-sm">{post.author}</p>
-                  <Badge
-                    variant="secondary"
-                    className="text-xs bg-orange-500/10 text-orange-400 border-orange-500/20"
-                  >
-                    {post.profile}
-                  </Badge>
-                </div>
-              </div>
-              <p className="text-sm text-gray-300 line-clamp-3">{post.content}</p>
-            </Card>
-          ))}
         </div>
       </div>
     </div>
