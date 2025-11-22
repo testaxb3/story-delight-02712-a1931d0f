@@ -97,24 +97,24 @@
   }
 
   .dark {
-    /* Dark Mode - Black like Cal AI */
-    --background: 0 0% 0%;
+    /* Dark Mode - Cal AI Exact Colors */
+    --background: 240 4% 8%;              /* #13131A - Dark purple-gray background */
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 7%;                     /* Very dark gray cards */
+    --card: 240 4% 11%;                   /* #1A1A24 - Slightly lighter card */
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
+    --popover: 240 4% 11%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;                 /* White for primary in dark mode */
     --primary-glow: 0 0% 100%;
-    --primary-foreground: 0 0% 0%;
+    --primary-foreground: 240 4% 8%;
     
-    --secondary: 0 0% 15%;
+    --secondary: 240 4% 15%;
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 0 0% 10%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 240 4% 12%;
+    --muted-foreground: 0 0% 55%;        /* Gray for subtitle text */
     
     --accent: 14 100% 50%;               /* Orange stays same */
     --accent-foreground: 0 0% 100%;
@@ -128,14 +128,14 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 10%;
+    --border: 240 4% 18%;                /* Subtle border */
+    --input: 240 4% 12%;
     --ring: 0 0% 98%;
 
-    --surface-base: 0 0% 0%;
-    --surface-raised: 0 0% 7%;
-    --surface-overlay: 0 0% 5%;
-    --surface-glass: 0 0% 7%;
+    --surface-base: 240 4% 8%;
+    --surface-raised: 240 4% 11%;
+    --surface-overlay: 240 4% 10%;
+    --surface-glass: 240 4% 11%;
     
     --text-high-contrast: 0 0% 98%;
     --text-medium-contrast: 0 0% 70%;
