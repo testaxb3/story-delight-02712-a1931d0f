@@ -48,19 +48,19 @@ export default function DashboardCalAI() {
     <MainLayout>
       <div className="space-y-6 pb-24">
         {/* Hero Welcome Card */}
-  <SectionCard className="bg-gradient-to-br from-primary to-primary/90 text-white border-0">
+        <SectionCard className="bg-foreground text-background border-0">
           <div className="flex items-center justify-between p-2">
             <div>
               <h1 className="text-2xl font-bold font-relative mb-1">
                 Welcome back, {getName()}!
               </h1>
-              <p className="text-sm text-white/80">
+              <p className="text-sm opacity-70">
                 Managing: {activeChild?.name || 'Your Child'}
               </p>
             </div>
-            <Avatar className="w-16 h-16 border-2 border-white/20">
+            <Avatar className="w-16 h-16 border-2 border-border">
               <AvatarImage src={activeChild?.photo_url || undefined} />
-              <AvatarFallback className="bg-white/20 text-white text-lg">
+              <AvatarFallback className="bg-muted text-foreground text-lg">
                 {(activeChild?.name?.[0] || getName()[0]).toUpperCase()}
               </AvatarFallback>
             </Avatar>

@@ -10,123 +10,31 @@
 @layer base {
   :root {
     /* ============================================
-       CAL AI INSPIRED DESIGN SYSTEM
-       Minimalist, neutral, clean
+       CAL AI EXACT COLORS - Extracted from screenshot
        ============================================ */
 
-    /* Light Mode - Cal AI Base Colors */
-    --background: 0 0% 96%;              /* Light gray background like Cal AI */
-    --foreground: 0 0% 9%;               /* Almost black for text */
+    /* Light Mode - Cal AI Exact Colors */
+    --background: 0 0% 95%;              /* #F2F2F2 - Light gray background */
+    --foreground: 0 0% 13%;              /* #212121 - Dark text */
 
-    /* Light Mode - Clean White Surfaces */
-    --card: 0 0% 100%;                   /* Pure white cards */
-    --card-foreground: 0 0% 9%;
+    /* Light Mode - Pure White Cards */
+    --card: 0 0% 100%;                   /* #FFFFFF - Pure white */
+    --card-foreground: 0 0% 13%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 9%;
+    --popover-foreground: 0 0% 13%;
 
-    /* Light Mode - Minimal Brand Colors */
-    --primary: 14 100% 59%;              /* Orange accent (like Cal AI fire icon) */
-    --primary-glow: 14 100% 68%;
+    /* Light Mode - Black accent (not orange!) */
+    --primary: 0 0% 13%;                 /* #212121 - Black for primary elements */
+    --primary-glow: 0 0% 20%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 0 0% 91%;               /* Light gray for secondary elements */
-    --secondary-foreground: 0 0% 9%;
+    --secondary: 0 0% 90%;               /* Light gray */
+    --secondary-foreground: 0 0% 13%;
     
-    --muted: 0 0% 96%;                   /* Same as background */
-    --muted-foreground: 0 0% 45%;        /* Medium gray text */
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 50%;        /* Medium gray for inactive text */
     
-    --accent: 14 100% 59%;               /* Same orange as primary */
-    --accent-foreground: 0 0% 100%;
-    
-    --success: 142 71% 45%;              /* Green for positive actions */
-    --success-foreground: 0 0% 100%;
-    
-    --warning: 38 92% 50%;               /* Amber for warnings */
-    --warning-foreground: 0 0% 100%;
-    
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* Light Mode - Subtle Borders */
-    --border: 0 0% 90%;                  /* Very light gray border */
-    --input: 0 0% 96%;
-    --ring: 14 100% 59%;
-    --radius: 1rem;
-
-    /* Minimal Surface System */
-    --surface-base: 0 0% 96%;
-    --surface-raised: 0 0% 100%;
-    --surface-overlay: 0 0% 98%;
-    --surface-glass: 0 0% 100%;
-    
-    /* Cal AI Text Contrast */
-    --text-high-contrast: 0 0% 9%;
-    --text-medium-contrast: 0 0% 25%;
-
-    /* Profile Colors - Toned down */
-    --defiant: 6 85% 65%;
-    --defiant-foreground: 0 0% 100%;
-    --intense: 282 70% 58%;
-    --intense-foreground: 0 0% 100%;
-    --distracted: 168 75% 48%;
-    --distracted-foreground: 0 0% 100%;
-
-    /* Minimal Gradients - mostly solid colors */
-    --gradient-primary: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(20 100% 62%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(142 71% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
-    --gradient-mesh: none;
-    
-    /* Subtle Shadow System */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-    --shadow-colored: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    
-    /* Minimal Glass Effect */
-    --glass-bg: hsl(0 0% 100% / 0.8);
-    --glass-border: hsl(0 0% 90% / 0.5);
-    --glass-blur: 12px;
-    
-    /* Glow Effects - minimal */
-    --glow-video: 0 85% 65%;
-    --glow-ebook: 210 90% 60%;
-    --glow-tool: 270 80% 65%;
-    --glow-pdf: 165 75% 55%;
-    --glow-session: 30 90% 60%;
-    --glow-template: 280 75% 65%;
-  }
-
-  .dark {
-    /* ============================================
-       CAL AI DARK MODE
-       Pure black with white cards
-       ============================================ */
-
-    /* Dark Mode - Pure Black Base */
-    --background: 0 0% 0%;               /* Pure black like Cal AI dark mode */
-    --foreground: 0 0% 98%;              /* Almost white text */
-
-    /* Dark Mode - Dark Gray Cards */
-    --card: 0 0% 10%;                    /* Very dark gray for cards */
-    --card-foreground: 0 0% 98%;
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    /* Dark Mode - Same Orange Accent */
-    --primary: 14 100% 59%;
-    --primary-glow: 14 100% 68%;
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 0 0% 20%;               /* Dark gray for secondary */
-    --secondary-foreground: 0 0% 98%;
-    
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 65%;
-    
-    --accent: 14 100% 59%;
+    --accent: 14 100% 50%;               /* Orange ONLY for fire icon */
     --accent-foreground: 0 0% 100%;
     
     --success: 142 71% 45%;
@@ -138,22 +46,23 @@
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Dark Mode - Borders */
-    --border: 0 0% 20%;
-    --input: 0 0% 15%;
-    --ring: 14 100% 59%;
+    /* Light Mode - Subtle Borders */
+    --border: 0 0% 88%;                  /* Very subtle border */
+    --input: 0 0% 95%;
+    --ring: 0 0% 13%;                    /* Black ring */
+    --radius: 1rem;
 
-    /* Dark Surfaces */
-    --surface-base: 0 0% 0%;
-    --surface-raised: 0 0% 10%;
-    --surface-overlay: 0 0% 8%;
-    --surface-glass: 0 0% 10%;
+    /* Surface System */
+    --surface-base: 0 0% 95%;
+    --surface-raised: 0 0% 100%;
+    --surface-overlay: 0 0% 98%;
+    --surface-glass: 0 0% 100%;
     
-    /* Dark Text */
-    --text-high-contrast: 0 0% 98%;
-    --text-medium-contrast: 0 0% 75%;
+    /* Text */
+    --text-high-contrast: 0 0% 13%;
+    --text-medium-contrast: 0 0% 30%;
 
-    /* Profile Colors - same */
+    /* Profile Colors */
     --defiant: 6 85% 65%;
     --defiant-foreground: 0 0% 100%;
     --intense: 282 70% 58%;
@@ -161,23 +70,97 @@
     --distracted: 168 75% 48%;
     --distracted-foreground: 0 0% 100%;
 
-    /* Dark Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(20 100% 62%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(142 71% 50%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
+    /* No gradients - Cal AI uses solid colors */
+    --gradient-primary: hsl(0 0% 13%);
+    --gradient-accent: hsl(14 100% 50%);
+    --gradient-success: hsl(142 71% 45%);
+    --gradient-hero: hsl(0 0% 13%);
     --gradient-mesh: none;
     
-    /* Dark Shadows */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
-    --shadow-colored: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    /* Minimal shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.06);
+    --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.07);
+    --shadow-xl: 0 8px 10px -2px rgb(0 0 0 / 0.08);
+    --shadow-colored: 0 2px 4px -1px rgb(0 0 0 / 0.06);
     
-    /* Dark Glass */
-    --glass-bg: hsl(0 0% 10% / 0.8);
-    --glass-border: hsl(0 0% 20% / 0.5);
+    --glass-bg: hsl(0 0% 100% / 0.8);
+    --glass-border: hsl(0 0% 90% / 0.5);
+    --glass-blur: 12px;
+    
+    --glow-video: 0 85% 65%;
+    --glow-ebook: 210 90% 60%;
+    --glow-tool: 270 80% 65%;
+    --glow-pdf: 165 75% 55%;
+    --glow-session: 30 90% 60%;
+    --glow-template: 280 75% 65%;
+  }
+
+  .dark {
+    /* Dark Mode - Black like Cal AI */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 7%;                     /* Very dark gray cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;                 /* White for primary in dark mode */
+    --primary-glow: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+    
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 60%;
+    
+    --accent: 14 100% 50%;               /* Orange stays same */
+    --accent-foreground: 0 0% 100%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 10%;
+    --ring: 0 0% 98%;
+
+    --surface-base: 0 0% 0%;
+    --surface-raised: 0 0% 7%;
+    --surface-overlay: 0 0% 5%;
+    --surface-glass: 0 0% 7%;
+    
+    --text-high-contrast: 0 0% 98%;
+    --text-medium-contrast: 0 0% 70%;
+
+    --defiant: 6 85% 65%;
+    --defiant-foreground: 0 0% 100%;
+    --intense: 282 70% 58%;
+    --intense-foreground: 0 0% 100%;
+    --distracted: 168 75% 48%;
+    --distracted-foreground: 0 0% 100%;
+
+    --gradient-primary: hsl(0 0% 98%);
+    --gradient-accent: hsl(14 100% 50%);
+    --gradient-success: hsl(142 71% 45%);
+    --gradient-hero: hsl(0 0% 98%);
+    --gradient-mesh: none;
+    
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.6);
+    --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.6);
+    --shadow-xl: 0 8px 10px -2px rgb(0 0 0 / 0.7);
+    --shadow-colored: 0 2px 4px -1px rgb(0 0 0 / 0.6);
+    
+    --glass-bg: hsl(0 0% 7% / 0.8);
+    --glass-border: hsl(0 0% 15% / 0.5);
     --glass-blur: 12px;
   }
 }
