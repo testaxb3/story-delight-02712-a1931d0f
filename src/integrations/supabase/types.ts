@@ -826,24 +826,36 @@ export type Database = {
           community_id: string
           content: string
           created_at: string
+          duration_minutes: number | null
           id: string
+          image_url: string | null
+          result_type: string | null
           script_used: string | null
+          title: string | null
           user_id: string
         }
         Insert: {
           community_id: string
           content: string
           created_at?: string
+          duration_minutes?: number | null
           id?: string
+          image_url?: string | null
+          result_type?: string | null
           script_used?: string | null
+          title?: string | null
           user_id: string
         }
         Update: {
           community_id?: string
           content?: string
           created_at?: string
+          duration_minutes?: number | null
           id?: string
+          image_url?: string | null
+          result_type?: string | null
           script_used?: string | null
+          title?: string | null
           user_id?: string
         }
         Relationships: [

@@ -45,14 +45,19 @@ interface Member {
 
 interface Post {
   id: string;
+  title: string | null;
   content: string;
+  image_url: string | null;
   script_used: string | null;
+  duration_minutes: number | null;
+  result_type: 'success' | 'partial' | 'needs_practice' | null;
   created_at: string;
   user_id: string;
   profiles: {
     username: string | null;
     name: string;
     photo_url: string | null;
+    brain_profile: string | null;
   };
 }
 
@@ -68,7 +73,12 @@ export default function CommunityFeed() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLeader, setIsLeader] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
+  const [postTitle, setPostTitle] = useState('');
   const [postContent, setPostContent] = useState('');
+  const [postImage, setPostImage] = useState('');
+  const [postScript, setPostScript] = useState('');
+  const [postDuration, setPostDuration] = useState('');
+  const [postResult, setPostResult] = useState<'success' | 'partial' | 'needs_practice'>('success');
   const [posting, setPosting] = useState(false);
 
   useEffect(() => {
@@ -147,7 +157,7 @@ export default function CommunityFeed() {
 
     const { data, error } = await supabase
       .from('group_posts')
-      .select('id, content, script_used, created_at, user_id, profiles(username, name, photo_url)')
+      .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles(username, name, photo_url, brain_profile)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
@@ -196,8 +206,8 @@ export default function CommunityFeed() {
   };
 
   const handleCreatePost = async () => {
-    if (!postContent.trim()) {
-      toast.error('❌ Post cannot be empty');
+    if (!postTitle.trim()) {
+      toast.error('❌ Title is required');
       return;
     }
     
@@ -219,13 +229,23 @@ export default function CommunityFeed() {
         .insert({
           community_id: currentCommunity.id,
           user_id: user.profileId,
-          content: postContent.trim(),
+          title: postTitle.trim(),
+          content: postContent.trim() || null,
+          image_url: postImage.trim() || null,
+          script_used: postScript.trim() || null,
+          duration_minutes: postDuration ? parseInt(postDuration) : null,
+          result_type: postResult,
         });
 
       if (error) throw error;
 
       toast.success('✅ Post created!');
+      setPostTitle('');
       setPostContent('');
+      setPostImage('');
+      setPostScript('');
+      setPostDuration('');
+      setPostResult('success');
       setShowPostModal(false);
       await loadPosts();
     } catch (error: any) {
@@ -385,8 +405,9 @@ export default function CommunityFeed() {
             ) : (
               posts.map((post) => (
                 <div key={post.id} className="bg-card border border-border rounded-xl p-4">
+                  {/* Header */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center font-bold text-sm">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center font-bold text-sm relative">
                       {post.profiles?.photo_url ? (
                         <img src={post.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
                       ) : (
@@ -394,18 +415,88 @@ export default function CommunityFeed() {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-sm">{post.profiles?.username || post.profiles?.name || 'User'}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-sm">{post.profiles?.username || post.profiles?.name || 'User'}</p>
+                        {post.profiles?.brain_profile && (
+                          <span className={cn(
+                            "text-xs px-2 py-0.5 rounded-full font-medium",
+                            post.profiles.brain_profile === 'INTENSE' && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+                            post.profiles.brain_profile === 'DISTRACTED' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                            post.profiles.brain_profile === 'DEFIANT' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
+                          )}>
+                            {post.profiles.brain_profile}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-muted-foreground">
                         {new Date(post.created_at).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <p className="text-sm mb-3">{post.content}</p>
-                  {post.script_used && (
-                    <div className="inline-block px-3 py-1 bg-accent/10 text-accent rounded-full text-xs">
-                      Used: {post.script_used}
+
+                  {/* Title */}
+                  {post.title && (
+                    <h3 className="text-base font-bold mb-2">{post.title}</h3>
+                  )}
+
+                  {/* Image */}
+                  {post.image_url && (
+                    <img 
+                      src={post.image_url} 
+                      alt="" 
+                      className="w-full rounded-xl mb-3 object-cover max-h-[300px]"
+                    />
+                  )}
+
+                  {/* Content */}
+                  {post.content && (
+                    <p className="text-sm mb-3 text-muted-foreground">{post.content}</p>
+                  )}
+
+                  {/* Metrics */}
+                  {(post.script_used || post.duration_minutes || post.result_type) && (
+                    <div className="flex items-center gap-3 mb-3 flex-wrap">
+                      {post.script_used && (
+                        <div className="flex items-center gap-1.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 px-3 py-1.5 rounded-full">
+                          <span>🎯</span>
+                          <span className="font-medium">{post.script_used}</span>
+                        </div>
+                      )}
+                      {post.duration_minutes && (
+                        <div className="flex items-center gap-1.5 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 px-3 py-1.5 rounded-full">
+                          <span>⏱️</span>
+                          <span className="font-medium">{post.duration_minutes} min</span>
+                        </div>
+                      )}
+                      {post.result_type && (
+                        <div className={cn(
+                          "flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium",
+                          post.result_type === 'success' && "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400",
+                          post.result_type === 'partial' && "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400",
+                          post.result_type === 'needs_practice' && "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400"
+                        )}>
+                          <span>📈</span>
+                          <span>
+                            {post.result_type === 'success' && 'Success'}
+                            {post.result_type === 'partial' && 'Partial'}
+                            {post.result_type === 'needs_practice' && 'Needs Practice'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
+
+                  {/* Actions */}
+                  <div className="flex gap-2">
+                    <button className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors">
+                      <span className="text-lg">😊</span>
+                      <span className="text-sm font-medium">React</span>
+                    </button>
+                    <button className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors">
+                      <MessageCircle className="w-4 h-4" />
+                      <span className="text-sm font-medium">Comment</span>
+                    </button>
+                  </div>
                 </div>
               ))
             )}
@@ -415,26 +506,119 @@ export default function CommunityFeed() {
         {/* FAB Button */}
         <button
           onClick={() => setShowPostModal(true)}
-          className="fixed bottom-20 right-4 w-14 h-14 rounded-full bg-accent text-white flex items-center justify-center shadow-lg hover:scale-110 transition-transform"
+          className="fixed bottom-24 right-5 w-16 h-16 rounded-full bg-gradient-to-r from-orange-500 to-orange-600 text-white flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-200 z-50"
         >
-          <Plus className="w-6 h-6" />
+          <Plus className="w-7 h-7" />
         </button>
 
         {/* Create Post Modal */}
         <Dialog open={showPostModal} onOpenChange={setShowPostModal}>
-          <DialogContent>
+          <DialogContent className="max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Share your win</DialogTitle>
             </DialogHeader>
-            <Textarea
-              value={postContent}
-              onChange={(e) => setPostContent(e.target.value)}
-              placeholder="Share your parenting win..."
-              className="min-h-[120px]"
-            />
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Title *</label>
+                <input
+                  type="text"
+                  value={postTitle}
+                  onChange={(e) => setPostTitle(e.target.value)}
+                  placeholder="e.g., Finally got him to sleep without a fight!"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Description (optional)</label>
+                <Textarea
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                  placeholder="Tell your story..."
+                  className="min-h-[100px]"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Photo URL (optional)</label>
+                <input
+                  type="text"
+                  value={postImage}
+                  onChange={(e) => setPostImage(e.target.value)}
+                  placeholder="https://..."
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Script Used (optional)</label>
+                <input
+                  type="text"
+                  value={postScript}
+                  onChange={(e) => setPostScript(e.target.value)}
+                  placeholder="e.g., Bedtime Routine"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Duration (minutes, optional)</label>
+                <input
+                  type="number"
+                  value={postDuration}
+                  onChange={(e) => setPostDuration(e.target.value)}
+                  placeholder="15"
+                  min="1"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">Result</label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setPostResult('success')}
+                    className={cn(
+                      "flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors",
+                      postResult === 'success'
+                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border-green-500"
+                        : "bg-muted border-border"
+                    )}
+                  >
+                    Success
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostResult('partial')}
+                    className={cn(
+                      "flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors",
+                      postResult === 'partial'
+                        ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border-yellow-500"
+                        : "bg-muted border-border"
+                    )}
+                  >
+                    Partial
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPostResult('needs_practice')}
+                    className={cn(
+                      "flex-1 px-3 py-2 rounded-lg text-sm font-medium border transition-colors",
+                      postResult === 'needs_practice'
+                        ? "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 border-orange-500"
+                        : "bg-muted border-border"
+                    )}
+                  >
+                    Needs Practice
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <Button
               onClick={handleCreatePost}
-              disabled={!postContent.trim() || posting}
+              disabled={!postTitle.trim() || posting}
               className="w-full"
             >
               {posting ? 'Posting...' : 'Post'}
