@@ -1265,7 +1265,12 @@ function CommunityContent() {
             </div>
 
             <Button
-              onClick={handlePost}
+              onClick={() => {
+                console.log('BUTTON CLICKED!');
+                console.log('newPost value:', newPost);
+                console.log('newPost.trim():', newPost.trim());
+                handlePost();
+              }}
               disabled={!newPost.trim()}
               size="sm"
               className="gap-2 bg-gradient-to-r from-primary to-accent hover:shadow-lg transition-all"
