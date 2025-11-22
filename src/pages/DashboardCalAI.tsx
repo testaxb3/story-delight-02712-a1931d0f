@@ -48,7 +48,7 @@ export default function DashboardCalAI() {
     <MainLayout>
       <div className="space-y-6 pb-24">
         {/* Hero Welcome Card */}
-        <SectionCard className="bg-gradient-to-br from-primary/90 to-primary text-white border-0">
+  <SectionCard className="bg-gradient-to-br from-primary to-primary/90 text-white border-0">
           <div className="flex items-center justify-between p-2">
             <div>
               <h1 className="text-2xl font-bold font-relative mb-1">

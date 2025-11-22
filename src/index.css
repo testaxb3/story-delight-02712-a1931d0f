@@ -10,60 +10,60 @@
 @layer base {
   :root {
     /* ============================================
-       UNIQUE PREMIUM DESIGN SYSTEM
-       Sophisticated, memorable, professional
+       CAL AI INSPIRED DESIGN SYSTEM
+       Minimalist, neutral, clean
        ============================================ */
 
-    /* Light Mode - Premium Base Colors */
-    --background: 220 25% 98%;        /* Soft off-white with subtle warmth */
-    --foreground: 220 40% 12%;        /* Deep charcoal for excellent contrast */
+    /* Light Mode - Cal AI Base Colors */
+    --background: 0 0% 96%;              /* Light gray background like Cal AI */
+    --foreground: 0 0% 9%;               /* Almost black for text */
 
-    /* Light Mode - Elevated Surfaces */
-    --card: 0 0% 100%;
-    --card-foreground: 220 40% 12%;
+    /* Light Mode - Clean White Surfaces */
+    --card: 0 0% 100%;                   /* Pure white cards */
+    --card-foreground: 0 0% 9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 40% 12%;
+    --popover-foreground: 0 0% 9%;
 
-    /* Light Mode - Distinctive Brand Colors */
-    --primary: 262 83% 58%;           /* Rich vibrant purple - memorable */
-    --primary-glow: 262 83% 68%;      /* Lighter variant for effects */
+    /* Light Mode - Minimal Brand Colors */
+    --primary: 14 100% 59%;              /* Orange accent (like Cal AI fire icon) */
+    --primary-glow: 14 100% 68%;
     --primary-foreground: 0 0% 100%;
     
-    --secondary: 195 65% 55%;         /* Sophisticated teal - unique pairing */
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 0 0% 91%;               /* Light gray for secondary elements */
+    --secondary-foreground: 0 0% 9%;
     
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 15% 42%;
+    --muted: 0 0% 96%;                   /* Same as background */
+    --muted-foreground: 0 0% 45%;        /* Medium gray text */
     
-    --accent: 338 78% 62%;            /* Vibrant coral-pink - attention grabbing */
+    --accent: 14 100% 59%;               /* Same orange as primary */
     --accent-foreground: 0 0% 100%;
     
-    --success: 158 64% 52%;
+    --success: 142 71% 45%;              /* Green for positive actions */
     --success-foreground: 0 0% 100%;
     
-    --warning: 38 92% 58%;
+    --warning: 38 92% 50%;               /* Amber for warnings */
     --warning-foreground: 0 0% 100%;
     
-    --destructive: 0 72% 58%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    /* Light Mode - Refined Borders & Inputs */
-    --border: 220 20% 90%;
-    --input: 220 20% 94%;
-    --ring: 262 83% 58%;
+    /* Light Mode - Subtle Borders */
+    --border: 0 0% 90%;                  /* Very light gray border */
+    --input: 0 0% 96%;
+    --ring: 14 100% 59%;
     --radius: 1rem;
 
-  /* Premium Surface Elevation System */
-    --surface-base: 220 25% 98%;
+    /* Minimal Surface System */
+    --surface-base: 0 0% 96%;
     --surface-raised: 0 0% 100%;
-    --surface-overlay: 220 15% 97%;
-    --surface-glass: 220 20% 99%;     /* For glassmorphism effects */
+    --surface-overlay: 0 0% 98%;
+    --surface-glass: 0 0% 100%;
     
-    /* Enhanced Contrast Text */
-    --text-high-contrast: 220 45% 8%;  /* Extra dark for important text */
-    --text-medium-contrast: 220 35% 25%; /* Medium contrast for body */
+    /* Cal AI Text Contrast */
+    --text-high-contrast: 0 0% 9%;
+    --text-medium-contrast: 0 0% 25%;
 
-    /* Profile Colors - Enhanced for uniqueness */
+    /* Profile Colors - Toned down */
     --defiant: 6 85% 65%;
     --defiant-foreground: 0 0% 100%;
     --intense: 282 70% 58%;
@@ -71,118 +71,114 @@
     --distracted: 168 75% 48%;
     --distracted-foreground: 0 0% 100%;
 
-    /* Premium Multi-Stop Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(262 83% 68%) 50%, hsl(280 70% 65%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(338 78% 62%) 0%, hsl(320 75% 65%) 50%, hsl(300 70% 68%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(158 64% 52%) 0%, hsl(170 60% 55%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 58%) 0%, hsl(262 70% 50%) 30%, hsl(280 65% 55%) 70%, hsl(338 78% 62%) 100%);
-    --gradient-mesh: radial-gradient(at 0% 0%, hsl(262 83% 58% / 0.15) 0px, transparent 50%),
-                     radial-gradient(at 100% 100%, hsl(338 78% 62% / 0.15) 0px, transparent 50%),
-                     radial-gradient(at 50% 50%, hsl(195 65% 55% / 0.1) 0px, transparent 50%);
+    /* Minimal Gradients - mostly solid colors */
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(20 100% 62%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(142 71% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
+    --gradient-mesh: none;
     
-    /* Premium Shadow System with Color */
-    --shadow-sm: 0 2px 8px -2px hsl(262 83% 58% / 0.08);
-    --shadow-md: 0 4px 16px -4px hsl(262 83% 58% / 0.12);
-    --shadow-lg: 0 8px 32px -8px hsl(262 83% 58% / 0.16);
-    --shadow-xl: 0 16px 48px -12px hsl(262 83% 58% / 0.2);
-    --shadow-colored: 0 8px 24px -6px hsl(262 83% 58% / 0.25);
+    /* Subtle Shadow System */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --shadow-colored: 0 4px 6px -1px rgb(0 0 0 / 0.1);
     
-    /* Glassmorphism Variables */
-    --glass-bg: hsl(0 0% 100% / 0.7);
-    --glass-border: hsl(220 20% 90% / 0.5);
+    /* Minimal Glass Effect */
+    --glass-bg: hsl(0 0% 100% / 0.8);
+    --glass-border: hsl(0 0% 90% / 0.5);
     --glass-blur: 12px;
     
-    /* Glow Effects for Bonus Cards */
-    --glow-video: 0 85% 65%;          /* Red/Pink glow for videos */
-    --glow-ebook: 210 90% 60%;        /* Blue glow for ebooks */
-    --glow-tool: 270 80% 65%;         /* Purple glow for tools */
-    --glow-pdf: 165 75% 55%;          /* Emerald glow for PDFs */
-    --glow-session: 30 90% 60%;       /* Orange glow for sessions */
-    --glow-template: 280 75% 65%;     /* Violet glow for templates */
-  }
-
-  .dark {
-    /* ============================================
-       PREMIUM DARK MODE
-       Rich, sophisticated darkness with colored shadows
-       ============================================ */
-
-    /* Dark Mode - Premium Base Colors */
-    --background: 222 47% 8%;         /* Rich deep blue-black */
-    --foreground: 220 20% 98%;        /* Soft white with warmth */
-
-    /* Dark Mode - Elevated Surfaces with Depth */
-    --card: 220 35% 14%;              /* Deeper slate with blue tint */
-    --card-foreground: 220 20% 98%;
-    --popover: 220 40% 12%;           /* Even darker for popovers */
-    --popover-foreground: 220 20% 98%;
-
-    /* Dark Mode - Vibrant Brand Colors */
-    --primary: 262 83% 65%;           /* Brighter purple for dark bg */
-    --primary-glow: 262 83% 75%;
-    --primary-foreground: 0 0% 100%;
-    
-    --secondary: 195 65% 60%;         /* Brighter teal */
-    --secondary-foreground: 0 0% 100%;
-    
-    --muted: 220 25% 18%;
-    --muted-foreground: 220 15% 72%;
-    
-    --accent: 338 78% 68%;            /* Vibrant coral-pink */
-    --accent-foreground: 0 0% 100%;
-    
-    --success: 158 64% 58%;
-    --success-foreground: 0 0% 100%;
-    
-    --warning: 38 92% 62%;
-    --warning-foreground: 0 0% 100%;
-    
-    --destructive: 0 72% 62%;
-    --destructive-foreground: 0 0% 100%;
-
-    /* Dark Mode - Refined Borders & Inputs */
-    --border: 220 25% 24%;
-    --input: 220 30% 11%;
-    --ring: 262 83% 65%;
-
-    /* Dark Mode - Surface Elevation System */
-    --surface-base: 222 47% 8%;
-    --surface-raised: 220 35% 14%;
-    --surface-overlay: 220 30% 18%;
-    --surface-glass: 220 35% 16%;
-
-    /* Dark Mode - Premium Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262 83% 55%) 0%, hsl(262 83% 65%) 50%, hsl(280 70% 60%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(338 78% 58%) 0%, hsl(320 75% 62%) 50%, hsl(300 70% 65%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(158 64% 48%) 0%, hsl(170 60% 52%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(262 83% 45%) 0%, hsl(262 70% 40%) 30%, hsl(280 65% 45%) 70%, hsl(338 78% 50%) 100%);
-    --gradient-mesh: radial-gradient(at 0% 0%, hsl(262 83% 58% / 0.2) 0px, transparent 50%),
-                     radial-gradient(at 100% 100%, hsl(338 78% 62% / 0.2) 0px, transparent 50%),
-                     radial-gradient(at 50% 50%, hsl(195 65% 55% / 0.15) 0px, transparent 50%);
-    
-    /* Dark Mode - Enhanced Shadows with Color */
-    --shadow-sm: 0 2px 12px -2px hsl(262 83% 58% / 0.15);
-    --shadow-md: 0 4px 20px -4px hsl(262 83% 58% / 0.2);
-    --shadow-lg: 0 8px 40px -8px hsl(262 83% 58% / 0.25);
-    --shadow-xl: 0 16px 60px -12px hsl(262 83% 58% / 0.3);
-    --shadow-colored: 0 8px 32px -6px hsl(262 83% 58% / 0.35);
-    
-    /* Dark Glassmorphism - More pronounced */
-    --glass-bg: hsl(222 40% 16% / 0.6);
-    --glass-border: hsl(220 25% 30% / 0.3);
-    --glass-blur: 16px;
-    
-    /* Glow Effects for Bonus Cards (Dark Mode) */
+    /* Glow Effects - minimal */
     --glow-video: 0 85% 65%;
     --glow-ebook: 210 90% 60%;
     --glow-tool: 270 80% 65%;
     --glow-pdf: 165 75% 55%;
     --glow-session: 30 90% 60%;
     --glow-template: 280 75% 65%;
+  }
+
+  .dark {
+    /* ============================================
+       CAL AI DARK MODE
+       Pure black with white cards
+       ============================================ */
+
+    /* Dark Mode - Pure Black Base */
+    --background: 0 0% 0%;               /* Pure black like Cal AI dark mode */
+    --foreground: 0 0% 98%;              /* Almost white text */
+
+    /* Dark Mode - Dark Gray Cards */
+    --card: 0 0% 10%;                    /* Very dark gray for cards */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Dark Mode - Same Orange Accent */
+    --primary: 14 100% 59%;
+    --primary-glow: 14 100% 68%;
+    --primary-foreground: 0 0% 100%;
     
-    /* Enhanced Contrast Text */
-    --text-high-contrast: 220 20% 98%;  /* Extra bright for important text */
-    --text-medium-contrast: 220 15% 85%; /* Medium contrast for body */
+    --secondary: 0 0% 20%;               /* Dark gray for secondary */
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+    
+    --accent: 14 100% 59%;
+    --accent-foreground: 0 0% 100%;
+    
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Dark Mode - Borders */
+    --border: 0 0% 20%;
+    --input: 0 0% 15%;
+    --ring: 14 100% 59%;
+
+    /* Dark Surfaces */
+    --surface-base: 0 0% 0%;
+    --surface-raised: 0 0% 10%;
+    --surface-overlay: 0 0% 8%;
+    --surface-glass: 0 0% 10%;
+    
+    /* Dark Text */
+    --text-high-contrast: 0 0% 98%;
+    --text-medium-contrast: 0 0% 75%;
+
+    /* Profile Colors - same */
+    --defiant: 6 85% 65%;
+    --defiant-foreground: 0 0% 100%;
+    --intense: 282 70% 58%;
+    --intense-foreground: 0 0% 100%;
+    --distracted: 168 75% 48%;
+    --distracted-foreground: 0 0% 100%;
+
+    /* Dark Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(20 100% 62%) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 71% 45%) 0%, hsl(142 71% 50%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(14 100% 59%) 0%, hsl(14 100% 64%) 100%);
+    --gradient-mesh: none;
+    
+    /* Dark Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4);
+    --shadow-colored: 0 4px 6px -1px rgb(0 0 0 / 0.4);
+    
+    /* Dark Glass */
+    --glass-bg: hsl(0 0% 10% / 0.8);
+    --glass-border: hsl(0 0% 20% / 0.5);
+    --glass-blur: 12px;
   }
 }
 
