@@ -55,7 +55,7 @@ export default function VideosCalAI() {
       .eq('user_id', user.id);
     
     if (data) {
-      const progressMap = new Map(data.map(p => [p.video_id, p.progress_percent]));
+      const progressMap = new Map(data.map((p: any) => [p.video_id, p.progress_percent || 0]));
       setProgress(progressMap);
     }
   };
