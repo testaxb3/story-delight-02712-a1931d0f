@@ -24,6 +24,8 @@ import { QuizPreLoadingScreen } from '@/components/Quiz/QuizPreLoadingScreen';
 import { QuizPostSpeedMotivationalScreen } from '@/components/Quiz/QuizPostSpeedMotivationalScreen';
 import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
 import { QuizThankYouScreen } from '@/components/Quiz/QuizThankYouScreen';
+import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
+import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 
 type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
 type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -65,6 +67,10 @@ export default function Quiz() {
   const [showPostSpeedMotivational, setShowPostSpeedMotivational] = useState(false);
   const [showFinalCelebration, setShowFinalCelebration] = useState(false);
   const [showThankYou, setShowThankYou] = useState(false);
+  const [showEnhancedResults, setShowEnhancedResults] = useState(false);
+  const [showMotivationalMilestone, setShowMotivationalMilestone] = useState(false);
+  const [currentMilestone, setCurrentMilestone] = useState<25 | 50 | 75>(25);
+  const [showLoading, setShowLoading] = useState(false);
 
   // Enhanced quiz data
   const [childAge, setChildAge] = useState<number>(5);
@@ -95,8 +101,8 @@ export default function Quiz() {
     if (completingQuiz) {
       const timer = setTimeout(() => {
         setCompletingQuiz(false);
-        setShowFinalCelebration(true);
-      }, 3500); // Aumentado de 2000ms para 3500ms
+        setShowLoading(true);
+      }, 3500);
       return () => clearTimeout(timer);
     }
   }, [completingQuiz]);
@@ -184,6 +190,24 @@ export default function Quiz() {
     }
   };
 
+  const checkMilestone = () => {
+    const totalQuestions = questions.length;
+    const milestones: Array<{ threshold: number; value: 25 | 50 | 75 }> = [
+      { threshold: Math.floor(totalQuestions * 0.25), value: 25 },
+      { threshold: Math.floor(totalQuestions * 0.50), value: 50 },
+      { threshold: Math.floor(totalQuestions * 0.75), value: 75 }
+    ];
+    
+    for (const milestone of milestones) {
+      if (currentQuestion === milestone.threshold && !showMotivationalMilestone) {
+        setCurrentMilestone(milestone.value);
+        setShowMotivationalMilestone(true);
+        return true;
+      }
+    }
+    return false;
+  };
+
   const handleNext = () => {
     switch (quizStep) {
       case 'name':
@@ -209,7 +233,9 @@ export default function Quiz() {
         break;
       case 'questions':
         if (currentQuestion < questions.length - 1) {
-          setCurrentQuestion(currentQuestion + 1);
+          const nextQuestion = currentQuestion + 1;
+          setCurrentQuestion(nextQuestion);
+          setTimeout(() => checkMilestone(), 100);
         } else {
           setShowCountdown(true);
         }
@@ -318,14 +344,86 @@ export default function Quiz() {
     }
   })();
 
-  const showBackButton = quizStep !== 'name' && !showPreLoading && !showPostSpeedMotivational && !showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou;
-  const showProgressBar = !showFinalCelebration && !showThankYou;
+  const showBackButton = quizStep !== 'name' && !showPreLoading && !showPostSpeedMotivational && !showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showLoading && !showEnhancedResults && !showMotivationalMilestone;
+  const showProgressBar = !showFinalCelebration && !showThankYou && !showLoading && !showEnhancedResults;
 
-  if (showPreLoading && result) {
+  if (showPreLoading) {
     return (
-      <QuizPreLoadingScreen
-        brainType={result.type}
-        onContinue={() => setShowPreLoading(false)}
+      <div className="min-h-screen flex flex-col bg-background">
+        <div className="flex-1 flex items-center justify-center px-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center space-y-6"
+          >
+            <h2 className="text-3xl md:text-4xl font-black text-foreground font-relative">
+              Let's start the quiz!
+            </h2>
+            <p className="text-base md:text-lg text-muted-foreground">
+              Get ready to discover {childName}'s brain profile
+            </p>
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  if (showLoading) {
+    return (
+      <QuizLoadingScreen
+        onComplete={() => {
+          setShowLoading(false);
+          setShowEnhancedResults(true);
+        }}
+      />
+    );
+  }
+
+  if (showEnhancedResults && result) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+          <div className="h-1 bg-muted">
+            <motion.div
+              className="h-full bg-foreground"
+              initial={{ width: 0 }}
+              animate={{ width: '95%' }}
+              transition={{ duration: 0.5 }}
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 px-6 pt-20 pb-24 overflow-y-auto">
+          <QuizEnhancedResults
+            brainType={result.type}
+            childName={childName}
+            challengeLevel={challengeLevel}
+            parentGoals={parentGoals}
+          />
+        </div>
+
+        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
+          <Button
+            onClick={() => {
+              if (navigator.vibrate) navigator.vibrate(15);
+              setShowEnhancedResults(false);
+              setShowFinalCelebration(true);
+            }}
+            className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
+          >
+            See My Dashboard
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (showMotivationalMilestone) {
+    return (
+      <QuizMotivationalScreen
+        milestone={currentMilestone}
+        brainType={currentMilestone === 75 ? result?.type : undefined}
+        onContinue={() => setShowMotivationalMilestone(false)}
       />
     );
   }
@@ -462,7 +560,7 @@ export default function Quiz() {
       </div>
 
       {/* Fixed Bottom Button */}
-      {!showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showPostSpeedMotivational && !showPreLoading && (
+      {!showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showPostSpeedMotivational && !showPreLoading && !showLoading && !showEnhancedResults && !showMotivationalMilestone && (
         <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 px-4 py-4 z-50">
           <Button
             onClick={quizStep === 'speed' ? () => {

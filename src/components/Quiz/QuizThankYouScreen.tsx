@@ -2,12 +2,15 @@ import { motion } from 'framer-motion';
 import { LottieIcon } from '@/components/LottieIcon';
 import clapDark from '@/assets/lottie/calai/clap_dark.json';
 import { Button } from '@/components/ui/button';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface QuizThankYouScreenProps {
   onContinue: () => void;
 }
 
 export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
+  const { theme } = useTheme();
+  
   const handleContinue = () => {
     if (navigator.vibrate) {
       navigator.vibrate(15);
@@ -15,8 +18,7 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
     onContinue();
   };
 
-  // Progress: 50% (mid-quiz break after 5 questions out of 10)
-  const progress = 50;
+  const progress = 30;
 
   return (
     <motion.div
@@ -37,9 +39,9 @@ export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
           />
         </div>
         <div className="px-4 h-14 flex items-center justify-end">
-          {/* Page Number */}
+          {/* Page Number - Dynamic from Quiz parent */}
           <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-            <span className="text-xs font-bold text-black dark:text-white">12</span>
+            <span className="text-xs font-bold text-black dark:text-white">7</span>
           </div>
         </div>
       </div>
