@@ -72,18 +72,22 @@ export function BottomNavCalAI() {
 
   useEffect(() => {
     const loadLotties = async () => {
-      try {
-        const loaded: Record<string, any> = {};
-        await Promise.all(
-          NAV_ITEMS.map(async (item) => {
+      const loaded: Record<string, any> = {};
+      
+      await Promise.all(
+        NAV_ITEMS.map(async (item) => {
+          try {
             const response = await fetch(`/lotties/${item.icon}-icon.json`);
-            loaded[item.icon] = await response.json();
-          })
-        );
-        setLottieData(loaded);
-      } catch (error) {
-        console.error('Error loading Lottie animations:', error);
-      }
+            if (response.ok) {
+              loaded[item.icon] = await response.json();
+            }
+          } catch (error) {
+            console.log(`Lottie not found for ${item.icon}, using fallback`);
+          }
+        })
+      );
+      
+      setLottieData(loaded);
     };
     
     loadLotties();
