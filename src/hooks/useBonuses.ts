@@ -216,8 +216,11 @@ export function useBonuses(filters?: {
         categoryCounts,
       };
     },
-    staleTime: 1000 * 60 * 5, // Cache category counts for 5 minutes
-    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
+    staleTime: 30000, // 30 seconds - much more responsive
+    gcTime: 60000, // 1 minute in cache
+    refetchOnMount: false, // Don't refetch if data is fresh
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    placeholderData: (previousData) => previousData, // Keep showing old data while loading new
   });
 }
 
