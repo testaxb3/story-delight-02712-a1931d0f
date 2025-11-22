@@ -78,22 +78,24 @@ export default function AddGroupLogo() {
   };
 
   const handleContinue = async () => {
-    if (!user?.profileId || !groupName) {
-      toast.error('Missing required data');
+    if (!groupName) {
+      toast.error('Missing group name');
       return;
     }
 
     setCreating(true);
 
     try {
-      // Get auth user ID (not profile ID)
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) {
+      // Get auth user
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+      if (authError || !authUser) {
+        console.error('Auth error:', authError);
         toast.error('Authentication error');
+        setCreating(false);
         return;
       }
 
-      // Create community
+      // Create community using auth.uid()
       const { data: community, error: communityError } = await supabase
         .from('communities')
         .insert({
@@ -105,18 +107,28 @@ export default function AddGroupLogo() {
         .select()
         .single();
 
-      if (communityError) throw communityError;
+      if (communityError) {
+        console.error('Community error:', communityError);
+        toast.error('Failed to create community: ' + communityError.message);
+        setCreating(false);
+        return;
+      }
 
-      // Add creator as leader (use profile ID for community_members)
+      // Add creator as leader
       const { error: memberError } = await supabase
         .from('community_members')
         .insert({
           community_id: community.id,
-          user_id: user.profileId,
+          user_id: authUser.id,
           role: 'leader',
         });
 
-      if (memberError) throw memberError;
+      if (memberError) {
+        console.error('Member error:', memberError);
+        toast.error('Failed to add you as leader: ' + memberError.message);
+        setCreating(false);
+        return;
+      }
 
       toast.success('Community created successfully!');
       navigate('/community/feed', { state: { communityId: community.id } });
