@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Camera, Save } from 'lucide-react';
+import { ArrowLeft, Camera, Save, Check, X, Loader2 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -12,14 +12,19 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
+
 export default function EditProfile() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [bio, setBio] = useState('');
   const [photoUrl, setPhotoUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>('idle');
+  const [originalUsername, setOriginalUsername] = useState('');
 
   useEffect(() => {
     if (user?.profileId) {
@@ -33,7 +38,7 @@ export default function EditProfile() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('name, bio, photo_url')
+        .select('name, username, bio, photo_url')
         .eq('id', user.profileId)
         .single();
 
@@ -41,6 +46,8 @@ export default function EditProfile() {
 
       if (data) {
         setName(data.name || '');
+        setUsername(data.username || '');
+        setOriginalUsername(data.username || '');
         setBio(data.bio || '');
         setPhotoUrl(data.photo_url || '');
       }
@@ -98,6 +105,91 @@ export default function EditProfile() {
     }
   };
 
+  useEffect(() => {
+    if (!username) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    const usernameRegex = /^[a-z0-9_]{3,}$/;
+    if (!usernameRegex.test(username)) {
+      setUsernameStatus('invalid');
+      return;
+    }
+
+    if (username === originalUsername) {
+      setUsernameStatus('available');
+      return;
+    }
+
+    setUsernameStatus('checking');
+    const timer = setTimeout(async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username)
+        .single();
+
+      if (error && error.code === 'PGRST116') {
+        setUsernameStatus('available');
+      } else if (data) {
+        setUsernameStatus('taken');
+      } else {
+        setUsernameStatus('idle');
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [username, originalUsername]);
+
+  const getUsernameHelper = () => {
+    if (!username) {
+      return {
+        text: 'This will be your unique identifier in communities',
+        color: 'text-gray-400',
+        icon: null,
+      };
+    }
+
+    if (usernameStatus === 'invalid') {
+      return {
+        text: '✗ Only lowercase letters, numbers and underscore allowed (min 3 chars)',
+        color: 'text-red-500',
+        icon: <X className="w-4 h-4 text-red-500" />,
+      };
+    }
+
+    if (usernameStatus === 'checking') {
+      return {
+        text: 'Checking availability...',
+        color: 'text-gray-400',
+        icon: <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />,
+      };
+    }
+
+    if (usernameStatus === 'available') {
+      return {
+        text: '✓ Username available',
+        color: 'text-green-500',
+        icon: <Check className="w-4 h-4 text-green-500" />,
+      };
+    }
+
+    if (usernameStatus === 'taken') {
+      return {
+        text: '✗ Username already taken',
+        color: 'text-red-500',
+        icon: <X className="w-4 h-4 text-red-500" />,
+      };
+    }
+
+    return {
+      text: 'This will be your unique identifier in communities',
+      color: 'text-gray-400',
+      icon: null,
+    };
+  };
+
   const handleSave = async () => {
     if (!user?.profileId) {
       toast.error('You must be signed in to edit your profile');
@@ -109,6 +201,15 @@ export default function EditProfile() {
       return;
     }
 
+    if (!username.trim()) {
+      toast.error('Username is required');
+      return;
+    }
+
+    if (usernameStatus === 'taken' || usernameStatus === 'invalid' || usernameStatus === 'checking') {
+      return;
+    }
+
     setSaving(true);
 
     try {
@@ -116,6 +217,7 @@ export default function EditProfile() {
         .from('profiles')
         .update({
           name: name.trim(),
+          username: username.trim().toLowerCase(),
           bio: bio.trim() || null,
           photo_url: photoUrl || null,
         })
@@ -192,12 +294,30 @@ export default function EditProfile() {
             <Label htmlFor="name">Name *</Label>
             <Input
               id="name"
-              placeholder="Your display name"
+              placeholder="Your full name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               maxLength={50}
             />
             <p className="text-xs text-muted-foreground">This is how other users will see you</p>
+          </div>
+
+          {/* Username */}
+          <div className="space-y-2">
+            <Label htmlFor="username">Username *</Label>
+            <Input
+              id="username"
+              placeholder="Choose a unique username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+              maxLength={20}
+            />
+            <div className="flex items-center gap-2">
+              {getUsernameHelper().icon}
+              <p className={`text-xs ${getUsernameHelper().color}`}>
+                {getUsernameHelper().text}
+              </p>
+            </div>
           </div>
 
           {/* Bio */}
@@ -219,7 +339,19 @@ export default function EditProfile() {
             <Button variant="outline" onClick={() => navigate(-1)} className="dark:border-slate-600 dark:hover:bg-slate-800/60 transition-colors">
               Cancel
             </Button>
-            <Button onClick={handleSave} disabled={saving || uploading} className="gap-2 transition-all">
+            <Button 
+              onClick={handleSave} 
+              disabled={
+                saving || 
+                uploading || 
+                !name.trim() || 
+                !username.trim() || 
+                usernameStatus === 'taken' || 
+                usernameStatus === 'invalid' || 
+                usernameStatus === 'checking'
+              } 
+              className="gap-2 transition-all"
+            >
               <Save className="w-4 h-4" />
               {saving ? 'Saving...' : 'Save Changes'}
             </Button>
