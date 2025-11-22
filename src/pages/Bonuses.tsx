@@ -253,8 +253,8 @@ function BonusesContent() {
     [filteredAndSortedBonuses]
   );
 
-  // Loading state with premium skeleton
-  if (isLoading) {
+  // Loading state with premium skeleton - only show on initial load
+  if (isLoading && !bonusesResponse) {
     return (
       <MainLayout>
         <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-12 md:pb-6">
