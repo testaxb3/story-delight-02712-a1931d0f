@@ -32,7 +32,9 @@ export default function ScriptsCalAI() {
   const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
-    fetchScripts();
+    if (activeChild) {
+      fetchScripts();
+    }
   }, [activeChild]);
 
   const fetchScripts = async () => {
@@ -43,7 +45,7 @@ export default function ScriptsCalAI() {
       .order('created_at', { ascending: false });
 
     if (activeChild?.brain_profile) {
-      query = query.eq('profile', activeChild.brain_profile);
+      query = query.or(`profile.eq.${activeChild.brain_profile},profile.eq.UNIVERSAL`);
     }
 
     const { data, error } = await query;

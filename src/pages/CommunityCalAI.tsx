@@ -53,7 +53,7 @@ export default function CommunityCalAI() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [user]);
 
   const fetchPosts = async () => {
     const { data, error } = await supabase
@@ -63,7 +63,31 @@ export default function CommunityCalAI() {
       .limit(50);
 
     if (!error && data) {
-      setPosts(data as any);
+      // Check which posts the user has liked
+      let userLikes: Set<string> = new Set();
+      if (user?.id) {
+        const { data: likesData } = await supabase
+          .from('post_likes')
+          .select('post_id')
+          .eq('user_id', user.id);
+        
+        if (likesData) {
+          userLikes = new Set(likesData.map(l => l.post_id));
+        }
+      }
+
+      const formattedPosts = (data as any[]).map((post: any) => ({
+        id: post.id,
+        content: post.content,
+        created_at: post.created_at,
+        user_id: post.user_id,
+        author_name: post.author_name || post.profile_name || 'Anonymous',
+        author_brain_type: post.author_brain_type || null,
+        likes_count: post.likes_count || 0,
+        comments_count: post.comments_count || 0,
+        user_has_liked: userLikes.has(post.id),
+      }));
+      setPosts(formattedPosts);
     }
     setLoading(false);
   };
