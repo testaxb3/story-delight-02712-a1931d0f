@@ -67,6 +67,14 @@ export interface BonusesResponse {
   page: number;
   pageSize: number;
   totalPages: number;
+  categoryCounts: {
+    all: number;
+    video: number;
+    ebook: number;
+    tool: number;
+    template: number;
+    session: number;
+  };
 }
 
 // Hook to get all bonuses with user-specific progress and pagination
@@ -83,7 +91,27 @@ export function useBonuses(filters?: {
   return useQuery<BonusesResponse>({
     queryKey: bonusesKeys.list(filters),
     queryFn: async () => {
-      // Count total bonuses first
+      // Fetch category counts from database (parallel query)
+      const { data: categoryData, error: categoryError } = await supabase
+        .from("bonuses")
+        .select("category");
+
+      if (categoryError) {
+        console.error("❌ Error fetching category counts:", categoryError);
+        throw categoryError;
+      }
+
+      // Calculate counts from all bonuses (not just current page)
+      const categoryCounts = {
+        all: categoryData?.length || 0,
+        video: categoryData?.filter(b => b.category === 'video').length || 0,
+        ebook: categoryData?.filter(b => b.category === 'ebook').length || 0,
+        tool: categoryData?.filter(b => b.category === 'tool').length || 0,
+        template: categoryData?.filter(b => b.category === 'template').length || 0,
+        session: categoryData?.filter(b => b.category === 'session').length || 0,
+      };
+
+      // Count total bonuses with filters applied
       let countQuery = supabase
         .from("bonuses")
         .select("*", { count: "exact", head: true });
@@ -177,16 +205,19 @@ export function useBonuses(filters?: {
       }) || [];
 
       console.log("✅ Bonuses fetched successfully:", bonuses.length, "items");
+      console.log("✅ Category counts:", categoryCounts);
+      
       return {
         data: bonuses,
         total: count || 0,
         page,
         pageSize,
         totalPages: Math.ceil((count || 0) / pageSize),
+        categoryCounts,
       };
     },
-    staleTime: 0, // Always fresh data
-    gcTime: 1000 * 60 * 5, // Keep in cache for 5 minutes
+    staleTime: 1000 * 60 * 5, // Cache category counts for 5 minutes
+    gcTime: 1000 * 60 * 10, // Keep in cache for 10 minutes
   });
 }
 
