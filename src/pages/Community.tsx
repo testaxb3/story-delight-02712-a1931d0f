@@ -401,7 +401,7 @@ function CommunityContent() {
       setPostImageThumbnailUrl('');
       setComposerMode('general');
       toast.success('Post shared with the community! 🎉');
-      fetchPosts();
+      // Don't call fetchPosts() as it can cause navigation issues
     };
 
     createPost();
