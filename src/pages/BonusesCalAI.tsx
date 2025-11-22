@@ -41,6 +41,28 @@ export default function BonusesCalAI() {
     }
   };
 
+  // Get thumbnail URL - handle both local paths and Supabase Storage paths
+  const getThumbnailUrl = (thumbnail: string | null): string | null => {
+    if (!thumbnail) return null;
+    
+    // If it's already a full URL, return it
+    if (thumbnail.startsWith('http://') || thumbnail.startsWith('https://')) {
+      return thumbnail;
+    }
+    
+    // If it starts with /, it's a local path - return as is
+    if (thumbnail.startsWith('/')) {
+      return thumbnail;
+    }
+    
+    // Otherwise, it's a Supabase Storage path
+    const { data } = supabase.storage
+      .from('public-assets')
+      .getPublicUrl(thumbnail);
+    
+    return data.publicUrl;
+  };
+
   const handleBonusClick = (bonus: BonusRow) => {
     if (bonus.category === 'ebook' && bonus.view_url) {
       navigate(bonus.view_url);
@@ -164,17 +186,26 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-[3/4] transition-all hover:scale-[1.02]">
-                        {bonus.thumbnail ? (
+                        {getThumbnailUrl(bonus.thumbnail) ? (
                           <img
-                            src={bonus.thumbnail}
+                            src={getThumbnailUrl(bonus.thumbnail)!}
                             alt={bonus.title}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to placeholder if image fails to load
+                              e.currentTarget.style.display = 'none';
+                              if (e.currentTarget.nextElementSibling) {
+                                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                              }
+                            }}
                           />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                            <BookOpen className="w-16 h-16 text-muted-foreground/30" />
-                          </div>
-                        )}
+                        ) : null}
+                        <div 
+                          className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center"
+                          style={{ display: getThumbnailUrl(bonus.thumbnail) ? 'none' : 'flex' }}
+                        >
+                          <BookOpen className="w-16 h-16 text-muted-foreground/30" />
+                        </div>
                       </div>
                       <h3 className="font-semibold text-sm md:text-base mb-1 line-clamp-2 group-hover:text-foreground/80 transition-colors">
                         {bonus.title}
@@ -211,12 +242,19 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-video transition-all hover:scale-[1.02]">
-                        {bonus.thumbnail ? (
+                        {getThumbnailUrl(bonus.thumbnail) ? (
                           <>
                             <img
-                              src={bonus.thumbnail}
+                              src={getThumbnailUrl(bonus.thumbnail)!}
                               alt={bonus.title}
                               className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.parentElement?.querySelector('.fallback-placeholder');
+                                if (fallback) {
+                                  (fallback as HTMLElement).style.display = 'flex';
+                                }
+                              }}
                             />
                             <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                               <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
@@ -224,11 +262,13 @@ export default function BonusesCalAI() {
                               </div>
                             </div>
                           </>
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center">
-                            <Play className="w-12 h-12 text-muted-foreground/30" />
-                          </div>
-                        )}
+                        ) : null}
+                        <div 
+                          className="fallback-placeholder w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center absolute inset-0"
+                          style={{ display: getThumbnailUrl(bonus.thumbnail) ? 'none' : 'flex' }}
+                        >
+                          <Play className="w-12 h-12 text-muted-foreground/30" />
+                        </div>
                         {bonus.duration && (
                           <div className="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-black/80 text-white text-xs font-medium">
                             {bonus.duration}
