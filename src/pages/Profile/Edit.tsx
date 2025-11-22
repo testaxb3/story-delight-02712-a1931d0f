@@ -147,22 +147,30 @@ export default function EditProfile() {
   };
 
   const handleSave = async () => {
+    console.log('=== EDIT PROFILE SAVE DEBUG ===');
+    console.log('User:', user);
+    console.log('User Profile ID:', user?.profileId);
+    
     if (!user?.profileId) {
+      console.error('Missing user.profileId');
       toast.error('You must be signed in to edit your profile');
       return;
     }
 
     if (!firstName.trim()) {
+      console.error('Missing firstName');
       toast.error('First name is required');
       return;
     }
 
     if (!username.trim()) {
+      console.error('Missing username');
       toast.error('Username is required');
       return;
     }
 
     if (usernameStatus === 'taken' || usernameStatus === 'invalid' || usernameStatus === 'checking') {
+      console.error('Invalid username status:', usernameStatus);
       return;
     }
 
@@ -171,24 +179,38 @@ export default function EditProfile() {
     try {
       const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
       
-      const { error } = await supabase
+      const updateData = {
+        name: fullName,
+        username: username.trim().toLowerCase(),
+        photo_url: photoUrl || null,
+        community_onboarding_completed: true,
+      };
+      
+      console.log('Data to update:', updateData);
+      console.log('Updating profile with ID:', user.profileId);
+      
+      const { data, error } = await supabase
         .from('profiles')
-        .update({
-          name: fullName,
-          username: username.trim().toLowerCase(),
-          photo_url: photoUrl || null,
-          community_onboarding_completed: true,
-        })
-        .eq('id', user.profileId);
+        .update(updateData)
+        .eq('id', user.profileId)
+        .select();
 
-      if (error) throw error;
+      console.log('Update response - data:', data);
+      console.log('Update response - error:', error);
 
+      if (error) {
+        console.error('Supabase update error:', error);
+        throw error;
+      }
+
+      console.log('Profile updated successfully, refreshing user...');
       await refreshUser();
+      
       toast.success('Profile updated successfully');
       navigate('/community');
     } catch (error) {
       console.error('Error updating profile:', error);
-      toast.error('Failed to update profile');
+      toast.error('Failed to update profile: ' + (error as any)?.message);
     } finally {
       setSaving(false);
     }
