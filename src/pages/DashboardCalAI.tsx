@@ -161,9 +161,9 @@ export default function DashboardCalAI() {
           {latestVideo && (
             <div className="snap-center shrink-0 w-[85vw] max-w-sm">
               <div 
-                onClick={() => navigate('/videos')}
-                className="h-full bg-[#1C1C1E] border border-[#333] rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group active:scale-[0.98] transition-all duration-300"
-              >
+              onClick={() => navigate('/bonuses?category=video')}
+              className="h-full bg-[#1C1C1E] border border-[#333] rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group active:scale-[0.98] transition-all duration-300"
+            >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
                 
                 <div className="flex justify-between items-start mb-4">

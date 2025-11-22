@@ -3,6 +3,7 @@ import { cn } from '@/lib/utils';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
 import { useHaptic } from '@/hooks/useHaptic';
+import { Users } from 'lucide-react';
 
 interface NavItem {
   icon: string;
@@ -14,7 +15,7 @@ const NAV_ITEMS: NavItem[] = [
   { icon: 'home', label: 'Home', path: '/' },
   { icon: 'scripts', label: 'Scripts', path: '/scripts' },
   { icon: 'bonuses', label: 'Bonuses', path: '/bonuses' },
-  { icon: 'videos', label: 'Videos', path: '/videos' },
+  { icon: 'community', label: 'Community', path: '/community' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
@@ -48,9 +49,11 @@ function NavButton({ icon, label, path, lottieData }: {
         <Lottie
           animationData={animationData}
           loop={isActive}
-          autoplay={true} // Always autoplay initially, or control via isActive if preferred
+          autoplay={true}
           style={{ width: '24px', height: '24px', pointerEvents: 'none' }}
         />
+      ) : icon === 'community' ? (
+        <Users className={cn("w-6 h-6", isActive ? "text-white" : "text-gray-500")} />
       ) : (
         <div className="w-6 h-6 bg-muted rounded animate-pulse" />
       )}

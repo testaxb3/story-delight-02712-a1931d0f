@@ -38,7 +38,7 @@ const JoinTutorial = lazy(() => import("./pages/Community/JoinTutorial"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
-const Videos = lazy(() => import("./pages/VideosCalAI"));
+
 const Library = lazy(() => import("./pages/Library"));
 const Bonuses = lazy(() => import("./pages/BonusesCalAI"));
 const EbookReader = lazy(() => import("./pages/EbookReader"));
@@ -226,14 +226,8 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/videos"
-          element={
-            <ProtectedRoute>
-              <Videos />
-            </ProtectedRoute>
-          }
-        />
+        {/* Redirect old videos route to bonuses with video filter */}
+        <Route path="/videos" element={<Navigate to="/bonuses?category=video" replace />} />
         <Route
           path="/library"
           element={

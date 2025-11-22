@@ -2087,6 +2087,60 @@ export type Database = {
           },
         ]
       }
+      user_bonus_progress: {
+        Row: {
+          bonus_id: string
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          id: string
+          last_accessed_at: string | null
+          progress_seconds: number | null
+          total_duration_seconds: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bonus_id: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          progress_seconds?: number | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bonus_id?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          progress_seconds?: number | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_bonus_progress_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_bonus_progress_bonus_id_fkey"
+            columns: ["bonus_id"]
+            isOneToOne: false
+            referencedRelation: "bonuses_with_user_progress"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_bonuses: {
         Row: {
           bonus_id: string
@@ -2475,6 +2529,42 @@ export type Database = {
           },
         ]
       }
+      video_progress_backup_20250122: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          id: string | null
+          last_watched_at: string | null
+          progress_seconds: number | null
+          total_duration_seconds: number | null
+          updated_at: string | null
+          user_id: string | null
+          video_id: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string | null
+          last_watched_at?: string | null
+          progress_seconds?: number | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string | null
+          last_watched_at?: string | null
+          progress_seconds?: number | null
+          total_duration_seconds?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          video_id?: string | null
+        }
+        Relationships: []
+      }
       videos: {
         Row: {
           attribution_required: boolean | null
@@ -2529,6 +2619,63 @@ export type Database = {
           title?: string
           verified_date?: string | null
           video_url?: string
+        }
+        Relationships: []
+      }
+      videos_backup_20250122: {
+        Row: {
+          attribution_required: boolean | null
+          created_at: string | null
+          creator_name: string | null
+          description: string | null
+          duration: string | null
+          id: string | null
+          license_type: string | null
+          locked: boolean | null
+          order_index: number | null
+          original_url: string | null
+          premium_only: boolean | null
+          section: string | null
+          thumbnail_url: string | null
+          title: string | null
+          verified_date: string | null
+          video_url: string | null
+        }
+        Insert: {
+          attribution_required?: boolean | null
+          created_at?: string | null
+          creator_name?: string | null
+          description?: string | null
+          duration?: string | null
+          id?: string | null
+          license_type?: string | null
+          locked?: boolean | null
+          order_index?: number | null
+          original_url?: string | null
+          premium_only?: boolean | null
+          section?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          verified_date?: string | null
+          video_url?: string | null
+        }
+        Update: {
+          attribution_required?: boolean | null
+          created_at?: string | null
+          creator_name?: string | null
+          description?: string | null
+          duration?: string | null
+          id?: string | null
+          license_type?: string | null
+          locked?: boolean | null
+          order_index?: number | null
+          original_url?: string | null
+          premium_only?: boolean | null
+          section?: string | null
+          thumbnail_url?: string | null
+          title?: string | null
+          verified_date?: string | null
+          video_url?: string | null
         }
         Relationships: []
       }

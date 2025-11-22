@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Target, BookOpen, Video } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { UserStats } from '@/hooks/useUserStats';
+import { routes } from '@/lib/navigation';
 
 interface ProfileStatsGridProps {
   stats: UserStats;
@@ -112,7 +113,7 @@ const ProfileStatsGridComponent = ({ stats }: ProfileStatsGridProps) => {
                 variant="link"
                 size="sm"
                 className="h-auto p-0 text-[10px] font-bold text-pink-600 hover:text-pink-700 dark:text-pink-400 dark:hover:text-pink-300 w-full"
-                onClick={() => navigate('/videos')}
+                onClick={() => navigate(routes.bonusesVideos)}
               >
                 Watch Foundation →
               </Button>
