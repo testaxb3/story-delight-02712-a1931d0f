@@ -171,6 +171,7 @@ const buildDefaultProfile = (
     bio: null,
     brain_profile: sanitizeString(childProfile),
     comments_count: 0,
+    community_onboarding_completed: false,
     followers_count: 0,
     following_count: 0,
     likes_received_count: 0,

@@ -694,4 +694,17 @@ header, main {
       transition-duration: 0.01ms !important;
     }
   }
+
+  /* ============================================
+     HIDE SCROLLBAR - For carousel components
+     ============================================ */
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
