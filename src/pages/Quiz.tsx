@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { logger } from '@/lib/logger';
@@ -40,7 +41,7 @@ const sanitizeChildName = (name: string): string => {
   return name
     .trim()
     .replace(/[<>]/g, '')
-    .replace(/[^\w\s\-']/g, '')
+    .replace(/[^\\w\\s\\-']/g, '')
     .substring(0, MAX_NAME_LENGTH);
 };
 
@@ -93,149 +94,108 @@ export default function Quiz() {
   
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
+  const { theme } = useTheme();
   const { refreshChildren, setActiveChild } = useChildProfiles();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    const syncQuizState = async () => {
-      if (user?.profileId) {
-        try {
-          await supabase
-            .from('profiles')
-            .update({ quiz_in_progress: hasStarted })
-            .eq('id', user.profileId);
-        } catch (error) {
-          logger.error('Failed to sync quiz state:', error);
-        }
-      }
-    };
-
-    if (hasStarted) {
-      syncQuizState();
+    if (countdown > 0 && showCountdown) {
+      setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+    } else if (countdown === 0 && showCountdown) {
+      setShowCountdown(false);
+      setCompletingQuiz(true);
+      completeQuiz();
     }
-  }, [hasStarted, user]);
+  }, [countdown, showCountdown]);
 
-  // Dramatic countdown before result reveal
   useEffect(() => {
-    if (showResult && showCountdown) {
-      const timer = setInterval(() => {
-        setCountdown(prev => {
-          if (prev <= 1) {
-            setShowCountdown(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 800);
-      return () => clearInterval(timer);
-    }
-  }, [showResult, showCountdown]);
+    if (completingQuiz) {
+      const timer = setTimeout(() => {
+        setCompletingQuiz(false);
+        setShowFinalCelebration(true);
+      }, 2000);
 
-  const handleAnswer = (value: string) => {
-    // Haptic feedback (mobile)
-    if (navigator.vibrate) {
-      navigator.vibrate(30);
+      return () => clearTimeout(timer);
     }
-    
-    setAnswers(prev => ({ ...prev, [currentQuestion]: value }));
+  }, [completingQuiz]);
+
+  useEffect(() => {
+    if (showFinalCelebration) {
+      const timer = setTimeout(() => {
+        setShowFinalCelebration(false);
+        setShowThankYou(true);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showFinalCelebration]);
+
+  useEffect(() => {
+    if (showThankYou) {
+      const timer = setTimeout(() => {
+        navigate('/dashboard');
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showThankYou, navigate]);
+
+  const startQuiz = () => {
+    setHasStarted(true);
+    setShowPreLoading(true);
+
+    // Simulate pre-loading delay
+    setTimeout(() => {
+      setShowPreLoading(false);
+    }, 1500);
   };
 
-  const handleStartQuiz = () => {
-    if (!isValidChildName(childName)) {
-      setNameError(true);
-      toast.error(`Child's name must be between ${MIN_NAME_LENGTH} and ${MAX_NAME_LENGTH} characters.`);
-      return;
-    }
-    
-    // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    
-    setNameError(false);
-    setQuizStep('details'); // Move to details collection
+  const handleAnswer = (questionIndex: number, answer: string) => {
+    setAnswers({ ...answers, [questionIndex]: answer });
   };
 
-  const handleDetailsComplete = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    setQuizStep('goals');
+  const calculateResult = () => {
+    const brainProfile = calculateBrainProfile(questions, answers);
+    setResult(brainProfile);
+    return brainProfile;
   };
 
-  const handleGoalsComplete = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    if (parentGoals.length === 0) {
-      toast.error('Please select at least one goal');
-      return;
-    }
-    setQuizStep('speed'); // Move to speed selection
-  };
-
-  const handleSpeedComplete = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    setShowPostSpeedMotivational(true);
-  };
-
-  const handlePostSpeedMotivationalContinue = () => {
-    setShowPostSpeedMotivational(false);
-    setQuizStep('challenge');
-  };
-
-  const handleChallengeComplete = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    if (!challengeDuration) {
-      toast.error('Please select how long you have been facing this challenge');
-      return;
-    }
-    setAnswers({});
+  const resetQuiz = () => {
     setCurrentQuestion(0);
+    setAnswers({});
     setShowResult(false);
     setResult(null);
-    setHasStarted(true);
+    setChildName('');
+    setHasStarted(false);
+    setSavingProfile(false);
     setSaveError(null);
-    setQuizStep('questions');
+    setCompletingQuiz(false);
+    setCountdown(3);
+    setShowCountdown(false);
+    setNameError(false);
+    setShowThankYou(false);
+    setShowPreLoading(false);
+    setChildAge(5);
+    setParentGoals([]);
+    setChallengeLevel(5);
+    setChallengeDuration('');
+    setTriedApproaches([]);
+    setResultSpeed('balanced');
+    setQuizStep('name');
+    setShowFinalCelebration(false);
   };
 
-  const toggleParentGoal = (goal: string) => {
-    setParentGoals(prev => 
-      prev.includes(goal) ? prev.filter(g => g !== goal) : [...prev, goal]
-    );
-  };
+  const saveChildProfile = async () => {
+    if (!user) {
+      logger.error('No user found, please login');
+      return;
+    }
 
-  const toggleApproach = (approach: string) => {
-    setTriedApproaches(prev =>
-      prev.includes(approach) ? prev.filter(a => a !== approach) : [...prev, approach]
-    );
-  };
-
-  const calculateResult = (): { type: BrainProfile; score: number } => {
-    const result = calculateBrainProfile(answers);
-    return {
-      type: result.type,
-      score: result.score
-    };
-  };
-
-  const getDevelopmentPhase = (age: number): string => {
-    if (age < 2) return 'baby';
-    if (age < 4) return 'toddler';
-    if (age < 10) return 'child';
-    if (age < 13) return 'preteen';
-    return 'teen';
-  };
-
-  const persistChildProfile = async (brainType: BrainProfile): Promise<boolean> => {
-    if (!user?.profileId) {
-      logger.error('No user profile ID found');
-      setSaveError('Unable to save profile. Please try again.');
-      return false;
+    if (!result) {
+      logger.error('No result found, please complete the quiz');
+      return;
     }
 
     setSavingProfile(true);
@@ -244,871 +204,559 @@ export default function Quiz() {
     try {
       const sanitizedName = sanitizeChildName(childName);
 
-      const { data: existingProfiles, error: fetchError } = await supabase
-        .from('child_profiles')
+      const { data: existingProfile, error: existingProfileError } = await supabase
+        .from('children')
         .select('*')
-        .eq('parent_id', user.profileId);
+        .eq('name', sanitizedName)
+        .eq('user_id', user.id)
+        .single();
 
-      if (fetchError) {
-        logger.error('Error fetching existing profiles:', fetchError);
-        setSaveError('Unable to check existing profiles. Please try again.');
-        setSavingProfile(false);
-        return false;
+      if (existingProfileError && existingProfileError.code !== 'PGRST116') {
+        throw existingProfileError;
       }
 
-      const duplicateName = existingProfiles?.some(
-        profile => profile.name.toLowerCase() === sanitizedName.toLowerCase()
-      );
-
-      if (duplicateName) {
-        setSaveError(`A profile with the name "${sanitizedName}" already exists.`);
-        setSavingProfile(false);
-        return false;
+      if (existingProfile) {
+        setSaveError('A profile with this name already exists.');
+        return;
       }
 
-      const { data: newChild, error: insertError } = await supabase
-        .from('child_profiles')
-        .insert({
+      const { data, error } = await supabase.from('children').insert([
+        {
           name: sanitizedName,
-          brain_profile: brainType,
-          parent_id: user.profileId,
-          is_active: true,
-          age_exact: childAge,
-          development_phase: getDevelopmentPhase(childAge),
+          brain_profile: result.type,
+          user_id: user.id,
+          quiz_score: result.score,
+          age: childAge,
           parent_goals: parentGoals,
           challenge_level: challengeLevel,
           challenge_duration: challengeDuration,
           tried_approaches: triedApproaches,
-          result_speed: resultSpeed
-        })
-        .select()
-        .single();
+          result_speed: resultSpeed,
+        },
+      ]);
 
-      if (insertError) {
-        logger.error('Error inserting child profile:', insertError);
-        if (insertError.code === '23505') {
-          setSaveError('A profile with this name already exists.');
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error('No data returned from supabase');
+      }
+
+      await refreshChildren();
+      await refreshUser();
+      queryClient.invalidateQueries({ queryKey: ['children'] });
+      const newChild = data[0];
+      setActiveChild(newChild);
+
+      toast.success(`Profile for ${sanitizedName} saved!`);
+      logger.debug(`Profile saved for ${sanitizedName} with id ${newChild.id}`);
+
+      return newChild;
+    } catch (error: any) {
+      logger.error('Error saving profile', error);
+      setSaveError(error.message || 'Failed to save profile.');
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value;
+    setChildName(name);
+    setNameError(!isValidChildName(name));
+  };
+
+  const completeQuiz = async () => {
+    const finalResult = calculateResult();
+    if (finalResult) {
+      await saveChildProfile();
+    }
+  };
+
+  const handleNext = () => {
+    switch (quizStep) {
+      case 'name':
+        if (isValidChildName(childName)) {
+          setQuizStep('details');
         } else {
-          setSaveError('Unable to save profile. Please try again.');
+          setNameError(true);
         }
-        setSavingProfile(false);
-        return false;
-      }
-
-      if (newChild) {
-        await refreshChildren();
-        setActiveChild(newChild.id);
-      }
-
-      setSavingProfile(false);
-      return true;
-    } catch (error) {
-      logger.error('Unexpected error:', error);
-      setSaveError('An unexpected error occurred. Please try again.');
-      setSavingProfile(false);
-      return false;
-    }
-  };
-
-  const handleNext = async () => {
-    // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    
-    // Show Thank You screen after 5th question (index 4)
-    if (currentQuestion === 4) {
-      setShowThankYou(true);
-      setCurrentQuestion(5);
-      return;
-    }
-
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-    } else {
-      // Last question - calculate result first, then show Pre-Loading screen
-      const calculatedResult = calculateResult();
-      setResult(calculatedResult);
-      setShowPreLoading(true);
-    }
-  };
-
-  const handleThankYouContinue = () => {
-    // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    setShowThankYou(false);
-    // currentQuestion is already set to 5 (next question) in handleNext
-  };
-
-  const handlePreLoadingContinue = async () => {
-    setShowPreLoading(false);
-    
-    // Result already calculated, just show countdown and save profile
-    setShowResult(true);
-    setShowCountdown(true);
-    setCountdown(3);
-    
-    if (result) {
-      await persistChildProfile(result.type);
+        break;
+      case 'details':
+        setQuizStep('goals');
+        break;
+      case 'goals':
+        setQuizStep('speed');
+        setShowPostSpeedMotivational(true);
+        break;
+      case 'speed':
+        setShowPostSpeedMotivational(false);
+        setQuizStep('challenge');
+        break;
+      case 'challenge':
+        setQuizStep('questions');
+        startQuiz();
+        break;
+      case 'questions':
+        if (currentQuestion < questions.length - 1) {
+          setCurrentQuestion(currentQuestion + 1);
+        } else {
+          setShowCountdown(true);
+        }
+        break;
+      default:
+        break;
     }
   };
 
   const handlePrevious = () => {
-    // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-    }
-  };
-
-  const handleGoToDashboard = async () => {
-    if (savingProfile || completingQuiz) return;
-
-    // Show final celebration before navigation
-    setShowFinalCelebration(true);
-  };
-
-  const handleCelebrationComplete = async () => {
-    setCompletingQuiz(true);
-
-    if (user?.profileId) {
-      try {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            quiz_completed: true,
-            quiz_in_progress: false
-          })
-          .eq('id', user.profileId);
-
-        if (profileError) {
-          logger.error('Failed to update quiz completion (profile):', profileError);
-          toast.error('Failed to save progress. Please try again.');
-          setCompletingQuiz(false);
-          return;
-        }
-
-        await supabase
-          .from('user_progress')
-          .update({ quiz_completed: true })
-          .eq('user_id', user.profileId)
-          .then(({ error }) => {
-            if (error) logger.warn('user_progress update failed; proceeding anyway:', error);
-          });
-
-        queryClient.setQueryData(['user-profile', user.profileId], (old: any) => {
-          if (!old) return old;
-          return {
-            ...old,
-            quiz_completed: true,
-            quiz_in_progress: false
-          };
-        });
-
-        queryClient.invalidateQueries({ queryKey: ['user-profile', user.profileId] });
-        queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
-
-        sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-
-        await Promise.all([
-          refreshChildren(),
-          refreshUser()
-        ]);
-
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        toast.success('Profile created successfully!');
-
-        const shouldShowPWAOnboarding = () => {
-          const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
-          const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
-          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-          
-          return isMobile && !isInstalled && !completedOnboarding;
-        };
-
-        if (shouldShowPWAOnboarding()) {
-          navigate('/onboarding', { replace: true });
+    switch (quizStep) {
+      case 'details':
+        setQuizStep('name');
+        break;
+      case 'goals':
+        setQuizStep('details');
+        break;
+      case 'speed':
+        setShowPostSpeedMotivational(false);
+        setQuizStep('goals');
+        break;
+      case 'challenge':
+        setQuizStep('speed');
+        break;
+      case 'questions':
+        if (currentQuestion > 0) {
+          setCurrentQuestion(currentQuestion - 1);
         } else {
-          navigate('/', { replace: true, state: { quizJustCompleted: true } });
+          setQuizStep('challenge');
         }
-      } catch (error) {
-        logger.error('Failed to update quiz completion:', error);
-        toast.error('An error occurred. Please try again.');
-        setCompletingQuiz(false);
-        return;
-      }
-    } else {
-      sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-      
-      const shouldShowPWAOnboarding = () => {
-        const isInstalled = window.matchMedia('(display-mode: standalone)').matches;
-        const completedOnboarding = localStorage.getItem('pwa_onboarding_completed');
-        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-        
-        return isMobile && !isInstalled && !completedOnboarding;
-      };
-
-      if (shouldShowPWAOnboarding()) {
-        navigate('/onboarding', { replace: true });
-      } else {
-        navigate('/', { replace: true, state: { quizJustCompleted: true } });
-      }
+        break;
+      default:
+        break;
     }
   };
 
-  const brainTypeInfo: Record<BrainProfile, {
-    title: string;
-    subtitle: string;
-    description: string;
-    gradient: string;
-  }> = {
-    INTENSE: {
-      title: 'INTENSE Brain',
-      subtitle: 'Highly sensitive, emotionally intense, and deeply connected',
-      description: 'Your child has a highly reactive nervous system that processes emotions and sensory information more intensely than others.',
-      gradient: 'from-intense via-intense/80 to-intense/60'
-    },
-    DISTRACTED: {
-      title: 'DISTRACTED Brain',
-      subtitle: 'Easily distracted, impulsive, and always on the move',
-      description: 'Your child\'s brain seeks constant stimulation and has difficulty with sustained attention and impulse control.',
-      gradient: 'from-distracted via-distracted/80 to-distracted/60'
-    },
-    DEFIANT: {
-      title: 'DEFIANT Brain',
-      subtitle: 'Strong-willed, power-seeking, and autonomy-driven',
-      description: 'Your child\'s brain is wired for independence and control, making them question authority naturally.',
-      gradient: 'from-defiant via-defiant/80 to-defiant/60'
+  const handleGoalToggle = (goal: string) => {
+    setParentGoals((prevGoals) =>
+      prevGoals.includes(goal) ? prevGoals.filter((g) => g !== goal) : [...prevGoals, goal]
+    );
+  };
+
+  const handleApproachToggle = (approach: string) => {
+    setTriedApproaches((prevApproaches) =>
+      prevApproaches.includes(approach) ? prevApproaches.filter((a) => a !== approach) : [...prevApproaches, approach]
+    );
+  };
+
+  const canProceed = () => {
+    switch (quizStep) {
+      case 'name':
+        return isValidChildName(childName);
+      case 'details':
+        return childAge > 0;
+      case 'goals':
+        return parentGoals.length > 0;
+      case 'challenge':
+        return challengeDuration !== '';
+      case 'questions':
+        return answers[currentQuestion] !== undefined;
+      default:
+        return false;
     }
   };
 
-  const progress = hasStarted ? ((currentQuestion + 1) / questions.length) * 100 : 0;
+  const getButtonText = () => {
+    switch (quizStep) {
+      case 'name':
+        return 'Next - Details';
+      case 'details':
+        return 'Next - Goals';
+      case 'goals':
+        return 'Next - Speed';
+      case 'speed':
+        return 'Next - Challenge';
+      case 'challenge':
+        return 'Start Quiz';
+      case 'questions':
+        return currentQuestion < questions.length - 1 ? 'Next Question' : 'See Results';
+      default:
+        return 'Next';
+    }
+  };
 
-  const questionGradients = [
-    'from-primary/5 via-accent/5 to-primary/5',
-    'from-intense/5 via-distracted/5 to-defiant/5',
-    'from-accent/5 via-primary/10 to-accent/5',
-    'from-primary/10 via-accent/5 to-primary/5',
-    'from-distracted/5 via-intense/5 to-primary/5'
-  ];
+  const progressPercentage = (() => {
+    switch (quizStep) {
+      case 'name':
+        return 10;
+      case 'details':
+        return 20;
+      case 'goals':
+        return 30;
+      case 'speed':
+        return 40;
+      case 'challenge':
+        return 50;
+      case 'questions':
+        return ((currentQuestion + 1) / questions.length) * 50 + 50;
+      default:
+        return 0;
+    }
+  })();
+
+  const currentPage = (() => {
+    switch (quizStep) {
+      case 'name':
+        return 'name';
+      case 'details':
+        return 'details';
+      case 'goals':
+        return 'goals';
+      case 'speed':
+        return 'speed';
+      case 'challenge':
+        return 'challenge';
+      case 'questions':
+        return 'questions';
+      default:
+        return 'name';
+    }
+  })();
+
+  const pageNumber = (() => {
+     switch (quizStep) {
+      case 'name':
+        return 1;
+      case 'details':
+        return 2;
+      case 'goals':
+        return 3;
+      case 'speed':
+        return 4;
+      case 'challenge':
+        return 5;
+      case 'questions':
+        return 6;
+      default:
+        return 1;
+    }
+  })();
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen flex flex-col bg-white dark:bg-black">
+      {/* Progress Bar - Full Width */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black shadow-sm">
+        <div className="h-1 bg-gray-200 dark:bg-gray-800">
+          <motion.div
+            className="h-full bg-black dark:bg-white"
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+
+        <div className="px-4 h-14 flex items-center justify-between">
+          {/* Back Button */}
+          {currentPage !== 'name' && !showResult && !showPreLoading && !showFinalCelebration && (
+            <button
+              onClick={handlePrevious}
+              className="w-10 h-10 flex items-center justify-center text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+          )}
+          
+          {/* Page Number Badge */}
+          <div className="ml-auto w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+            <span className="text-xs font-bold text-black dark:text-white">{pageNumber}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
       <AnimatePresence mode="wait">
-            {/* Special screens with keys for AnimatePresence */}
-            {showFinalCelebration && result ? (
-              <div key="final-celebration">
-                <QuizFinalCelebration
-                  brainType={result.type}
-                  onComplete={handleCelebrationComplete}
-                />
-              </div>
-            ) : showPostSpeedMotivational ? (
-              <div key="post-speed-motivational">
-                <QuizPostSpeedMotivationalScreen
-                  selectedGoals={parentGoals}
-                  onContinue={handlePostSpeedMotivationalContinue}
-                />
-              </div>
-            ) : showThankYou ? (
-              <div key="thank-you">
-                <QuizThankYouScreen
-                  onContinue={handleThankYouContinue}
-                />
-              </div>
-            ) : showPreLoading && result ? (
-              <div key="pre-loading">
-                <QuizPreLoadingScreen
-                  brainType={result.type}
-                  onContinue={handlePreLoadingContinue}
-                />
-              </div>
-            ) : quizStep === 'name' ? (
-              <motion.div
-                key="intro"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-end gap-4">
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '7%' }} />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">1</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-28 px-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h2 className="text-3xl md:text-4xl font-bold text-black mb-2 font-relative">
-                        Discover Your Child's Brain Profile
-                      </h2>
-                      <p className="text-gray-500 text-base md:text-lg">
-                        A scientifically-designed assessment to understand your child's unique neurodevelopmental patterns
-                      </p>
-                    </div>
-
-                    <div className="space-y-4 pt-4">
-                      <div className="space-y-3">
-                        <Label htmlFor="childName" className="text-left block font-medium text-black text-base">
-                          What's your child's name?
-                        </Label>
-                        <Input
-                          id="childName"
-                          type="text"
-                          placeholder="Enter child's name"
-                          value={childName}
-                          onChange={(e) => {
-                            setChildName(e.target.value);
-                            setNameError(false);
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && isValidChildName(childName)) {
-                              handleStartQuiz();
-                            }
-                          }}
-                          className={cn(
-                            "h-14 px-5 text-base rounded-2xl border-2 border-gray-200 bg-white transition-colors",
-                            "focus:border-black focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
-                            nameError && "border-red-500"
-                          )}
-                          maxLength={MAX_NAME_LENGTH}
-                          autoComplete="off"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
+        {showPreLoading ? (
+          <motion.div
+            key="preloading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <QuizPreLoadingScreen />
+          </motion.div>
+        ) : showPostSpeedMotivational ? (
+          <motion.div
+            key="postSpeedMotivational"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <QuizPostSpeedMotivationalScreen />
+          </motion.div>
+        ) : quizStep === 'name' ? (
+          <motion.div
+            key="name"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              What is your child's name?
+            </h1>
+            <Input
+              type="text"
+              placeholder="Enter child's name"
+              value={childName}
+              onChange={handleNameChange}
+              className={cn(
+                'w-full max-w-md text-center rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-sm dark:bg-gray-900 dark:text-white',
+                nameError && 'border-red-500 dark:border-red-500'
+              )}
+            />
+            {nameError && (
+              <p className="text-red-500 dark:text-red-400">
+                Please enter a valid name (2-50 characters, letters, numbers, spaces, hyphens, and apostrophes only).
+              </p>
+            )}
+          </motion.div>
+        ) : quizStep === 'details' ? (
+          <motion.div
+            key="details"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              How old is your child?
+            </h1>
+            <Input
+              type="number"
+              placeholder="Enter child's age"
+              value={childAge}
+              onChange={(e) => setChildAge(Number(e.target.value))}
+              className="w-full max-w-md text-center rounded-xl border-2 border-gray-200 dark:border-gray-700 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-sm dark:bg-gray-900 dark:text-white"
+            />
+          </motion.div>
+        ) : quizStep === 'goals' ? (
+          <motion.div
+            key="goals"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              What are your primary goals for your child?
+            </h1>
+            <div className="flex flex-wrap justify-center gap-4">
+              {[
+                'Improve Focus',
+                'Reduce Defiance',
+                'Enhance Emotional Regulation',
+                'Boost Confidence',
+              ].map((goal) => (
+                <Button
+                  key={goal}
+                  variant="outline"
+                  className={cn(
+                    'rounded-full',
+                    parentGoals.includes(goal)
+                      ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90'
+                      : 'text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                  )}
+                  onClick={() => handleGoalToggle(goal)}
+                >
+                  {goal}
+                </Button>
+              ))}
+            </div>
+          </motion.div>
+        ) : quizStep === 'speed' ? (
+          <motion.div
+            key="speed"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              How quickly do you want to see results?
+            </h1>
+            <QuizSpeedSlider setResultSpeed={setResultSpeed} resultSpeed={resultSpeed} />
+          </motion.div>
+        ) : quizStep === 'challenge' ? (
+          <motion.div
+            key="challenge"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              What is the typical duration of a challenge or difficult behavior?
+            </h1>
+            <div className="flex flex-wrap justify-center gap-4">
+              {['Less than 5 minutes', '5-15 minutes', '15-30 minutes', '30+ minutes'].map(
+                (duration) => (
                   <Button
-                    onClick={handleStartQuiz}
-                    disabled={!isValidChildName(childName)}
-                    size="lg"
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              </motion.div>
-            ) : quizStep === 'details' ? (
-              <motion.div
-                key="details"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
-                    {/* Back Button */}
-                    <button
-                      onClick={() => setQuizStep('name')}
-                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
-                    >
-                      <ArrowLeft className="w-5 h-5 text-black" />
-                    </button>
-                    
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '14%' }} />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">2</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content - adjusted for fixed header (h-2 + h-16 = 72px) */}
-                <div className="flex-1 pt-24 pb-28 px-6">
-                  <div className="space-y-6">
-                    <div className="space-y-1">
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-1 font-relative leading-tight">
-                        Tell us about {childName}
-                      </h2>
-                      <p className="text-sm md:text-base text-gray-500 opacity-70">
-                        This helps us personalize strategies for their developmental stage
-                      </p>
-                    </div>
-
-                    <div className="space-y-5 pt-2">
-                      <div className="space-y-4">
-                        <Label className="text-left block font-semibold text-black text-base">
-                          How old is {childName}?
-                        </Label>
-                        <div className="flex items-center gap-4">
-                          <Slider
-                            value={[childAge]}
-                            onValueChange={(value) => setChildAge(value[0])}
-                            min={1}
-                            max={18}
-                            step={1}
-                            className="flex-1 cursor-pointer"
-                          />
-                          <div className="w-20 h-16 rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 flex items-center justify-center shadow-sm">
-                            <span className="text-3xl font-bold text-black">{childAge}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
-                  <Button 
-                    onClick={handleDetailsComplete}
-                    size="lg"
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all active:scale-[0.98]"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              </motion.div>
-            ) : quizStep === 'goals' ? (
-              <motion.div
-                key="goals"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
-                    {/* Back Button */}
-                    <button
-                      onClick={() => setQuizStep('details')}
-                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
-                    >
-                      <ArrowLeft className="w-5 h-5 text-black" />
-                    </button>
-                    
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '21%' }} />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">3</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-28 px-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
-                        What do you most want to improve?
-                      </h2>
-                      <p className="text-gray-500 text-sm md:text-base">
-                        Select all that apply - we'll prioritize these in your plan
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      {[
-                        { value: 'tantrums', label: 'Tantrums & Meltdowns', emoji: '😤' },
-                        { value: 'sleep', label: 'Sleep Routine', emoji: '😴' },
-                        { value: 'eating', label: 'Eating & Mealtimes', emoji: '🍽️' },
-                        { value: 'focus', label: 'Focus & Concentration', emoji: '🎯' },
-                        { value: 'family', label: 'Family Relationships', emoji: '❤️' },
-                        { value: 'transitions', label: 'Transitions & Changes', emoji: '🔄' },
-                        { value: 'school', label: 'School Behavior', emoji: '📚' }
-                      ].map((goal) => (
-                        <div
-                          key={goal.value}
-                          onClick={() => toggleParentGoal(goal.value)}
-                          className={cn(
-                            "p-4 rounded-xl border-2 cursor-pointer transition-all",
-                            parentGoals.includes(goal.value)
-                              ? "border-black bg-black text-white"
-                              : "border-gray-200 bg-white hover:border-gray-300"
-                          )}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Checkbox
-                              checked={parentGoals.includes(goal.value)}
-                              className="pointer-events-none"
-                            />
-                            <span className="text-2xl">{goal.emoji}</span>
-                            <span className="font-medium">{goal.label}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
-                  <Button 
-                    onClick={handleGoalsComplete}
-                    size="lg"
-                    disabled={parentGoals.length === 0}
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              </motion.div>
-            ) : quizStep === 'speed' ? (
-              <motion.div
-                key="speed"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
-                    {/* Back Button */}
-                    <button
-                      onClick={() => setQuizStep('goals')}
-                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
-                    >
-                      <ArrowLeft className="w-5 h-5 text-black" />
-                    </button>
-                    
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '28%' }} />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">4</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-28">
-                  <QuizSpeedSlider
-                    value={resultSpeed}
-                    onChange={setResultSpeed}
-                  />
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
-                  <Button 
-                    onClick={handleSpeedComplete}
-                    size="lg"
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 font-relative shadow-lg transition-all active:scale-[0.98]"
-                  >
-                    Continue
-                  </Button>
-                </div>
-              </motion.div>
-            ) : quizStep === 'challenge' ? (
-              <motion.div
-                key="challenge"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
-                    {/* Back Button */}
-                    <button
-                      onClick={() => setQuizStep('speed')}
-                      className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
-                    >
-                      <ArrowLeft className="w-5 h-5 text-black" />
-                    </button>
-                    
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <div className="h-full bg-black rounded-full transition-all duration-300" style={{ width: '42%' }} />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">6</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-28 px-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-black mb-2 font-relative">
-                        How challenging has it been?
-                      </h2>
-                      <p className="text-gray-500 text-sm md:text-base">
-                        Help us understand your current situation
-                      </p>
-                    </div>
-
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <Label className="text-left block font-medium text-black text-base">
-                          Challenge Level
-                        </Label>
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-4">
-                            <Slider
-                              value={[challengeLevel]}
-                              onValueChange={(value) => setChallengeLevel(value[0])}
-                              min={1}
-                              max={10}
-                              step={1}
-                              className="flex-1"
-                            />
-                            <div className="w-16 h-14 rounded-xl bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-                              <span className="text-2xl font-bold text-white">{challengeLevel}</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between text-xs text-gray-500">
-                            <span>1 - Manageable</span>
-                            <span>10 - Overwhelming</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label className="text-left block font-medium text-black text-base">
-                          How long have you been facing this?
-                        </Label>
-                        <div className="grid grid-cols-2 gap-3">
-                          {['weeks', 'months', 'years', 'always'].map((duration) => (
-                            <div
-                              key={duration}
-                              onClick={() => setChallengeDuration(duration)}
-                              className={cn(
-                                "p-4 rounded-xl border-2 cursor-pointer transition-all text-center",
-                                challengeDuration === duration
-                                  ? "border-black bg-black text-white"
-                                  : "border-gray-200 bg-white hover:border-gray-300"
-                              )}
-                            >
-                              <span className="font-medium capitalize">{duration}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <Label className="text-left block font-medium text-black text-base">
-                          What have you already tried? (Optional)
-                        </Label>
-                        <div className="grid grid-cols-2 gap-2">
-                          {['time_out', 'rewards', 'consequences', 'ignoring', 'talking', 'other_methods'].map((approach) => (
-                            <div
-                              key={approach}
-                              onClick={() => toggleApproach(approach)}
-                              className={cn(
-                                "p-3 rounded-lg border cursor-pointer transition-all text-center text-sm",
-                                triedApproaches.includes(approach)
-                                  ? "border-black bg-black/5"
-                                  : "border-gray-200 bg-white hover:border-gray-300"
-                              )}
-                            >
-                              <span className="capitalize">{approach.replace('_', ' ')}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
-                  <Button 
-                    onClick={handleChallengeComplete}
-                    size="lg"
-                    disabled={!challengeDuration}
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
-                  >
-                    Start Quiz
-                  </Button>
-                </div>
-              </motion.div>
-            ) : quizStep === 'questions' && !showResult ? (
-              <motion.div
-                key={`question-${currentQuestion}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col bg-white"
-              >
-                {/* Header with Progress Bar */}
-                <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
-                  <div className="px-6 h-[72px] flex items-center justify-between gap-4">
-                    {/* Back Button */}
-                    {currentQuestion > 0 ? (
-                      <button
-                        onClick={handlePrevious}
-                        className="w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors active:scale-95"
-                      >
-                        <ArrowLeft className="w-5 h-5 text-black" />
-                      </button>
-                    ) : (
-                      <div className="w-10 flex-shrink-0" />
+                    key={duration}
+                    variant="outline"
+                    className={cn(
+                      'rounded-full',
+                      challengeDuration === duration
+                        ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90'
+                        : 'text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
                     )}
-                    
-                    {/* Progress Bar */}
-                    <div className="flex-1 relative h-2 bg-gray-200 rounded-full">
-                      <motion.div 
-                        className="h-full bg-black rounded-full"
-                        initial={{ width: 0 }}
-                        animate={{ width: `${progress}%` }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </div>
-                    
-                    {/* Page Number */}
-                    <div className="w-9 h-9 flex-shrink-0 bg-black/10 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold text-black">{7 + currentQuestion}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 pt-24 pb-28 px-6">
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="text-2xl md:text-3xl font-bold text-black mb-3 font-relative">
-                        {questions[currentQuestion].question}
-                      </h3>
-                      <p className="text-gray-500 text-sm md:text-base">
-                        This will be used to calibrate your custom plan.
-                      </p>
-                    </div>
-
-                    <div className="space-y-3">
-                      {questions[currentQuestion].options.map((option, index) => (
-                        <motion.div
-                          key={option.value}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.05 * index }}
-                        >
-                          <QuizOptionCard
-                            value={option.value}
-                            label={option.label}
-                            isSelected={answers[currentQuestion] === option.value}
-                            onSelect={handleAnswer}
-                          />
-                        </motion.div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Fixed Bottom Button */}
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 px-6 py-5 z-50">
-                  <Button
-                    onClick={handleNext}
-                    disabled={!answers[currentQuestion]}
-                    size="lg"
-                    className="w-full h-14 text-base font-semibold rounded-xl bg-black text-white hover:bg-black/90 disabled:bg-gray-200 disabled:text-gray-400 font-relative shadow-lg transition-all active:scale-[0.98]"
+                    onClick={() => setChallengeDuration(duration)}
                   >
-                    {currentQuestion < questions.length - 1 ? 'Continue' : 'See Results'}
+                    {duration}
                   </Button>
-                </div>
-              </motion.div>
-            ) : showResult && showCountdown ? (
-              <motion.div
-                key="countdown"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.1 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center justify-center min-h-[60vh] relative"
-              >
-                {/* Page Number */}
-                <div className="absolute top-4 left-4 z-10">
-                  <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-black dark:text-white">20</span>
-                  </div>
-                </div>
+                )
+              )}
+            </div>
 
-                <div className="text-center">
-                  <motion.div
-                    key={countdown}
-                    initial={{ scale: 0.5, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 1.5, opacity: 0 }}
-                    transition={{ duration: 0.5, type: "spring" }}
-                  >
-                    <div className="text-[12rem] md:text-[15rem] font-black text-black dark:text-white font-relative leading-none">
-                      {countdown}
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            ) : showResult && !showCountdown && result ? (
-              <div className="relative">
-                {/* Page Number */}
-                <div className="absolute top-4 left-4 z-10">
-                  <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-                    <span className="text-xs font-bold text-black dark:text-white">21</span>
-                  </div>
-                </div>
+            <h2 className="text-xl font-semibold text-center text-black dark:text-white mt-6">
+              What approaches have you already tried?
+            </h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              {[
+                'Time-outs',
+                'Reward Charts',
+                'Ignoring Behavior',
+                'Yelling',
+                'Taking Away Privileges',
+              ].map((approach) => (
+                <Button
+                  key={approach}
+                  variant="outline"
+                  className={cn(
+                    'rounded-full',
+                    triedApproaches.includes(approach)
+                      ? 'bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90'
+                      : 'text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800'
+                  )}
+                  onClick={() => handleApproachToggle(approach)}
+                >
+                  {approach}
+                </Button>
+              ))}
+            </div>
+          </motion.div>
+        ) : hasStarted ? (
+          <motion.div
+            key={`question-${currentQuestion}`}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-2xl font-bold text-center text-black dark:text-white">
+              {questions[currentQuestion].question}
+            </h1>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+              {questions[currentQuestion].options.map((option) => (
+                <QuizOptionCard
+                  key={option.value}
+                  option={option}
+                  selected={answers[currentQuestion] === option.value}
+                  onSelect={() => handleAnswer(currentQuestion, option.value)}
+                />
+              ))}
+            </div>
+          </motion.div>
+        ) : showCountdown ? (
+          <motion.div
+            key="countdown"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <h1 className="text-6xl font-bold text-center text-black dark:text-white">
+              {countdown}
+            </h1>
+          </motion.div>
+        ) : completingQuiz ? (
+          <motion.div
+            key="completing"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <QuizLoadingScreen />
+          </motion.div>
+        ) : showFinalCelebration ? (
+          <motion.div
+            key="celebration"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <QuizFinalCelebration />
+          </motion.div>
+        ) : showThankYou ? (
+          <motion.div
+            key="thankyou"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="flex-grow flex items-center justify-center"
+          >
+            <QuizThankYouScreen />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="start"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="container flex-grow flex flex-col items-center justify-center gap-4 p-4"
+          >
+            <h1 className="text-3xl font-bold text-center text-black dark:text-white">
+              Welcome to the Brain Profile Quiz!
+            </h1>
+            <p className="text-lg text-center text-gray-600 dark:text-gray-400">
+              This quiz will help you understand your child's unique brain profile.
+            </p>
+            <Button
+              onClick={startQuiz}
+              className="w-full max-w-md h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
+            >
+              Start Quiz
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-                <div className="space-y-8">
-                  <QuizEnhancedResults
-                    brainType={result.type}
-                    childName={childName}
-                    challengeLevel={challengeLevel}
-                    parentGoals={parentGoals}
-                  />
-
-                  <div className="flex flex-col items-center gap-4 mt-8">
-                    {savingProfile && (
-                      <p className="text-sm text-gray-500">Saving profile...</p>
-                    )}
-                    {saveError && (
-                      <p className="text-sm text-red-500">{saveError}</p>
-                    )}
-                    
-                    <Button
-                      onClick={handleGoToDashboard}
-                      disabled={savingProfile || completingQuiz}
-                      className="w-full max-w-md h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-base font-bold rounded-xl disabled:opacity-50 shadow-xl hover:shadow-2xl transition-shadow"
-                    >
-                      {completingQuiz ? 'Finalizing...' : 'See My Dashboard'}
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ) : null}
-          </AnimatePresence>
+      {/* Fixed Bottom Button */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-gray-800 px-4 py-4 z-50">
+        <Button
+          onClick={handleNext}
+          disabled={!canProceed()}
+          className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-600 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
+        >
+          {getButtonText()}
+        </Button>
+      </div>
     </div>
   );
 }
