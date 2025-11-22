@@ -8,7 +8,7 @@ html, body {
   padding: 0 !important;
   height: 100%;
   width: 100%;
-  background: #FFFFFF !important;
+  background: #0E0E10 !important;
   overflow-x: hidden;
 }
 
@@ -29,7 +29,7 @@ body {
 }
 
 main, #root, .container, .wrapper {
-  background: #FFFFFF !important;
+  background: transparent !important;
   margin: 0 !important;
   padding: 0 !important;
 }
@@ -134,26 +134,26 @@ header, main {
   }
 
   .dark {
-    /* Dark Mode - Cal AI Exact Colors */
-    --background: 240 4% 8%;              /* #13131A - Dark purple-gray background */
+    /* Dark Mode - Cal AI Exact Colors from screenshot */
+    --background: 0 0% 5.5%;             /* #0E0E10 - Deep dark background */
     --foreground: 0 0% 98%;
 
-    --card: 240 4% 11%;                   /* #1A1A24 - Slightly lighter card */
+    --card: 0 0% 8%;                     /* #141418 - Dark gray cards */
     --card-foreground: 0 0% 98%;
-    --popover: 240 4% 11%;
+    --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;                 /* White for primary in dark mode */
     --primary-glow: 0 0% 100%;
-    --primary-foreground: 240 4% 8%;
+    --primary-foreground: 0 0% 5.5%;
     
-    --secondary: 240 4% 15%;
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 240 4% 12%;
-    --muted-foreground: 0 0% 55%;        /* Gray for subtitle text */
+    --muted: 0 0% 9%;
+    --muted-foreground: 0 0% 50%;        /* Gray for subtitle text */
     
-    --accent: 14 100% 50%;               /* Orange stays same */
+    --accent: 14 100% 50%;               /* Orange for fire icon only */
     --accent-foreground: 0 0% 100%;
     
     --success: 142 71% 45%;

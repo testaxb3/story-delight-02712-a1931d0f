@@ -11,7 +11,7 @@ export function SectionCard({ children, className, onClick }: SectionCardProps) 
   return (
     <Card 
       className={cn(
-        "bg-white dark:bg-calai-900 rounded-2xl p-4 shadow-sm border border-border/50",
+        "bg-card rounded-[24px] shadow-sm border-0",
         className
       )}
       onClick={onClick}

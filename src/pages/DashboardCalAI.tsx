@@ -1,50 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Video, Flame, Target, Calendar, ChevronDown, Plus, MessageCircleHeart, Moon, Sun } from 'lucide-react';
+import { BookOpen, Video, Flame, Target, Calendar, Plus } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { SectionCard } from '@/components/CalAI/SectionCard';
-import { SectionHeader } from '@/components/CalAI/SectionHeader';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import { useMemo } from 'react';
-import { getUserInitials } from '@/lib/profileUtils';
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { activeChild, childProfiles, setActiveChild, onboardingRequired } = useChildProfiles();
-  const { theme, toggleTheme } = useTheme();
+  const { activeChild } = useChildProfiles();
   const { data: dashboardStats } = useDashboardStats();
-
-  const profileInitials = useMemo(() => getUserInitials(user), [user]);
-
-  const activeLabel = useMemo(() => {
-    if (activeChild) {
-      return `${activeChild.name} (${activeChild.brain_profile})`;
-    }
-    if (onboardingRequired) {
-      return 'Add your child profile';
-    }
-    return 'Select a child';
-  }, [activeChild, onboardingRequired]);
-
-  const getName = () => {
-    return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Friend';
-  };
 
   const scriptsAvailable = dashboardStats?.totalScripts ?? 0;
   const scriptsUsed = dashboardStats?.uniqueScriptsUsed ?? 0;
@@ -52,7 +19,7 @@ export default function DashboardCalAI() {
 
   // Week calendar - today is highlighted
   const today = new Date();
-  const dayOfWeek = today.getDay(); // 0 = Sunday
+  const dayOfWeek = today.getDay();
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((label, index) => {
     const date = new Date(today);
     date.setDate(today.getDate() - dayOfWeek + index);
@@ -65,158 +32,188 @@ export default function DashboardCalAI() {
   });
 
   return (
-    <MainLayout>
-      <div className="space-y-6 pb-24 px-4 pt-4">
-        {/* Top Header - Logo + Streak Badge */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold font-relative">NEP</h1>
-          <div className="flex items-center gap-2 bg-white dark:bg-card px-4 py-2 rounded-full shadow-sm">
+    <MainLayout hideSideNav hideBottomNav>
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Cal AI Header - Logo + Streak */}
+        <header className="px-6 py-6 flex items-center justify-between">
+          <h1 className="text-3xl font-bold font-relative tracking-tight">NEP</h1>
+          <div className="flex items-center gap-2 bg-card px-5 py-2.5 rounded-full shadow-sm">
             <Flame className="w-5 h-5 text-accent" />
-            <span className="font-bold">{currentStreak}</span>
+            <span className="font-bold text-lg">{currentStreak}</span>
+          </div>
+        </header>
+
+        {/* Weekly Calendar - Horizontal */}
+        <div className="px-6 mb-8">
+          <div className="flex justify-between items-center">
+            {weekDays.map((day) => (
+              <button
+                key={day.label}
+                className={cn(
+                  "flex flex-col items-center gap-2 transition-all",
+                  day.isToday && "scale-110"
+                )}
+              >
+                <span className={cn(
+                  "text-xs font-medium",
+                  day.isToday ? "text-foreground" : "text-muted-foreground"
+                )}>
+                  {day.label}
+                </span>
+                <div className={cn(
+                  "w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold transition-all relative",
+                  day.isToday 
+                    ? "bg-foreground text-background" 
+                    : "text-foreground"
+                )}>
+                  {day.date}
+                  {/* Activity dots for past days */}
+                  {day.isPast && !day.isToday && (
+                    <div className="absolute bottom-1.5 flex gap-0.5">
+                      <div className="w-1 h-1 rounded-full bg-accent" />
+                      <div className="w-1 h-1 rounded-full bg-accent" />
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* Weekly Calendar - Horizontal com pontilhados */}
-        <div className="flex justify-between items-center px-2">
-          {weekDays.map((day) => (
-            <button
-              key={day.label}
-              className={cn(
-                "flex flex-col items-center gap-1 transition-all relative",
-                day.isToday && "scale-110"
-              )}
-            >
-              <span className={cn(
-                "text-xs font-medium",
-                day.isToday ? "text-foreground" : "text-muted-foreground"
-              )}>
-                {day.label}
-              </span>
-              <div className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold transition-all relative",
-                day.isToday 
-                  ? "bg-foreground text-background" 
-                  : day.isPast
-                    ? "text-foreground"
-                    : "text-muted-foreground"
-              )}>
-                {day.date}
-                {/* Pontilhados para dias com atividade */}
-                {day.isPast && (
-                  <div className="absolute bottom-1 flex gap-0.5">
-                    <div className="w-1 h-1 rounded-full bg-accent" />
-                    <div className="w-1 h-1 rounded-full bg-accent" />
-                  </div>
-                )}
-              </div>
-            </button>
-          ))}
-        </div>
-
-        {/* Large Stats Cards Grid */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Scripts Available Card */}
-          <SectionCard className="min-h-[180px] bg-muted/30">
-            <div className="flex flex-col justify-between h-full p-2">
-              <div className="flex items-start justify-between">
-                <BookOpen className="w-8 h-8 text-foreground/60" />
-              </div>
+        {/* Main Stats Cards Grid */}
+        <div className="px-6 mb-8">
+          <div className="grid grid-cols-2 gap-4">
+            {/* Scripts Available Card */}
+            <div className="bg-card rounded-[24px] p-6 min-h-[180px] flex flex-col justify-between">
+              <BookOpen className="w-8 h-8 text-foreground/40" />
               <div>
-                <p className="text-5xl font-bold mb-1">{scriptsAvailable}</p>
+                <p className="text-5xl font-bold mb-1.5">{scriptsAvailable}</p>
                 <p className="text-sm text-muted-foreground font-medium">Scripts Available</p>
               </div>
             </div>
-          </SectionCard>
 
-          {/* Scripts Used Card */}
-          <SectionCard className="min-h-[180px]">
-            <div className="flex flex-col justify-between h-full p-2">
-              <div className="flex items-start justify-between">
-                <Target className="w-8 h-8 text-foreground/60" />
-              </div>
+            {/* Scripts Used Card */}
+            <div className="bg-card rounded-[24px] p-6 min-h-[180px] flex flex-col justify-between">
+              <Target className="w-8 h-8 text-foreground/40" />
               <div>
-                <p className="text-5xl font-bold mb-1">{scriptsUsed}</p>
+                <p className="text-5xl font-bold mb-1.5">{scriptsUsed}</p>
                 <p className="text-sm text-muted-foreground font-medium">Scripts Used</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <BookOpen className="w-4 h-4" />
-                  <span className="text-xs font-medium">+{scriptsUsed}</span>
-                </div>
               </div>
             </div>
-          </SectionCard>
+          </div>
         </div>
 
         {/* Tracker Card - Horizontal */}
-        <SectionCard className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
-                <Calendar className="w-6 h-6 text-accent" />
+        <div className="px-6 mb-8">
+          <div 
+            className="bg-card rounded-[24px] p-5 cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/tracker')}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                  <Calendar className="w-6 h-6 text-accent" />
+                </div>
+                <div>
+                  <p className="font-bold text-base mb-0.5">My Plan Tracker</p>
+                  <p className="text-sm text-muted-foreground">{currentStreak} days logged</p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold text-lg">My Plan Tracker</p>
-                <p className="text-sm text-muted-foreground">{currentStreak} days logged</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full w-10 h-10"
-                onClick={() => navigate('/tracker')}
-              >
-                <span className="text-xl">→</span>
-              </Button>
+              <div className="text-2xl text-muted-foreground">→</div>
             </div>
           </div>
-        </SectionCard>
-
-        {/* Page Indicators */}
-        <div className="flex justify-center gap-2 py-2">
-          <div className="w-2 h-2 rounded-full bg-muted" />
-          <div className="w-2 h-2 rounded-full bg-muted" />
-          <div className="w-2 h-2 rounded-full bg-foreground" />
         </div>
 
-        {/* Recently Added Section - Cal AI style */}
-        <div>
-          <h2 className="text-xl font-bold mb-3 px-2">Recently added</h2>
+        {/* Page Indicators */}
+        <div className="flex justify-center gap-2 mb-8">
+          <div className="w-2 h-2 rounded-full bg-muted" />
+          <div className="w-2 h-2 rounded-full bg-muted" />
+          <div className="w-6 h-2 rounded-full bg-foreground" />
+        </div>
+
+        {/* Recently Added Section */}
+        <div className="px-6 pb-32">
+          <h2 className="text-xl font-bold mb-4 font-relative">Recently added</h2>
           <div className="space-y-3">
-            <SectionCard 
-              className="p-4 cursor-pointer active:scale-[0.98] transition-transform"
+            <div 
+              className="bg-card rounded-[24px] p-5 cursor-pointer active:scale-[0.98] transition-transform"
               onClick={() => navigate('/scripts')}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
                   <BookOpen className="w-6 h-6 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sm mb-0.5 truncate">New Bedtime Scripts</h3>
+                  <h3 className="font-bold text-sm mb-1 truncate">New Bedtime Scripts</h3>
                   <p className="text-xs text-muted-foreground truncate">
-                    {scriptsAvailable} scripts available for {activeChild?.brain_profile || 'your'} profile
+                    {scriptsAvailable} scripts for {activeChild?.brain_profile || 'your'} profile
                   </p>
                 </div>
               </div>
-            </SectionCard>
+            </div>
             
-            <SectionCard 
-              className="p-4 cursor-pointer active:scale-[0.98] transition-transform"
-              onClick={() => navigate('/tracker')}
+            <div 
+              className="bg-card rounded-[24px] p-5 cursor-pointer active:scale-[0.98] transition-transform"
+              onClick={() => navigate('/videos')}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center flex-shrink-0">
-                  <Calendar className="w-6 h-6 text-accent" />
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-accent/10 flex items-center justify-center flex-shrink-0">
+                  <Video className="w-6 h-6 text-accent" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-sm mb-0.5 truncate">Track Your Progress</h3>
+                  <h3 className="font-bold text-sm mb-1 truncate">Video Library</h3>
                   <p className="text-xs text-muted-foreground truncate">
-                    {currentStreak} day streak - Keep it going!
+                    Expert guidance and strategies
                   </p>
                 </div>
               </div>
-            </SectionCard>
+            </div>
           </div>
         </div>
+
+        {/* Cal AI Bottom Nav - Floating with blur */}
+        <nav className="fixed bottom-6 left-6 right-6 z-50 md:hidden">
+          <div className="bg-card/80 backdrop-blur-xl rounded-full px-4 py-3 shadow-xl border border-white/5">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => navigate('/')}
+                className="flex flex-col items-center justify-center w-14 h-14 rounded-full bg-foreground text-background transition-all"
+              >
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-background rounded-full" />
+                </div>
+              </button>
+
+              <button
+                onClick={() => navigate('/scripts')}
+                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
+              >
+                <BookOpen className="w-6 h-6" />
+              </button>
+
+              <button
+                onClick={() => navigate('/videos')}
+                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
+              >
+                <Video className="w-6 h-6" />
+              </button>
+
+              <button
+                onClick={() => navigate('/bonuses')}
+                className="flex items-center justify-center w-12 h-12 text-muted-foreground transition-colors"
+              >
+                <BookOpen className="w-6 h-6" />
+              </button>
+
+              <button
+                onClick={() => navigate('/profile')}
+                className="flex items-center justify-center w-12 h-12 rounded-full bg-foreground text-background transition-all"
+              >
+                <Plus className="w-6 h-6" />
+              </button>
+            </div>
+          </div>
+        </nav>
       </div>
     </MainLayout>
   );
