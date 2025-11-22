@@ -187,6 +187,26 @@ export default function Quiz() {
     const finalResult = calculateResult();
     if (finalResult) {
       await saveChildProfile();
+      
+      // Mark quiz as completed in profiles table
+      if (user?.id) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ 
+            quiz_completed: true,
+            quiz_in_progress: false 
+          })
+          .eq('id', user.id);
+        
+        if (error) {
+          logger.error('Error updating quiz_completed', error);
+        } else {
+          // Set sessionStorage to allow navigation without redirect
+          sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
+          await refreshUser(); // Refresh user data to update quiz_completed state
+          logger.debug('Quiz marked as completed');
+        }
+      }
     }
   };
 
@@ -458,7 +478,7 @@ export default function Quiz() {
   }
 
   if (showThankYou) {
-    return <QuizThankYouScreen onContinue={() => navigate('/')} />;
+    return <QuizThankYouScreen onContinue={() => navigate('/', { state: { quizJustCompleted: true } })} />;
   }
 
   return (
