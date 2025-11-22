@@ -1135,6 +1135,7 @@ export type Database = {
           quiz_in_progress: boolean
           role: string | null
           updated_at: string | null
+          username: string | null
           welcome_modal_shown: boolean | null
         }
         Insert: {
@@ -1160,6 +1161,7 @@ export type Database = {
           quiz_in_progress?: boolean
           role?: string | null
           updated_at?: string | null
+          username?: string | null
           welcome_modal_shown?: boolean | null
         }
         Update: {
@@ -1185,6 +1187,7 @@ export type Database = {
           quiz_in_progress?: boolean
           role?: string | null
           updated_at?: string | null
+          username?: string | null
           welcome_modal_shown?: boolean | null
         }
         Relationships: []
@@ -3087,6 +3090,7 @@ export type Database = {
           quiz_in_progress: boolean
           role: string | null
           updated_at: string | null
+          username: string | null
           welcome_modal_shown: boolean | null
         }
         SetofOptions: {

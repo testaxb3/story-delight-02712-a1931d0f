@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { PhotoUpload } from '@/components/PhotoUpload';
 import { NotificationSettings } from '@/components/NotificationSettings';
 import { useTheme } from '@/contexts/ThemeContext';
+import { UserProfileEditCard } from '@/components/Profile/UserProfileEditCard';
 import type { ChildProfile } from '@/contexts/ChildProfilesContext';
 
 interface ProfileSettingsCardProps {
@@ -43,6 +44,9 @@ export function ProfileSettingsCard({
 
   return (
     <>
+      {/* User Profile Edit Card */}
+      <UserProfileEditCard />
+
       {/* Theme Toggle Card */}
       <Card className="p-6 glass border-none shadow-lg animate-in fade-in slide-in-from-bottom-6 duration-500 transition-all">
         <div className="flex items-center gap-2 mb-4">
