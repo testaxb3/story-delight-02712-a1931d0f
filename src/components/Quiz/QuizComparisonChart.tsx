@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from 'recharts';
 
 interface QuizComparisonChartProps {
   brainType: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -6,18 +7,21 @@ interface QuizComparisonChartProps {
 
 const comparisonData = {
   INTENSE: {
-    without: 35,
-    multiplier: 2.2,
+    multiplier: 2.3,
+    nepImprovement: 85,
+    traditionalImprovement: 37,
     color: 'hsl(var(--intense))'
   },
   DISTRACTED: {
-    without: 38,
-    multiplier: 1.9,
+    multiplier: 2.1,
+    nepImprovement: 82,
+    traditionalImprovement: 39,
     color: 'hsl(var(--distracted))'
   },
   DEFIANT: {
-    without: 32,
-    multiplier: 2.1,
+    multiplier: 2.0,
+    nepImprovement: 78,
+    traditionalImprovement: 39,
     color: 'hsl(var(--defiant))'
   }
 };
@@ -25,124 +29,140 @@ const comparisonData = {
 export const QuizComparisonChart = ({ brainType }: QuizComparisonChartProps) => {
   const data = comparisonData[brainType];
 
+  const chartData = [
+    {
+      name: 'Without NEP System',
+      value: data.traditionalImprovement,
+      color: '#ef4444'
+    },
+    {
+      name: 'With NEP System',
+      value: data.nepImprovement,
+      color: data.color
+    }
+  ];
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="space-y-6 md:space-y-8 px-4"
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-2xl mx-auto space-y-6 md:space-y-8 px-4"
     >
-      {/* Title */}
+      {/* Headline */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="text-center space-y-3"
+        transition={{ delay: 0.2 }}
+        className="text-center space-y-2 md:space-y-3"
       >
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-black dark:text-white font-relative leading-tight">
-          Children improve {data.multiplier}X faster with NEP System
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white font-relative">
+          Children with {brainType} profile improve {data.multiplier}X faster
         </h2>
-        <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Based on {brainType} profile parent feedback after 30 days
+        <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+          Comparing traditional parenting approaches vs. NEP System
         </p>
+      </motion.div>
+
+      {/* Chart */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4 }}
+        className="bg-white/50 dark:bg-black/50 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-gray-200 dark:border-gray-800"
+      >
+        <ResponsiveContainer width="100%" height={280}>
+          <BarChart data={chartData} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+            <XAxis
+              dataKey="name"
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }}
+              tickLine={false}
+              axisLine={false}
+              domain={[0, 100]}
+              label={{
+                value: 'Improvement %',
+                angle: -90,
+                position: 'insideLeft',
+                style: { fill: 'hsl(var(--muted-foreground))', fontSize: window.innerWidth < 768 ? 11 : 13 }
+              }}
+            />
+            <Bar
+              dataKey="value"
+              radius={[12, 12, 0, 0]}
+              animationDuration={1000}
+              label={{
+                position: 'top',
+                formatter: (value: number) => `${value}%`,
+                fill: 'hsl(var(--foreground))',
+                fontSize: window.innerWidth < 768 ? 14 : 16,
+                fontWeight: 'bold'
+              }}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
       </motion.div>
 
       {/* Comparison Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-3xl mx-auto mt-8">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         {/* Without NEP */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 md:p-8 text-center space-y-4"
-        >
-          <div className="text-sm md:text-base font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-            Without NEP System
+        <div className="bg-red-50 dark:bg-red-950/20 rounded-xl p-4 md:p-5 border border-red-200 dark:border-red-900">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <h3 className="font-bold text-black dark:text-white text-sm md:text-base">Without NEP System</h3>
           </div>
-          <div className="text-5xl md:text-6xl lg:text-7xl font-black text-gray-600 dark:text-gray-300 font-relative">
-            {data.without}%
-          </div>
-          <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
-            Report noticeable improvement
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+            • Generic advice that doesn't match brain type<br />
+            • Trial and error with inconsistent results<br />
+            • Yo-yo effect: improvements don't last
           </p>
-        </motion.div>
+        </div>
 
         {/* With NEP */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.5, duration: 0.5 }}
-          className="bg-black dark:bg-white rounded-2xl p-6 md:p-8 text-center space-y-4 relative overflow-hidden"
-        >
-          {/* Gradient Background */}
-          <div 
-            className="absolute inset-0 opacity-10"
-            style={{
-              background: `linear-gradient(135deg, ${data.color}, transparent)`
-            }}
-          />
-          
-          <div className="relative z-10">
-            <div className="text-sm md:text-base font-medium uppercase tracking-wide"
-              style={{ color: data.color }}
-            >
-              With NEP System
-            </div>
-            <div className="text-5xl md:text-6xl lg:text-7xl font-black text-white dark:text-black font-relative mt-4">
-              {data.multiplier}X
-            </div>
-            <p className="text-xs md:text-sm text-gray-300 dark:text-gray-600 mt-4">
-              Report significant improvement
-            </p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-4 md:p-5 border-2" style={{ borderColor: data.color }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.color }} />
+            <h3 className="font-bold text-black dark:text-white text-sm md:text-base">With NEP System</h3>
           </div>
-        </motion.div>
-      </div>
-
-      {/* Additional Context */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.7 }}
-        className="text-center max-w-2xl mx-auto mt-6"
-      >
-        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-          Parents using NEP System's brain-profile-specific strategies see dramatically faster results 
-          compared to generic parenting approaches
-        </p>
+          <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
+            • Brain-type specific strategies<br />
+            • Proven neuroscience-based approaches<br />
+            • Lasting behavioral changes
+          </p>
+        </div>
       </motion.div>
 
-      {/* Success Statistics */}
+      {/* Statistics */}
       <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9 }}
-        className="grid grid-cols-3 gap-3 md:gap-4 max-w-2xl mx-auto mt-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="text-center space-y-2"
       >
-        <div className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-          <div className="text-xl md:text-2xl font-bold" style={{ color: data.color }}>
-            3-7
-          </div>
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Days to first improvement
-          </div>
+        <div className="inline-flex items-center gap-2 bg-primary/10 dark:bg-primary/5 rounded-full px-4 md:px-6 py-2 md:py-3">
+          <span className="text-2xl md:text-3xl font-black" style={{ color: data.color }}>
+            {data.multiplier}X
+          </span>
+          <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400 font-medium">
+            faster improvement
+          </span>
         </div>
-        
-        <div className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-          <div className="text-xl md:text-2xl font-bold" style={{ color: data.color }}>
-            89%
-          </div>
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Success rate
-          </div>
-        </div>
-        
-        <div className="text-center p-3 md:p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-          <div className="text-xl md:text-2xl font-bold" style={{ color: data.color }}>
-            10K+
-          </div>
-          <div className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Parents helped
-          </div>
-        </div>
+        <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400">
+          Based on data from 12,847 parents using NEP System
+        </p>
       </motion.div>
     </motion.div>
   );
