@@ -146,7 +146,7 @@ export default function CommunityFeed() {
 
     const { data, error } = await supabase
       .from('group_posts')
-      .select('id, content, script_used, created_at, user_id, profiles(name, photo_url)')
+      .select('*, profiles!user_id(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
