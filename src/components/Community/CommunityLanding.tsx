@@ -63,20 +63,24 @@ const COMMUNITY_IMAGES = [
 export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: CommunityLandingProps) {
   return (
     <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
-      {/* Top Section - Image Grid (60% of viewport) */}
-      <div className="h-[60vh] relative overflow-hidden">
-        {/* Grid of placeholder images */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 p-2 h-full">
-          {COMMUNITY_IMAGES.map((item) => {
+      {/* Top Section - Image Grid (55% of viewport to ensure buttons visible) */}
+      <div className="h-[55vh] relative overflow-hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}>
+        {/* Grid of placeholder images with variable heights */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 px-2 h-full">
+          {COMMUNITY_IMAGES.map((item, index) => {
             const IconComponent = item.icon;
+            // First row cards are taller
+            const isFirstRow = index < 2;
             return (
               <div
                 key={item.id}
-                className="relative rounded-2xl overflow-hidden group cursor-pointer"
+                className={`relative rounded-2xl overflow-hidden group cursor-pointer ${
+                  isFirstRow ? 'row-span-2' : ''
+                }`}
               >
                 {/* Gradient background with icon */}
                 <div className={`absolute inset-0 bg-gradient-to-br ${item.gradient} flex items-center justify-center`}>
-                  <IconComponent className="w-16 h-16 text-white/30" />
+                  <IconComponent className="w-16 h-16 text-white/20" />
                 </div>
                 
                 {/* Dark overlay */}
@@ -107,16 +111,16 @@ export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: Communi
         </div>
       </div>
 
-      {/* Bottom Section - Content and CTAs (40% of viewport) */}
-      <div className="flex-1 bg-[#0d0d0d] flex flex-col items-center justify-center px-6 py-12">
+      {/* Bottom Section - Content and CTAs (45% of viewport) */}
+      <div className="flex-1 bg-[#0d0d0d] flex flex-col items-center justify-center px-6 py-8 pb-safe">
         <div className="max-w-md w-full text-center">
           {/* Title */}
-          <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-white leading-tight">
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-white leading-tight">
             Parenting is easier together 💪
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg text-gray-400 mb-10">
+          <p className="text-base sm:text-lg text-gray-400 mb-8">
             Join a community and see how other parents are using NEP scripts
           </p>
 
@@ -133,7 +137,7 @@ export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: Communi
               variant="outline"
               size="lg"
               onClick={onJoinCommunity}
-              className="w-full h-14 text-base bg-transparent border-2 border-gray-700 text-white hover:bg-white/5 rounded-full font-medium"
+              className="w-full h-14 text-base bg-transparent border-2 border-gray-600 text-white hover:bg-white/5 hover:border-gray-500 rounded-full font-medium"
             >
               Join Existing Community
             </Button>
