@@ -40,7 +40,7 @@ const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
 const Library = lazy(() => import("./pages/Library"));
-const Bonuses = lazy(() => import("./pages/BonusesCalAI"));
+const Bonuses = lazy(() => import("./pages/Bonuses"));
 const EbookReader = lazy(() => import("./pages/EbookReader"));
 const EbookReaderV2 = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
