@@ -3185,6 +3185,14 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: never; Returns: boolean }
+      is_community_leader: {
+        Args: { _community_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_community_member: {
+        Args: { _community_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_email_approved: { Args: { p_email: string }; Returns: boolean }
       mark_chapter_complete: {
         Args: { p_chapter_index: number; p_ebook_id: string }
