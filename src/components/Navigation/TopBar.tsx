@@ -54,11 +54,7 @@ export function TopBar() {
           className="flex items-center gap-2 group hover:scale-105 transition-transform"
           aria-label="Go to home"
         >
-          <div className="relative">
-            <div className="text-4xl group-hover:animate-pulse">🧠</div>
-            <div className="absolute inset-0 bg-white/20 rounded-full blur-xl group-hover:bg-white/30 transition-all"></div>
-          </div>
-          <span className="font-bold text-lg hidden sm:block group-hover:text-white/90 transition-colors">
+          <span className="font-bold text-lg group-hover:text-white/90 transition-colors">
             NEP System
           </span>
         </button>
