@@ -123,7 +123,13 @@ export default function CommunityFeed() {
   };
 
   const loadPosts = async () => {
-    if (!currentCommunity) return;
+    if (!currentCommunity) {
+      console.log('loadPosts: No current community');
+      return;
+    }
+
+    console.log('=== LOAD POSTS ===');
+    console.log('Loading posts for community:', currentCommunity.id);
 
     const { data, error } = await supabase
       .from('group_posts')
@@ -131,8 +137,15 @@ export default function CommunityFeed() {
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
+    console.log('loadPosts result - data:', data);
+    console.log('loadPosts result - error:', error);
+    console.log('Posts count:', data?.length || 0);
+
     if (!error && data) {
       setPosts(data as any);
+      console.log('Posts set to state');
+    } else if (error) {
+      console.error('Error loading posts:', error);
     }
   };
 
