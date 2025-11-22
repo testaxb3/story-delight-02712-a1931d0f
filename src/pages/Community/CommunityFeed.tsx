@@ -50,6 +50,7 @@ interface Post {
   created_at: string;
   user_id: string;
   profiles: {
+    username: string | null;
     name: string;
     photo_url: string | null;
   };
@@ -146,7 +147,7 @@ export default function CommunityFeed() {
 
     const { data, error } = await supabase
       .from('group_posts')
-      .select('id, content, script_used, created_at, user_id, profiles(name, photo_url)')
+      .select('id, content, script_used, created_at, user_id, profiles(username, name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
@@ -389,11 +390,11 @@ export default function CommunityFeed() {
                       {post.profiles?.photo_url ? (
                         <img src={post.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
                       ) : (
-                        getInitials(post.profiles?.name || 'U')
+                        getInitials(post.profiles?.username || post.profiles?.name || 'U')
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-sm">{post.profiles?.name || 'User'}</p>
+                      <p className="font-semibold text-sm">{post.profiles?.username || post.profiles?.name || 'User'}</p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(post.created_at).toLocaleDateString()}
                       </p>
