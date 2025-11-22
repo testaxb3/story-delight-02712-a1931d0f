@@ -148,11 +148,16 @@ export default function EditProfile() {
 
   const handleSave = async () => {
     console.log('=== EDIT PROFILE SAVE DEBUG ===');
-    console.log('User:', user);
-    console.log('User Profile ID:', user?.profileId);
     
-    if (!user?.profileId) {
-      console.error('Missing user.profileId');
+    // Get fresh auth user
+    const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
+    console.log('Auth User:', authUser);
+    console.log('Auth Error:', authError);
+    console.log('Context User:', user);
+    console.log('Context User Profile ID:', user?.profileId);
+    
+    if (authError || !authUser) {
+      console.error('Auth error:', authError);
       toast.error('You must be signed in to edit your profile');
       return;
     }
@@ -187,12 +192,12 @@ export default function EditProfile() {
       };
       
       console.log('Data to update:', updateData);
-      console.log('Updating profile with ID:', user.profileId);
+      console.log('Updating profile with auth.uid():', authUser.id);
       
       const { data, error } = await supabase
         .from('profiles')
         .update(updateData)
-        .eq('id', user.profileId)
+        .eq('id', authUser.id)
         .select();
 
       console.log('Update response - data:', data);
@@ -207,7 +212,7 @@ export default function EditProfile() {
       await refreshUser();
       
       toast.success('Profile updated successfully');
-      navigate(-1); // Go back to previous page
+      navigate(-1);
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile: ' + (error as any)?.message);
