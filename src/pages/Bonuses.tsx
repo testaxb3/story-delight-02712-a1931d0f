@@ -356,11 +356,15 @@ function BonusesContent() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-background pb-24 md:pb-12 relative overflow-hidden">
+      <div className="min-h-screen bg-background pb-32 relative overflow-hidden">
+        {/* Ambient Background Glows */}
+        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
         {/* Fixed Header Background for Status Bar */}
         <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
 
-        <main className="max-w-7xl mx-auto px-4 pt-[calc(env(safe-area-inset-top)+24px)] md:pt-8 pb-8 space-y-8 relative z-50">
+        <main className="px-4 pt-[calc(env(safe-area-inset-top)+16px)] pb-8 space-y-6 relative z-50">
           {/* Header with Stats */}
           <BonusesHeader
             userName={user?.user_metadata?.full_name?.split(' ')[0] || "Member"}
@@ -378,31 +382,6 @@ function BonusesContent() {
             />
           )}
 
-          {/* Coming Soon Notice */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
-            <Card className="border-2 border-primary/30 dark:border-primary/50 bg-gradient-to-br from-primary/10 via-intense/5 to-purple-500/10 dark:from-primary/20 dark:via-purple-900/20 dark:to-purple-800/20">
-              <CardContent className="pt-6">
-                <div className="flex items-start gap-4">
-                  <div className="p-3 bg-gradient-to-br from-primary to-purple-600 dark:from-primary/90 dark:to-purple-700 rounded-full">
-                    <Calendar className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-2 bg-gradient-to-r from-primary to-purple-600 dark:from-primary/90 dark:to-purple-500 bg-clip-text text-transparent">
-                      New Bonuses Added Weekly
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      We're constantly adding new resources to help you master NEP parenting.
-                      Check back regularly for fresh content, advanced modules, and exclusive tools.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
           {/* Category Tabs and Filters */}
           <BonusesCategoryTabs
             activeCategory={activeCategory}
@@ -419,10 +398,10 @@ function BonusesContent() {
           {/* Unlocked Bonuses Grid */}
           {unlockedBonuses.length > 0 && (
             <div>
-              <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-2xl font-bold">Available Now</h2>
-                <span className="px-3 py-1 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-sm font-semibold rounded-full">
-                  {unlockedBonuses.length} bonuses
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xl font-semibold text-white">Available Now</h2>
+                <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
+                  {unlockedBonuses.length}
                 </span>
               </div>
               <div className={
@@ -444,11 +423,11 @@ function BonusesContent() {
 
           {/* Locked Bonuses Section */}
           {lockedBonuses.length > 0 && (
-            <div className="mt-12">
-              <div className="flex items-center gap-3 mb-6">
-                <h2 className="text-2xl font-bold text-muted-foreground">Coming Soon</h2>
-                <span className="px-3 py-1 bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 text-sm font-semibold rounded-full">
-                  {lockedBonuses.length} locked
+            <div className="mt-8">
+              <div className="flex items-center gap-3 mb-4">
+                <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
+                <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
+                  {lockedBonuses.length}
                 </span>
               </div>
               <div className={
@@ -470,30 +449,26 @@ function BonusesContent() {
 
           {/* Empty State */}
           {filteredAndSortedBonuses.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-16"
-            >
+            <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <div className="w-20 h-20 bg-primary/10 dark:bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-10 h-10 text-primary" />
+                <div className="w-16 h-16 bg-[#2C2C2E] rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-8 h-8 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-bold mb-2">No bonuses found</h3>
-                <p className="text-muted-foreground mb-6">
-                  Try adjusting your filters or search query to find what you're looking for.
+                <h3 className="text-xl font-semibold text-white mb-2">No bonuses found</h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  Try adjusting your filters or search query.
                 </p>
                 <Button
                   onClick={() => {
                     setActiveCategory("all");
                     setSearchQuery("");
                   }}
-                  variant="outline"
+                  className="bg-white text-black hover:bg-gray-200"
                 >
                   Clear Filters
                 </Button>
               </div>
-            </motion.div>
+            </div>
           )}
 
           {/* Unlock More CTA */}
