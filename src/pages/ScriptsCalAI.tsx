@@ -5,10 +5,12 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Search, Sparkles, Clock, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
+import { ScriptModal } from '@/components/scripts/ScriptModal';
+import { useFavoriteScripts } from '@/hooks/useFavoriteScripts';
+import { recordScriptUsage } from '@/lib/supabase/progress';
 import type { Database } from '@/integrations/supabase/types';
 
 type ScriptRow = Database['public']['Tables']['scripts']['Row'];
@@ -25,11 +27,13 @@ const CATEGORIES = [
 export default function ScriptsCalAI() {
   const { user } = useAuth();
   const { activeChild } = useChildProfiles();
-  const navigate = useNavigate();
   const [scripts, setScripts] = useState<ScriptRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedScript, setSelectedScript] = useState<ScriptRow | null>(null);
+  
+  const { favorites, toggleFavorite } = useFavoriteScripts();
 
   useEffect(() => {
     if (activeChild) {
@@ -133,7 +137,7 @@ export default function ScriptsCalAI() {
               <Card
                 key={script.id}
                 className="p-6 hover:bg-muted/5 transition-colors cursor-pointer bg-card border-border"
-                onClick={() => navigate(`/scripts/${script.id}`)}
+                onClick={() => setSelectedScript(script)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <Badge variant="secondary" className="text-xs">
@@ -169,6 +173,30 @@ export default function ScriptsCalAI() {
           </div>
         )}
       </div>
+
+      {/* Script Modal */}
+      <ScriptModal
+        open={!!selectedScript}
+        onOpenChange={(open) => {
+          if (!open) setSelectedScript(null);
+        }}
+        script={selectedScript}
+        isFavorite={selectedScript ? favorites.includes(selectedScript.id) : false}
+        onToggleFavorite={async () => {
+          if (selectedScript) {
+            await toggleFavorite(selectedScript.id);
+          }
+        }}
+        onMarkUsed={async () => {
+          if (selectedScript && user) {
+            await recordScriptUsage({
+              userId: user.id,
+              scriptId: selectedScript.id,
+              fallbackChildProfile: activeChild?.brain_profile
+            });
+          }
+        }}
+      />
     </MainLayout>
   );
 }
