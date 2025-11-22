@@ -30,6 +30,11 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const Quiz = lazy(() => import("./pages/Quiz"));
 const Community = lazy(() => import("./pages/CommunityCalAI"));
+const CreateGroupName = lazy(() => import("./pages/Community/CreateGroupName"));
+const AddGroupLogo = lazy(() => import("./pages/Community/AddGroupLogo"));
+const CommunityFeed = lazy(() => import("./pages/Community/CommunityFeed"));
+const MembersList = lazy(() => import("./pages/Community/MembersList"));
+const JoinTutorial = lazy(() => import("./pages/Community/JoinTutorial"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
@@ -143,6 +148,54 @@ function AppContent() {
         />
         <Route
           path="/community"
+          element={
+            <ProtectedRoute>
+              <Community />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/create"
+          element={
+            <ProtectedRoute>
+              <CreateGroupName />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/add-logo"
+          element={
+            <ProtectedRoute>
+              <AddGroupLogo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/feed"
+          element={
+            <ProtectedRoute>
+              <CommunityFeed />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/members"
+          element={
+            <ProtectedRoute>
+              <MembersList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/join"
+          element={
+            <ProtectedRoute>
+              <JoinTutorial />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/:inviteCode"
           element={
             <ProtectedRoute>
               <Community />
