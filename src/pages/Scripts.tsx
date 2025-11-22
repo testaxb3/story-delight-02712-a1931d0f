@@ -555,8 +555,12 @@ function ScriptsContent() {
         />
       )}
 
-      <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="min-h-screen bg-background pb-32 relative overflow-hidden">
+        {/* Fixed Header Background for Status Bar */}
+        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
+
+        <div className="relative z-50 px-4 pt-[calc(env(safe-area-inset-top)+24px)] space-y-8">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <ScriptsHeader
             totalScripts={brainScopedScripts.length}
             usedToday={used.size}
@@ -572,15 +576,17 @@ function ScriptsContent() {
           </Button>
         </div>
 
-        <Card className="p-6 bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200/50 dark:border-purple-800/50 shadow-xl">
-          <div className="flex items-center justify-between gap-3 flex-wrap">
+        <Card className="p-6 bg-[#1C1C1E] border border-[#333] shadow-xl rounded-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          
+          <div className="flex items-center justify-between gap-3 flex-wrap relative z-10">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-500 rounded-lg shadow-md">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="p-2 bg-[#2C2C2E] rounded-lg shadow-sm border border-[#333]">
+                <Sparkles className="w-5 h-5 text-purple-400" />
               </div>
-              <h2 className="text-xl font-bold bg-gradient-to-r from-purple-700 to-indigo-700 dark:from-purple-300 dark:to-indigo-300 bg-clip-text text-transparent">Smart suggestions for {activeChild?.name ?? 'your family'}</h2>
+              <h2 className="text-xl font-bold text-white">Smart suggestions for {activeChild?.name ?? 'your family'}</h2>
             </div>
-            <Badge variant="outline" className="border-primary/40 text-primary bg-primary/5 font-semibold px-3 py-1">
+            <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 font-medium px-3 py-1">
               {hasPersonalizedHistory ? '✨ ' + t.scripts.personalizedHistory : `🧠 ${t.scripts.profileBased} ${currentBrain}`}
             </Badge>
           </div>
@@ -599,35 +605,35 @@ function ScriptsContent() {
                 return (
                   <div
                     key={script.id}
-                    className="relative text-left rounded-xl border-2 glass p-5 transition-all hover:-translate-y-2 hover:shadow-2xl hover:border-primary/50 dark:hover:border-primary/70 group"
+                    className="relative text-left rounded-xl bg-[#252527] border border-[#333] p-5 transition-all hover:bg-[#2C2C2E] hover:border-[#444] group"
                   >
                     <button
                       onClick={() => handleSelectScript(script)}
                       className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                     >
                       <div className="flex items-start gap-4">
-                        <div className="text-3xl shrink-0 group-hover:scale-110 transition-transform">{script.emoji}</div>
+                        <div className="text-3xl shrink-0 group-hover:scale-110 transition-transform grayscale group-hover:grayscale-0">{script.emoji}</div>
                         <div className="flex-1 pr-8">
-                        <p className="font-bold text-base">{script.title}</p>
-                        <p className="text-xs text-muted-foreground mt-1.5 font-medium">{script.displayCategory}</p>
+                        <p className="font-bold text-base text-white group-hover:text-purple-400 transition-colors">{script.title}</p>
+                        <p className="text-xs text-gray-400 mt-1.5 font-medium">{script.displayCategory}</p>
                         {meta?.feedbackCount ? (
-                          <p className="text-[11px] text-muted-foreground/80 mt-1">
+                          <p className="text-[11px] text-gray-500 mt-1">
                             {meta.feedbackCount} registro(s) positivo(s)
                           </p>
                         ) : null}
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2 mt-3">
                           {script.tags.slice(0, 2).map((tag) => (
-                            <Badge key={tag} variant="outline" className="border-primary/30 text-primary">
+                            <Badge key={tag} variant="outline" className="border-[#444] text-gray-400 bg-[#1A1A1A]">
                               #{tag}
                             </Badge>
                           ))}
                           {script.estimatedTimeMinutes && (
-                            <Badge className="bg-primary/10 text-primary border-primary/20">
+                            <Badge className="bg-[#1A1A1A] text-gray-300 border border-[#333]">
                               ⏱️ {script.estimatedTimeMinutes} min
                             </Badge>
                           )}
                           {meta?.successScore !== undefined && meta.successScore !== null && (
-                            <Badge className="bg-emerald-500/10 text-emerald-700 border-emerald-500/20">
+                            <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
                               {(
                                 (meta.successScore > 1 ? meta.successScore : meta.successScore * 100)
                               ).toFixed(0)}% sucesso
@@ -664,12 +670,12 @@ function ScriptsContent() {
 
         {/* Search */}
         <div className="relative group">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary w-5 h-5 transition-colors z-10" />
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 group-focus-within:text-purple-400 w-5 h-5 transition-colors z-10" />
           <Input
             placeholder={SEARCH_PLACEHOLDERS[placeholderIndex]}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 text-base border-2 transition-all focus:border-primary focus:ring-4 focus:ring-primary/10 shadow-sm focus:shadow-lg bg-background dark:bg-card"
+            className="pl-12 h-14 text-base border border-[#333] bg-[#1C1C1E] text-white placeholder:text-gray-600 rounded-2xl focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-lg"
             ref={searchInputRef}
           />
         </div>
@@ -687,25 +693,31 @@ function ScriptsContent() {
           {categories.map((cat) => (
             <Button
               key={cat.name}
-              variant={selectedCategory === cat.value ? 'default' : 'outline'}
+              variant="ghost"
               className={`
-                whitespace-nowrap justify-start h-12 text-base font-semibold
-                transition-all duration-200
+                whitespace-nowrap justify-start h-12 text-sm font-medium rounded-xl border
+                transition-all duration-300
                 ${selectedCategory === cat.value
-                  ? 'shadow-lg hover:shadow-xl bg-gradient-to-r from-primary to-primary/80 dark:from-primary/90 dark:to-primary/70'
-                  : 'hover:shadow-md hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/5 dark:hover:bg-primary/10'
+                  ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:bg-white/90'
+                  : 'bg-[#1C1C1E] text-gray-400 border-[#333] hover:border-gray-600 hover:text-white'
                 }
               `}
               onClick={() => setSelectedCategory(cat.value)}
             >
-              <span className="mr-2 text-xl">{cat.emoji}</span>
+              <span className="mr-3 text-lg grayscale opacity-80">{cat.emoji}</span>
               <span className="flex-1 text-left">{cat.name}</span>
-              <Badge
-                variant={selectedCategory === cat.value ? 'secondary' : 'outline'}
-                className={`ml-2 ${selectedCategory === cat.value ? 'bg-white/20 border-white/30 dark:bg-white/10 dark:border-white/20' : ''}`}
-              >
-                {getCategoryCount(cat.value, brainScopedScripts)}
-              </Badge>
+              {getCategoryCount(cat.value, brainScopedScripts) > 0 && (
+                <Badge
+                  variant="secondary"
+                  className={`ml-2 text-[10px] h-5 min-w-[20px] flex items-center justify-center px-1 ${
+                    selectedCategory === cat.value 
+                      ? 'bg-black text-white' 
+                      : 'bg-[#2C2C2E] text-gray-500'
+                  }`}
+                >
+                  {getCategoryCount(cat.value, brainScopedScripts)}
+                </Badge>
+              )}
             </Button>
           ))}
         </div>
@@ -776,11 +788,12 @@ function ScriptsContent() {
           onClose={() => setShowAlternatives(false)}
         />
 
-        {/* Request Script Modal */}
-        <RequestScriptModal
-          open={requestScriptModalOpen}
-          onOpenChange={setRequestScriptModalOpen}
-        />
+          {/* Request Script Modal */}
+          <RequestScriptModal
+            open={requestScriptModalOpen}
+            onOpenChange={setRequestScriptModalOpen}
+          />
+        </div>
       </div>
     </MainLayout>
   );

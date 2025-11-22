@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import Lottie from 'lottie-react';
 import { useEffect, useState } from 'react';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface NavItem {
   icon: string;
@@ -17,14 +18,15 @@ const NAV_ITEMS: NavItem[] = [
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
 
-function NavButton({ icon, label, path, lottieData }: { 
-  icon: string; 
-  label: string; 
+function NavButton({ icon, label, path, lottieData }: {
+  icon: string;
+  label: string;
   path: string;
   lottieData: any;
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { triggerHaptic } = useHaptic();
   const isActive = location.pathname === path;
   const animationData = lottieData[icon];
 
@@ -32,25 +34,32 @@ function NavButton({ icon, label, path, lottieData }: {
     <button
       onClick={(e) => {
         e.stopPropagation();
+        triggerHaptic('medium');
         console.log('Navigating to:', path);
         navigate(path);
       }}
       className={cn(
-        "flex items-center justify-center transition-all w-12 h-12 relative z-10 cursor-pointer touch-manipulation",
-        isActive && "scale-110"
+        "flex flex-col items-center justify-center transition-all w-16 py-1 relative z-10 cursor-pointer touch-manipulation rounded-2xl",
+        isActive ? "bg-white/10" : "hover:bg-white/5"
       )}
       aria-label={label}
     >
       {animationData ? (
         <Lottie
           animationData={animationData}
-          loop={true}
-          autoplay={true}
-          style={{ width: '32px', height: '32px', pointerEvents: 'none' }}
+          loop={isActive}
+          autoplay={true} // Always autoplay initially, or control via isActive if preferred
+          style={{ width: '24px', height: '24px', pointerEvents: 'none' }}
         />
       ) : (
-        <div className="w-8 h-8 bg-muted rounded animate-pulse" />
+        <div className="w-6 h-6 bg-muted rounded animate-pulse" />
       )}
+      <span className={cn(
+        "text-[10px] font-medium mt-0.5 transition-colors",
+        isActive ? "text-white" : "text-gray-500"
+      )}>
+        {label}
+      </span>
     </button>
   );
 }

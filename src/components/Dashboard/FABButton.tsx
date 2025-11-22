@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface FABButtonProps {
   onClick?: () => void;
@@ -7,9 +8,16 @@ interface FABButtonProps {
 }
 
 export function FABButton({ onClick, className }: FABButtonProps) {
+  const { triggerHaptic } = useHaptic();
+
+  const handleClick = () => {
+    triggerHaptic('heavy');
+    onClick?.();
+  };
+
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className={cn(
         "fixed right-5 z-50",
         "w-14 h-14 rounded-full",

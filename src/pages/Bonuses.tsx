@@ -360,8 +360,11 @@ function BonusesContent() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-12 md:pb-6">
-        <main className="max-w-7xl mx-auto px-4 pt-4 md:pt-6 pb-8 space-y-8">
+      <div className="min-h-screen bg-background pb-24 md:pb-12 relative overflow-hidden">
+        {/* Fixed Header Background for Status Bar */}
+        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
+
+        <main className="max-w-7xl mx-auto px-4 pt-[calc(env(safe-area-inset-top)+24px)] md:pt-8 pb-8 space-y-8 relative z-50">
           {/* Header with Stats */}
           <BonusesHeader
             userName={user?.user_metadata?.full_name?.split(' ')[0] || "Member"}
