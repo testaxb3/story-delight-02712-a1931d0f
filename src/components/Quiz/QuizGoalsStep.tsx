@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface QuizGoalsStepProps {
   selectedGoals: string[];
@@ -15,6 +16,8 @@ const goalOptions = [
 ];
 
 export const QuizGoalsStep = ({ selectedGoals, onToggle }: QuizGoalsStepProps) => {
+  const { theme } = useTheme();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

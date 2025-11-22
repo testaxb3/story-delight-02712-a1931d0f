@@ -6,7 +6,11 @@ interface RecommendationItem {
   percentage: number;
 }
 
-export const QuizLoadingScreen = () => {
+interface QuizLoadingScreenProps {
+  onComplete?: () => void;
+}
+
+export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) => {
   const [percentage, setPercentage] = useState(0);
   const [checklistItems, setChecklistItems] = useState([
     { text: 'Analyzing brain profile', completed: false },
@@ -42,11 +46,16 @@ export const QuizLoadingScreen = () => {
         setChecklistItems((prev) =>
           prev.map((item) => ({ ...item, completed: true }))
         );
+        
+        // Call onComplete after a short delay
+        if (onComplete) {
+          setTimeout(() => onComplete(), 500);
+        }
       }
     }, interval);
 
     return () => clearInterval(percentTimer);
-  }, []);
+  }, [onComplete]);
 
   return (
     <motion.div

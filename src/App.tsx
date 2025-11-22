@@ -91,7 +91,7 @@ function AppContent() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/auth" element={<Auth />} />
-        <Route path="/onboarding" element={<PWAOnboarding />} />
+        <Route path="/onboarding" element={<ProtectedRoute><PWAOnboarding /></ProtectedRoute>} />
         <Route
           path="/refund"
           element={

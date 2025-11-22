@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface QuizChallengeStepProps {
   challengeLevel: number;
@@ -34,6 +35,8 @@ export const QuizChallengeStep = ({
   onDurationChange,
   onApproachToggle,
 }: QuizChallengeStepProps) => {
+  const { theme } = useTheme();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
