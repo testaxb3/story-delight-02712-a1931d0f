@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { User, Clock, Smartphone, Check, DollarSign, CheckCircle, Eye, Mail } from 'lucide-react';
+import { User, Clock, Smartphone, Check, DollarSign, CheckCircle, Eye, Mail, Moon, Sun } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useNavigate } from 'react-router-dom';
 import { PhotoUpload } from '@/components/PhotoUpload';
 import { NotificationSettings } from '@/components/NotificationSettings';
+import { useTheme } from '@/contexts/ThemeContext';
 import type { ChildProfile } from '@/contexts/ChildProfilesContext';
 
 interface ProfileSettingsCardProps {
@@ -38,9 +39,42 @@ export function ProfileSettingsCard({
   isInstalled,
 }: ProfileSettingsCardProps) {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <>
+      {/* Theme Toggle Card */}
+      <Card className="p-6 glass border-none shadow-lg animate-in fade-in slide-in-from-bottom-6 duration-500 transition-all">
+        <div className="flex items-center gap-2 mb-4">
+          {theme === 'dark' ? (
+            <Moon className="w-5 h-5 dark:text-slate-300" />
+          ) : (
+            <Sun className="w-5 h-5" />
+          )}
+          <h2 className="text-lg font-semibold dark:text-slate-100">Appearance</h2>
+        </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium dark:text-slate-300">Theme</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              Switch between light and dark mode
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={toggleTheme}
+            className="rounded-full h-12 w-12"
+          >
+            {theme === 'dark' ? (
+              <Sun className="h-5 w-5" />
+            ) : (
+              <Moon className="h-5 w-5" />
+            )}
+          </Button>
+        </div>
+      </Card>
+
       {/* Settings */}
       <Card className="p-6 glass border-none shadow-lg animate-in fade-in slide-in-from-bottom-7 duration-500 transition-all">
         <div className="flex items-center gap-2 mb-4">
