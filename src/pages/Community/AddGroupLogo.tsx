@@ -151,29 +151,6 @@ export default function AddGroupLogo() {
 
       {/* Content */}
       <div className="pt-[calc(env(safe-area-inset-top)+120px)] pb-[calc(env(safe-area-inset-bottom)+100px)] px-6">
-        {/* Preview */}
-        {(selectedEmoji !== null || uploadedImage) && (
-          <div className="flex flex-col items-center mb-8">
-            <div className="relative">
-              {uploadedImage ? (
-                <div className="relative w-32 h-32 rounded-full overflow-hidden">
-                  <img src={uploadedImage} alt="Group logo" className="w-full h-full object-cover" />
-                  <button
-                    onClick={handleRemoveImage}
-                    className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <div className={`w-32 h-32 rounded-full bg-gradient-to-br ${EMOJI_OPTIONS[selectedEmoji || 0].color} flex items-center justify-center text-6xl`}>
-                  {EMOJI_OPTIONS[selectedEmoji || 0].emoji}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
         {/* Emoji Carousel */}
         {!uploadedImage && (
           <>
@@ -216,6 +193,29 @@ export default function AddGroupLogo() {
           />
         </label>
         {uploading && <p className="text-center text-sm text-gray-400 mt-2">Uploading...</p>}
+
+        {/* Preview - Only show AFTER selection */}
+        {(selectedEmoji !== null || uploadedImage) && (
+          <div className="flex flex-col items-center mt-8">
+            <div className="relative">
+              {uploadedImage ? (
+                <div className="relative w-40 h-40 rounded-full overflow-hidden">
+                  <img src={uploadedImage} alt="Group logo" className="w-full h-full object-cover" />
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute -top-2 -right-2 w-10 h-10 rounded-full bg-red-500 flex items-center justify-center hover:bg-red-600 transition-colors"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              ) : (
+                <div className={`w-40 h-40 rounded-full bg-gradient-to-br ${EMOJI_OPTIONS[selectedEmoji || 0].color} flex items-center justify-center text-7xl`}>
+                  {EMOJI_OPTIONS[selectedEmoji || 0].emoji}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Bottom Button */}

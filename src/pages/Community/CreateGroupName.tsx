@@ -54,7 +54,7 @@ export default function CreateGroupName() {
         {/* Suggestions */}
         <div className="mt-8">
           <p className="text-sm text-gray-400 mb-3">Suggestions:</p>
-          <div className="space-y-2">
+          <div className="flex flex-wrap gap-2">
             {[
               'INTENSE Parents Circle',
               'Calm Parenting Squad',
@@ -64,7 +64,7 @@ export default function CreateGroupName() {
               <button
                 key={suggestion}
                 onClick={() => setGroupName(suggestion)}
-                className="w-full text-left px-4 py-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl hover:bg-[#222] transition-colors"
+                className="px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full hover:bg-[#222] hover:border-gray-600 transition-colors text-sm"
               >
                 {suggestion}
               </button>
