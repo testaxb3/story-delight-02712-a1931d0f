@@ -42,13 +42,23 @@ export default function CommunityCalAI() {
     // Check if user belongs to any community
     const { data: membership } = await supabase
       .from('community_members')
-      .select('community_id')
+      .select('community_id, communities!inner(id, name, logo_emoji, logo_url, invite_code)')
       .eq('user_id', user.profileId)
       .limit(1)
       .single();
 
-    if (membership && !inviteCode) {
-      navigate('/community/feed', { state: { communityId: membership.community_id } });
+    if (membership?.communities && !inviteCode) {
+      // Redirect to feed with the community they belong to
+      const communityData = Array.isArray(membership.communities) 
+        ? membership.communities[0] 
+        : membership.communities;
+      
+      if (communityData) {
+        navigate('/community/feed', { 
+          state: { communityId: communityData.id },
+          replace: true 
+        });
+      }
     } else if (inviteCode && onboardingComplete) {
       handleDeepLink(inviteCode);
     }

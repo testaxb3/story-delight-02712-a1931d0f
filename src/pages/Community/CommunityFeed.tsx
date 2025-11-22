@@ -123,16 +123,25 @@ export default function CommunityFeed() {
   };
 
   const loadPosts = async () => {
-    if (!currentCommunity) return;
+    console.log('[loadPosts] Starting...', { currentCommunity });
+    if (!currentCommunity) {
+      console.log('[loadPosts] No currentCommunity - ABORTING');
+      return;
+    }
 
+    console.log('[loadPosts] Fetching posts for community:', currentCommunity.id);
     const { data, error } = await supabase
       .from('group_posts')
       .select('id, content, script_used, created_at, user_id, profiles(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
+    console.log('[loadPosts] Result:', { data, error, dataLength: data?.length });
     if (!error && data) {
+      console.log('[loadPosts] Setting posts state with', data.length, 'posts');
       setPosts(data as any);
+    } else if (error) {
+      console.error('[loadPosts] ERROR:', error);
     }
   };
 
@@ -172,11 +181,21 @@ export default function CommunityFeed() {
   };
 
   const handleCreatePost = async () => {
-    if (!postContent.trim() || !currentCommunity || !user?.profileId) return;
+    console.log('[handleCreatePost] START', { 
+      postContent: postContent.trim(), 
+      currentCommunity, 
+      userId: user?.profileId 
+    });
+    
+    if (!postContent.trim() || !currentCommunity || !user?.profileId) {
+      console.log('[handleCreatePost] Validation failed - ABORTING');
+      return;
+    }
 
     setPosting(true);
 
     try {
+      console.log('[handleCreatePost] Inserting post...');
       const { error } = await supabase
         .from('group_posts')
         .insert({
@@ -187,11 +206,16 @@ export default function CommunityFeed() {
 
       if (error) throw error;
 
+      console.log('[handleCreatePost] Post inserted successfully');
       toast.success('Post created!');
       setPostContent('');
       setShowPostModal(false);
+      
+      console.log('[handleCreatePost] Calling loadPosts...');
       await loadPosts();
+      console.log('[handleCreatePost] loadPosts completed');
     } catch (error) {
+      console.error('[handleCreatePost] ERROR:', error);
       toast.error('Failed to create post');
     } finally {
       setPosting(false);
