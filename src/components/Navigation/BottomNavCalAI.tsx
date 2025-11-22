@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import Lottie from 'lottie-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface NavItem {
   icon: string;
@@ -25,15 +25,8 @@ function NavButton({ icon, label, path, lottieData }: {
 }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const lottieRef = useRef<any>(null);
   const isActive = location.pathname === path;
   const animationData = lottieData[icon];
-
-  useEffect(() => {
-    if (isActive && lottieRef.current && animationData) {
-      lottieRef.current.goToAndPlay(0);
-    }
-  }, [isActive, animationData]);
 
   return (
     <button
@@ -50,14 +43,13 @@ function NavButton({ icon, label, path, lottieData }: {
     >
       {animationData ? (
         <Lottie
-          lottieRef={lottieRef}
           animationData={animationData}
-          loop={false}
-          autoplay={false}
-          style={{ width: '28px', height: '28px', pointerEvents: 'none' }}
+          loop={true}
+          autoplay={true}
+          style={{ width: '32px', height: '32px', pointerEvents: 'none' }}
         />
       ) : (
-        <div className="w-7 h-7 bg-muted rounded animate-pulse" />
+        <div className="w-8 h-8 bg-muted rounded animate-pulse" />
       )}
     </button>
   );
