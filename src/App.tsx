@@ -16,7 +16,7 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 
 // PERFORMANCE OPTIMIZATION: Eager load critical pages
 import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/DashboardCalAI";
 import NotFound from "./pages/NotFound";
 
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting

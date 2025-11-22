@@ -91,6 +91,19 @@ export default {
           'high-contrast': "hsl(var(--text-high-contrast))",
           'medium-contrast': "hsl(var(--text-medium-contrast))",
         },
+        // Cal AI inspired palette
+        'calai': {
+          50: 'hsl(220, 20%, 98%)',
+          100: 'hsl(220, 15%, 95%)',
+          200: 'hsl(220, 13%, 91%)',
+          300: 'hsl(220, 11%, 82%)',
+          400: 'hsl(220, 9%, 65%)',
+          500: 'hsl(220, 8%, 46%)',
+          600: 'hsl(220, 10%, 37%)',
+          700: 'hsl(220, 12%, 28%)',
+          800: 'hsl(220, 15%, 20%)',
+          900: 'hsl(220, 20%, 14%)',
+        },
       },
       backgroundImage: {
         'gradient-primary': 'var(--gradient-primary)',
