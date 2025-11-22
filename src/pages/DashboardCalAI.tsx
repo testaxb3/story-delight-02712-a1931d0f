@@ -69,10 +69,7 @@ export default function DashboardCalAI() {
       <div className="space-y-6 pb-24 px-4 pt-4">
         {/* Top Header - Logo + Streak Badge */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl">🧠</span>
-            <h1 className="text-3xl font-bold font-relative">NEP</h1>
-          </div>
+          <h1 className="text-3xl font-bold font-relative">NEP</h1>
           <div className="flex items-center gap-2 bg-white dark:bg-card px-4 py-2 rounded-full shadow-sm">
             <Flame className="w-5 h-5 text-accent" />
             <span className="font-bold">{currentStreak}</span>
