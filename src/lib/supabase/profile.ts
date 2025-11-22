@@ -178,6 +178,7 @@ const buildDefaultProfile = (
     photo_url: null,
     posts_count: 0,
     quiz_in_progress: false,
+    username: null,
     welcome_modal_shown: null,
   };
 };
