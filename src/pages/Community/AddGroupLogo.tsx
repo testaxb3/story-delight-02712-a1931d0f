@@ -27,7 +27,7 @@ export default function AddGroupLogo() {
   const { user } = useAuth();
   const groupName = location.state?.groupName || '';
   
-  const [selectedEmoji, setSelectedEmoji] = useState<number | null>(0);
+  const [selectedEmoji, setSelectedEmoji] = useState<number | null>(null);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -74,7 +74,7 @@ export default function AddGroupLogo() {
 
   const handleRemoveImage = () => {
     setUploadedImage(null);
-    setSelectedEmoji(0);
+    setSelectedEmoji(null);
   };
 
   const handleContinue = async () => {
@@ -98,7 +98,7 @@ export default function AddGroupLogo() {
         .from('communities')
         .insert({
           name: groupName,
-          logo_emoji: uploadedImage ? null : EMOJI_OPTIONS[selectedEmoji || 0].emoji,
+          logo_emoji: uploadedImage ? null : (selectedEmoji !== null ? EMOJI_OPTIONS[selectedEmoji].emoji : EMOJI_OPTIONS[0].emoji),
           logo_url: uploadedImage,
           created_by: authUser.id,
         })
@@ -208,11 +208,11 @@ export default function AddGroupLogo() {
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
-              ) : (
-                <div className={`w-40 h-40 rounded-full bg-gradient-to-br ${EMOJI_OPTIONS[selectedEmoji || 0].color} flex items-center justify-center text-7xl`}>
-                  {EMOJI_OPTIONS[selectedEmoji || 0].emoji}
+              ) : selectedEmoji !== null ? (
+                <div className={`w-40 h-40 rounded-full bg-gradient-to-br ${EMOJI_OPTIONS[selectedEmoji].color} flex items-center justify-center text-7xl`}>
+                  {EMOJI_OPTIONS[selectedEmoji].emoji}
                 </div>
-              )}
+              ) : null}
             </div>
           </div>
         )}
