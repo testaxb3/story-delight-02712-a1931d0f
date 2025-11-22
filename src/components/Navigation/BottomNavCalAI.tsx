@@ -37,9 +37,13 @@ function NavButton({ icon, label, path, lottieData }: {
 
   return (
     <button
-      onClick={() => navigate(path)}
+      onClick={(e) => {
+        e.stopPropagation();
+        console.log('Navigating to:', path);
+        navigate(path);
+      }}
       className={cn(
-        "flex items-center justify-center transition-all w-12 h-12",
+        "flex items-center justify-center transition-all w-12 h-12 relative z-10 cursor-pointer touch-manipulation",
         isActive && "scale-110"
       )}
       aria-label={label}
@@ -50,7 +54,7 @@ function NavButton({ icon, label, path, lottieData }: {
           animationData={animationData}
           loop={false}
           autoplay={false}
-          style={{ width: '28px', height: '28px' }}
+          style={{ width: '28px', height: '28px', pointerEvents: 'none' }}
         />
       ) : (
         <div className="w-7 h-7 bg-muted rounded animate-pulse" />
@@ -82,9 +86,9 @@ export function BottomNavCalAI() {
   }, []);
 
   return (
-    <nav className="fixed bottom-6 left-6 right-6 z-50 md:hidden">
+    <nav className="fixed bottom-6 left-6 right-6 z-[100] md:hidden pointer-events-auto">
       <div className="bg-card/80 backdrop-blur-xl rounded-full px-4 py-3 shadow-2xl border border-white/5">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-2">
           {NAV_ITEMS.map((item) => (
             <NavButton
               key={item.path}
