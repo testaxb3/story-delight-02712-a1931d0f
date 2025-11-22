@@ -336,8 +336,17 @@ function CommunityContent() {
   }, [hasMore, loadingPosts, fetchPosts]);
 
   const handlePost = () => {
-    if (!newPost.trim()) return;
+    console.log('=== CREATE POST DEBUG ===');
+    console.log('New post content:', newPost);
+    console.log('User email:', user?.email);
+    
+    if (!newPost.trim()) {
+      console.log('Post is empty, returning');
+      return;
+    }
+    
     if (!user?.email) {
+      console.error('User not signed in');
       toast.error('You must be signed in to share a post.');
       return;
     }
@@ -345,21 +354,32 @@ function CommunityContent() {
     // Check rate limit
     if (!postRateLimit.canMakeCall()) {
       const remainingSeconds = Math.ceil(postRateLimit.getRemainingTime() / 1000);
+      console.log('Rate limit hit:', remainingSeconds, 's remaining');
       toast.error(`Please wait ${remainingSeconds}s before posting again`);
       return;
     }
 
+    console.log('Creating post...');
+
     const createPost = async () => {
+      console.log('Fetching profile for email:', user.email);
+      
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('id, name, email, photo_url')
         .eq('email', user.email)
         .maybeSingle();
 
+      console.log('Profile data:', profile);
+      console.log('Profile error:', profileError);
+
       if (profileError || !profile) {
+        console.error('Profile not found or error:', profileError);
         toast.error('Complete your profile before posting.');
         return;
       }
+
+      console.log('Inserting post into community_posts...');
 
       const { data, error } = await supabase
         .from('community_posts')
@@ -380,10 +400,16 @@ function CommunityContent() {
         `)
         .single();
 
+      console.log('Insert result - data:', data);
+      console.log('Insert result - error:', error);
+
       if (error || !data) {
-        toast.error('Unable to publish your update. Please try again.');
+        console.error('Failed to create post:', error);
+        toast.error('Unable to publish your update. Please try again: ' + (error?.message || 'Unknown error'));
         return;
       }
+
+      console.log('Building community post object...');
 
       const newCommunityPost = buildCommunityPost(
         {
@@ -395,13 +421,16 @@ function CommunityContent() {
         currentBrain,
         { count: 0, liked: false }
       );
+      
+      console.log('New community post:', newCommunityPost);
+      
       setPosts(prev => [newCommunityPost, ...prev]);
       setNewPost('');
       setPostImageUrl('');
       setPostImageThumbnailUrl('');
       setComposerMode('general');
       toast.success('Post shared with the community! 🎉');
-      // Don't call fetchPosts() as it can cause navigation issues
+      console.log('Post created successfully!');
     };
 
     createPost();
