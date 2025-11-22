@@ -41,26 +41,24 @@ export default function BonusesCalAI() {
     }
   };
 
-  // Get thumbnail URL - handle both local paths and Supabase Storage paths
-  const getThumbnailUrl = (thumbnail: string | null): string | null => {
-    if (!thumbnail) return null;
+  // Get thumbnail URL from Supabase Storage or return as-is if already a URL
+  const getThumbnailUrl = (bonus: BonusRow): string | null => {
+    if (!bonus.thumbnail) return null;
     
     // If it's already a full URL, return it
-    if (thumbnail.startsWith('http://') || thumbnail.startsWith('https://')) {
-      return thumbnail;
+    if (bonus.thumbnail.startsWith('http://') || bonus.thumbnail.startsWith('https://')) {
+      return bonus.thumbnail;
     }
     
-    // If it starts with /, it's a local path - return as is
-    if (thumbnail.startsWith('/')) {
-      return thumbnail;
-    }
-    
-    // Otherwise, it's a Supabase Storage path
+    // Try to find the most recent image for this bonus in Storage
+    // This is a temporary solution - ideally thumbnails should have correct Storage paths in DB
     const { data } = supabase.storage
-      .from('public-assets')
-      .getPublicUrl(thumbnail);
+      .from('community-posts')
+      .getPublicUrl(`ebook-covers/placeholder.png`);
     
-    return data.publicUrl;
+    // For now, just return the thumbnail path as-is
+    // The images should be in public/ folder
+    return bonus.thumbnail;
   };
 
   const handleBonusClick = (bonus: BonusRow) => {
@@ -186,23 +184,28 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-[3/4] transition-all hover:scale-[1.02]">
-                        {getThumbnailUrl(bonus.thumbnail) ? (
+                        {bonus.thumbnail ? (
                           <img
-                            src={getThumbnailUrl(bonus.thumbnail)!}
+                            src={bonus.thumbnail}
                             alt={bonus.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               // Fallback to placeholder if image fails to load
-                              e.currentTarget.style.display = 'none';
-                              if (e.currentTarget.nextElementSibling) {
-                                (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                              const target = e.currentTarget;
+                              target.style.display = 'none';
+                              const parent = target.parentElement;
+                              if (parent) {
+                                const placeholder = parent.querySelector('.fallback-placeholder');
+                                if (placeholder) {
+                                  (placeholder as HTMLElement).style.display = 'flex';
+                                }
                               }
                             }}
                           />
                         ) : null}
                         <div 
-                          className="w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center"
-                          style={{ display: getThumbnailUrl(bonus.thumbnail) ? 'none' : 'flex' }}
+                          className="fallback-placeholder w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center absolute inset-0"
+                          style={{ display: bonus.thumbnail ? 'none' : 'flex' }}
                         >
                           <BookOpen className="w-16 h-16 text-muted-foreground/30" />
                         </div>
@@ -242,17 +245,21 @@ export default function BonusesCalAI() {
                       className="group text-left"
                     >
                       <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-video transition-all hover:scale-[1.02]">
-                        {getThumbnailUrl(bonus.thumbnail) ? (
+                        {bonus.thumbnail ? (
                           <>
                             <img
-                              src={getThumbnailUrl(bonus.thumbnail)!}
+                              src={bonus.thumbnail}
                               alt={bonus.title}
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                const fallback = e.currentTarget.parentElement?.querySelector('.fallback-placeholder');
-                                if (fallback) {
-                                  (fallback as HTMLElement).style.display = 'flex';
+                                const target = e.currentTarget;
+                                target.style.display = 'none';
+                                const parent = target.parentElement;
+                                if (parent) {
+                                  const fallback = parent.querySelector('.fallback-placeholder');
+                                  if (fallback) {
+                                    (fallback as HTMLElement).style.display = 'flex';
+                                  }
                                 }
                               }}
                             />
@@ -265,7 +272,7 @@ export default function BonusesCalAI() {
                         ) : null}
                         <div 
                           className="fallback-placeholder w-full h-full bg-gradient-to-br from-muted to-muted/50 flex items-center justify-center absolute inset-0"
-                          style={{ display: getThumbnailUrl(bonus.thumbnail) ? 'none' : 'flex' }}
+                          style={{ display: bonus.thumbnail ? 'none' : 'flex' }}
                         >
                           <Play className="w-12 h-12 text-muted-foreground/30" />
                         </div>
