@@ -485,17 +485,8 @@ export default function Quiz() {
     <div className="min-h-screen flex flex-col bg-white dark:bg-black">
       {/* Progress Bar & Header */}
       {showProgressBar && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black shadow-sm">
-          <div className="h-1 bg-gray-200 dark:bg-gray-800">
-            <motion.div
-              className="h-full bg-black dark:bg-white"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 0.3 }}
-            />
-          </div>
-
-          <div className="px-4 h-14 flex items-center justify-between">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-black">
+          <div className="px-4 h-14 flex items-center">
             {showBackButton && (
               <button
                 onClick={handlePrevious}
@@ -504,10 +495,15 @@ export default function Quiz() {
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            
-            <div className="ml-auto w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-              <span className="text-xs font-bold text-black dark:text-white">{pageNumber}</span>
-            </div>
+          </div>
+          
+          <div className="h-[2px] bg-gray-200 dark:bg-gray-800">
+            <motion.div
+              className="h-full bg-black dark:bg-white"
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 0.3 }}
+            />
           </div>
         </div>
       )}
