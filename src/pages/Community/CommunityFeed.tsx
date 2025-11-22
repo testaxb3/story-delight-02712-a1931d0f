@@ -146,17 +146,17 @@ export default function CommunityFeed() {
 
     const { data, error } = await supabase
       .from('group_posts')
-      .select('*, profiles!user_id(name, photo_url)')
+      .select('id, content, script_used, created_at, user_id, profiles(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('created_at', { ascending: false });
 
     if (error) {
-      toast.error(`❌ Error loading posts: ${error.message}`);
+      toast.error(`❌ Error: ${error.message}`);
       return;
     }
 
     setPosts((data || []) as any);
-    toast.success(`✅ Loaded ${data?.length || 0} posts`);
+    toast.success(`✅ ${data?.length || 0} posts loaded`);
   };
 
   const checkLeaderStatus = async () => {
