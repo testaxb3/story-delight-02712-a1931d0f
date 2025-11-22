@@ -130,12 +130,6 @@ export default function ProfileCalAI() {
             </div>
             <ChevronRight className="w-5 h-5 text-muted-foreground" />
           </button>
-          <MenuItem
-            icon={Users}
-            title="Upgrade to Family Plan"
-            subtitle="Support multiple children & family members"
-            className="bg-accent/5 border border-accent/20"
-          />
         </Card>
 
         {/* Goals & Tracking */}
