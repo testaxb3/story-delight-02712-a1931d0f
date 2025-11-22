@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { BookOpen, Clock, FileText, Gift, Loader2, Play, Sparkles, Target, ThumbsUp, TrendingDown, Users, Video, X } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Badge } from '@/components/ui/badge';
@@ -22,7 +23,6 @@ import { useLiveStats } from '@/hooks/useLiveStats';
 import { getBrainTypeIcon } from '@/lib/brainTypes';
 import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { useVideos } from '@/hooks/useVideos';
 import { trackFeatureDiscovery, trackReturnVisit } from '@/lib/analytics-advanced';
 
 // Premium Dashboard Components
@@ -36,8 +36,6 @@ import { RecentScriptUsage } from '@/components/Dashboard/RecentScriptUsage';
 import { PersonalizedInsights } from '@/components/Dashboard/PersonalizedInsights';
 import { AnimatedMetricCard } from '@/components/Dashboard/AnimatedMetricCard';
 import { DashboardSkeletonV2 } from '@/components/Skeletons/DashboardSkeletonV2';
-
-type VideoRow = Database['public']['Tables']['videos']['Row'];
 
 type StandaloneNavigator = Navigator & { standalone?: boolean };
 
@@ -67,7 +65,21 @@ export default function Dashboard() {
   // Optimized: Single query for all dashboard stats
   const { data: dashboardStats, isLoading: loadingDashboardStats } = useDashboardStats();
   const { progress, loading: loadingProgress } = useVideoProgressOptimized();
-  const { data: videos = [], isLoading: loadingVideos } = useVideos();
+  
+  // Fetch video bonuses instead of videos table
+  const { data: videoBonuses = [], isLoading: loadingVideos } = useQuery({
+    queryKey: ['bonuses', 'videos'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('bonuses')
+        .select('*')
+        .eq('category', 'video')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      return data || [];
+    },
+  });
 
   // Derived values from dashboard stats
   const trackerSummary = {
@@ -142,14 +154,14 @@ export default function Dashboard() {
 
   // Calculate last watched video
   const lastWatchedVideo = useMemo(() => {
-    if (!progress || progress.size === 0 || videos.length === 0) return null;
+    if (!progress || progress.size === 0 || videoBonuses.length === 0) return null;
 
     // Find the most recently watched video
-    let latestVideo: VideoRow | null = null;
+    let latestVideo: any = null;
     let latestTimestamp = 0;
 
     progress.forEach((progressData, videoId) => {
-      const video = videos.find(v => v.id === videoId);
+      const video = videoBonuses.find(v => v.id === videoId);
       if (!video) return;
 
       const timestamp = new Date(progressData.last_watched_at).getTime();
@@ -160,7 +172,7 @@ export default function Dashboard() {
     });
 
     return latestVideo;
-  }, [progress, videos]);
+  }, [progress, videoBonuses]);
 
   // Get progress percentage for a video
   const getProgressPercentage = (videoId: string): number => {
@@ -183,7 +195,7 @@ export default function Dashboard() {
       icon: Video,
       label: 'Video Lessons',
       count: contentCounts.videos ? `${contentCounts.videos} videos` : '',
-      path: '/videos',
+      path: '/bonuses?category=video',
       gradient: 'bg-gradient-accent',
       isRecommended: false,
       isNew: true,

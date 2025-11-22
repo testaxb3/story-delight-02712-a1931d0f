@@ -2,6 +2,7 @@ import { Play, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { useNavigate } from 'react-router-dom';
+import { routes } from '@/lib/navigation';
 
 interface ContinueWatchingProps {
   videoTitle: string;
@@ -23,7 +24,7 @@ export const ContinueWatching = ({
   if (progressPercentage >= 100) return null;
 
   return (
-    <div className="card-glass rounded-2xl p-6 hover-lift cursor-pointer" onClick={() => navigate('/videos')}>
+    <div className="card-glass rounded-2xl p-6 hover-lift cursor-pointer" onClick={() => navigate(routes.bonusesVideos)}>
       <div className="flex items-center gap-2 mb-4">
         <div className="p-2 rounded-lg bg-warning/10">
           <Clock className="w-4 h-4 text-warning" />
@@ -65,7 +66,7 @@ export const ContinueWatching = ({
         className="w-full mt-4 gradient-primary font-bold group"
         onClick={(e) => {
           e.stopPropagation();
-          navigate('/videos');
+          navigate(routes.bonusesVideos);
         }}
       >
         <Play className="mr-2 w-4 h-4 group-hover:scale-110 transition-transform" />

@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import type { Database } from '@/integrations/supabase/types';
+import { routes } from '@/lib/navigation';
 
 type VideoRow = Database['public']['Tables']['videos']['Row'];
 
@@ -46,7 +47,7 @@ export function VideoCard({
 
         <div
           className="relative mb-4 bg-gradient-accent rounded-xl overflow-hidden aspect-video flex items-center justify-center cursor-pointer group transition-all hover:scale-[1.02]"
-          onClick={() => navigate('/videos')}
+          onClick={() => navigate(routes.bonusesVideos)}
         >
           {video.thumbnail_url ? (
             <>
@@ -103,7 +104,7 @@ export function VideoCard({
         </div>
         <Progress value={progressPercentage} className="h-2 mb-4" />
 
-        <Button className="w-full text-sm sm:text-base" onClick={() => navigate('/videos')}>
+        <Button className="w-full text-sm sm:text-base" onClick={() => navigate(routes.bonusesVideos)}>
           <Play className="w-4 h-4 mr-2" />
           Continue Watching
         </Button>
@@ -124,7 +125,7 @@ export function VideoCard({
 
       <div
         className="relative mb-4 bg-gradient-accent rounded-xl overflow-hidden aspect-video flex items-center justify-center cursor-pointer group transition-all hover:scale-[1.02]"
-        onClick={() => navigate('/videos')}
+        onClick={() => navigate(routes.bonusesVideos)}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600 opacity-80 group-hover:opacity-90 transition-opacity" />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center z-20">
@@ -146,7 +147,7 @@ export function VideoCard({
         <p className="text-xs sm:text-sm text-foreground">Learn the science behind your child's brain and transform your parenting</p>
       </div>
 
-      <Button className="w-full text-sm sm:text-base" onClick={() => navigate('/videos')}>
+      <Button className="w-full text-sm sm:text-base" onClick={() => navigate(routes.bonusesVideos)}>
         <Play className="w-4 h-4 mr-2" />
         Start Watching
       </Button>
