@@ -11,7 +11,7 @@ export function FABButton({ onClick, className }: FABButtonProps) {
     <button
       onClick={onClick}
       className={cn(
-        "fixed bottom-[120px] right-5 z-50",
+        "fixed right-5 z-50",
         "w-14 h-14 rounded-full",
         "bg-accent hover:bg-accent/90",
         "flex items-center justify-center",
@@ -21,6 +21,7 @@ export function FABButton({ onClick, className }: FABButtonProps) {
         "hover:shadow-2xl hover:shadow-accent/30",
         className
       )}
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 7.5rem)` }}
     >
       <Plus className="w-7 h-7 text-white" strokeWidth={2.5} />
     </button>
