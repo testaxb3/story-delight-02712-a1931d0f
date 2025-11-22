@@ -9,14 +9,12 @@ import { Mail, Lock, CheckCircle2, Shield, Zap, DollarSign, Info, Loader2, Alert
 import { loginSchema } from '@/lib/validations';
 import { z } from 'zod';
 import { useRateLimit } from '@/hooks/useRateLimit';
-import { WelcomeGiftModal } from '@/components/WelcomeGiftModal';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
-  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -24,11 +22,11 @@ export default function Auth() {
   const loginRateLimit = useRateLimit(5, 60000);
 
   useEffect(() => {
-    // Only redirect if user exists AND welcome modal is not showing
-    if (user && !showWelcomeModal) {
+    // Only redirect if user exists
+    if (user) {
       navigate('/', { replace: true });
     }
-  }, [user, navigate, showWelcomeModal]);
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,8 +68,9 @@ export default function Auth() {
         }
       } else {
         if (isSignUp) {
-          // Show welcome modal on successful signup
-          setShowWelcomeModal(true);
+          // Redirect to onboarding after successful signup
+          toast.success('Welcome! Let\'s get you set up');
+          navigate('/onboarding', { replace: true });
         } else {
           toast.success('Welcome back!');
           navigate('/', { replace: true });
@@ -82,11 +81,6 @@ export default function Auth() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleWelcomeModalClose = () => {
-    setShowWelcomeModal(false);
-    // Don't show toast or switch mode here - let the modal navigate to quiz
   };
 
   return (
@@ -382,12 +376,6 @@ export default function Auth() {
           </div>
         )}
       </div>
-
-      {/* Welcome Gift Modal */}
-      <WelcomeGiftModal 
-        open={showWelcomeModal} 
-        onClose={handleWelcomeModalClose} 
-      />
     </div>
   );
 }
