@@ -8,7 +8,7 @@ html, body {
   padding: 0 !important;
   height: 100%;
   width: 100%;
-  background: #0E0E10 !important;
+  background: #0a0a0a !important;
   overflow-x: hidden;
 }
 
@@ -134,8 +134,8 @@ header, main {
   }
 
   .dark {
-    /* Dark Mode - Cal AI Exact Colors from screenshot */
-    --background: 0 0% 5.5%;             /* #0E0E10 - Deep dark background */
+    /* Dark Mode - Cal AI Exact Colors - Darker background */
+    --background: 0 0% 4%;               /* #0a0a0a - Deeper dark background */
     --foreground: 0 0% 98%;
 
     --card: 0 0% 8%;                     /* #141418 - Dark gray cards */
