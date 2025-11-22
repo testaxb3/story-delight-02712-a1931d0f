@@ -89,7 +89,7 @@ export default function CommunityFeed() {
 
     const { data, error } = await supabase
       .from('community_members')
-      .select('communities(*)')
+      .select('community_id, communities(id, name, logo_emoji, logo_url, invite_code)')
       .eq('user_id', user.profileId);
 
     if (error) {
@@ -97,7 +97,7 @@ export default function CommunityFeed() {
       return;
     }
 
-    const communityList = data.map((item: any) => item.communities);
+    const communityList = data.map((item: any) => item.communities).filter(Boolean);
     setCommunities(communityList);
     
     if (communityId) {
