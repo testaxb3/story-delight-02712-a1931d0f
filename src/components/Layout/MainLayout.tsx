@@ -14,13 +14,9 @@ interface MainLayoutProps {
 
 export function MainLayout({ children, hideTopBar = false, noPaddingTop = false, fullWidth = false, hideBottomNav = false, hideSideNav = false }: MainLayoutProps) {
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${!hideSideNav ? 'pb-20 md:pb-0 md:pl-20 lg:pl-24' : ''}`}>
+    <div className={`min-h-screen transition-colors duration-300 m-0 p-0 ${!hideSideNav ? 'pb-20 md:pb-0 md:pl-20 lg:pl-24' : ''}`}>
       {!hideSideNav && <SideNav />}
-      <main className={
-        fullWidth
-          ? ''
-          : `container mx-auto px-4 sm:px-6 ${noPaddingTop ? 'pb-8' : 'py-8'} space-y-6`
-      }>
+      <main className="w-full m-0 p-0">
         {children}
       </main>
       {!hideBottomNav && <BottomNav />}
