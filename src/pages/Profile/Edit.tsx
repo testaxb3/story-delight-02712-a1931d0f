@@ -207,7 +207,7 @@ export default function EditProfile() {
       await refreshUser();
       
       toast.success('Profile updated successfully');
-      navigate('/community');
+      navigate(-1); // Go back to previous page
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('Failed to update profile: ' + (error as any)?.message);
