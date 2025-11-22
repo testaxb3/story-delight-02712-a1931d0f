@@ -1,28 +1,16 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Search, Play, BookOpen, Sparkles, Clock, Eye } from 'lucide-react';
+import { Play, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
 type BonusRow = Database['public']['Tables']['bonuses']['Row'];
 
-const CATEGORIES = [
-  { id: 'all', label: 'All', icon: Sparkles },
-  { id: 'video', label: 'Videos', icon: Play },
-  { id: 'ebook', label: 'Ebooks', icon: BookOpen },
-];
-
 export default function BonusesCalAI() {
   const navigate = useNavigate();
   const [bonuses, setBonuses] = useState<BonusRow[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
     fetchBonuses();
@@ -41,27 +29,6 @@ export default function BonusesCalAI() {
     setLoading(false);
   };
 
-  const filteredBonuses = useMemo(() => {
-    return bonuses.filter(bonus => {
-      const matchesSearch = !searchQuery || 
-        bonus.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bonus.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || bonus.category === selectedCategory;
-      return matchesSearch && matchesCategory;
-    });
-  }, [bonuses, searchQuery, selectedCategory]);
-
-  const categoryCounts = useMemo(() => {
-    return CATEGORIES.reduce((acc, cat) => {
-      if (cat.id === 'all') {
-        acc[cat.id] = bonuses.length;
-      } else {
-        acc[cat.id] = bonuses.filter(b => b.category === cat.id).length;
-      }
-      return acc;
-    }, {} as Record<string, number>);
-  }, [bonuses]);
-
   const handleBonusClick = (bonus: BonusRow) => {
     if (bonus.category === 'ebook' && bonus.view_url) {
       navigate(bonus.view_url);
@@ -70,113 +37,141 @@ export default function BonusesCalAI() {
     }
   };
 
+  const videos = bonuses.filter(b => b.category === 'video');
+  const ebooks = bonuses.filter(b => b.category === 'ebook');
+
   return (
     <MainLayout>
-      <div className="max-w-7xl mx-auto px-4 py-6 pb-24">
+      <div className="px-4 md:px-6 py-6 md:py-8 pb-24 md:pb-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2">Bonuses</h1>
-          <p className="text-muted-foreground">Premium content and exclusive resources</p>
+        <div className="mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-5xl font-bold mb-3">Library</h1>
+          <p className="text-base md:text-lg text-muted-foreground">
+            Premium ebooks and video content
+          </p>
         </div>
 
-        {/* Search */}
-        <div className="mb-6">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-            <Input
-              placeholder="Search bonuses..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-card border-border"
-            />
+        {/* Ebooks Section */}
+        <section className="mb-12 md:mb-16">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <BookOpen className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold">Ebooks</h2>
+              <p className="text-sm text-muted-foreground">{ebooks.length} available</p>
+            </div>
           </div>
-        </div>
 
-        {/* Categories */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-8 scrollbar-hide">
-          {CATEGORIES.map(cat => (
-            <Button
-              key={cat.id}
-              variant={selectedCategory === cat.id ? "default" : "ghost"}
-              onClick={() => setSelectedCategory(cat.id)}
-              className="flex-shrink-0"
-            >
-              <cat.icon className="w-4 h-4 mr-2" />
-              {cat.label}
-              {categoryCounts[cat.id] > 0 && (
-                <Badge variant="secondary" className="ml-2">
-                  {categoryCounts[cat.id]}
-                </Badge>
-              )}
-            </Button>
-          ))}
-        </div>
-
-        {/* Bonuses Grid */}
-        {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map(i => (
-              <Card key={i} className="h-64 animate-pulse bg-card/50" />
-            ))}
-          </div>
-        ) : filteredBonuses.length === 0 ? (
-          <Card className="p-12 text-center bg-card">
-            <Sparkles className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-            <h3 className="text-lg font-medium mb-2">No bonuses found</h3>
-            <p className="text-muted-foreground">Try adjusting your filters</p>
-          </Card>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredBonuses.map(bonus => (
-              <Card
-                key={bonus.id}
-                className="overflow-hidden hover:bg-muted/5 transition-colors cursor-pointer bg-card border-border"
-                onClick={() => handleBonusClick(bonus)}
-              >
-                {/* Thumbnail */}
-                {bonus.thumbnail && (
-                  <div className="relative aspect-video bg-muted">
-                    <img
-                      src={bonus.thumbnail}
-                      alt={bonus.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      {bonus.category === 'video' ? (
-                        <Play className="w-12 h-12 text-white" />
-                      ) : (
-                        <Eye className="w-12 h-12 text-white" />
-                      )}
-                    </div>
+          {loading ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-48 rounded-2xl bg-muted/30 animate-pulse" />
+              ))}
+            </div>
+          ) : ebooks.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No ebooks available yet
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {ebooks.map(bonus => (
+                <button
+                  key={bonus.id}
+                  onClick={() => handleBonusClick(bonus)}
+                  className="group text-left"
+                >
+                  <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-[3/4] transition-all hover:scale-[1.02]">
+                    {bonus.thumbnail ? (
+                      <img
+                        src={bonus.thumbnail}
+                        alt={bonus.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <BookOpen className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
                   </div>
-                )}
+                  <h3 className="font-semibold text-sm md:text-base mb-1 line-clamp-2 group-hover:text-foreground/80 transition-colors">
+                    {bonus.title}
+                  </h3>
+                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
+                    {bonus.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
 
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between mb-2">
-                    <Badge variant="secondary" className="text-xs">
-                      {bonus.category}
-                    </Badge>
+        {/* Videos Section */}
+        <section>
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-foreground/5 flex items-center justify-center">
+              <Play className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold">Videos</h2>
+              <p className="text-sm text-muted-foreground">{videos.length} available</p>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {[1, 2, 3].map(i => (
+                <div key={i} className="h-48 rounded-2xl bg-muted/30 animate-pulse" />
+              ))}
+            </div>
+          ) : videos.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground">
+              No videos available yet
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {videos.map(bonus => (
+                <button
+                  key={bonus.id}
+                  onClick={() => handleBonusClick(bonus)}
+                  className="group text-left"
+                >
+                  <div className="relative rounded-2xl overflow-hidden bg-card border border-border mb-3 aspect-video transition-all hover:scale-[1.02]">
+                    {bonus.thumbnail ? (
+                      <>
+                        <img
+                          src={bonus.thumbnail}
+                          alt={bonus.title}
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="w-14 h-14 rounded-full bg-white/90 flex items-center justify-center">
+                            <Play className="w-6 h-6 text-black ml-1" fill="currentColor" />
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="w-full h-full bg-muted flex items-center justify-center">
+                        <Play className="w-12 h-12 text-muted-foreground" />
+                      </div>
+                    )}
                     {bonus.duration && (
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3" />
+                      <div className="absolute bottom-2 right-2 px-2 py-1 rounded-lg bg-black/80 text-white text-xs font-medium">
                         {bonus.duration}
                       </div>
                     )}
                   </div>
-                  
-                  <h3 className="font-medium line-clamp-2 mb-2">
+                  <h3 className="font-semibold text-sm md:text-base mb-1 line-clamp-2 group-hover:text-foreground/80 transition-colors">
                     {bonus.title}
                   </h3>
-                  
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-2">
                     {bonus.description}
                   </p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        )}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
     </MainLayout>
   );
