@@ -496,54 +496,44 @@ export default function CommunityFeed() {
         </div>
 
         <div className="px-4 py-4 space-y-4">
-          {/* Leader Invite Card */}
-          {isLeader && currentCommunity && (
+          {/* Leaderboard - Horizontal scrollable member list */}
+          {currentCommunity && members.length > 0 && (
             <div className="bg-card border border-border rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-3">
-                {members.slice(0, 3).map((member, idx) => (
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <Crown className="w-5 h-5 text-orange-500" />
+                Members
+              </h3>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
+                {members.map((member, idx) => (
                   <div
                     key={member.id}
-                    className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-xs font-bold -ml-2 first:ml-0 border-2 border-background"
+                    className="flex flex-col items-center gap-1 min-w-[60px]"
                   >
-                    {member.profiles?.photo_url ? (
-                      <img src={member.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
-                    ) : (
-                      getInitials(member.profiles?.name || 'U')
-                    )}
+                    <div className="relative">
+                      {idx === 0 && member.role === 'leader' && (
+                        <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center z-10">
+                          <Crown className="w-3 h-3 text-white" />
+                        </div>
+                      )}
+                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-sm font-bold border-2 border-background">
+                        {member.profiles?.photo_url ? (
+                          <img 
+                            src={member.profiles.photo_url} 
+                            alt={member.profiles?.name || 'User'} 
+                            className="w-full h-full rounded-full object-cover" 
+                          />
+                        ) : (
+                          <span className="text-white">
+                            {getInitials(member.profiles?.name || 'U')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="text-xs text-center line-clamp-1 max-w-[60px]">
+                      {member.profiles?.name?.split(' ')[0] || 'User'}
+                    </span>
                   </div>
                 ))}
-              </div>
-              <h3 className="font-semibold mb-2">Invite your friends to the group</h3>
-              <div className="flex items-center gap-2 mb-3">
-                <input
-                  type="text"
-                  value={`https://nepapp.com/community/${currentCommunity.invite_code}`}
-                  readOnly
-                  className="flex-1 px-3 py-2 bg-muted rounded-lg text-sm"
-                />
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={handleShare}
-                  className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors"
-                >
-                  <Share2 className="w-4 h-4" />
-                  Share
-                </button>
-                <button
-                  className="flex-1 h-10 rounded-lg bg-green-600 text-white flex items-center justify-center gap-2 hover:bg-green-700 transition-colors"
-                  onClick={() => window.open(`sms:?&body=Join my parenting community: https://nepapp.com/community/${currentCommunity.invite_code}`)}
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  Messages
-                </button>
-                <button
-                  onClick={handleCopyLink}
-                  className="flex-1 h-10 rounded-lg border border-border flex items-center justify-center gap-2 hover:bg-muted transition-colors"
-                >
-                  <Copy className="w-4 h-4" />
-                  Copy
-                </button>
               </div>
             </div>
           )}
