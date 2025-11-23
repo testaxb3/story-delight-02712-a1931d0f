@@ -1,48 +1,36 @@
-import { useCallback, useEffect } from 'react';
-import { useHaptic as useHapticBase } from 'use-haptic';
+import { useCallback } from 'react';
 
 export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
 
 /**
  * Hook for haptic feedback (vibration) on mobile devices
  * Provides consistent vibration patterns across the app
- *
- * Now uses the 'use-haptic' package which leverages the native input[switch]
- * element introduced in Safari 18.0 for reliable haptic feedback on iOS.
+ * Uses the native Vibration API for reliable cross-platform support
  */
 export function useHaptic() {
-  const { triggerHaptic: triggerHapticBase } = useHapticBase();
-
   const triggerHaptic = useCallback((pattern: HapticPattern = 'light') => {
-    console.log('[Haptic] Triggering vibration:', pattern);
-
-    // Map our pattern types to the number of times to trigger haptic
-    // The use-haptic package provides a single tap, so we trigger multiple times for complex patterns
-    const triggerCounts: Record<HapticPattern, number> = {
-      light: 1,        // Single quick tap
-      medium: 1,       // Single medium tap
-      heavy: 1,        // Single heavy tap
-      success: 2,      // Double tap for success
-      warning: 2,      // Double tap for warning
-      error: 3,        // Triple tap for error
-    };
-
-    const count = triggerCounts[pattern];
-
-    // Trigger haptic feedback the specified number of times
-    for (let i = 0; i < count; i++) {
-      setTimeout(() => {
-        triggerHapticBase();
-      }, i * 100); // 100ms delay between taps for patterns
+    // Check if vibration is supported
+    if (!('vibrate' in navigator)) {
+      return;
     }
 
-    console.log('[Haptic] Haptic feedback triggered:', pattern, `${count}x`);
-  }, [triggerHapticBase]);
+    // Map pattern types to vibration durations in milliseconds
+    const vibrationPatterns: Record<HapticPattern, number | number[]> = {
+      light: 10,
+      medium: 20,
+      heavy: 30,
+      success: [10, 50, 10],
+      warning: [20, 50, 20],
+      error: [30, 50, 30, 50, 30],
+    };
 
-  // Initialize on mount
-  useEffect(() => {
-    console.log('[Haptic] Hook initialized with use-haptic package');
-    console.log('[Haptic] Standalone mode:', (window.navigator as any).standalone || window.matchMedia('(display-mode: standalone)').matches);
+    const vibrationPattern = vibrationPatterns[pattern];
+    
+    try {
+      navigator.vibrate(vibrationPattern);
+    } catch (error) {
+      console.warn('[Haptic] Vibration failed:', error);
+    }
   }, []);
 
   return { triggerHaptic };
