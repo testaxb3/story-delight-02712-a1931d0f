@@ -576,15 +576,15 @@ function ScriptsContent() {
           </Button>
         </div>
 
-        <Card className="p-6 bg-[#1C1C1E] border border-[#333] shadow-xl rounded-2xl relative overflow-hidden">
+        <Card className="p-6 bg-card border-border shadow-xl rounded-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
           
           <div className="flex items-center justify-between gap-3 flex-wrap relative z-10">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-[#2C2C2E] rounded-lg shadow-sm border border-[#333]">
+              <div className="p-2 bg-muted rounded-lg shadow-sm border-border">
                 <Sparkles className="w-5 h-5 text-purple-400" />
               </div>
-              <h2 className="text-xl font-bold text-white">Smart suggestions for {activeChild?.name ?? 'your family'}</h2>
+              <h2 className="text-xl font-bold text-foreground">Smart suggestions for {activeChild?.name ?? 'your family'}</h2>
             </div>
             <Badge variant="outline" className="border-purple-500/30 text-purple-400 bg-purple-500/10 font-medium px-3 py-1">
               {hasPersonalizedHistory ? '✨ ' + t.scripts.personalizedHistory : `🧠 ${t.scripts.profileBased} ${currentBrain}`}
@@ -605,7 +605,7 @@ function ScriptsContent() {
                 return (
                   <div
                     key={script.id}
-                    className="relative text-left rounded-xl bg-[#252527] border border-[#333] p-5 transition-all hover:bg-[#2C2C2E] hover:border-[#444] group"
+                    className="relative text-left rounded-xl bg-card border-border p-5 transition-all hover:bg-muted/50 hover:border-muted-foreground/20 group"
                   >
                     <button
                       onClick={() => handleSelectScript(script)}
@@ -614,21 +614,21 @@ function ScriptsContent() {
                       <div className="flex items-start gap-4">
                         <div className="text-3xl shrink-0 group-hover:scale-110 transition-transform grayscale group-hover:grayscale-0">{script.emoji}</div>
                         <div className="flex-1 pr-8">
-                        <p className="font-bold text-base text-white group-hover:text-purple-400 transition-colors">{script.title}</p>
-                        <p className="text-xs text-gray-400 mt-1.5 font-medium">{script.displayCategory}</p>
+                        <p className="font-bold text-base text-foreground group-hover:text-purple-400 transition-colors">{script.title}</p>
+                        <p className="text-xs text-muted-foreground mt-1.5 font-medium">{script.displayCategory}</p>
                         {meta?.feedbackCount ? (
-                          <p className="text-[11px] text-gray-500 mt-1">
+                          <p className="text-[11px] text-muted-foreground mt-1">
                             {meta.feedbackCount} registro(s) positivo(s)
                           </p>
                         ) : null}
                         <div className="flex flex-wrap gap-2 mt-3">
                           {script.tags.slice(0, 2).map((tag) => (
-                            <Badge key={tag} variant="outline" className="border-[#444] text-gray-400 bg-[#1A1A1A]">
+                            <Badge key={tag} variant="outline" className="border-border text-muted-foreground bg-muted">
                               #{tag}
                             </Badge>
                           ))}
                           {script.estimatedTimeMinutes && (
-                            <Badge className="bg-[#1A1A1A] text-gray-300 border border-[#333]">
+                            <Badge className="bg-muted text-foreground border-border">
                               ⏱️ {script.estimatedTimeMinutes} min
                             </Badge>
                           )}
@@ -675,7 +675,7 @@ function ScriptsContent() {
             placeholder={SEARCH_PLACEHOLDERS[placeholderIndex]}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-14 text-base border border-[#333] bg-[#1C1C1E] text-white placeholder:text-gray-600 rounded-2xl focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-lg"
+            className="pl-12 h-14 text-base border-border bg-background text-foreground placeholder:text-muted-foreground rounded-2xl focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/10 transition-all shadow-lg"
             ref={searchInputRef}
           />
         </div>
@@ -698,8 +698,8 @@ function ScriptsContent() {
                 whitespace-nowrap justify-start h-12 text-sm font-medium rounded-xl border
                 transition-all duration-300
                 ${selectedCategory === cat.value
-                  ? 'bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)] hover:bg-white/90'
-                  : 'bg-[#1C1C1E] text-gray-400 border-[#333] hover:border-gray-600 hover:text-white'
+                  ? 'bg-primary text-primary-foreground border-primary shadow-lg hover:bg-primary/90'
+                  : 'bg-card text-muted-foreground border-border hover:border-muted-foreground/50 hover:text-foreground'
                 }
               `}
               onClick={() => setSelectedCategory(cat.value)}
@@ -711,8 +711,8 @@ function ScriptsContent() {
                   variant="secondary"
                   className={`ml-2 text-[10px] h-5 min-w-[20px] flex items-center justify-center px-1 ${
                     selectedCategory === cat.value 
-                      ? 'bg-black text-white' 
-                      : 'bg-[#2C2C2E] text-gray-500'
+                      ? 'bg-primary-foreground text-primary' 
+                      : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {getCategoryCount(cat.value, brainScopedScripts)}
