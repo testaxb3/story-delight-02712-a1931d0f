@@ -81,7 +81,8 @@ export const BonusesCategoryTabs = memo(function BonusesCategoryTabs({
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   triggerHaptic('light');
                   onCategoryChange(category.id);
                 }}
