@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useInfiniteQuery, UseInfiniteQueryOptions } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 

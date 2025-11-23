@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Video, Flame, Calendar, Play, ChevronRight, Zap, Target } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
