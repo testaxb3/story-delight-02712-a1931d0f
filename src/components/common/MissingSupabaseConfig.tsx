@@ -1,5 +1,3 @@
-import { SUPABASE_CONFIG_ERROR_MESSAGE } from "@/integrations/supabase/client";
-
 const MissingSupabaseConfig = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-purple-900 p-6 text-white">
@@ -8,7 +6,7 @@ const MissingSupabaseConfig = () => {
         <div className="space-y-3">
           <h1 className="text-3xl font-semibold">Connect Supabase to continue</h1>
           <p className="text-base text-white/80">
-            {SUPABASE_CONFIG_ERROR_MESSAGE}
+            As variáveis VITE_SUPABASE_URL e VITE_SUPABASE_PUBLISHABLE_KEY precisam ser configuradas nos Secrets do projeto Lovable.
           </p>
           <p className="text-sm text-white/60">
             The keys can be found in your Supabase project dashboard. See the
