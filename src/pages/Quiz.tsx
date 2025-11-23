@@ -48,29 +48,6 @@ export default function Quiz() {
   });
   const submission = useQuizSubmission();
 
-  // Countdown timer
-  useEffect(() => {
-    if (quizState.countdown > 0 && quizState.showCountdown) {
-      const timer = setTimeout(() => quizState.setCountdown(quizState.countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (quizState.countdown === 0 && quizState.showCountdown) {
-      quizState.setShowCountdown(false);
-      quizState.setCompletingQuiz(true);
-      handleCompleteQuiz();
-    }
-  }, [quizState.countdown, quizState.showCountdown]);
-
-  // Completing quiz screen timer
-  useEffect(() => {
-    if (quizState.completingQuiz) {
-      const timer = setTimeout(() => {
-        quizState.setCompletingQuiz(false);
-        quizState.setShowLoading(true);
-      }, 3500);
-      return () => clearTimeout(timer);
-    }
-  }, [quizState.completingQuiz]);
-
   // Start quiz flow
   const startQuiz = useCallback(() => {
     quizState.setHasStarted(true);
@@ -97,6 +74,23 @@ export default function Quiz() {
       resultSpeed: quizState.resultSpeed,
     });
   }, [quizState, validation, submission]);
+
+  // Countdown timer - Fixed to prevent double execution
+  useEffect(() => {
+    if (!quizState.showCountdown) return;
+    
+    if (quizState.countdown > 0) {
+      const timer = setTimeout(() => {
+        quizState.setCountdown(quizState.countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (quizState.countdown === 0) {
+      // Only execute once when countdown reaches 0
+      quizState.setShowCountdown(false);
+      quizState.setShowLoading(true);
+      handleCompleteQuiz();
+    }
+  }, [quizState.countdown, quizState.showCountdown, quizState, handleCompleteQuiz]);
 
   // Navigation handlers
   const handleNext = useCallback(() => {
@@ -125,16 +119,12 @@ export default function Quiz() {
       case 'questions':
         if (progress.isLastQuestion) {
           quizState.setShowCountdown(true);
+          quizState.setCountdown(3); // Reset countdown to 3
         } else {
           const nextQuestion = quizState.currentQuestion + 1;
           quizState.setCurrentQuestion(nextQuestion);
           
-          // Check milestone
-          const milestone = progress.checkMilestone(nextQuestion);
-          if (milestone.reached && milestone.milestone) {
-            quizState.setCurrentMilestone(milestone.milestone);
-            quizState.setShowMotivationalMilestone(true);
-          }
+          // Milestone screens removed - go directly to next question
         }
         break;
     }
@@ -201,9 +191,7 @@ export default function Quiz() {
     );
   }
 
-  if (quizState.showMotivationalMilestone) {
-    return <QuizMotivationalScreen milestone={quizState.currentMilestone} brainType={quizState.currentMilestone === 75 ? quizState.result?.type : undefined} onContinue={() => quizState.setShowMotivationalMilestone(false)} />;
-  }
+  // Motivational milestone screens removed
 
   if (quizState.showPostSpeedMotivational) {
     return <QuizPostSpeedMotivationalScreen selectedGoals={quizState.parentGoals} onContinue={handleNext} />;
@@ -265,7 +253,7 @@ export default function Quiz() {
         </div>
 
         {/* Fixed Bottom Button */}
-        {!quizState.showCountdown && !quizState.completingQuiz && !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showPostSpeedMotivational && !quizState.showPreLoading && !quizState.showLoading && !quizState.showEnhancedResults && !quizState.showMotivationalMilestone && (
+        {!quizState.showCountdown && !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showPostSpeedMotivational && !quizState.showPreLoading && !quizState.showLoading && !quizState.showEnhancedResults && (
           <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-6 pb-8 pt-4 z-50">
             <Button onClick={quizState.quizStep === 'speed' ? () => quizState.setShowPostSpeedMotivational(true) : handleNext} disabled={!validation.canProceed} className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-base font-bold rounded-xl transition-all">
               {progress.buttonText}
