@@ -1,8 +1,4 @@
-import {
-  SUPABASE_CONFIG_ERROR_MESSAGE,
-  isSupabaseConfigured,
-  supabase,
-} from "@/integrations/supabase/client";
+import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { saveChildProfile } from "@/lib/supabase/profile";
 
@@ -13,10 +9,6 @@ type TrackerDayRow = Database["public"]["Tables"]["tracker_days"]["Row"];
 type AuthDestination = "dashboard" | "quiz";
 
 export async function ensureTrackerDays(userId: string) {
-  if (!isSupabaseConfigured) {
-    throw new Error(SUPABASE_CONFIG_ERROR_MESSAGE);
-  }
-
   try {
     const { data, error } = await supabase
       .from("tracker_days")
@@ -56,10 +48,6 @@ export async function ensureTrackerDays(userId: string) {
 }
 
 export async function ensureUserScaffolding(userId: string, email: string) {
-  if (!isSupabaseConfigured) {
-    throw new Error(SUPABASE_CONFIG_ERROR_MESSAGE);
-  }
-
   const normalizedEmail = email.toLowerCase();
   const defaultName = normalizedEmail.split("@")[0] ?? "Parent";
 
@@ -79,10 +67,6 @@ export async function ensureUserScaffolding(userId: string, email: string) {
 }
 
 export async function resolveAuthDestination(userId: string): Promise<AuthDestination> {
-  if (!isSupabaseConfigured) {
-    throw new Error(SUPABASE_CONFIG_ERROR_MESSAGE);
-  }
-
   try {
     const { data: progressData, error } = await supabase
       .from("user_progress")
