@@ -89,6 +89,7 @@ export default function CommunityFeed() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showReactionsSheet, setShowReactionsSheet] = useState(false);
+  const [postReactions, setPostReactions] = useState<Record<string, { emoji: string; count: number }[]>>({});
 
   useEffect(() => {
     if (user?.profileId) {
@@ -101,8 +102,32 @@ export default function CommunityFeed() {
       loadMembers();
       loadPosts();
       checkLeaderStatus();
+
+      // Subscribe to real-time reaction changes
+      const channel = supabase
+        .channel(`group_reactions:${currentCommunity.id}`)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'group_reactions',
+          },
+          (payload) => {
+            // Reload reactions when any change occurs
+            const postIds = posts.map(p => p.id);
+            if (postIds.length > 0) {
+              loadPostReactions(postIds);
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
-  }, [currentCommunity]);
+  }, [currentCommunity, posts.length]);
 
   const loadCommunities = async () => {
     if (!user?.profileId) return;
@@ -163,6 +188,44 @@ export default function CommunityFeed() {
     }
 
     setPosts((data || []) as any);
+
+    // Load reactions for all posts
+    if (data && data.length > 0) {
+      await loadPostReactions(data.map(p => p.id));
+    }
+  };
+
+  const loadPostReactions = async (postIds: string[]) => {
+    if (postIds.length === 0) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('group_reactions')
+        .select('post_id, emoji, user_id')
+        .in('post_id', postIds);
+
+      if (error) throw error;
+
+      // Group reactions by post_id and emoji
+      const reactionsByPost: Record<string, { emoji: string; count: number }[]> = {};
+      
+      (data || []).forEach((reaction: any) => {
+        if (!reactionsByPost[reaction.post_id]) {
+          reactionsByPost[reaction.post_id] = [];
+        }
+        
+        const existingReaction = reactionsByPost[reaction.post_id].find(r => r.emoji === reaction.emoji);
+        if (existingReaction) {
+          existingReaction.count++;
+        } else {
+          reactionsByPost[reaction.post_id].push({ emoji: reaction.emoji, count: 1 });
+        }
+      });
+
+      setPostReactions(reactionsByPost);
+    } catch (error) {
+      console.error('Error loading reactions:', error);
+    }
   };
 
   const checkLeaderStatus = async () => {
@@ -668,23 +731,44 @@ export default function CommunityFeed() {
                   )}
 
                   {/* Enhanced Actions with better interaction feedback */}
-                  <div className="flex gap-2.5 pt-2 border-t border-white/5">
-                    <motion.button 
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleOpenReactions(post.id)}
-                      className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
-                    >
-                      <Heart className="w-4 h-4 text-rose-500" />
-                      <span className="text-xs">React</span>
-                    </motion.button>
-                    <motion.button 
-                      whileTap={{ scale: 0.97 }}
-                      onClick={() => handleOpenReactions(post.id)}
-                      className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
-                    >
-                      <MessageCircle className="w-4 h-4 text-blue-400" />
-                      <span className="text-xs">Comment</span>
-                    </motion.button>
+                  <div className="flex flex-col gap-3 pt-3 border-t border-white/5">
+                    {/* Reactions display */}
+                    {postReactions[post.id] && postReactions[post.id].length > 0 && (
+                      <div className="flex items-center gap-2 flex-wrap px-1">
+                        {postReactions[post.id]
+                          .sort((a, b) => b.count - a.count)
+                          .slice(0, 5)
+                          .map((reaction, idx) => (
+                            <div
+                              key={`${reaction.emoji}-${idx}`}
+                              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+                            >
+                              <span className="text-sm">{reaction.emoji}</span>
+                              <span className="text-xs font-bold text-white/80">{reaction.count}</span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="flex gap-2.5">
+                      <motion.button 
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleOpenReactions(post.id)}
+                        className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
+                      >
+                        <Heart className="w-4 h-4 text-rose-500" />
+                        <span className="text-xs">React</span>
+                      </motion.button>
+                      <motion.button 
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => handleOpenReactions(post.id)}
+                        className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
+                      >
+                        <MessageCircle className="w-4 h-4 text-blue-400" />
+                        <span className="text-xs">Comment</span>
+                      </motion.button>
+                    </div>
                   </div>
                 </motion.div>
               ))
