@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BonusData, BonusCategory } from "@/types/bonus";
-import { useState } from "react";
+import { useState, memo } from "react";
 
 // Re-export for backward compatibility
 export type { BonusData };
@@ -83,7 +83,8 @@ const categoryConfig: Record<BonusCategory, {
   }
 };
 
-export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
+// PERFORMANCE: Memoize BonusCard to prevent unnecessary re-renders
+export const BonusCard = memo(function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
   // Ensure valid category with robust fallback
   const validCategory = (bonus?.category && 
     Object.values(BonusCategory).includes(bonus.category as BonusCategory)) 
@@ -99,8 +100,8 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -6, scale: 1.02 }}
+      transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3) }}
+      whileHover={{ y: -4 }}
       className="h-full"
     >
       <Card className={cn(
@@ -326,4 +327,13 @@ export function BonusCard({ bonus, onAction, index = 0 }: BonusCardProps) {
       </Card>
     </motion.div>
   );
-}
+}, (prevProps, nextProps) => {
+  // PERFORMANCE: Custom comparison for memo
+  return (
+    prevProps.bonus.id === nextProps.bonus.id &&
+    prevProps.bonus.progress === nextProps.bonus.progress &&
+    prevProps.bonus.completed === nextProps.bonus.completed &&
+    prevProps.bonus.locked === nextProps.bonus.locked &&
+    prevProps.index === nextProps.index
+  );
+});

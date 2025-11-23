@@ -3,6 +3,7 @@ import { Gift, Trophy, Clock, CheckCircle, Sparkles, TrendingUp } from "lucide-r
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface BonusesHeaderProps {
   userName?: string;
@@ -12,7 +13,8 @@ interface BonusesHeaderProps {
   totalTimeSpent?: string;
 }
 
-export function BonusesHeader({
+// PERFORMANCE: Memoize header to prevent re-renders
+export const BonusesHeader = memo(function BonusesHeader({
   userName = "Member",
   totalBonuses,
   unlockedBonuses,
@@ -94,4 +96,4 @@ export function BonusesHeader({
       </div>
     </div>
   );
-}
+});

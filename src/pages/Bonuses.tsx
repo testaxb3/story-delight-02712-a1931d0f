@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, memo } from "react";
 import { MainLayout } from "@/components/Layout/MainLayout";
 import { BonusesHeader } from "@/components/bonuses/BonusesHeader";
 import { BonusesCategoryTabs } from "@/components/bonuses/BonusesCategoryTabs";
@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { OptimizedYouTubePlayer } from "@/components/VideoPlayer/OptimizedYouTubePlayer";
 import { Progress } from "@/components/ui/progress";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 import { BonusData, BonusCategory } from "@/types/bonus";
 import { supabase } from "@/integrations/supabase/client";
@@ -90,21 +90,21 @@ function BonusesContent() {
     setCurrentPage(0);
   }, [activeCategory, searchQuery]);
 
-  // Categories configuration
-  const categories = [
+  // PERFORMANCE: Memoize categories configuration
+  const categories = useMemo(() => [
     { id: "all", label: "All Bonuses", icon: Sparkles, count: categoryCounts.all },
     { id: "video", label: "Videos", icon: Play, count: categoryCounts.video },
     { id: "ebook", label: "Ebooks", icon: BookOpen, count: categoryCounts.ebook },
     { id: "tool", label: "Tools", icon: Wrench, count: categoryCounts.tool },
-  ];
+  ], [categoryCounts]);
 
-  // Clear all filters helper
-  const handleClearFilters = () => {
+  // PERFORMANCE: Memoize callbacks to prevent re-renders
+  const handleClearFilters = useCallback(() => {
     setSearchQuery("");
     setActiveCategory("all");
     setSortBy("newest");
     setCurrentPage(0);
-  };
+  }, []);
 
   // Sort bonuses client-side (data already filtered by backend)
   const sortedBonuses = useMemo(() => {
@@ -167,13 +167,13 @@ function BonusesContent() {
     totalTimeSpent
   }), [sortedBonuses, totalTimeSpent]);
 
-  // Helper to check if URL is YouTube
-  const isYouTubeUrl = (url: string) => {
+  // PERFORMANCE: Memoize YouTube URL checker
+  const isYouTubeUrl = useCallback((url: string) => {
     return /(?:youtube\.com|youtu\.be)/.test(url);
-  };
+  }, []);
 
-  // Handle bonus actions
-  const handleBonusAction = async (bonus: BonusData) => {
+  // PERFORMANCE: Memoize bonus action handler
+  const handleBonusAction = useCallback(async (bonus: BonusData) => {
     // If it's a video category
     if (bonus.category === 'video') {
       // Priority 1: Use videoUrl if available
@@ -221,7 +221,7 @@ function BonusesContent() {
     } else if (bonus.downloadUrl) {
       window.open(bonus.downloadUrl, '_blank');
     }
-  };
+  }, [navigate, isYouTubeUrl]);
 
   // PERFORMANCE: Memoize split bonus lists (data already filtered by backend)
   const unlockedBonuses = useMemo(() => 
@@ -364,85 +364,80 @@ function BonusesContent() {
           )}
 
           {/* Category Tabs and Filters */}
-          <div className="relative">
-            {isFetching && (
-              <div className="absolute -top-1 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-pulse" />
-            )}
-            <BonusesCategoryTabs
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-              searchQuery={searchQuery}
-              onSearchChange={setSearchQuery}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-              viewMode={viewMode}
-              onViewModeChange={setViewMode}
-              categories={categories}
-            />
-          </div>
+          <BonusesCategoryTabs
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            viewMode={viewMode}
+            onViewModeChange={setViewMode}
+            categories={categories}
+          />
 
-          {/* Unlocked Bonuses Grid */}
-          {unlockedBonuses.length > 0 && (
+          {/* PERFORMANCE: AnimatePresence for smooth transitions */}
+          <AnimatePresence mode="wait">
             <motion.div
-              key={`unlocked-${activeCategory}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2 }}
+              key={`content-${activeCategory}-${searchQuery}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-xl font-semibold text-white">Available Now</h2>
-                <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
-                  {unlockedBonuses.length}
-                </span>
-              </div>
-              <div className={
-                viewMode === "grid"
-                  ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-                  : "space-y-4"
-              }>
-                {unlockedBonuses.map((bonus, index) => (
-                  <BonusCard
-                    key={bonus.id}
-                    bonus={bonus}
-                    onAction={handleBonusAction}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          )}
+              {/* Unlocked Bonuses Grid */}
+              {unlockedBonuses.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-xl font-semibold text-white">Available Now</h2>
+                    <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
+                      {unlockedBonuses.length}
+                    </span>
+                  </div>
+                  <div className={
+                    viewMode === "grid"
+                      ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                      : "space-y-4"
+                  }>
+                    {unlockedBonuses.map((bonus, index) => (
+                      <BonusCard
+                        key={bonus.id}
+                        bonus={bonus}
+                        onAction={handleBonusAction}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
-          {/* Locked Bonuses Section */}
-          {lockedBonuses.length > 0 && (
-            <motion.div
-              key={`locked-${activeCategory}`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: 0.1 }}
-              className="mt-8"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
-                <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
-                  {lockedBonuses.length}
-                </span>
-              </div>
-              <div className={
-                viewMode === "grid"
-                  ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
-                  : "space-y-4"
-              }>
-                {lockedBonuses.map((bonus, index) => (
-                  <BonusCard
-                    key={bonus.id}
-                    bonus={bonus}
-                    onAction={handleBonusAction}
-                    index={index}
-                  />
-                ))}
-              </div>
+              {/* Locked Bonuses Section */}
+              {lockedBonuses.length > 0 && (
+                <div className="mt-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
+                    <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
+                      {lockedBonuses.length}
+                    </span>
+                  </div>
+                  <div className={
+                    viewMode === "grid"
+                      ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                      : "space-y-4"
+                  }>
+                    {lockedBonuses.map((bonus, index) => (
+                      <BonusCard
+                        key={bonus.id}
+                        bonus={bonus}
+                        onAction={handleBonusAction}
+                        index={index}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
-          )}
+          </AnimatePresence>
 
           {/* Empty State */}
           {sortedBonuses.length === 0 && !isFetching && (
