@@ -92,7 +92,12 @@ function BonusesContent() {
 
   // PERFORMANCE: Prevent scroll on category change
   const handleCategoryChange = useCallback((category: string) => {
+    const currentScroll = window.scrollY;
     setActiveCategory(category);
+    // Preserve scroll position after state update
+    setTimeout(() => {
+      window.scrollTo(0, currentScroll);
+    }, 0);
   }, []);
 
   // PERFORMANCE: Memoize categories configuration
