@@ -93,7 +93,7 @@ const PWAInstall = () => {
           className="relative aspect-video rounded-xl overflow-hidden shadow-2xl bg-black"
         >
           <iframe
-            src={`https://www.youtube.com/embed/${isIOS ? 'X3VD_vFqwN0' : 'oP_FoLrCKvI'}?modestbranding=1&rel=0`}
+            src={`https://www.youtube.com/embed/${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}?modestbranding=1&rel=0`}
             title="PWA Installation Tutorial"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
