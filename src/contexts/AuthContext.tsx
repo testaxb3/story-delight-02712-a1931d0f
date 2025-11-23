@@ -173,11 +173,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
 
-      // ✅ FIX: Invalidate all caches on login to ensure fresh data
-      // This prevents showing stale quiz_completed status
+      // ✅ CRITICAL FIX: Force immediate refetch instead of just invalidating
+      // This ensures quiz_completed status is fresh before redirect
       if (data?.user?.id) {
+        console.log('[AuthContext] 🔄 Forçando refetch do perfil após login');
+        
+        // Invalidate first to clear stale data
         queryClient.invalidateQueries({ queryKey: ['user-profile', data.user.id] });
         queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
+        
+        // Force immediate refetch and WAIT for it to complete
+        await queryClient.refetchQueries({ 
+          queryKey: ['user-profile', data.user.id],
+          exact: true 
+        });
+        
+        // Small delay to ensure state propagation
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        console.log('[AuthContext] ✅ Profile refetchado após login');
       }
 
       return { error: null };

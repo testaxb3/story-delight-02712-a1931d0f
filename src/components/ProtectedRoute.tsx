@@ -58,12 +58,19 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
   // Isso resolve loops de redirecionamento causados por cache stale
-  if (user.quiz_completed) {
+  if (user.quiz_completed === true) {
     console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
     // Limpar sessionStorage se quiz confirmado completo
     if (sessionStorage.getItem('quizJustCompletedAt')) {
       sessionStorage.removeItem('quizJustCompletedAt');
       console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
+    }
+    // ✅ Garantir que os flags PWA estejam setados para não pedir novamente
+    if (!localStorage.getItem('pwa_flow_completed')) {
+      localStorage.setItem('pwa_flow_completed', 'true');
+    }
+    if (!localStorage.getItem('theme_selected')) {
+      localStorage.setItem('theme_selected', 'true');
     }
     return <>{children}</>;
   }
