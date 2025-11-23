@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { memo, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { QuizOptionCard } from './QuizOptionCard';
 
 interface Option {
@@ -8,6 +9,7 @@ interface Option {
 
 interface Question {
   question: string;
+  context?: string;
   options: Option[];
 }
 
@@ -17,31 +19,56 @@ interface QuizQuestionStepProps {
   onAnswer: (answer: string) => void;
 }
 
-export const QuizQuestionStep = ({ question, currentAnswer, onAnswer }: QuizQuestionStepProps) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="space-y-8"
-    >
-      <div className="text-left space-y-2 px-6">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight">
-          {question.question}
-        </h2>
-      </div>
+export const QuizQuestionStep = memo(({ question, currentAnswer, onAnswer }: QuizQuestionStepProps) => {
+  const handleAnswer = useCallback((answer: string) => {
+    onAnswer(answer);
+  }, [onAnswer]);
 
-      <div className="space-y-4 px-6">
-        {question.options.map((option) => (
-          <QuizOptionCard
-            key={option.value}
-            label={option.label}
-            value={option.value}
-            isSelected={currentAnswer === option.value}
-            onSelect={(value) => onAnswer(value)}
-          />
-        ))}
-      </div>
-    </motion.div>
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={question.question}
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        transition={{ duration: 0.25 }}
+        className="space-y-8"
+      >
+        <div className="text-left space-y-3 px-6">
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-3xl font-bold text-foreground leading-tight font-relative"
+          >
+            {question.question}
+          </motion.h2>
+          
+          {question.context && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="text-sm text-muted-foreground"
+            >
+              {question.context}
+            </motion.p>
+          )}
+        </div>
+
+        <div className="space-y-4 px-6">
+          {question.options.map((option, index) => (
+            <QuizOptionCard
+              key={option.value}
+              label={option.label}
+              value={option.value}
+              isSelected={currentAnswer === option.value}
+              onSelect={handleAnswer}
+              index={index}
+            />
+          ))}
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
-};
+});

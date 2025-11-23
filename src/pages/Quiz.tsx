@@ -1,19 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { supabase } from '@/integrations/supabase/client';
-import { useChildProfiles } from '@/contexts/ChildProfilesContext';
-import { logger } from '@/lib/logger';
-import { quizQuestions, calculateBrainProfile } from '@/lib/quizQuestions';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
-import { toast } from 'sonner';
-import { useQueryClient } from '@tanstack/react-query';
 import { useHaptic } from '@/hooks/useHaptic';
 
-// Import step components
+// Custom hooks
+import { useQuizState } from '@/hooks/useQuizState';
+import { useQuizValidation } from '@/hooks/useQuizValidation';
+import { useQuizProgress } from '@/hooks/useQuizProgress';
+import { useQuizSubmission } from '@/hooks/useQuizSubmission';
+
+// Components
 import { QuizNameStep } from '@/components/Quiz/QuizNameStep';
 import { QuizDetailsStep } from '@/components/Quiz/QuizDetailsStep';
 import { QuizGoalsStep } from '@/components/Quiz/QuizGoalsStep';
@@ -27,596 +25,254 @@ import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
 import { QuizThankYouScreen } from '@/components/Quiz/QuizThankYouScreen';
 import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
 import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
-
-type BrainCategory = 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'NEUTRAL';
-type BrainProfile = 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
-type QuizStep = 'name' | 'details' | 'goals' | 'speed' | 'challenge' | 'questions';
-
-const questions = quizQuestions;
-const MIN_NAME_LENGTH = 2;
-const MAX_NAME_LENGTH = 50;
-
-const sanitizeChildName = (name: string): string => {
-  return name
-    .trim()
-    .replace(/[<>]/g, '')
-    .replace(/[^\w\s\-']/g, '')
-    .substring(0, MAX_NAME_LENGTH);
-};
-
-const isValidChildName = (name: string): boolean => {
-  const trimmed = name.trim();
-  return (
-    trimmed.length >= MIN_NAME_LENGTH &&
-    trimmed.length <= MAX_NAME_LENGTH &&
-    /^[\w\s\-']+$/.test(trimmed)
-  );
-};
+import { QuizErrorBoundary } from '@/components/Quiz/ui/QuizErrorBoundary';
+import { quizQuestions } from '@/lib/quizQuestions';
 
 export default function Quiz() {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const [result, setResult] = useState<{ type: BrainProfile; score: number } | null>(null);
-  const [childName, setChildName] = useState('');
-  const [nameError, setNameError] = useState(false);
-  const [hasStarted, setHasStarted] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [countdown, setCountdown] = useState(3);
-  const [showCountdown, setShowCountdown] = useState(false);
-  const [completingQuiz, setCompletingQuiz] = useState(false);
-  const [showPreLoading, setShowPreLoading] = useState(false);
-  const [showPostSpeedMotivational, setShowPostSpeedMotivational] = useState(false);
-  const [showFinalCelebration, setShowFinalCelebration] = useState(false);
-  const [showThankYou, setShowThankYou] = useState(false);
-  const [showEnhancedResults, setShowEnhancedResults] = useState(false);
-  const [showMotivationalMilestone, setShowMotivationalMilestone] = useState(false);
-  const [currentMilestone, setCurrentMilestone] = useState<25 | 50 | 75>(25);
-  const [showLoading, setShowLoading] = useState(false);
-
-  // Enhanced quiz data
-  const [childAge, setChildAge] = useState<number>(5);
-  const [parentGoals, setParentGoals] = useState<string[]>([]);
-  const [challengeLevel, setChallengeLevel] = useState<number>(5);
-  const [challengeDuration, setChallengeDuration] = useState<string>('');
-  const [triedApproaches, setTriedApproaches] = useState<string[]>([]);
-  const [resultSpeed, setResultSpeed] = useState<'slow' | 'balanced' | 'intensive'>('balanced');
-  const [quizStep, setQuizStep] = useState<QuizStep>('name');
-
   const navigate = useNavigate();
-  const { user, refreshUser } = useAuth();
-  const { theme } = useTheme();
-  const { refreshChildren, setActiveChild } = useChildProfiles();
-  const queryClient = useQueryClient();
   const { triggerHaptic } = useHaptic();
+  
+  // Custom hooks
+  const quizState = useQuizState();
+  const validation = useQuizValidation({
+    childName: quizState.childName,
+    childAge: quizState.childAge,
+    parentGoals: quizState.parentGoals,
+    challengeDuration: quizState.challengeDuration,
+    currentAnswer: quizState.answers[quizState.currentQuestion],
+    quizStep: quizState.quizStep,
+  });
+  const progress = useQuizProgress({
+    currentQuestion: quizState.currentQuestion,
+    quizStep: quizState.quizStep,
+  });
+  const submission = useQuizSubmission();
 
+  // Countdown timer
   useEffect(() => {
-    if (countdown > 0 && showCountdown) {
-      setTimeout(() => setCountdown(countdown - 1), 1000);
-    } else if (countdown === 0 && showCountdown) {
-      setShowCountdown(false);
-      setCompletingQuiz(true);
-      completeQuiz();
+    if (quizState.countdown > 0 && quizState.showCountdown) {
+      const timer = setTimeout(() => quizState.setCountdown(quizState.countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (quizState.countdown === 0 && quizState.showCountdown) {
+      quizState.setShowCountdown(false);
+      quizState.setCompletingQuiz(true);
+      handleCompleteQuiz();
     }
-  }, [countdown, showCountdown]);
+  }, [quizState.countdown, quizState.showCountdown]);
 
+  // Completing quiz screen timer
   useEffect(() => {
-    if (completingQuiz) {
+    if (quizState.completingQuiz) {
       const timer = setTimeout(() => {
-        setCompletingQuiz(false);
-        setShowLoading(true);
+        quizState.setCompletingQuiz(false);
+        quizState.setShowLoading(true);
       }, 3500);
       return () => clearTimeout(timer);
     }
-  }, [completingQuiz]);
+  }, [quizState.completingQuiz]);
 
-  const startQuiz = () => {
-    setHasStarted(true);
-    setShowPreLoading(true);
-    setTimeout(() => {
-      setShowPreLoading(false);
-    }, 1500);
-  };
+  // Start quiz flow
+  const startQuiz = useCallback(() => {
+    quizState.setHasStarted(true);
+    quizState.setShowPreLoading(true);
+    setTimeout(() => quizState.setShowPreLoading(false), 1500);
+  }, [quizState]);
 
-  const handleAnswer = (questionIndex: number, answer: string) => {
-    setAnswers({ ...answers, [questionIndex]: answer });
-  };
-
-  const calculateResult = () => {
-    const brainProfile = calculateBrainProfile(answers);
-    setResult(brainProfile);
-    return brainProfile;
-  };
-
-  const saveChildProfile = async () => {
-    if (!user || !result) return;
-
-    setSavingProfile(true);
-
-    try {
-      const sanitizedName = sanitizeChildName(childName);
-
-      const { data: existingProfile } = await supabase
-        .from('child_profiles')
-        .select('*')
-        .eq('name', sanitizedName)
-        .eq('parent_id', user.id)
-        .single();
-
-      if (existingProfile) {
-        toast.error('A profile with this name already exists.');
-        return;
-      }
-
-      const { data, error } = await supabase.from('child_profiles').insert([
-        {
-          name: sanitizedName,
-          brain_profile: result.type,
-          parent_id: user.id,
-          age: childAge,
-          parent_goals: parentGoals,
-          challenge_level: challengeLevel,
-          challenge_duration: challengeDuration,
-          tried_approaches: triedApproaches,
-          result_speed: resultSpeed,
-        },
-      ]).select();
-
-      if (error) throw error;
-
-      if (data && data[0]) {
-        await refreshChildren();
-        await refreshUser();
-        queryClient.invalidateQueries({ queryKey: ['children'] });
-        setActiveChild(data[0]);
-        toast.success(`Profile for ${sanitizedName} saved!`);
-        logger.debug(`Profile saved for ${sanitizedName}`);
-        return data[0];
-      }
-    } catch (error: any) {
-      logger.error('Error saving profile', error);
-      toast.error(error.message || 'Failed to save profile.');
-    } finally {
-      setSavingProfile(false);
-    }
-  };
-
-  const handleNameChange = (name: string) => {
-    setChildName(name);
-    setNameError(!isValidChildName(name));
-  };
-
-  const completeQuiz = async () => {
-    console.log('🔵 [completeQuiz] Iniciando conclusão do quiz');
-    console.log('🔵 [completeQuiz] user:', { id: user?.id, email: user?.email });
+  // Complete quiz
+  const handleCompleteQuiz = useCallback(async () => {
+    const result = quizState.calculateResult();
     
-    const finalResult = calculateResult();
-    console.log('🔵 [completeQuiz] Resultado calculado:', finalResult);
-    
-    if (!finalResult) {
-      console.error('❌ [completeQuiz] ERRO: finalResult é null/undefined');
-      toast.error('Erro ao calcular resultado do quiz.');
-      return;
-    }
+    if (!result) return;
 
-    if (!user?.id) {
-      console.error('❌ [completeQuiz] ERRO CRÍTICO: user.id não existe!');
-      toast.error('Erro ao salvar conclusão do quiz. Tente fazer login novamente.');
-      return;
-    }
+    const sanitizedName = validation.sanitizeName();
+    
+    await submission.completeQuiz({
+      childName: sanitizedName,
+      brainProfile: result.type,
+      childAge: quizState.childAge,
+      parentGoals: quizState.parentGoals,
+      challengeLevel: quizState.challengeLevel,
+      challengeDuration: quizState.challengeDuration,
+      triedApproaches: quizState.triedApproaches,
+      resultSpeed: quizState.resultSpeed,
+    });
+  }, [quizState, validation, submission]);
 
-    // Save child profile first
-    await saveChildProfile();
-    console.log('🔵 [completeQuiz] Perfil filho salvo');
-    
-    // Mark quiz as completed in profiles table
-    console.log('🔵 [completeQuiz] Atualizando profiles table com quiz_completed=true para user:', user.id);
-    
-    // ✅ SIMPLIFIED UPDATE: Remove .select() to avoid potential RLS issues
-    const { error } = await supabase
-      .from('profiles')
-      .update({ 
-        quiz_completed: true,
-        quiz_in_progress: false 
-      })
-      .eq('id', user.id);
-    
-    if (error) {
-      console.error('❌ [completeQuiz] ERRO ao atualizar quiz_completed:', error);
-      logger.error('Error updating quiz_completed', error);
-      toast.error('Erro ao salvar quiz: ' + error.message);
-      return;
-    }
-    
-    console.log('✅ [completeQuiz] Quiz marcado como completo no banco!');
-    
-    // Set sessionStorage to allow navigation without redirect (5 minute grace period)
-    sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-    console.log('🔵 [completeQuiz] sessionStorage definido com timestamp:', Date.now());
-    
-    // Refresh user data to update quiz_completed state
-    console.log('🔵 [completeQuiz] Iniciando refreshUser...');
-    await refreshUser();
-    console.log('✅ [completeQuiz] refreshUser completado!');
-    
-    logger.debug('Quiz marked as completed');
-    console.log('✅ [completeQuiz] SUCESSO TOTAL - Quiz completado!');
-  };
+  // Navigation handlers
+  const handleNext = useCallback(() => {
+    triggerHaptic('light');
 
-  const checkMilestone = () => {
-    const totalQuestions = questions.length;
-    const milestones: Array<{ threshold: number; value: 25 | 50 | 75 }> = [
-      { threshold: Math.floor(totalQuestions * 0.25), value: 25 },
-      { threshold: Math.floor(totalQuestions * 0.50), value: 50 },
-      { threshold: Math.floor(totalQuestions * 0.75), value: 75 }
-    ];
-    
-    for (const milestone of milestones) {
-      if (currentQuestion === milestone.threshold && !showMotivationalMilestone) {
-        setCurrentMilestone(milestone.value);
-        setShowMotivationalMilestone(true);
-        return true;
-      }
-    }
-    return false;
-  };
-
-  const handleNext = () => {
-    switch (quizStep) {
+    switch (quizState.quizStep) {
       case 'name':
-        if (isValidChildName(childName)) {
-          setQuizStep('details');
-        } else {
-          setNameError(true);
+        if (validation.nameValidation.isValid) {
+          quizState.setQuizStep('details');
         }
         break;
       case 'details':
-        setQuizStep('goals');
+        quizState.setQuizStep('goals');
         break;
       case 'goals':
-        setQuizStep('speed');
+        quizState.setQuizStep('speed');
         break;
       case 'speed':
-        setShowPostSpeedMotivational(false);
-        setQuizStep('challenge');
+        quizState.setShowPostSpeedMotivational(false);
+        quizState.setQuizStep('challenge');
         break;
       case 'challenge':
-        setQuizStep('questions');
+        quizState.setQuizStep('questions');
         startQuiz();
         break;
       case 'questions':
-        if (currentQuestion < questions.length - 1) {
-          const nextQuestion = currentQuestion + 1;
-          setCurrentQuestion(nextQuestion);
-          setTimeout(() => checkMilestone(), 100);
+        if (progress.isLastQuestion) {
+          quizState.setShowCountdown(true);
         } else {
-          setShowCountdown(true);
+          const nextQuestion = quizState.currentQuestion + 1;
+          quizState.setCurrentQuestion(nextQuestion);
+          
+          // Check milestone
+          const milestone = progress.checkMilestone(nextQuestion);
+          if (milestone.reached && milestone.milestone) {
+            quizState.setCurrentMilestone(milestone.milestone);
+            quizState.setShowMotivationalMilestone(true);
+          }
         }
         break;
     }
-  };
+  }, [quizState, validation, progress, triggerHaptic, startQuiz]);
 
-  const handlePrevious = () => {
-    switch (quizStep) {
+  const handlePrevious = useCallback(() => {
+    triggerHaptic('light');
+
+    switch (quizState.quizStep) {
       case 'details':
-        setQuizStep('name');
+        quizState.setQuizStep('name');
         break;
       case 'goals':
-        setQuizStep('details');
+        quizState.setQuizStep('details');
         break;
       case 'speed':
-        setShowPostSpeedMotivational(false);
-        setQuizStep('goals');
+        quizState.setShowPostSpeedMotivational(false);
+        quizState.setQuizStep('goals');
         break;
       case 'challenge':
-        setQuizStep('speed');
+        quizState.setQuizStep('speed');
         break;
       case 'questions':
-        if (currentQuestion > 0) {
-          setCurrentQuestion(currentQuestion - 1);
+        if (quizState.currentQuestion > 0) {
+          quizState.setCurrentQuestion(quizState.currentQuestion - 1);
         } else {
-          setQuizStep('challenge');
+          quizState.setQuizStep('challenge');
         }
         break;
     }
-  };
+  }, [quizState, triggerHaptic]);
 
-  const canProceed = () => {
-    switch (quizStep) {
-      case 'name':
-        return isValidChildName(childName);
-      case 'details':
-        return childAge > 0;
-      case 'goals':
-        return parentGoals.length > 0;
-      case 'speed':
-        return true;
-      case 'challenge':
-        return challengeDuration !== '';
-      case 'questions':
-        return answers[currentQuestion] !== undefined;
-      default:
-        return false;
-    }
-  };
-
-  const getButtonText = () => {
-    switch (quizStep) {
-      case 'name':
-        return 'Next - Details';
-      case 'details':
-        return 'Next - Goals';
-      case 'goals':
-        return 'Next - Speed';
-      case 'speed':
-        return 'Next - Challenge';
-      case 'challenge':
-        return 'Start Quiz';
-      case 'questions':
-        return currentQuestion < questions.length - 1 ? 'Next Question' : 'See Results';
-      default:
-        return 'Next';
-    }
-  };
-
-  const progressPercentage = (() => {
-    switch (quizStep) {
-      case 'name':
-        return 10;
-      case 'details':
-        return 20;
-      case 'goals':
-        return 30;
-      case 'speed':
-        return 40;
-      case 'challenge':
-        return 50;
-      case 'questions':
-        return ((currentQuestion + 1) / questions.length) * 50 + 50;
-      default:
-        return 0;
-    }
-  })();
-
-  const pageNumber = (() => {
-    switch (quizStep) {
-      case 'name':
-        return 1;
-      case 'details':
-        return 2;
-      case 'goals':
-        return 3;
-      case 'speed':
-        return 4;
-      case 'challenge':
-        return 5;
-      case 'questions':
-        return 6 + currentQuestion;
-      default:
-        return 1;
-    }
-  })();
-
-  const showBackButton = quizStep !== 'name' && !showPreLoading && !showPostSpeedMotivational && !showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showLoading && !showEnhancedResults && !showMotivationalMilestone;
-  const showProgressBar = !showFinalCelebration && !showThankYou && !showLoading && !showEnhancedResults;
-
-  if (showPreLoading) {
+  // Conditional screen renders
+  if (quizState.showPreLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-background">
-        <div className="flex-1 flex items-center justify-center px-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center space-y-6"
-          >
-            <h2 className="text-3xl md:text-4xl font-black text-foreground font-relative">
-              Let's start the quiz!
-            </h2>
-            <p className="text-base md:text-lg text-muted-foreground">
-              Get ready to discover {childName}'s brain profile
-            </p>
-          </motion.div>
-        </div>
-      </div>
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen flex items-center justify-center bg-background">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-6">
+          <h2 className="text-3xl md:text-4xl font-black text-foreground font-relative">Let's start the quiz!</h2>
+          <p className="text-base md:text-lg text-muted-foreground">Get ready to discover {quizState.childName}'s brain profile</p>
+        </motion.div>
+      </motion.div>
     );
   }
 
-  if (showLoading) {
-    return (
-      <QuizLoadingScreen
-        onComplete={() => {
-          setShowLoading(false);
-          setShowEnhancedResults(true);
-        }}
-      />
-    );
+  if (quizState.showLoading) {
+    return <QuizLoadingScreen onComplete={() => { quizState.setShowLoading(false); quizState.setShowEnhancedResults(true); }} />;
   }
 
-  if (showEnhancedResults && result) {
+  if (quizState.showEnhancedResults && quizState.result) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
           <div className="h-1 bg-muted">
-            <motion.div
-              className="h-full bg-foreground"
-              initial={{ width: 0 }}
-              animate={{ width: '95%' }}
-              transition={{ duration: 0.5 }}
-            />
+            <motion.div className="h-full bg-foreground" initial={{ width: 0 }} animate={{ width: '95%' }} transition={{ duration: 0.5 }} />
           </div>
         </div>
-
         <div className="flex-1 px-6 pt-20 pb-24 overflow-y-auto">
-          <QuizEnhancedResults
-            brainType={result.type}
-            childName={childName}
-            challengeLevel={challengeLevel}
-            parentGoals={parentGoals}
-          />
+          <QuizEnhancedResults brainType={quizState.result.type} childName={quizState.childName} challengeLevel={quizState.challengeLevel} parentGoals={quizState.parentGoals} />
         </div>
-
         <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-          <Button
-            onClick={() => {
-              triggerHaptic('light');
-              setShowEnhancedResults(false);
-              setShowFinalCelebration(true);
-            }}
-            className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-xl shadow-xl hover:shadow-2xl transition-shadow"
-          >
-            See My Dashboard
-          </Button>
+          <Button onClick={() => { triggerHaptic('light'); quizState.setShowEnhancedResults(false); quizState.setShowFinalCelebration(true); }} className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-xl">See My Dashboard</Button>
         </div>
       </div>
     );
   }
 
-  if (showMotivationalMilestone) {
-    return (
-      <QuizMotivationalScreen
-        milestone={currentMilestone}
-        brainType={currentMilestone === 75 ? result?.type : undefined}
-        onContinue={() => setShowMotivationalMilestone(false)}
-      />
-    );
+  if (quizState.showMotivationalMilestone) {
+    return <QuizMotivationalScreen milestone={quizState.currentMilestone} brainType={quizState.currentMilestone === 75 ? quizState.result?.type : undefined} onContinue={() => quizState.setShowMotivationalMilestone(false)} />;
   }
 
-  if (showPostSpeedMotivational) {
-    return (
-      <QuizPostSpeedMotivationalScreen
-        selectedGoals={parentGoals}
-        onContinue={handleNext}
-      />
-    );
+  if (quizState.showPostSpeedMotivational) {
+    return <QuizPostSpeedMotivationalScreen selectedGoals={quizState.parentGoals} onContinue={handleNext} />;
   }
 
-  // Removed duplicate QuizLoadingScreen - already handled in showLoading state
-
-  if (showFinalCelebration && result) {
-    return (
-      <QuizFinalCelebration
-        brainType={result.type}
-        onComplete={() => {
-          setShowFinalCelebration(false);
-          setShowThankYou(true);
-        }}
-      />
-    );
+  if (quizState.showFinalCelebration && quizState.result) {
+    return <QuizFinalCelebration brainType={quizState.result.type} onComplete={() => { quizState.setShowFinalCelebration(false); quizState.setShowThankYou(true); }} />;
   }
 
-  if (showThankYou) {
+  if (quizState.showThankYou) {
     return <QuizThankYouScreen onContinue={() => navigate('/', { state: { quizJustCompleted: true } })} />;
   }
 
-  return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-black">
-      {/* Progress Bar & Header */}
-      {showProgressBar && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-background">
-          <div className="pt-safe-area-top">
-            <div className="px-6 h-16 flex items-center gap-4">
-              {showBackButton && (
-                <button
-                  onClick={handlePrevious}
-                  className="w-10 h-10 flex items-center justify-center text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors flex-shrink-0"
-                >
-                  <ArrowLeft className="w-6 h-6" />
-                </button>
-              )}
+  const showBackButton = progress.showBackButton(quizState.quizStep, quizState.showPreLoading, quizState.showPostSpeedMotivational, quizState.showCountdown, quizState.completingQuiz, quizState.showFinalCelebration, quizState.showThankYou, quizState.showLoading, quizState.showEnhancedResults, quizState.showMotivationalMilestone);
+  const showProgressBar = !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showLoading && !quizState.showEnhancedResults;
 
-              <div className="flex-1 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gray-900 dark:bg-white rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  transition={{ duration: 0.3, ease: "easeOut" }}
-                />
+  return (
+    <QuizErrorBoundary>
+      <div className="min-h-screen flex flex-col bg-background">
+        {/* Progress Bar & Header */}
+        {showProgressBar && (
+          <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-xl border-b border-border/50">
+            <div className="pt-safe-area-top">
+              <div className="px-6 h-16 flex items-center gap-4">
+                {showBackButton && (
+                  <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
+                    <ArrowLeft className="w-6 h-6" />
+                  </motion.button>
+                )}
+                <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
+                  <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Content */}
-      <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-24">
-        <AnimatePresence mode="wait">
-          {showCountdown ? (
-            <motion.div
-              key="countdown"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="text-center"
-            >
-              <h1 className="text-6xl md:text-8xl font-black text-black dark:text-white font-relative">
-                {countdown}
-              </h1>
-            </motion.div>
-          ) : quizStep === 'name' ? (
-            <QuizNameStep
-              key="name"
-              childName={childName}
-              nameError={nameError}
-              onChange={handleNameChange}
-            />
-          ) : quizStep === 'details' ? (
-            <QuizDetailsStep
-              key="details"
-              childAge={childAge}
-              onChange={setChildAge}
-            />
-          ) : quizStep === 'goals' ? (
-            <QuizGoalsStep
-              key="goals"
-              selectedGoals={parentGoals}
-              onToggle={(goal) =>
-                setParentGoals((prev) =>
-                  prev.includes(goal) ? prev.filter((g) => g !== goal) : [...prev, goal]
-                )
-              }
-            />
-          ) : quizStep === 'speed' ? (
-            <div key="speed" className="w-full max-w-2xl">
-              <QuizSpeedSlider value={resultSpeed} onChange={setResultSpeed} />
-            </div>
-          ) : quizStep === 'challenge' ? (
-            <QuizChallengeStep
-              key="challenge"
-              challengeLevel={challengeLevel}
-              challengeDuration={challengeDuration}
-              triedApproaches={triedApproaches}
-              onLevelChange={setChallengeLevel}
-              onDurationChange={setChallengeDuration}
-              onApproachToggle={(approach) =>
-                setTriedApproaches((prev) =>
-                  prev.includes(approach) ? prev.filter((a) => a !== approach) : [...prev, approach]
-                )
-              }
-            />
-          ) : quizStep === 'questions' && hasStarted ? (
-            <QuizQuestionStep
-              key={`question-${currentQuestion}`}
-              question={questions[currentQuestion]}
-              currentAnswer={answers[currentQuestion]}
-              onAnswer={(answer) => handleAnswer(currentQuestion, answer)}
-            />
-          ) : null}
-        </AnimatePresence>
+        {/* Content */}
+        <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-24">
+          <AnimatePresence mode="wait">
+            {quizState.showCountdown ? (
+              <motion.div key="countdown" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.5 }} className="text-center">
+                <h1 className="text-8xl md:text-9xl font-black text-foreground font-relative">{quizState.countdown}</h1>
+              </motion.div>
+            ) : quizState.quizStep === 'name' ? (
+              <QuizNameStep key="name" childName={quizState.childName} nameError={!validation.nameValidation.isValid} onChange={quizState.setChildName} />
+            ) : quizState.quizStep === 'details' ? (
+              <QuizDetailsStep key="details" childAge={quizState.childAge} onChange={quizState.setChildAge} />
+            ) : quizState.quizStep === 'goals' ? (
+              <QuizGoalsStep key="goals" selectedGoals={quizState.parentGoals} onToggle={quizState.toggleParentGoal} />
+            ) : quizState.quizStep === 'speed' ? (
+              <div key="speed" className="w-full max-w-2xl"><QuizSpeedSlider value={quizState.resultSpeed} onChange={quizState.setResultSpeed} /></div>
+            ) : quizState.quizStep === 'challenge' ? (
+              <QuizChallengeStep key="challenge" challengeLevel={quizState.challengeLevel} challengeDuration={quizState.challengeDuration} triedApproaches={quizState.triedApproaches} onLevelChange={quizState.setChallengeLevel} onDurationChange={quizState.setChallengeDuration} onApproachToggle={quizState.toggleTriedApproach} />
+            ) : quizState.quizStep === 'questions' && quizState.hasStarted ? (
+              <QuizQuestionStep key={`question-${quizState.currentQuestion}`} question={quizQuestions[quizState.currentQuestion]} currentAnswer={quizState.answers[quizState.currentQuestion]} onAnswer={(answer) => quizState.setAnswer(quizState.currentQuestion, answer)} />
+            ) : null}
+          </AnimatePresence>
+        </div>
+
+        {/* Fixed Bottom Button */}
+        {!quizState.showCountdown && !quizState.completingQuiz && !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showPostSpeedMotivational && !quizState.showPreLoading && !quizState.showLoading && !quizState.showEnhancedResults && !quizState.showMotivationalMilestone && (
+          <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-6 pb-8 pt-4 z-50">
+            <Button onClick={quizState.quizStep === 'speed' ? () => quizState.setShowPostSpeedMotivational(true) : handleNext} disabled={!validation.canProceed} className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-base font-bold rounded-xl transition-all">
+              {progress.buttonText}
+            </Button>
+          </div>
+        )}
       </div>
-
-      {/* Fixed Bottom Button */}
-      {!showCountdown && !completingQuiz && !showFinalCelebration && !showThankYou && !showPostSpeedMotivational && !showPreLoading && !showLoading && !showEnhancedResults && !showMotivationalMilestone && (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-background px-6 pb-8 pt-4 z-50">
-          <Button
-            onClick={quizStep === 'speed' ? () => {
-              setShowPostSpeedMotivational(true);
-            } : handleNext}
-            disabled={!canProceed()}
-            className="w-full h-14 bg-black dark:bg-white text-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 disabled:bg-gray-200 dark:disabled:bg-gray-800 disabled:text-gray-400 dark:disabled:text-gray-600 text-base font-bold rounded-xl shadow-xl transition-all"
-          >
-            {getButtonText()}
-          </Button>
-        </div>
-      )}
-    </div>
+    </QuizErrorBoundary>
   );
 }
