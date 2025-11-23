@@ -57,7 +57,7 @@ export function useFeedback() {
         setSubmitting(false);
       }
     },
-    [user?.profileId, activeChild?.id]
+    [user?.id, activeChild?.id]
   );
 
   /**
