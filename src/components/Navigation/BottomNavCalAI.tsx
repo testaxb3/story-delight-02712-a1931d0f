@@ -41,7 +41,7 @@ function NavButton({ icon, label, path, lottieData }: {
       }}
       className={cn(
         "flex flex-col items-center justify-center transition-all w-16 py-1 relative z-10 cursor-pointer touch-manipulation rounded-2xl",
-        isActive ? "bg-white/10" : "hover:bg-white/5"
+        isActive ? "bg-primary/10" : "hover:bg-muted/50"
       )}
       aria-label={label}
     >
@@ -53,13 +53,13 @@ function NavButton({ icon, label, path, lottieData }: {
           style={{ width: '24px', height: '24px', pointerEvents: 'none' }}
         />
       ) : icon === 'community' ? (
-        <Users className={cn("w-6 h-6", isActive ? "text-white" : "text-gray-500")} />
+        <Users className={cn("w-6 h-6", isActive ? "text-foreground" : "text-muted-foreground")} />
       ) : (
         <div className="w-6 h-6 bg-muted rounded animate-pulse" />
       )}
       <span className={cn(
         "text-[10px] font-medium mt-0.5 transition-colors",
-        isActive ? "text-white" : "text-gray-500"
+        isActive ? "text-foreground" : "text-muted-foreground"
       )}>
         {label}
       </span>

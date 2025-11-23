@@ -375,7 +375,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-gradient-primary rounded-lg flex-shrink-0">
-                  <Sparkles className="w-5 h-5 text-white" />
+                  <Sparkles className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Personalized Strategies</p>
@@ -385,7 +385,7 @@ export default function Dashboard() {
 
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-gradient-accent rounded-lg flex-shrink-0">
-                  <Target className="w-5 h-5 text-white" />
+                  <Target className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Brain Profile Match</p>
@@ -395,7 +395,7 @@ export default function Dashboard() {
 
               <div className="flex items-start gap-3">
                 <div className="p-2 bg-gradient-success rounded-lg flex-shrink-0">
-                  <ThumbsUp className="w-5 h-5 text-white" />
+                  <ThumbsUp className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
                   <p className="font-semibold text-sm">Step-by-Step Guidance</p>

@@ -35,7 +35,7 @@ html, body {
   padding: 0 !important;
   height: 100%;
   width: 100%;
-  background: #1a1b2e !important;  /* Cal AI purple-blue dark background */
+  background: hsl(var(--background)) !important;  /* Respects theme */
   overflow-x: hidden;
 }
 
@@ -148,8 +148,8 @@ header, main {
     --shadow-xl: 0 8px 10px -2px rgb(0 0 0 / 0.08);
     --shadow-colored: 0 2px 4px -1px rgb(0 0 0 / 0.06);
     
-    --glass-bg: hsl(0 0% 100% / 0.8);
-    --glass-border: hsl(0 0% 90% / 0.5);
+    --glass-bg: hsl(0 0% 100% / 0.9);     /* More opaque for better contrast */
+    --glass-border: hsl(0 0% 85% / 0.6);  /* More visible border */
     --glass-blur: 12px;
     
     --glow-video: 0 85% 65%;
