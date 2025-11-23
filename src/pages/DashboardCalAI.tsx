@@ -10,6 +10,7 @@ import { FABButton } from '@/components/Dashboard/FABButton';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
@@ -23,6 +24,12 @@ export default function DashboardCalAI() {
   const scriptsAvailable = scriptsForProfile ?? 0;
   const scriptsUsed = dashboardStats?.uniqueScriptsUsed ?? 0;
   const currentStreak = Math.max(dashboardStats?.totalTrackerEntries ?? 0, 1);
+
+  // Helper function to get category emoji
+  const getCategoryEmoji = (category: string) => {
+    const categoryKey = category.toLowerCase().replace(/\s+/g, '_');
+    return CATEGORY_EMOJIS[categoryKey] || '🧠';
+  };
 
   // Fetch recent content
   useEffect(() => {
@@ -212,9 +219,7 @@ export default function DashboardCalAI() {
                   className="bg-[#1C1C1E] border border-[#333] rounded-2xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform hover:bg-[#2C2C2E]"
                 >
                   <div className="w-14 h-14 rounded-xl bg-[#2C2C2E] flex items-center justify-center text-2xl shadow-inner">
-                    {/* Fallback emoji logic or specific category icons */}
-                    {script.category === 'Bedtime' ? '🌙' : 
-                     script.category === 'Tantrums' ? '😤' : '📄'}
+                    {getCategoryEmoji(script.category)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-white font-bold text-sm truncate">{script.title}</h3>
