@@ -74,7 +74,7 @@ function BonusesContent() {
     session: 0,
   };
 
-  // Update URL when filters change
+  // Update URL when filters change (without scroll)
   useEffect(() => {
     const params = new URLSearchParams();
     if (currentPage > 0) params.set("page", currentPage.toString());
@@ -82,7 +82,7 @@ function BonusesContent() {
     if (activeCategory !== "all") params.set("category", activeCategory);
     if (sortBy !== "newest") params.set("sort", sortBy);
     
-    setSearchParams(params, { replace: true });
+    setSearchParams(params, { replace: true, preventScrollReset: true });
   }, [currentPage, searchQuery, activeCategory, sortBy, setSearchParams]);
   
   // Reset to page 0 when filters change (without scroll)
