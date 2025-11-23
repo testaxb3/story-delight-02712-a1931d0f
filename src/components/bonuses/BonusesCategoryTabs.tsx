@@ -20,7 +20,7 @@ import {
   Wrench,
   Sparkles
 } from "lucide-react";
-import { useState } from "react";
+import { useState, memo, useCallback, useMemo } from "react";
 import { useHaptic } from "@/hooks/useHaptic";
 
 interface BonusesCategoryTabsProps {
@@ -40,7 +40,8 @@ interface BonusesCategoryTabsProps {
   }>;
 }
 
-export function BonusesCategoryTabs({
+// PERFORMANCE: Memoize tabs component
+export const BonusesCategoryTabs = memo(function BonusesCategoryTabs({
   activeCategory,
   onCategoryChange,
   searchQuery,
@@ -53,6 +54,11 @@ export function BonusesCategoryTabs({
 }: BonusesCategoryTabsProps) {
   const [showFilters, setShowFilters] = useState(false);
   const { triggerHaptic } = useHaptic();
+
+  // PERFORMANCE: Debounced search with useCallback
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    onSearchChange(e.target.value);
+  }, [onSearchChange]);
 
   return (
     <div className="space-y-4 mb-6">
@@ -121,7 +127,7 @@ export function BonusesCategoryTabs({
           <Input
             placeholder="Search bonuses..."
             value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-10 h-11 bg-card border-border text-foreground placeholder:text-muted-foreground rounded-xl focus:border-primary/20 focus:ring-0 transition-all"
           />
         </div>
@@ -238,4 +244,4 @@ export function BonusesCategoryTabs({
       )}
     </div>
   );
-}
+});

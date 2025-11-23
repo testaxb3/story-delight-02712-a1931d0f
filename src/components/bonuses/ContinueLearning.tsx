@@ -4,13 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Play, ArrowRight, Clock, TrendingUp } from "lucide-react";
 import { BonusData } from "./BonusCard";
+import { memo } from "react";
 
 interface ContinueLearningProps {
   inProgressBonuses: BonusData[];
   onContinue: (bonus: BonusData) => void;
 }
 
-export function ContinueLearning({ inProgressBonuses, onContinue }: ContinueLearningProps) {
+// PERFORMANCE: Memoize ContinueLearning component
+export const ContinueLearning = memo(function ContinueLearning({ inProgressBonuses, onContinue }: ContinueLearningProps) {
   if (inProgressBonuses.length === 0) return null;
 
   return (
@@ -106,4 +108,4 @@ export function ContinueLearning({ inProgressBonuses, onContinue }: ContinueLear
       </div>
     </motion.div>
   );
-}
+});
