@@ -1,6 +1,6 @@
 // PERFORMANCE OPTIMIZATION: Refactored to use React Query
 // Benefits: Automatic caching, deduplication, reduced re-renders
-import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { clearUserContext } from '@/lib/sentry';
 import { resetUser } from '@/lib/analytics';
