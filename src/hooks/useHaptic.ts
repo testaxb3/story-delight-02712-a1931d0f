@@ -12,43 +12,47 @@ export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning'
  * Vibration API for Android and other devices.
  */
 export function useHaptic() {
-  // Light duration for quick, subtle feedback
-  const { triggerHaptic: triggerLight } = useHapticBase(5);
-  // Medium duration for normal feedback
-  const { triggerHaptic: triggerMedium } = useHapticBase(10);
-  // Heavy duration for strong feedback
-  const { triggerHaptic: triggerHeavy } = useHapticBase(20);
+  // Single hook instance with light duration (5ms) as base
+  const { triggerHaptic: triggerBase } = useHapticBase(5);
 
   const triggerHaptic = useCallback((pattern: HapticPattern = 'light') => {
     // Map pattern types to appropriate haptic triggers
     switch (pattern) {
       case 'light':
-        triggerLight();
+        triggerBase();
         break;
       case 'medium':
-        triggerMedium();
+        triggerBase();
+        setTimeout(() => triggerBase(), 10);
         break;
       case 'heavy':
-        triggerHeavy();
+        triggerBase();
+        setTimeout(() => triggerBase(), 10);
+        setTimeout(() => triggerBase(), 20);
         break;
       case 'success':
         // Double tap for success
-        triggerLight();
-        setTimeout(() => triggerLight(), 100);
+        triggerBase();
+        setTimeout(() => triggerBase(), 100);
         break;
       case 'warning':
-        // Medium double tap for warning
-        triggerMedium();
-        setTimeout(() => triggerMedium(), 100);
+        // Medium-heavy double tap for warning
+        triggerBase();
+        setTimeout(() => triggerBase(), 10);
+        setTimeout(() => triggerBase(), 120);
+        setTimeout(() => triggerBase(), 130);
         break;
       case 'error':
         // Triple heavy tap for error
-        triggerHeavy();
-        setTimeout(() => triggerHeavy(), 100);
-        setTimeout(() => triggerHeavy(), 200);
+        triggerBase();
+        setTimeout(() => triggerBase(), 10);
+        setTimeout(() => triggerBase(), 20);
+        setTimeout(() => triggerBase(), 150);
+        setTimeout(() => triggerBase(), 160);
+        setTimeout(() => triggerBase(), 170);
         break;
     }
-  }, [triggerLight, triggerMedium, triggerHeavy]);
+  }, [triggerBase]);
 
   return { triggerHaptic };
 }
