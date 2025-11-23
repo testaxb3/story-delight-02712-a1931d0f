@@ -276,36 +276,19 @@ export default function CommunityFeed() {
     if (!selectedPostId || !user?.profileId) return;
     
     try {
-      // Check if reaction already exists
-      const { data: existing } = await supabase
-        .from('group_reactions')
-        .select('id')
-        .eq('post_id', selectedPostId)
-        .eq('user_id', user.profileId)
-        .eq('emoji', emoji)
-        .single();
+      const { data, error } = await supabase
+        .rpc('toggle_group_reaction', {
+          p_post_id: selectedPostId,
+          p_emoji: emoji
+        });
 
-      if (existing) {
-        // Remove reaction if already exists
-        const { error } = await supabase
-          .from('group_reactions')
-          .delete()
-          .eq('id', existing.id);
-        
-        if (error) throw error;
-        toast.success('Reaction removed');
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast.success(data.message);
       } else {
-        // Add new reaction
-        const { error } = await supabase
-          .from('group_reactions')
-          .insert({
-            post_id: selectedPostId,
-            user_id: user.profileId,
-            emoji: emoji,
-          });
-        
-        if (error) throw error;
-        toast.success('Reaction added!');
+        toast.error(data?.message || 'Failed to update reaction');
+        return;
       }
 
       // Reload posts to show updated reaction count
