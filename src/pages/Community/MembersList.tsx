@@ -41,11 +41,23 @@ export default function MembersList() {
 
     const { data, error } = await supabase
       .from('community_members')
-      .select('id, user_id, role, profiles(name, username, photo_url, brain_profile)')
+      .select(`
+        id,
+        user_id,
+        role,
+        profiles!inner (
+          name,
+          username,
+          photo_url,
+          brain_profile
+        )
+      `)
       .eq('community_id', communityId)
       .order('role', { ascending: true });
 
-    if (!error && data) {
+    if (error) {
+      console.error('Error loading members:', error);
+    } else if (data) {
       setMembers(data as any);
     }
 
