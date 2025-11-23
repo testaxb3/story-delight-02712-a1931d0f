@@ -40,10 +40,24 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Isso resolve loops de redirecionamento causados por cache stale
   if (user.quiz_completed) {
     console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
+    // Limpar sessionStorage se quiz confirmado completo
+    if (sessionStorage.getItem('quizJustCompletedAt')) {
+      sessionStorage.removeItem('quizJustCompletedAt');
+      console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
+    }
     return <>{children}</>;
   }
 
-  // Se não completou o quiz E não está em rota de quiz, redirecionar
+  // ✅ FIX: Permitir navegação imediatamente após concluir quiz (janela de 5 minutos)
+  const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
+  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 300000; // 5 minutos
+  
+  if (withinGracePeriod) {
+    console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
+    return <>{children}</>;
+  }
+
+  // Se não completou o quiz E não está em rota de quiz E não está no grace period, redirecionar
   if (!isQuizRoute) {
     console.log('[ProtectedRoute] ❌ Quiz NÃO completado - redirecionando para /quiz');
     return <Navigate to="/quiz" replace />;
