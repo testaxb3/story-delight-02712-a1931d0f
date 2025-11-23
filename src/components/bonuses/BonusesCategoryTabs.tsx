@@ -83,8 +83,14 @@ export const BonusesCategoryTabs = memo(function BonusesCategoryTabs({
                 whileTap={{ scale: 0.98 }}
                 onClick={(e) => {
                   e.preventDefault();
+                  e.stopPropagation();
+                  const currentScroll = window.scrollY;
                   triggerHaptic('light');
                   onCategoryChange(category.id);
+                  // Force scroll position to stay
+                  requestAnimationFrame(() => {
+                    window.scrollTo(0, currentScroll);
+                  });
                 }}
                 className={`
                   relative flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap
