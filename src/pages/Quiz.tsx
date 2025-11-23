@@ -190,68 +190,54 @@ export default function Quiz() {
     const finalResult = calculateResult();
     console.log('🔵 [completeQuiz] Resultado calculado:', finalResult);
     
-    if (finalResult) {
-      await saveChildProfile();
-      console.log('🔵 [completeQuiz] Perfil filho salvo');
-      
-      // Mark quiz as completed in profiles table
-      if (!user?.id) {
-        console.error('❌ [completeQuiz] ERRO CRÍTICO: user.id não existe!');
-        toast.error('Erro ao salvar conclusão do quiz. Tente fazer login novamente.');
-        return;
-      }
-
-      console.log('🔵 [completeQuiz] Atualizando profiles table com quiz_completed=true para user:', user.id);
-      
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ 
-          quiz_completed: true,
-          quiz_in_progress: false 
-        })
-        .eq('id', user.id)
-        .select();
-      
-      if (error) {
-        console.error('❌ [completeQuiz] ERRO ao atualizar quiz_completed:', error);
-        logger.error('Error updating quiz_completed', error);
-        toast.error('Erro ao salvar quiz. Tente novamente.');
-        return; // Stop execution if update failed
-      }
-      
-      console.log('✅ [completeQuiz] Quiz marcado como completo no banco! Data:', data);
-      
-      // ✅ DOUBLE-CHECK: Verificar se realmente foi salvo no banco
-      const { data: verification, error: verifyError } = await supabase
-        .from('profiles')
-        .select('quiz_completed, quiz_in_progress')
-        .eq('id', user.id)
-        .single();
-      
-      if (verifyError) {
-        console.error('❌ [completeQuiz] ERRO ao verificar quiz_completed:', verifyError);
-      } else {
-        console.log('🔍 [completeQuiz] VERIFICAÇÃO - Estado atual no banco:', verification);
-        if (!verification?.quiz_completed) {
-          console.error('❌ [completeQuiz] CRÍTICO: quiz_completed NÃO foi salvo no banco apesar do update ter "sucesso"!');
-          toast.error('Erro crítico ao salvar quiz. Entre em contato com o suporte.');
-          return;
-        }
-      }
-      
-      // Set sessionStorage to allow navigation without redirect (5 minute grace period)
-      sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
-      console.log('🔵 [completeQuiz] sessionStorage definido com timestamp:', Date.now());
-      
-      console.log('🔵 [completeQuiz] Iniciando refreshUser...');
-      await refreshUser(); // Refresh user data to update quiz_completed state
-      console.log('✅ [completeQuiz] refreshUser completado!');
-      
-      logger.debug('Quiz marked as completed');
-      toast.success('Quiz completed successfully!');
-    } else {
+    if (!finalResult) {
       console.error('❌ [completeQuiz] ERRO: finalResult é null/undefined');
+      toast.error('Erro ao calcular resultado do quiz.');
+      return;
     }
+
+    if (!user?.id) {
+      console.error('❌ [completeQuiz] ERRO CRÍTICO: user.id não existe!');
+      toast.error('Erro ao salvar conclusão do quiz. Tente fazer login novamente.');
+      return;
+    }
+
+    // Save child profile first
+    await saveChildProfile();
+    console.log('🔵 [completeQuiz] Perfil filho salvo');
+    
+    // Mark quiz as completed in profiles table
+    console.log('🔵 [completeQuiz] Atualizando profiles table com quiz_completed=true para user:', user.id);
+    
+    // ✅ SIMPLIFIED UPDATE: Remove .select() to avoid potential RLS issues
+    const { error } = await supabase
+      .from('profiles')
+      .update({ 
+        quiz_completed: true,
+        quiz_in_progress: false 
+      })
+      .eq('id', user.id);
+    
+    if (error) {
+      console.error('❌ [completeQuiz] ERRO ao atualizar quiz_completed:', error);
+      logger.error('Error updating quiz_completed', error);
+      toast.error('Erro ao salvar quiz: ' + error.message);
+      return;
+    }
+    
+    console.log('✅ [completeQuiz] Quiz marcado como completo no banco!');
+    
+    // Set sessionStorage to allow navigation without redirect (5 minute grace period)
+    sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
+    console.log('🔵 [completeQuiz] sessionStorage definido com timestamp:', Date.now());
+    
+    // Refresh user data to update quiz_completed state
+    console.log('🔵 [completeQuiz] Iniciando refreshUser...');
+    await refreshUser();
+    console.log('✅ [completeQuiz] refreshUser completado!');
+    
+    logger.debug('Quiz marked as completed');
+    console.log('✅ [completeQuiz] SUCESSO TOTAL - Quiz completado!');
   };
 
   const checkMilestone = () => {
