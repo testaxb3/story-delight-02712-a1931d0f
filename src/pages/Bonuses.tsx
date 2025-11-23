@@ -85,10 +85,15 @@ function BonusesContent() {
     setSearchParams(params, { replace: true });
   }, [currentPage, searchQuery, activeCategory, sortBy, setSearchParams]);
   
-  // Reset to page 0 when filters change
+  // Reset to page 0 when filters change (without scroll)
   useEffect(() => {
     setCurrentPage(0);
   }, [activeCategory, searchQuery]);
+
+  // PERFORMANCE: Prevent scroll on category change
+  const handleCategoryChange = useCallback((category: string) => {
+    setActiveCategory(category);
+  }, []);
 
   // PERFORMANCE: Memoize categories configuration
   const categories = useMemo(() => [
@@ -366,7 +371,7 @@ function BonusesContent() {
           {/* Category Tabs and Filters */}
           <BonusesCategoryTabs
             activeCategory={activeCategory}
-            onCategoryChange={setActiveCategory}
+            onCategoryChange={handleCategoryChange}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             sortBy={sortBy}
@@ -376,14 +381,15 @@ function BonusesContent() {
             categories={categories}
           />
 
-          {/* PERFORMANCE: AnimatePresence for smooth transitions */}
-          <AnimatePresence mode="wait">
+          {/* PERFORMANCE: AnimatePresence for smooth transitions - no layout shift */}
+          <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={`content-${activeCategory}-${searchQuery}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
+              style={{ willChange: 'opacity' }}
             >
               {/* Unlocked Bonuses Grid */}
               {unlockedBonuses.length > 0 && (
