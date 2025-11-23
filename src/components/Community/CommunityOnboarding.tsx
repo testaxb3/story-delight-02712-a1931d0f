@@ -88,7 +88,7 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
   const canGoBack = currentStep === 'photo';
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Back Button */}
       {canGoBack && (
         <div className="px-4 pt-8 pb-4">

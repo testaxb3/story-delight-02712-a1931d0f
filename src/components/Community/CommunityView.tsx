@@ -36,27 +36,27 @@ export function CommunityView({ communityId, onLeave }: CommunityViewProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] px-4 py-6 pb-24">
+    <div className="min-h-screen bg-background px-4 py-6 pb-24">
       <div className="max-w-3xl mx-auto">
         {/* Header with Dropdown */}
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => setShowDropdown(!showDropdown)}
-            className="flex items-center gap-3 px-6 py-3 rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a] transition-colors"
+            className="flex items-center gap-3 px-6 py-3 rounded-full bg-card hover:bg-card/80 transition-colors"
           >
             <span className="text-2xl">{community.logo}</span>
             <span className="text-white font-medium">{community.name}</span>
             <ChevronDown className="w-5 h-5 text-white" />
           </button>
 
-          <button className="w-12 h-12 rounded-full bg-[#1a1a1a] flex items-center justify-center hover:bg-[#2a2a2a] transition-colors">
+          <button className="w-12 h-12 rounded-full bg-card flex items-center justify-center hover:bg-card/80 transition-colors">
             <Users className="w-5 h-5 text-white" />
           </button>
         </div>
 
         {/* Dropdown Menu */}
         {showDropdown && (
-          <Card className="mb-8 bg-[#1a1a1a] border-[#2a2a2a] p-4">
+          <Card className="mb-8 bg-card border-border p-4">
             <button className="w-full flex items-center gap-3 px-4 py-3 text-left text-white hover:bg-white/5 rounded-lg transition-colors">
               <span className="text-xl">{community.logo}</span>
               <span className="flex-1">{community.name}</span>
@@ -77,7 +77,7 @@ export function CommunityView({ communityId, onLeave }: CommunityViewProps) {
 
         {/* Invite Card (if leader) */}
         {isLeader && (
-          <Card className="mb-8 bg-[#1a1a1a] border-[#2a2a2a] p-6">
+          <Card className="mb-8 bg-card border-border p-6">
             <div className="flex items-start gap-4 mb-6">
               <Avatar className="w-16 h-16">
                 <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">
@@ -109,7 +109,7 @@ export function CommunityView({ communityId, onLeave }: CommunityViewProps) {
               Invite your friends to the group
             </h3>
 
-            <div className="bg-[#0a0a0a] rounded-lg px-4 py-3 mb-4 text-center">
+            <div className="bg-background rounded-lg px-4 py-3 mb-4 text-center">
               <p className="text-gray-400 text-sm">{community.inviteLink}</p>
             </div>
 
@@ -141,7 +141,7 @@ export function CommunityView({ communityId, onLeave }: CommunityViewProps) {
         {/* Feed */}
         <div className="space-y-4">
           {posts.map((post) => (
-            <Card key={post.id} className="p-6 bg-[#1a1a1a] border-[#2a2a2a]">
+            <Card key={post.id} className="p-6 bg-card border-border">
               <div className="flex items-start gap-3 mb-4">
                 <Avatar className="w-10 h-10">
                   <AvatarFallback className="bg-gradient-to-br from-orange-500 to-orange-600 text-white">

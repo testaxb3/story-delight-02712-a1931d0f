@@ -14,14 +14,13 @@ export default function CreateGroupName() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-[#0d0d0d]">
+      <div className="fixed top-0 left-0 right-0 z-10 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-background">
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:bg-[#333] transition-colors"
-          >
+            className="w-10 h-10 rounded-full bg-card flex items-center justify-center hover:bg-card/80 transition-colors">
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 text-center">
@@ -64,8 +63,7 @@ export default function CreateGroupName() {
               <button
                 key={suggestion}
                 onClick={() => setGroupName(suggestion)}
-                className="px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-full hover:bg-[#222] hover:border-gray-600 transition-colors text-sm"
-              >
+                className="px-4 py-2 bg-card border border-border rounded-full hover:bg-card/80 hover:border-primary/20 transition-colors text-sm">
                 {suggestion}
               </button>
             ))}

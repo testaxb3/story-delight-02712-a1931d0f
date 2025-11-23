@@ -391,7 +391,7 @@ function BonusesContent() {
             >
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-white">Available Now</h2>
-                <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
+                <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
                   {unlockedBonuses.length}
                 </span>
               </div>
@@ -423,7 +423,7 @@ function BonusesContent() {
             >
               <div className="flex items-center gap-3 mb-4">
                 <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
-                <span className="px-2 py-0.5 bg-[#2C2C2E] text-gray-400 text-xs font-medium rounded-lg">
+                <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
                   {lockedBonuses.length}
                 </span>
               </div>
@@ -448,7 +448,7 @@ function BonusesContent() {
           {sortedBonuses.length === 0 && !isFetching && (
             <div className="text-center py-16">
               <div className="max-w-md mx-auto">
-                <div className="w-16 h-16 bg-[#2C2C2E] rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 className="text-xl font-semibold text-white mb-2">No bonuses found</h3>

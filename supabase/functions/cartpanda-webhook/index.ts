@@ -55,6 +55,21 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // ✅ SECURITY: Validate webhook secret
+    const authHeader = req.headers.get('authorization');
+    const webhookSecret = Deno.env.get('CARTPANDA_WEBHOOK_SECRET');
+    
+    if (webhookSecret && authHeader !== `Bearer ${webhookSecret}`) {
+      console.error('❌ Unauthorized webhook attempt');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
+    }
+
     console.log('🎯 Cartpanda webhook received');
     
     // Parse request - can be GET or POST
