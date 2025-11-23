@@ -1,5 +1,6 @@
 import { Check, Circle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizOptionCardProps {
   value: string;
@@ -9,11 +10,11 @@ interface QuizOptionCardProps {
 }
 
 export const QuizOptionCard = ({ value, label, isSelected, onSelect }: QuizOptionCardProps) => {
+  const { triggerHaptic } = useHaptic();
+
   const handleClick = () => {
     // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
+    triggerHaptic('light');
     onSelect(value);
   };
 

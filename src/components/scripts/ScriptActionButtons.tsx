@@ -10,6 +10,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import confetti from 'canvas-confetti';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface ScriptActionButtonsProps {
   scriptId: string;
@@ -36,6 +37,7 @@ export function ScriptActionButtons({
   const [lastUsed, setLastUsed] = useState<Date | null>(null);
   const [showUndo, setShowUndo] = useState(false);
   const [undoTimer, setUndoTimer] = useState<NodeJS.Timeout | null>(null);
+  const { triggerHaptic } = useHaptic();
 
   // Load usage data from localStorage
   useEffect(() => {
@@ -56,18 +58,6 @@ export function ScriptActionButtons({
       }
     };
   }, [undoTimer]);
-
-  // Haptic feedback (vibration on mobile)
-  const triggerHaptic = (pattern: 'light' | 'medium' | 'heavy' = 'light') => {
-    if ('vibrate' in navigator) {
-      const patterns = {
-        light: 10,
-        medium: 20,
-        heavy: [10, 20, 10],
-      };
-      navigator.vibrate(patterns[pattern]);
-    }
-  };
 
   // Confetti animation
   const triggerConfetti = () => {

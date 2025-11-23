@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizCountdownProps {
   onComplete: () => void;
@@ -7,10 +8,11 @@ interface QuizCountdownProps {
 
 export const QuizCountdown = ({ onComplete }: QuizCountdownProps) => {
   const [count, setCount] = useState(3);
+  const { triggerHaptic } = useHaptic();
 
   useEffect(() => {
     // Haptic feedback on mount
-    if (navigator.vibrate) navigator.vibrate(20);
+    triggerHaptic('medium');
 
     const interval = setInterval(() => {
       setCount((prev) => {
@@ -19,16 +21,16 @@ export const QuizCountdown = ({ onComplete }: QuizCountdownProps) => {
           setTimeout(onComplete, 500); // Small delay before completion
           return 0;
         }
-        
+
         // Haptic feedback on each count
-        if (navigator.vibrate) navigator.vibrate(15);
-        
+        triggerHaptic('light');
+
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [onComplete]);
+  }, [onComplete, triggerHaptic]);
 
   return (
     <div className="fixed inset-0 bg-white dark:bg-black flex items-center justify-center overflow-hidden">
