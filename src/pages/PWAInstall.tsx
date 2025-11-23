@@ -2,7 +2,6 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Smartphone, Bell, Download, Zap, Lock, WifiOff } from 'lucide-react';
-import ReactPlayer from 'react-player';
 import { isIOSDevice } from '@/utils/platform';
 import { trackEvent } from '@/lib/analytics';
 import { useEffect } from 'react';
@@ -58,16 +57,6 @@ const PWAInstall = () => {
     navigate('/pwa-check');
   };
 
-  const handleVideoPlay = () => {
-    trackEvent('pwa_install_video_played');
-  };
-
-  // iOS tutorial video: https://www.youtube.com/watch?v=X3VD_vFqwN0
-  // Android tutorial video: https://www.youtube.com/watch?v=oP_FoLrCKvI
-  const tutorialVideoUrl = isIOS 
-    ? 'https://www.youtube.com/watch?v=X3VD_vFqwN0'
-    : 'https://www.youtube.com/watch?v=oP_FoLrCKvI';
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted/20 flex flex-col items-center justify-center p-6">
       <motion.div
@@ -103,20 +92,12 @@ const PWAInstall = () => {
           transition={{ delay: 0.3 }}
           className="relative aspect-video rounded-xl overflow-hidden shadow-2xl bg-black"
         >
-          <ReactPlayer
-            url={tutorialVideoUrl}
-            width="100%"
-            height="100%"
-            controls
-            onPlay={handleVideoPlay}
-            config={{
-              youtube: {
-                playerVars: { 
-                  modestbranding: 1,
-                  rel: 0
-                }
-              }
-            }}
+          <iframe
+            src={`https://www.youtube.com/embed/${isIOS ? 'X3VD_vFqwN0' : 'oP_FoLrCKvI'}?modestbranding=1&rel=0`}
+            title="PWA Installation Tutorial"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
           />
         </motion.div>
 
