@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 import { TopBar } from '@/components/Navigation/TopBar';
 import { BottomNavCalAI } from '@/components/Navigation/BottomNavCalAI';
 import { SideNav } from '@/components/Navigation/SideNav';
