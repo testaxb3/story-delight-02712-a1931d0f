@@ -67,6 +67,7 @@ export default function CommunityFeed() {
   const navigate = useNavigate();
   const location = useLocation();
   const communityId = location.state?.communityId;
+  const shouldRefresh = location.state?.refresh;
 
   const [communities, setCommunities] = useState<Community[]>([]);
   const [currentCommunity, setCurrentCommunity] = useState<Community | null>(null);
@@ -91,7 +92,7 @@ export default function CommunityFeed() {
     if (user?.profileId) {
       loadCommunities();
     }
-  }, [user?.profileId]);
+  }, [user?.profileId, shouldRefresh]);
 
   useEffect(() => {
     if (currentCommunity) {
@@ -102,23 +103,15 @@ export default function CommunityFeed() {
   }, [currentCommunity]);
 
   const loadCommunities = async () => {
-    if (!user?.profileId) {
-      toast.error('❌ User not found');
-      return;
-    }
+    if (!user?.profileId) return;
 
     const { data, error } = await supabase
       .from('community_members')
       .select('community_id, communities!inner(id, name, logo_emoji, logo_url, invite_code)')
       .eq('user_id', user.profileId);
 
-    if (error) {
-      toast.error(`❌ Error loading communities: ${error.message}`);
-      return;
-    }
-
-    if (!data || data.length === 0) {
-      toast.error('❌ No communities found');
+    if (error || !data || data.length === 0) {
+      console.error('Error loading communities:', error);
       return;
     }
 
@@ -126,10 +119,7 @@ export default function CommunityFeed() {
       .map((item: any) => item.communities)
       .filter(Boolean);
     
-    if (communityList.length === 0) {
-      toast.error('❌ No community data');
-      return;
-    }
+    if (communityList.length === 0) return;
 
     setCommunities(communityList);
     
@@ -138,16 +128,10 @@ export default function CommunityFeed() {
       : communityList[0];
     
     setCurrentCommunity(selectedCommunity);
-    toast.success(`✅ Loaded: ${selectedCommunity.name}`);
   };
 
   const loadMembers = async () => {
-    if (!currentCommunity) {
-      console.log('❌ No currentCommunity - skipping loadMembers');
-      return;
-    }
-
-    console.log('🔄 Loading members for community:', currentCommunity.id);
+    if (!currentCommunity) return;
     
     const { data, error } = await supabase
       .from('community_members')
@@ -155,31 +139,16 @@ export default function CommunityFeed() {
       .eq('community_id', currentCommunity.id)
       .order('role', { ascending: true });
 
-    console.log('📊 Members query result:', { data, error, count: data?.length });
-
     if (error) {
-      console.error('❌ Error loading members:', error);
-      toast.error(`Error loading members: ${error.message}`);
+      console.error('Error loading members:', error);
       return;
     }
 
-    if (!data || data.length === 0) {
-      console.warn('⚠️ No members found for community:', currentCommunity.id);
-      toast.error('No members found');
-      setMembers([]);
-      return;
-    }
-
-    console.log('✅ Members loaded successfully:', data);
-    setMembers(data as any);
-    toast.success(`${data.length} members loaded`);
+    setMembers((data || []) as any);
   };
 
   const loadPosts = async () => {
-    if (!currentCommunity) {
-      toast.error('❌ No community selected');
-      return;
-    }
+    if (!currentCommunity) return;
 
     const { data, error } = await supabase
       .from('group_posts')
@@ -188,12 +157,11 @@ export default function CommunityFeed() {
       .order('created_at', { ascending: false });
 
     if (error) {
-      toast.error(`❌ Error: ${error.message}`);
+      console.error('Error loading posts:', error);
       return;
     }
 
     setPosts((data || []) as any);
-    toast.success(`✅ ${data?.length || 0} posts loaded`);
   };
 
   const checkLeaderStatus = async () => {
