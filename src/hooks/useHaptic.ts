@@ -1,37 +1,54 @@
 import { useCallback } from 'react';
+import { useHaptic as useHapticBase } from 'use-haptic';
 
 export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
 
 /**
  * Hook for haptic feedback (vibration) on mobile devices
  * Provides consistent vibration patterns across the app
- * Uses the native Vibration API for reliable cross-platform support
+ * 
+ * Uses the 'use-haptic' package which leverages the input[switch] element
+ * introduced in Safari 18.0 for iOS haptic feedback, with fallback to
+ * Vibration API for Android and other devices.
  */
 export function useHaptic() {
+  // Light duration for quick, subtle feedback
+  const { triggerHaptic: triggerLight } = useHapticBase(5);
+  // Medium duration for normal feedback
+  const { triggerHaptic: triggerMedium } = useHapticBase(10);
+  // Heavy duration for strong feedback
+  const { triggerHaptic: triggerHeavy } = useHapticBase(20);
+
   const triggerHaptic = useCallback((pattern: HapticPattern = 'light') => {
-    // Check if vibration is supported
-    if (!('vibrate' in navigator)) {
-      return;
+    // Map pattern types to appropriate haptic triggers
+    switch (pattern) {
+      case 'light':
+        triggerLight();
+        break;
+      case 'medium':
+        triggerMedium();
+        break;
+      case 'heavy':
+        triggerHeavy();
+        break;
+      case 'success':
+        // Double tap for success
+        triggerLight();
+        setTimeout(() => triggerLight(), 100);
+        break;
+      case 'warning':
+        // Medium double tap for warning
+        triggerMedium();
+        setTimeout(() => triggerMedium(), 100);
+        break;
+      case 'error':
+        // Triple heavy tap for error
+        triggerHeavy();
+        setTimeout(() => triggerHeavy(), 100);
+        setTimeout(() => triggerHeavy(), 200);
+        break;
     }
-
-    // Map pattern types to vibration durations in milliseconds
-    const vibrationPatterns: Record<HapticPattern, number | number[]> = {
-      light: 10,
-      medium: 20,
-      heavy: 30,
-      success: [10, 50, 10],
-      warning: [20, 50, 20],
-      error: [30, 50, 30, 50, 30],
-    };
-
-    const vibrationPattern = vibrationPatterns[pattern];
-    
-    try {
-      navigator.vibrate(vibrationPattern);
-    } catch (error) {
-      console.warn('[Haptic] Vibration failed:', error);
-    }
-  }, []);
+  }, [triggerLight, triggerMedium, triggerHeavy]);
 
   return { triggerHaptic };
 }
