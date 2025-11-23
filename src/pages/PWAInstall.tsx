@@ -5,6 +5,7 @@ import { Smartphone, Bell, Download, Zap, Lock, WifiOff } from 'lucide-react';
 import { isIOSDevice } from '@/utils/platform';
 import { trackEvent } from '@/lib/analytics';
 import { useEffect } from 'react';
+import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
 
 const PWAInstall = () => {
   const navigate = useNavigate();
@@ -92,12 +93,10 @@ const PWAInstall = () => {
           transition={{ delay: 0.3 }}
           className="relative aspect-video rounded-xl overflow-hidden shadow-2xl bg-black"
         >
-          <iframe
-            src={`https://www.youtube.com/embed/${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}?modestbranding=1&rel=0`}
-            title="PWA Installation Tutorial"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="absolute inset-0 w-full h-full"
+          <OptimizedYouTubePlayer
+            videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
+            videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
+            showFullscreenHint={false}
           />
         </motion.div>
 
