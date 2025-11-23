@@ -5,7 +5,19 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
+  // 🔍 DEBUG: Log detalhado para diagnosticar problema
+  console.log('[ProtectedRoute] Estado atual:', {
+    loading,
+    hasUser: !!user,
+    userId: user?.id,
+    email: user?.email,
+    quiz_completed: user?.quiz_completed,
+    quiz_in_progress: user?.quiz_in_progress,
+    pathname: location.pathname
+  });
+
   if (loading) {
+    console.log('[ProtectedRoute] LOADING - mostrando spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-6xl animate-brain-pulse">🧠</div>
@@ -14,6 +26,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
+    console.log('[ProtectedRoute] NO USER - redirecionando para /auth');
     return <Navigate to="/auth" replace />;
   }
 
@@ -21,40 +34,22 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const quizExemptRoutes = ['/quiz', '/refund', '/refund-status'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
-  // Permitir navegação imediatamente após concluir o quiz (primeira navegação)
-  const navState = location.state as { quizJustCompleted?: boolean } | null;
-  const justCompleted = !!navState?.quizJustCompleted;
-  
-  // Check sessionStorage for recent quiz completion (5-minute TTL)
-  // ✅ FIX: Extended from 2min to 5min to prevent premature expiration
-  const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
-  const withinTTL = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 300000; // 5 minutes (300000ms)
+  console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
 
-  // ✅ FIX: Clear sessionStorage if quiz is confirmed completed in database
-  if (user.quiz_completed && quizCompletedAt > 0) {
-    sessionStorage.removeItem('quizJustCompletedAt');
+  // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
+  // Isso resolve loops de redirecionamento causados por cache stale
+  if (user.quiz_completed) {
+    console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
+    return <>{children}</>;
   }
 
-  // ✅ NEW FIX: Handle inconsistent state (quiz_completed=true but quiz_in_progress=true)
-  // This can happen from race conditions or incomplete updates
-  const hasInconsistentState = user.quiz_completed && user.quiz_in_progress;
-  
-  // Debug log
-  console.debug('[ProtectedRoute]', {
-    path: location.pathname,
-    quiz_completed: user.quiz_completed,
-    quiz_in_progress: user.quiz_in_progress,
-    hasInconsistentState,
-    justCompleted,
-    withinTTL,
-    isQuizRoute
-  });
-
-  // ✅ FIX: If quiz is marked completed, ALWAYS allow access (even if in_progress is stuck)
-  // Prioritize quiz_completed over quiz_in_progress to handle inconsistent states
-  if (!isQuizRoute && !user.quiz_completed && !justCompleted && !withinTTL) {
+  // Se não completou o quiz E não está em rota de quiz, redirecionar
+  if (!isQuizRoute) {
+    console.log('[ProtectedRoute] ❌ Quiz NÃO completado - redirecionando para /quiz');
     return <Navigate to="/quiz" replace />;
   }
 
+  // Se está na rota de quiz, permitir acesso
+  console.log('[ProtectedRoute] ✅ Rota de quiz - permitindo acesso');
   return <>{children}</>;
 }
