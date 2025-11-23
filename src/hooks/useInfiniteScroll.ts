@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { useEffect } from 'react';
 import { useInfiniteQuery, UseInfiniteQueryOptions } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
+import { useEffect } from 'react';
 
 interface UseInfiniteScrollOptions<TData, TError> extends Omit<UseInfiniteQueryOptions<TData, TError>, 'queryFn'> {
   queryFn: (pageParam: number) => Promise<TData[]>;

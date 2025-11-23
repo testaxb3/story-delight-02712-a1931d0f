@@ -1,6 +1,7 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { AlertTriangle } from 'lucide-react';
+import type { ReactNode } from 'react';
 
 interface RateLimitConfig {
   maxCalls: number;

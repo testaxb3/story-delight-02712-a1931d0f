@@ -1,4 +1,3 @@
-import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Video, Flame, Calendar, Play, ChevronRight, Zap, Target } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -14,9 +13,10 @@ import { WeeklyWinsSection } from '@/components/Dashboard/WeeklyWinsSection';
 import { InsightsCard } from '@/components/Dashboard/InsightsCard';
 import { RecentActivitySection } from '@/components/Dashboard/RecentActivitySection';
 import { cn } from '@/lib/utils';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
