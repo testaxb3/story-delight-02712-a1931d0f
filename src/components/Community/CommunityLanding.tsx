@@ -88,21 +88,25 @@ export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: Communi
 
     try {
       // Check if already a member
-      const { data: existing } = await supabase
+      const { data: existing, error: checkError } = await supabase
         .from('community_members')
         .select('id')
         .eq('community_id', community.id)
         .eq('user_id', user.profileId)
-        .single();
+        .maybeSingle();
+
+      if (checkError) {
+        console.error('Error checking membership:', checkError);
+      }
 
       if (existing) {
-        toast.success('You are already a member!');
-        navigate('/community/feed', { state: { communityId: community.id } });
+        // Already a member, just navigate
+        navigate('/community/feed', { state: { communityId: community.id, refresh: true } });
         return;
       }
 
       // Join the community
-      const { error } = await supabase
+      const { error: insertError } = await supabase
         .from('community_members')
         .insert({
           community_id: community.id,
@@ -110,10 +114,16 @@ export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: Communi
           role: 'member',
         });
 
-      if (error) throw error;
+      if (insertError) {
+        console.error('Insert error:', insertError);
+        throw insertError;
+      }
 
-      toast.success(`Joined ${community.name}!`);
-      navigate('/community/feed', { state: { communityId: community.id } });
+      // Wait a moment for the insert to complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      toast.success(`Welcome to ${community.name}!`);
+      navigate('/community/feed', { state: { communityId: community.id, refresh: true } });
     } catch (error: any) {
       console.error('Error joining community:', error);
       toast.error('Failed to join community');
