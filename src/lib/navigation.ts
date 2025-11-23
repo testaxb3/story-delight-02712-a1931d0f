@@ -14,6 +14,10 @@ export const routes = {
   auth: '/auth',
   onboarding: '/onboarding',
   
+  // PWA Installation Flow
+  pwaInstall: '/pwa-install',
+  pwaCheck: '/pwa-check',
+  
   // Primary Pages
   scripts: '/scripts',
   bonuses: '/bonuses',

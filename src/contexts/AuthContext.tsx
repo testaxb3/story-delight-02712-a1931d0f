@@ -55,6 +55,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const loading = authLoading || (!!session && profileLoading);
 
   useEffect(() => {
+    // 🔄 Check for saved session (for PWA fresh installs)
+    const savedSessionStr = localStorage.getItem('saved_pwa_session');
+    if (savedSessionStr) {
+      try {
+        const savedSession = JSON.parse(savedSessionStr);
+        // Validate and restore session
+        if (savedSession?.access_token && savedSession?.refresh_token) {
+          console.log('[AuthContext] 🔄 Restoring saved PWA session');
+          supabase.auth.setSession({
+            access_token: savedSession.access_token,
+            refresh_token: savedSession.refresh_token
+          });
+        }
+      } catch (err) {
+        console.error('[AuthContext] Failed to restore saved session:', err);
+        localStorage.removeItem('saved_pwa_session');
+      }
+    }
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -70,6 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('[AuthContext] User signed out');
           setSession(null);
           setAuthLoading(false);
+          // Clear saved session on logout
+          localStorage.removeItem('saved_pwa_session');
           return;
         }
 
@@ -81,6 +102,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return session;
         });
+        
+        // 💾 Save session for PWA reinstalls
+        if (session?.access_token && session?.refresh_token) {
+          localStorage.setItem('saved_pwa_session', JSON.stringify({
+            access_token: session.access_token,
+            refresh_token: session.refresh_token
+          }));
+        }
         
         // Ensure user scaffolding on sign in (fallback safety check)
         if (event === 'SIGNED_IN' && session?.user) {
@@ -136,6 +165,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error };
       }
 
+      // 💾 Save session for PWA
+      if (data?.session) {
+        localStorage.setItem('saved_pwa_session', JSON.stringify({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token
+        }));
+      }
+
       // ✅ FIX: Invalidate all caches on login to ensure fresh data
       // This prevents showing stale quiz_completed status
       if (data?.user?.id) {
@@ -156,7 +193,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       // Create account - profile will be created automatically by database trigger
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -171,6 +208,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (error) {
         console.error('Signup error:', error);
         return { error };
+      }
+
+      // 💾 Save session for PWA
+      if (data?.session) {
+        localStorage.setItem('saved_pwa_session', JSON.stringify({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token
+        }));
       }
 
       // Profile and user_progress are created automatically by the handle_new_user() trigger
@@ -192,6 +237,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Limpar marcadores de sessão e update
     localStorage.removeItem('app_session_start');
     localStorage.removeItem('app_version_acknowledged');
+    localStorage.removeItem('saved_pwa_session');
+    
+    // Note: We DON'T clear 'pwa_flow_completed' so user doesn't see PWA flow again on re-login
   };
 
   const refreshUser = async () => {

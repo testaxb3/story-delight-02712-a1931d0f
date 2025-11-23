@@ -30,11 +30,22 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/auth" replace />;
   }
 
+  // Check if PWA flow is completed (before quiz)
+  const pwaFlowCompleted = localStorage.getItem('pwa_flow_completed') === 'true';
+  const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
+  
   // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
-  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status'];
+  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
   console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
+  console.log('[ProtectedRoute] PWA flow completed?', pwaFlowCompleted);
+
+  // 🔄 PWA Flow Check: If user hasn't completed PWA flow, redirect to installation
+  if (!pwaFlowCompleted && !isPWARoute && !isQuizRoute) {
+    console.log('[ProtectedRoute] ⚠️ PWA flow não completado - redirecionando para /pwa-install');
+    return <Navigate to="/pwa-install" replace />;
+  }
 
   // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
   // Isso resolve loops de redirecionamento causados por cache stale
