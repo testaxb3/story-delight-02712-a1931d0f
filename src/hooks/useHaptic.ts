@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from 'react';
+import { useHaptic as useHapticBase } from 'use-haptic';
 
 export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
 
@@ -6,86 +7,42 @@ export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning'
  * Hook for haptic feedback (vibration) on mobile devices
  * Provides consistent vibration patterns across the app
  *
- * PWA Note: iOS Safari blocks navigator.vibrate() in standalone mode.
- * This hook uses multiple fallback strategies for maximum compatibility.
+ * Now uses the 'use-haptic' package which leverages the native input[switch]
+ * element introduced in Safari 18.0 for reliable haptic feedback on iOS.
  */
 export function useHaptic() {
+  const { triggerHaptic: triggerHapticBase } = useHapticBase();
+
   const triggerHaptic = useCallback((pattern: HapticPattern = 'light') => {
-    const patterns: Record<HapticPattern, number | number[]> = {
-      light: 15,        // Quick tap
-      medium: 25,       // Button press
-      heavy: 40,        // Important action
-      success: [15, 50, 15],   // Success pattern
-      warning: [25, 40, 25],   // Warning pattern
-      error: [40, 60, 40],     // Error pattern
+    console.log('[Haptic] Triggering vibration:', pattern);
+
+    // Map our pattern types to the number of times to trigger haptic
+    // The use-haptic package provides a single tap, so we trigger multiple times for complex patterns
+    const triggerCounts: Record<HapticPattern, number> = {
+      light: 1,        // Single quick tap
+      medium: 1,       // Single medium tap
+      heavy: 1,        // Single heavy tap
+      success: 2,      // Double tap for success
+      warning: 2,      // Double tap for warning
+      error: 3,        // Triple tap for error
     };
 
-    const vibrationPattern = patterns[pattern];
-    console.log('[Haptic] Attempting vibration:', pattern, vibrationPattern);
+    const count = triggerCounts[pattern];
 
-    // Strategy 1: Try navigator.vibrate (Android PWA, browsers)
-    if (navigator.vibrate) {
-      try {
-        const result = navigator.vibrate(vibrationPattern);
-        console.log('[Haptic] navigator.vibrate result:', result);
-        if (result) return; // Success
-      } catch (error) {
-        console.warn('[Haptic] navigator.vibrate failed:', error);
-      }
+    // Trigger haptic feedback the specified number of times
+    for (let i = 0; i < count; i++) {
+      setTimeout(() => {
+        triggerHapticBase();
+      }, i * 100); // 100ms delay between taps for patterns
     }
 
-    // Strategy 2: Try webkit vibration (older iOS)
-    if ((navigator as any).webkitVibrate) {
-      try {
-        (navigator as any).webkitVibrate(vibrationPattern);
-        console.log('[Haptic] webkitVibrate called');
-        return;
-      } catch (error) {
-        console.warn('[Haptic] webkitVibrate failed:', error);
-      }
-    }
+    console.log('[Haptic] Haptic feedback triggered:', pattern, `${count}x`);
+  }, [triggerHapticBase]);
 
-    // Strategy 3: Try Haptic Engine API (iOS standalone PWA)
-    if ((window as any).webkit?.messageHandlers?.haptic) {
-      try {
-        (window as any).webkit.messageHandlers.haptic.postMessage({ pattern });
-        console.log('[Haptic] iOS Haptic Engine called');
-        return;
-      } catch (error) {
-        console.warn('[Haptic] iOS Haptic Engine failed:', error);
-      }
-    }
-
-    // Strategy 4: Trigger touch-action via AudioContext (silent audio for haptic)
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      // Silent audio that triggers haptic on some devices
-      gainNode.gain.setValueAtTime(0.00001, audioContext.currentTime);
-      oscillator.frequency.setValueAtTime(20, audioContext.currentTime);
-      oscillator.start();
-
-      const duration = typeof vibrationPattern === 'number' ? vibrationPattern : vibrationPattern[0];
-      oscillator.stop(audioContext.currentTime + duration / 1000);
-
-      console.log('[Haptic] AudioContext haptic triggered');
-    } catch (error) {
-      console.warn('[Haptic] AudioContext haptic failed:', error);
-    }
-
-    console.log('[Haptic] All strategies attempted for pattern:', pattern);
-  }, []);
-
-  // Initialize on mount - required for some iOS PWA contexts
+  // Initialize on mount
   useEffect(() => {
-    console.log('[Haptic] Hook initialized');
+    console.log('[Haptic] Hook initialized with use-haptic package');
     console.log('[Haptic] Standalone mode:', (window.navigator as any).standalone || window.matchMedia('(display-mode: standalone)').matches);
-    console.log('[Haptic] Vibrate API:', !!navigator.vibrate);
   }, []);
 
   return { triggerHaptic };

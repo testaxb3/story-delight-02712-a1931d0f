@@ -4,6 +4,7 @@ import fingerHeartDark from '@/assets/lottie/calai/finger_heart_dark.json';
 import fingerHeartLight from '@/assets/lottie/calai/finger_heart_light.json';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Button } from '@/components/ui/button';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizPreLoadingScreenProps {
   brainType: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -18,10 +19,10 @@ const brainTypeGradients = {
 
 export const QuizPreLoadingScreen = ({ brainType, onContinue }: QuizPreLoadingScreenProps) => {
   const { theme } = useTheme();
+  const { triggerHaptic } = useHaptic();
+
   const handleContinue = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
+    triggerHaptic('light');
     onContinue();
   };
 

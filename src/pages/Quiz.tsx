@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import { useHaptic } from '@/hooks/useHaptic';
 
 // Import step components
 import { QuizNameStep } from '@/components/Quiz/QuizNameStep';
@@ -86,6 +87,7 @@ export default function Quiz() {
   const { theme } = useTheme();
   const { refreshChildren, setActiveChild } = useChildProfiles();
   const queryClient = useQueryClient();
+  const { triggerHaptic } = useHaptic();
 
   useEffect(() => {
     if (countdown > 0 && showCountdown) {
@@ -455,7 +457,7 @@ export default function Quiz() {
         <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
           <Button
             onClick={() => {
-              if (navigator.vibrate) navigator.vibrate(15);
+              triggerHaptic('light');
               setShowEnhancedResults(false);
               setShowFinalCelebration(true);
             }}

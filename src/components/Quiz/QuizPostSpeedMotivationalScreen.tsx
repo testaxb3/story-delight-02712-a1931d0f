@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizPostSpeedMotivationalScreenProps {
   selectedGoals: string[];
@@ -52,10 +53,10 @@ const goalMessages = {
 };
 
 export const QuizPostSpeedMotivationalScreen = ({ selectedGoals, onContinue }: QuizPostSpeedMotivationalScreenProps) => {
+  const { triggerHaptic } = useHaptic();
+
   const handleContinue = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
+    triggerHaptic('light');
     onContinue();
   };
 

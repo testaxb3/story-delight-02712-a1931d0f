@@ -3,6 +3,7 @@ import { LottieIcon } from '@/components/LottieIcon';
 import clapDark from '@/assets/lottie/calai/clap_dark.json';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizThankYouScreenProps {
   onContinue: () => void;
@@ -10,11 +11,10 @@ interface QuizThankYouScreenProps {
 
 export const QuizThankYouScreen = ({ onContinue }: QuizThankYouScreenProps) => {
   const { theme } = useTheme();
-  
+  const { triggerHaptic } = useHaptic();
+
   const handleContinue = () => {
-    if (navigator.vibrate) {
-      navigator.vibrate(15);
-    }
+    triggerHaptic('light');
     onContinue();
   };
 

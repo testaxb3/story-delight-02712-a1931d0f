@@ -5,10 +5,12 @@ import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTub
 import { Smartphone, ArrowRight, Moon, Sun } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useHaptic } from '@/hooks/useHaptic';
 
 export default function PWAOnboarding() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { triggerHaptic } = useHaptic();
   const [step, setStep] = useState<'theme' | 'pwa'>('theme');
   const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop'>('desktop');
 
@@ -27,12 +29,10 @@ export default function PWAOnboarding() {
 
   const handleThemeSelect = (selectedTheme: 'light' | 'dark') => {
     setTheme(selectedTheme);
-    
+
     // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    
+    triggerHaptic('light');
+
     // Move to PWA step
     setTimeout(() => {
       setStep('pwa');

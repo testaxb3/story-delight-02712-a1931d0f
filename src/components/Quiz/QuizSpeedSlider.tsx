@@ -5,6 +5,7 @@ import { LottieIcon } from '@/components/LottieIcon';
 import slothAnimation from '@/assets/lottie/calai/sloth.json';
 import rabbitAnimation from '@/assets/lottie/calai/rabbit.json';
 import pantherAnimation from '@/assets/lottie/calai/panther.json';
+import { useHaptic } from '@/hooks/useHaptic';
 
 export interface QuizSpeedSliderProps {
   value: 'slow' | 'balanced' | 'intensive';
@@ -40,15 +41,14 @@ const speedOptions = {
 
 export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
   const [sliderValue, setSliderValue] = useState([speedOptions[value].position]);
+  const { triggerHaptic } = useHaptic();
 
   const handleSliderChange = (newValue: number[]) => {
     const position = newValue[0];
-    
+
     // Haptic feedback
-    if (navigator.vibrate) {
-      navigator.vibrate(10);
-    }
-    
+    triggerHaptic('light');
+
     setSliderValue(newValue);
     
     // Map position to speed value
