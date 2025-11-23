@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, Users, Plus, Share2, MessageCircle, 
-  Copy, Flame, Check, Camera, X, Crown, Heart, Sparkles, TrendingUp
+  Copy, Flame, Check, Camera, X, Crown, Heart, Sparkles, TrendingUp, MoreVertical, Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PostReactionsSheet } from '@/components/Community/PostReactionsSheet';
@@ -90,12 +90,27 @@ export default function CommunityFeed() {
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showReactionsSheet, setShowReactionsSheet] = useState(false);
   const [postReactions, setPostReactions] = useState<Record<string, { emoji: string; count: number }[]>>({});
+  const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
+  const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   useEffect(() => {
     if (user?.profileId) {
       loadCommunities();
+      checkIfAdmin();
     }
   }, [user?.profileId, shouldRefresh]);
+
+  const checkIfAdmin = async () => {
+    if (!user?.profileId) return;
+
+    const { data } = await supabase
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.profileId)
+      .single();
+
+    setIsUserAdmin(data?.is_admin || false);
+  };
 
   useEffect(() => {
     if (currentCommunity) {
@@ -380,6 +395,32 @@ export default function CommunityFeed() {
       await loadPosts();
     } catch (error: any) {
       toast.error(`Error: ${error.message}`);
+    }
+  };
+
+  const handleDeletePost = async (postId: string) => {
+    if (!user?.profileId) return;
+
+    const confirmDelete = window.confirm('Are you sure you want to delete this post?');
+    if (!confirmDelete) return;
+
+    setDeletingPostId(postId);
+
+    try {
+      const { error } = await supabase
+        .from('group_posts')
+        .delete()
+        .eq('id', postId);
+
+      if (error) throw error;
+
+      toast.success('Post deleted successfully!');
+      await loadPosts();
+    } catch (error: any) {
+      console.error('Error deleting post:', error);
+      toast.error(`Failed to delete post: ${error.message}`);
+    } finally {
+      setDeletingPostId(null);
     }
   };
 
@@ -674,6 +715,30 @@ export default function CommunityFeed() {
                         })}
                       </p>
                     </div>
+
+                    {/* Delete button (visible for post author or admin) */}
+                    {user?.profileId && (post.user_id === user.profileId || isUserAdmin) && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <motion.button
+                            whileTap={{ scale: 0.95 }}
+                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4 text-white/60" />
+                          </motion.button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleDeletePost(post.id)}
+                            disabled={deletingPostId === post.id}
+                            className="text-red-500 focus:text-red-500"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            {deletingPostId === post.id ? 'Deleting...' : 'Delete Post'}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
 
                   {/* Enhanced Title */}
