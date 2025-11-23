@@ -81,16 +81,9 @@ export const BonusesCategoryTabs = memo(function BonusesCategoryTabs({
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  const currentScroll = window.scrollY;
+                onClick={() => {
                   triggerHaptic('light');
                   onCategoryChange(category.id);
-                  // Force scroll position to stay
-                  requestAnimationFrame(() => {
-                    window.scrollTo(0, currentScroll);
-                  });
                 }}
                 className={`
                   relative flex items-center gap-2 px-4 py-2 rounded-2xl whitespace-nowrap
