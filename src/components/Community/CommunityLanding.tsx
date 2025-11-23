@@ -62,7 +62,7 @@ const COMMUNITY_IMAGES = [
 
 export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: CommunityLandingProps) {
   return (
-    <div className="min-h-screen bg-[#0d0d0d] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Top Section - Image Grid (55% of viewport to ensure buttons visible) */}
       <div className="h-[55vh] relative overflow-hidden" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 8px)' }}>
         {/* Grid of placeholder images with variable heights */}
@@ -112,7 +112,7 @@ export function CommunityLanding({ onCreateCommunity, onJoinCommunity }: Communi
       </div>
 
       {/* Bottom Section - Content and CTAs (45% of viewport) */}
-      <div className="flex-1 bg-[#0d0d0d] flex flex-col items-center justify-center px-6 py-8 pb-safe">
+      <div className="flex-1 bg-background flex flex-col items-center justify-center px-6 py-8 pb-safe">
         <div className="max-w-md w-full text-center">
           {/* Title */}
           <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-white leading-tight">

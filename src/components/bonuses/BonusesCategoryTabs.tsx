@@ -84,7 +84,7 @@ export function BonusesCategoryTabs({
                   transition-all duration-200 border border-transparent
                   ${isActive 
                     ? 'bg-white text-black shadow-[0_0_15px_rgba(255,255,255,0.15)] font-semibold' 
-                    : 'bg-[#1C1C1E] text-gray-400 border-[#333] hover:bg-[#2C2C2E] hover:text-white'
+                    : 'bg-card text-muted-foreground border-border hover:bg-card/80 hover:text-foreground'
                   }
                 `}
               >
@@ -96,7 +96,7 @@ export function BonusesCategoryTabs({
                     px-1.5 py-0.5 rounded text-[10px] font-bold ml-1
                     ${isActive 
                       ? 'bg-black text-white' 
-                      : 'bg-[#2C2C2E] text-gray-500'
+                      : 'bg-muted text-muted-foreground'
                     }
                   `}
                 >
@@ -122,17 +122,16 @@ export function BonusesCategoryTabs({
             placeholder="Search bonuses..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-10 h-11 bg-[#1C1C1E] border-[#333] text-white placeholder:text-gray-600 rounded-xl focus:border-white/20 focus:ring-0 transition-all"
+            className="pl-10 h-11 bg-card border-border text-foreground placeholder:text-muted-foreground rounded-xl focus:border-primary/20 focus:ring-0 transition-all"
           />
         </div>
 
         {/* Premium Sort Dropdown */}
         <Select value={sortBy} onValueChange={onSortChange}>
-          <SelectTrigger className="w-full md:w-[200px] h-11 bg-[#1C1C1E] border-[#333] text-white rounded-xl focus:ring-0">
-            <SlidersHorizontal className="w-4 h-4 mr-2 text-gray-500" />
+          <SelectTrigger className="w-full md:w-[200px] h-11 bg-card border-border text-foreground rounded-xl focus:ring-0">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
-          <SelectContent className="bg-[#1C1C1E] border-[#333] text-white rounded-xl">
+          <SelectContent className="bg-card border-border text-foreground rounded-xl">
             <SelectItem value="newest">
               <span className="flex items-center gap-2">
                 <Sparkles className="w-3 h-3 text-purple-400" />
@@ -155,8 +154,8 @@ export function BonusesCategoryTabs({
             className={`
               h-11 w-11 rounded-xl border transition-all duration-200
               ${viewMode === "grid" 
-                ? 'bg-[#2C2C2E] text-white border-[#444]' 
-                : 'bg-[#1C1C1E] text-gray-500 border-[#333] hover:text-white'
+                ? 'bg-muted text-foreground border-primary' 
+                : 'bg-card text-muted-foreground border-border hover:text-foreground'
               }
             `}
           >
@@ -170,8 +169,8 @@ export function BonusesCategoryTabs({
             className={`
               h-11 w-11 rounded-xl border transition-all duration-200
               ${viewMode === "list" 
-                ? 'bg-[#2C2C2E] text-white border-[#444]' 
-                : 'bg-[#1C1C1E] text-gray-500 border-[#333] hover:text-white'
+                ? 'bg-muted text-foreground border-primary' 
+                : 'bg-card text-muted-foreground border-border hover:text-foreground'
               }
             `}
           >

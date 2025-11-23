@@ -69,10 +69,10 @@ export function BonusesHeader({
         {stats.map((stat, index) => (
           <Card
             key={stat.label}
-            className="bg-[#1C1C1E] border-none rounded-2xl p-4 shadow-sm"
+            className="bg-card border-none rounded-2xl p-4 shadow-sm"
           >
             <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 rounded-xl bg-[#2C2C2E]">
+              <div className="p-2 rounded-xl bg-muted">
                 <stat.icon className={`w-4 h-4 ${stat.color}`} />
               </div>
             </div>
