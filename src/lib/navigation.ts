@@ -17,6 +17,7 @@ export const routes = {
   // PWA Installation Flow
   pwaInstall: '/pwa-install',
   pwaCheck: '/pwa-check',
+  themeSelection: '/theme-selection',
   
   // Primary Pages
   scripts: '/scripts',

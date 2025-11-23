@@ -27,11 +27,11 @@ const PWACheck = () => {
         origin: { y: 0.6 }
       });
 
-      // Mark PWA flow as completed and redirect to quiz after 2 seconds
+      // Mark PWA flow as completed and redirect to theme selection after 2 seconds
       setTimeout(() => {
         localStorage.setItem('pwa_flow_completed', 'true');
         localStorage.setItem('pwa_install_timestamp', Date.now().toString());
-        navigate('/quiz');
+        navigate('/theme-selection');
       }, 2000);
     } else {
       // Show confirmation screen if not installed
@@ -49,7 +49,7 @@ const PWACheck = () => {
     trackEvent('pwa_check_clicked_continue_anyway');
     localStorage.setItem('pwa_flow_completed', 'true');
     localStorage.setItem('pwa_install_skipped', Date.now().toString());
-    navigate('/quiz');
+    navigate('/theme-selection');
   };
 
   const missingFeatures = [
