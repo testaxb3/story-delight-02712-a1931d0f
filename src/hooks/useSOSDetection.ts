@@ -112,7 +112,7 @@ export function useSOSDetection(options: SOSDetectionOptions = {}): SOSDetection
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (lastFeedback && lastFeedback.outcome === 'not_yet') {
         const feedbackTime = new Date(lastFeedback.created_at).getTime();
