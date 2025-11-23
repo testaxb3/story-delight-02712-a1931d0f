@@ -40,13 +40,9 @@ export const CommentThread = React.memo(function CommentThread({
   const [expandedReplies, setExpandedReplies] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const fetchedRef = useRef<string | null>(null);
 
-  // Fetch comments once when component mounts or postId changes (guarded)
+  // Fetch comments and subscribe to real-time updates
   useEffect(() => {
-    if (fetchedRef.current === postId) return; // already fetched for this post
-    fetchedRef.current = postId;
-
     let mounted = true;
 
     const fetchComments = async () => {
@@ -76,10 +72,59 @@ export const CommentThread = React.memo(function CommentThread({
 
     fetchComments();
 
+    // Subscribe to realtime changes
+    const channel = supabase
+      .channel(`post_comments:${postId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'post_comments',
+          filter: `post_id=eq.${postId}`,
+        },
+        async (payload) => {
+          if (!mounted) return;
+          
+          // Fetch the new comment with profile data
+          const { data, error } = await supabase
+            .from('post_comments')
+            .select(`
+              *,
+              profiles:user_id (name, email, photo_url)
+            `)
+            .eq('id', payload.new.id)
+            .single();
+
+          if (!error && data) {
+            setComments((prev) => {
+              // Avoid duplicates
+              if (prev.some(c => c.id === data.id)) return prev;
+              return [...prev, data as PostComment];
+            });
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'DELETE',
+          schema: 'public',
+          table: 'post_comments',
+          filter: `post_id=eq.${postId}`,
+        },
+        (payload) => {
+          if (!mounted) return;
+          setComments((prev) => prev.filter((c) => c.id !== payload.old.id));
+        }
+      )
+      .subscribe();
+
     return () => {
       mounted = false;
+      supabase.removeChannel(channel);
     };
-  }, [postId]); // only postId
+  }, [postId]);
 
   // Notify parent when count changes
   useEffect(() => {
