@@ -22,6 +22,8 @@ import NotFound from "./pages/NotFound";
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting
 // This reduces initial bundle size and improves Time to Interactive (TTI)
 const PWAOnboarding = lazy(() => import("./pages/PWAOnboarding"));
+const PWAInstall = lazy(() => import("./pages/PWAInstall"));
+const PWACheck = lazy(() => import("./pages/PWACheck"));
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
 const Scripts = lazy(() => import("./pages/Scripts"));
@@ -98,6 +100,8 @@ function AppContent() {
       <Routes>
         <Route path="/auth" element={<Auth />} />
         <Route path="/onboarding" element={<ProtectedRoute><PWAOnboarding /></ProtectedRoute>} />
+        <Route path="/pwa-install" element={<ProtectedRoute><PWAInstall /></ProtectedRoute>} />
+        <Route path="/pwa-check" element={<ProtectedRoute><PWACheck /></ProtectedRoute>} />
         <Route
           path="/refund"
           element={
