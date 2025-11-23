@@ -28,10 +28,11 @@ export const AuthCard = memo(function AuthCard({
 }: AuthCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.95 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: "easeOut" }}
       className="w-full max-w-md"
+      style={{ willChange: 'opacity, transform' }}
     >
       {/* Glassmorphism Card with Gradient */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card to-card/95 backdrop-blur-xl border border-border/50 shadow-2xl">
@@ -41,9 +42,9 @@ export const AuthCard = memo(function AuthCard({
         <div className="relative p-8 md:p-10">
           {/* Logo/Icon Header */}
           <motion.div
-            initial={{ scale: 0, rotate: -180 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1, duration: 0.2 }}
             className="flex justify-center mb-6"
           >
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
@@ -53,9 +54,9 @@ export const AuthCard = memo(function AuthCard({
 
           {/* Title */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.15, duration: 0.2 }}
             className="text-center mb-8"
           >
             <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
@@ -72,9 +73,9 @@ export const AuthCard = memo(function AuthCard({
           <form onSubmit={onSubmit} className="space-y-5">
             {/* Email Field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.2 }}
               className="space-y-2"
             >
               <label htmlFor="email" className="text-sm font-medium text-foreground/90 flex items-center gap-2">
@@ -102,9 +103,9 @@ export const AuthCard = memo(function AuthCard({
 
             {/* Password Field */}
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.45 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25, duration: 0.2 }}
               className="space-y-2"
             >
               <label htmlFor="password" className="text-sm font-medium text-foreground/90 flex items-center gap-2">
@@ -132,19 +133,19 @@ export const AuthCard = memo(function AuthCard({
 
             {/* Submit Button */}
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.2 }}
             >
               <Button
                 type="submit"
                 disabled={loading}
                 className="w-full h-14 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground 
-                  hover:shadow-xl hover:shadow-primary/25 hover:scale-[1.02]
+                  hover:shadow-lg hover:shadow-primary/20
                   active:scale-[0.98]
                   text-base font-semibold rounded-xl 
-                  transition-all duration-200
-                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  transition-all duration-150
+                  disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <motion.div
@@ -170,7 +171,7 @@ export const AuthCard = memo(function AuthCard({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.35, duration: 0.2 }}
             className="text-center mt-6"
           >
             <button
@@ -191,9 +192,9 @@ export const AuthCard = memo(function AuthCard({
           {/* Purchase Link */}
           {isSignUp && (
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.2 }}
               className="pt-6 mt-6 border-t border-border/50"
             >
               <p className="text-xs text-muted-foreground mb-3 text-center">
@@ -218,7 +219,7 @@ export const AuthCard = memo(function AuthCard({
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
+            transition={{ delay: 0.45, duration: 0.2 }}
             className="text-xs text-center text-muted-foreground/70 mt-6"
           >
             By continuing, you agree to our{" "}

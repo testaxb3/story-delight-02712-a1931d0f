@@ -6,7 +6,6 @@ import { loginSchema } from '@/lib/validations';
 import { useRateLimit } from '@/hooks/useRateLimit';
 import { AuthCard } from '@/components/auth/AuthCard';
 import { AuthBackground } from '@/components/auth/AuthBackground';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const Auth = memo(function Auth() {
   const [email, setEmail] = useState('');
@@ -107,19 +106,16 @@ const Auth = memo(function Auth() {
 
       {/* Content */}
       <div className="relative flex-1 flex items-center justify-center px-4 md:px-6 py-8 pb-[calc(env(safe-area-inset-bottom)+2rem)]">
-        <AnimatePresence mode="wait">
-          <AuthCard
-            key={isSignUp ? 'signup' : 'signin'}
-            isSignUp={isSignUp}
-            email={email}
-            password={password}
-            loading={loading}
-            onEmailChange={handleEmailChange}
-            onPasswordChange={handlePasswordChange}
-            onSubmit={handleSubmit}
-            onToggleMode={handleToggleMode}
-          />
-        </AnimatePresence>
+        <AuthCard
+          isSignUp={isSignUp}
+          email={email}
+          password={password}
+          loading={loading}
+          onEmailChange={handleEmailChange}
+          onPasswordChange={handlePasswordChange}
+          onSubmit={handleSubmit}
+          onToggleMode={handleToggleMode}
+        />
       </div>
 
       {/* Bottom Gradient Fade */}
