@@ -203,7 +203,7 @@ function ScriptsContent() {
   }, []);
 
   const loadFeedback = useCallback(async (scriptId: string) => {
-    if (!activeChild?.id || !user?.profileId) {
+    if (!activeChild?.id || !user?.id) {
       setFeedbackHistory([]);
       return;
     }
@@ -229,7 +229,7 @@ function ScriptsContent() {
     }
 
     setLoadingFeedback(false);
-  }, [activeChild?.id, user?.profileId]);
+  }, [activeChild?.id, user?.id]);
 
   useEffect(() => {
     fetchScripts();
@@ -454,14 +454,14 @@ function ScriptsContent() {
   };
 
   const handleSubmitFeedback = async () => {
-    if (!selectedScript || !activeChild?.id || !user?.profileId) {
+    if (!selectedScript || !activeChild?.id || !user?.id) {
       toast({ title: 'Please select a script and a child profile before submitting.' });
       return;
     }
 
     setSavingFeedback(true);
     const payload: Database['public']['Tables']['script_feedback']['Insert'] = {
-      user_id: user.profileId,
+      user_id: user.id,
       child_id: activeChild.id,
       script_id: selectedScript.id,
       outcome: feedbackOutcome,
