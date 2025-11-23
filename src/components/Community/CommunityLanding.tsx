@@ -267,7 +267,8 @@ export const CommunityLanding = memo(function CommunityLanding({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="relative z-10 bg-gradient-to-t from-background via-background to-transparent flex flex-col items-center justify-center px-6 py-12 pb-safe"
+        className="relative z-10 bg-gradient-to-t from-background via-background to-transparent flex flex-col items-center justify-center px-6 py-12"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
       >
         <div className="max-w-md w-full text-center">
           {/* Title with icon */}
