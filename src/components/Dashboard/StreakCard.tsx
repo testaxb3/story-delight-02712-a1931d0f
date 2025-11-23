@@ -73,7 +73,7 @@ export const StreakCard = ({ currentStreak, scriptsUsed }: StreakCardProps) => {
                 ${isStrong ? 'bg-gradient-warning' : 'bg-gradient-to-br from-orange-500 to-red-500'}
               `}
             >
-              <Flame className="w-8 h-8 text-white" />
+              <Flame className="w-8 h-8 text-primary-foreground" />
             </motion.div>
             <div>
               <div className="text-sm text-muted-foreground font-medium mb-1">
