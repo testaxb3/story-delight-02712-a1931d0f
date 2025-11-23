@@ -9,12 +9,11 @@ interface Member {
   id: string;
   user_id: string;
   role: string;
-  profiles: {
-    name: string;
-    username: string | null;
-    photo_url: string | null;
-    brain_profile: string | null;
-  };
+  joined_at: string;
+  name: string;
+  username: string | null;
+  photo_url: string | null;
+  brain_profile: string | null;
 }
 
 export default function MembersList() {
@@ -43,21 +42,10 @@ export default function MembersList() {
     console.log('MembersList: Loading members for community:', communityId);
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from('community_members')
-      .select(`
-        id,
-        user_id,
-        role,
-        profiles!inner (
-          name,
-          username,
-          photo_url,
-          brain_profile
-        )
-      `)
-      .eq('community_id', communityId)
-      .order('role', { ascending: true });
+    // Use RPC function to avoid PostgREST relationship cache issues
+    const { data, error } = await supabase.rpc('get_community_members', {
+      p_community_id: communityId
+    });
 
     if (error) {
       console.error('MembersList: Error loading members:', error);
@@ -160,11 +148,11 @@ export default function MembersList() {
                 className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 flex items-center gap-3"
               >
                 <div className="relative flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.profiles?.brain_profile)} flex items-center justify-center font-bold`}>
-                    {member.profiles?.photo_url ? (
-                      <img src={member.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.brain_profile)} flex items-center justify-center font-bold`}>
+                    {member.photo_url ? (
+                      <img src={member.photo_url} alt="" className="w-full h-full rounded-full" />
                     ) : (
-                      getInitials(member.profiles?.name || 'U')
+                      getInitials(member.name || 'U')
                     )}
                   </div>
                   {member.role === 'leader' && (
@@ -175,13 +163,13 @@ export default function MembersList() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{member.profiles?.name || 'User'}</p>
-                  {member.profiles?.username && (
-                    <p className="text-sm text-gray-400 truncate">@{member.profiles.username}</p>
+                  <p className="font-semibold truncate">{member.name || 'User'}</p>
+                  {member.username && (
+                    <p className="text-sm text-gray-400 truncate">@{member.username}</p>
                   )}
-                  {member.profiles?.brain_profile && (
+                  {member.brain_profile && (
                     <span className="inline-block mt-1 px-2 py-0.5 bg-accent/10 text-accent rounded-full text-xs">
-                      {member.profiles.brain_profile}
+                      {member.brain_profile}
                     </span>
                   )}
                 </div>

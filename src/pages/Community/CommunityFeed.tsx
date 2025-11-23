@@ -38,10 +38,11 @@ interface Member {
   id: string;
   user_id: string;
   role: string;
-  profiles: {
-    name: string;
-    photo_url: string | null;
-  };
+  joined_at: string;
+  name: string;
+  username: string | null;
+  photo_url: string | null;
+  brain_profile: string | null;
 }
 
 interface Post {
@@ -133,11 +134,10 @@ export default function CommunityFeed() {
   const loadMembers = async () => {
     if (!currentCommunity) return;
     
-    const { data, error } = await supabase
-      .from('community_members')
-      .select('id, user_id, role, profiles!inner(name, photo_url)')
-      .eq('community_id', currentCommunity.id)
-      .order('role', { ascending: true });
+    // Use RPC function instead of direct join to avoid PostgREST cache issues
+    const { data, error } = await supabase.rpc('get_community_members', {
+      p_community_id: currentCommunity.id
+    });
 
     if (error) {
       console.error('Error loading members:', error);
@@ -484,21 +484,21 @@ export default function CommunityFeed() {
                         </div>
                       )}
                       <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-sm font-bold border-2 border-background">
-                        {member.profiles?.photo_url ? (
+                        {member.photo_url ? (
                           <img 
-                            src={member.profiles.photo_url} 
-                            alt={member.profiles?.name || 'User'} 
+                            src={member.photo_url} 
+                            alt={member.name || 'User'} 
                             className="w-full h-full rounded-full object-cover" 
                           />
                         ) : (
                           <span className="text-white">
-                            {getInitials(member.profiles?.name || 'U')}
+                            {getInitials(member.name || 'U')}
                           </span>
                         )}
                       </div>
                     </div>
                     <span className="text-xs text-center line-clamp-1 max-w-[60px]">
-                      {member.profiles?.name?.split(' ')[0] || 'User'}
+                      {member.name?.split(' ')[0] || 'User'}
                     </span>
                   </div>
                 ))}
@@ -534,10 +534,10 @@ export default function CommunityFeed() {
                       ? "bg-gradient-to-br from-yellow-400 to-yellow-600" 
                       : "bg-gradient-to-br from-purple-500 to-purple-600"
                   )}>
-                    {member.profiles?.photo_url ? (
-                      <img src={member.profiles.photo_url} alt="" className="w-full h-full rounded-full" />
+                    {member.photo_url ? (
+                      <img src={member.photo_url} alt="" className="w-full h-full rounded-full" />
                     ) : (
-                      getInitials(member.profiles?.name || 'U')
+                      getInitials(member.name || 'U')
                     )}
                   </div>
                 </div>
@@ -546,7 +546,7 @@ export default function CommunityFeed() {
                   <span className="text-xs font-bold">0</span>
                 </div>
                 <span className="text-xs text-muted-foreground max-w-[70px] truncate text-center">
-                  {member.profiles?.name?.split(' ')[0] || 'User'}
+                  {member.name?.split(' ')[0] || 'User'}
                 </span>
                   </div>
                     ))}

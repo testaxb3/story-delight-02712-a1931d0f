@@ -581,6 +581,27 @@ export type Database = {
             referencedRelation: "communities"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       community_posts: {
@@ -3299,6 +3320,19 @@ export type Database = {
       force_app_update: { Args: { update_message?: string }; Returns: Json }
       generate_invite_code: { Args: never; Returns: string }
       get_app_version: { Args: never; Returns: Json }
+      get_community_members: {
+        Args: { p_community_id: string }
+        Returns: {
+          brain_profile: string
+          id: string
+          joined_at: string
+          name: string
+          photo_url: string
+          role: string
+          user_id: string
+          username: string
+        }[]
+      }
       get_orphaned_ebooks: {
         Args: never
         Returns: {
