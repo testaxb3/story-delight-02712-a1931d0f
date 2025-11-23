@@ -57,11 +57,20 @@ export default function Quiz() {
 
   // Complete quiz
   const handleCompleteQuiz = useCallback(async () => {
+    console.log('🔵 [Quiz] Iniciando conclusão do quiz');
     const result = quizState.calculateResult();
     
-    if (!result) return;
+    if (!result) {
+      console.log('❌ [Quiz] Nenhum resultado calculado');
+      return;
+    }
 
     const sanitizedName = validation.sanitizeName();
+    
+    console.log('🔵 [Quiz] Chamando submission.completeQuiz', { 
+      childName: sanitizedName, 
+      brainProfile: result.type 
+    });
     
     await submission.completeQuiz({
       childName: sanitizedName,
@@ -73,6 +82,8 @@ export default function Quiz() {
       triedApproaches: quizState.triedApproaches,
       resultSpeed: quizState.resultSpeed,
     });
+    
+    console.log('✅ [Quiz] submission.completeQuiz completado com sucesso');
   }, [quizState, validation, submission]);
 
   // Countdown timer - Fixed to prevent double execution

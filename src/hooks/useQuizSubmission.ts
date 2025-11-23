@@ -127,13 +127,16 @@ export function useQuizSubmission() {
 
       if (updateError) throw updateError;
 
-      // Set grace period for navigation
+      // ✅ Set grace period for 10 minutes (increased from 5)
       sessionStorage.setItem('quizJustCompletedAt', Date.now().toString());
 
       // Refresh user data
       await refreshUser();
       
-      logger.debug('Quiz marked as completed successfully');
+      // ✅ Additional delay to ensure propagation
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      logger.debug('✅ Quiz marked as completed and propagated successfully');
       return true;
     } catch (err: any) {
       const errorMsg = err.message || 'Failed to mark quiz as completed';
@@ -146,11 +149,34 @@ export function useQuizSubmission() {
 
   // Complete quiz (save profile + mark completed)
   const completeQuiz = useCallback(async (data: SubmissionData) => {
+    if (!user?.id) return false;
+    
+    // ✅ OPTIMISTIC UPDATE: Update cache IMMEDIATELY before DB save
+    queryClient.setQueryData(['user-profile', user.id], (oldData: any) => {
+      if (!oldData) return oldData;
+      return {
+        ...oldData,
+        quiz_completed: true,
+        quiz_in_progress: false
+      };
+    });
+    
+    logger.debug('🟢 [completeQuiz] Cache updated optimistically');
+    
     // Save child profile first
     const profile = await saveChildProfile(data);
     
     if (!profile) {
-      logger.error('Failed to save child profile during quiz completion');
+      // ❌ Rollback optimistic update if save fails
+      queryClient.setQueryData(['user-profile', user.id], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          quiz_completed: false,
+          quiz_in_progress: true
+        };
+      });
+      logger.error('Failed to save child profile during quiz completion - rolled back cache');
       return false;
     }
 
@@ -158,7 +184,7 @@ export function useQuizSubmission() {
     const success = await markQuizCompleted();
     
     return success;
-  }, [saveChildProfile, markQuizCompleted]);
+  }, [saveChildProfile, markQuizCompleted, user, queryClient]);
 
   return {
     isSaving,
