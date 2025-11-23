@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface RecommendationItem {
   text: string;
@@ -19,6 +19,14 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
     { text: 'Customizing ebooks', completed: false },
     { text: 'Building roadmap', completed: false }
   ]);
+
+  // ✅ Use ref to prevent re-triggering useEffect when onComplete changes
+  const onCompleteRef = useRef(onComplete);
+  
+  // Update ref when onComplete changes
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     // Animate percentage from 0 to 100
@@ -47,15 +55,15 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
           prev.map((item) => ({ ...item, completed: true }))
         );
         
-        // Call onComplete after a short delay
-        if (onComplete) {
-          setTimeout(() => onComplete(), 500);
+        // Call onComplete after a short delay using ref
+        if (onCompleteRef.current) {
+          setTimeout(() => onCompleteRef.current?.(), 500);
         }
       }
     }, interval);
 
     return () => clearInterval(percentTimer);
-  }, [onComplete]);
+  }, []); // ✅ Empty dependency array - run only once
 
   return (
     <motion.div

@@ -75,9 +75,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // ✅ FIX: Permitir navegação imediatamente após concluir quiz (janela de 5 minutos)
+  // ✅ FIX: Permitir navegação imediatamente após concluir quiz (janela de 10 minutos - increased)
   const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
-  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 300000; // 5 minutos
+  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 600000; // ✅ 10 minutos
   
   if (withinGracePeriod) {
     console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
