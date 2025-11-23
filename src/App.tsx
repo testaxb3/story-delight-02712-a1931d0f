@@ -34,7 +34,7 @@ const CreateGroupName = lazy(() => import("./pages/Community/CreateGroupName"));
 const AddGroupLogo = lazy(() => import("./pages/Community/AddGroupLogo"));
 const CommunityFeed = lazy(() => import("./pages/Community/CommunityFeed"));
 const MembersList = lazy(() => import("./pages/Community/MembersList"));
-const JoinTutorial = lazy(() => import("./pages/Community/JoinTutorial"));
+const JoinCommunity = lazy(() => import("./pages/Community/JoinCommunity"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
@@ -190,7 +190,7 @@ function AppContent() {
           path="/community/join"
           element={
             <ProtectedRoute>
-              <JoinTutorial />
+              <JoinCommunity />
             </ProtectedRoute>
           }
         />

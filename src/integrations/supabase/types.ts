@@ -525,6 +525,7 @@ export type Database = {
           description: string | null
           id: string
           invite_code: string
+          is_official: boolean | null
           logo_emoji: string | null
           logo_url: string | null
           name: string
@@ -535,6 +536,7 @@ export type Database = {
           description?: string | null
           id?: string
           invite_code: string
+          is_official?: boolean | null
           logo_emoji?: string | null
           logo_url?: string | null
           name: string
@@ -545,6 +547,7 @@ export type Database = {
           description?: string | null
           id?: string
           invite_code?: string
+          is_official?: boolean | null
           logo_emoji?: string | null
           logo_url?: string | null
           name?: string

@@ -136,7 +136,7 @@ export const CommunityLanding = memo(function CommunityLanding({
       const { data: communitiesData, error } = await supabase
         .from('communities')
         .select('id, name, logo_emoji, description, invite_code')
-        .in('invite_code', ['INTENSE2024', 'DEFIANT2024', 'DISTRACTED2024'])
+        .eq('is_official', true)
         .order('invite_code');
 
       if (error) throw error;
