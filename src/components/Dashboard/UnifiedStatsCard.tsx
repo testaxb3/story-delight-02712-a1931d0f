@@ -1,3 +1,4 @@
+import React from 'react';
 import { Flame } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
