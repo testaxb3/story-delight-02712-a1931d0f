@@ -66,7 +66,7 @@ const EnhancedScriptCardComponent = ({
 
       <div className="absolute top-4 left-4 flex gap-2 z-10">
         {script.emergency_suitable && (
-          <Badge className="bg-red-500/90 text-white border-0 shadow-lg animate-pulse font-bold text-xs">
+          <Badge className="bg-red-500/90 text-white dark:text-white border-0 shadow-lg animate-pulse font-bold text-xs">
             🚨 SOS
           </Badge>
         )}
