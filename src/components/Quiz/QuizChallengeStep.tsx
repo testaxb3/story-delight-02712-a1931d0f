@@ -1,7 +1,7 @@
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
-import { useTheme } from '@/contexts/ThemeContext';
 
 interface QuizChallengeStepProps {
   challengeLevel: number;
@@ -27,7 +27,7 @@ const approachOptions = [
   'Therapy/counseling',
 ];
 
-export const QuizChallengeStep = ({
+export const QuizChallengeStep = memo(({
   challengeLevel,
   challengeDuration,
   triedApproaches,
@@ -35,32 +35,40 @@ export const QuizChallengeStep = ({
   onDurationChange,
   onApproachToggle,
 }: QuizChallengeStepProps) => {
-  const { theme } = useTheme();
-  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="space-y-8"
+      className="space-y-8 w-full max-w-md"
     >
       {/* Challenge Level */}
       <div className="space-y-6">
-        <div className="text-center space-y-3">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white font-relative">
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="text-center space-y-3"
+        >
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground font-relative">
             How challenging is the situation?
           </h2>
-          <p className="text-base md:text-lg text-gray-500 dark:text-gray-400">
+          <p className="text-base md:text-lg text-muted-foreground">
             Rate from 1 (manageable) to 10 (extremely difficult)
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-6 max-w-md mx-auto">
-          <div className="text-center">
-            <div className="text-6xl md:text-7xl font-black text-black dark:text-white font-relative">
+        <div className="space-y-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+            className="text-center"
+          >
+            <div className="text-6xl md:text-7xl font-black text-foreground font-relative">
               {challengeLevel}
             </div>
-          </div>
+          </motion.div>
 
           <Slider
             value={[challengeLevel]}
@@ -71,7 +79,7 @@ export const QuizChallengeStep = ({
             className="touch-none"
           />
 
-          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex justify-between text-xs text-muted-foreground">
             <span>Manageable</span>
             <span>Extremely Difficult</span>
           </div>
@@ -79,30 +87,27 @@ export const QuizChallengeStep = ({
       </div>
 
       {/* Challenge Duration */}
-      <div className="space-y-4 max-w-md mx-auto">
-        <h3 className="text-xl font-bold text-black dark:text-white font-relative text-center">
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-foreground font-relative text-center">
           How long has this been going on?
         </h3>
         <div className="space-y-3">
-          {durationOptions.map((option) => (
+          {durationOptions.map((option, index) => (
             <motion.button
               key={option.value}
               onClick={() => onDurationChange(option.value)}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 + index * 0.05 }}
               className={`w-full p-4 rounded-xl border-2 transition-all ${
                 challengeDuration === option.value
-                  ? 'border-black dark:border-white bg-black dark:bg-white'
-                  : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'border-foreground bg-foreground/5'
+                  : 'border-border bg-card/50 hover:border-foreground/30'
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
-              <span
-                className={`font-medium ${
-                  challengeDuration === option.value
-                    ? 'text-white dark:text-black'
-                    : 'text-black dark:text-white'
-                }`}
-              >
+              <span className={`font-medium ${challengeDuration === option.value ? 'text-foreground' : 'text-foreground'}`}>
                 {option.label}
               </span>
             </motion.button>
@@ -111,39 +116,33 @@ export const QuizChallengeStep = ({
       </div>
 
       {/* Tried Approaches */}
-      <div className="space-y-4 max-w-md mx-auto">
-        <h3 className="text-xl font-bold text-black dark:text-white font-relative text-center">
+      <div className="space-y-4">
+        <h3 className="text-xl font-bold text-foreground font-relative text-center">
           What have you already tried?
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+        <p className="text-sm text-muted-foreground text-center">
           Select all that apply (optional)
         </p>
         <div className="space-y-3">
-          {approachOptions.map((approach) => {
+          {approachOptions.map((approach, index) => {
             const isSelected = triedApproaches.includes(approach);
             return (
               <motion.button
                 key={approach}
                 onClick={() => onApproachToggle(approach)}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + index * 0.05 }}
                 className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center gap-4 ${
                   isSelected
-                    ? 'border-black dark:border-white bg-black/5 dark:bg-white/5'
-                    : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'border-foreground bg-foreground/5'
+                    : 'border-border bg-card/50 hover:border-foreground/30'
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Checkbox
-                  checked={isSelected}
-                  className={`${
-                    isSelected
-                      ? 'bg-black dark:bg-white border-black dark:border-white'
-                      : 'bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-600'
-                  }`}
-                />
-                <span className={`text-sm font-medium text-black dark:text-white`}>
-                  {approach}
-                </span>
+                <Checkbox checked={isSelected} className={isSelected ? 'bg-foreground border-foreground' : 'bg-card border-border'} />
+                <span className="text-sm font-medium text-foreground">{approach}</span>
               </motion.button>
             );
           })}
@@ -151,4 +150,4 @@ export const QuizChallengeStep = ({
       </div>
     </motion.div>
   );
-};
+});
