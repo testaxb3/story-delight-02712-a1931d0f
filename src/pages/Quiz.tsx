@@ -214,7 +214,7 @@ export default function Quiz() {
         {/* Progress Bar & Header */}
         {showProgressBar && (
           <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-xl border-b border-border/50">
-            <div className="pt-safe-area-top">
+            <div className="pt-12 sm:pt-4">
               <div className="px-6 h-16 flex items-center gap-4">
                 {showBackButton && (
                   <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
@@ -230,7 +230,7 @@ export default function Quiz() {
         )}
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-24">
+        <div className="flex-1 flex items-center justify-center px-6 pt-32 sm:pt-24 pb-24">
           <AnimatePresence mode="wait">
             {quizState.showCountdown ? (
               <motion.div key="countdown" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.5 }} className="text-center">
