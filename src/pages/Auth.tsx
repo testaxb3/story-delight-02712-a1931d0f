@@ -84,18 +84,18 @@ const Auth = memo(function Auth() {
           toast.success('Welcome! Let\'s get you set up', {
             duration: 3000,
           });
-          // Small delay to ensure profile is loaded before navigation
+          // Wait for profile refetch to complete (300ms) + propagation buffer
           setTimeout(() => {
             navigate('/onboarding', { replace: true });
-          }, 200);
+          }, 600);
         } else {
           toast.success('Welcome back!', {
             duration: 3000,
           });
-          // Small delay to ensure profile is loaded before navigation
+          // Wait for profile refetch to complete (300ms) + propagation buffer
           setTimeout(() => {
             navigate('/', { replace: true });
-          }, 200);
+          }, 600);
         }
       }
     } catch (error: any) {
