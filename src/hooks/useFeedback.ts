@@ -27,14 +27,14 @@ export function useFeedback() {
    */
   const submitFeedback = useCallback(
     async (scriptId: string, outcome: FeedbackOutcome, notes?: string) => {
-      if (!user?.profileId) {
+      if (!user?.id) {
         throw new Error('User required to submit feedback');
       }
 
       setSubmitting(true);
       try {
         const payload: ScriptFeedbackInsert = {
-          user_id: user.profileId,
+          user_id: user.id,
           child_id: activeChild?.id || null, // Optional - can be null for backwards compatibility
           script_id: scriptId,
           outcome,
@@ -65,7 +65,7 @@ export function useFeedback() {
    */
   const getFeedbackStats = useCallback(
     async (scriptId: string): Promise<FeedbackStats> => {
-      if (!user?.profileId) {
+      if (!user?.id) {
         return {
           totalCount: 0,
           workedCount: 0,
@@ -81,7 +81,7 @@ export function useFeedback() {
           .from('script_feedback')
           .select('outcome')
           .eq('script_id', scriptId)
-          .eq('user_id', user.profileId);
+          .eq('user_id', user.id);
 
         // Filter by child_id if available
         if (activeChild?.id) {
@@ -119,14 +119,14 @@ export function useFeedback() {
         setLoading(false);
       }
     },
-    [user?.profileId, activeChild?.id]
+    [user?.id, activeChild?.id]
   );
 
   /**
    * Get user's complete feedback history for current child
    */
   const getUserFeedbackHistory = useCallback(async (): Promise<ScriptFeedback[]> => {
-    if (!user?.profileId) {
+    if (!user?.id) {
       return [];
     }
 
@@ -135,7 +135,7 @@ export function useFeedback() {
       let query = supabase
         .from('script_feedback')
         .select('*')
-        .eq('user_id', user.profileId);
+        .eq('user_id', user.id);
 
       // Filter by child_id if available
       if (activeChild?.id) {
@@ -153,14 +153,14 @@ export function useFeedback() {
     } finally {
       setLoading(false);
     }
-  }, [user?.profileId, activeChild?.id]);
+  }, [user?.id, activeChild?.id]);
 
   /**
    * Get feedback for a specific script
    */
   const getScriptFeedback = useCallback(
     async (scriptId: string): Promise<ScriptFeedback[]> => {
-      if (!user?.profileId) {
+      if (!user?.id) {
         return [];
       }
 
@@ -170,7 +170,7 @@ export function useFeedback() {
           .from('script_feedback')
           .select('*')
           .eq('script_id', scriptId)
-          .eq('user_id', user.profileId);
+          .eq('user_id', user.id);
 
         // Filter by child_id if available
         if (activeChild?.id) {
@@ -189,14 +189,14 @@ export function useFeedback() {
         setLoading(false);
       }
     },
-    [user?.profileId, activeChild?.id]
+    [user?.id, activeChild?.id]
   );
 
   /**
    * Get aggregated feedback stats across all scripts for recommendations
    */
   const getAllFeedbackStats = useCallback(async () => {
-    if (!user?.profileId) {
+    if (!user?.id) {
       return new Map<string, FeedbackStats>();
     }
 
@@ -205,7 +205,7 @@ export function useFeedback() {
       let query = supabase
         .from('script_feedback')
         .select('script_id, outcome')
-        .eq('user_id', user.profileId);
+        .eq('user_id', user.id);
 
       // Filter by child_id if available
       if (activeChild?.id) {
@@ -252,7 +252,7 @@ export function useFeedback() {
     } finally {
       setLoading(false);
     }
-  }, [user?.profileId, activeChild?.id]);
+  }, [user?.id, activeChild?.id]);
 
   return {
     submitFeedback,
