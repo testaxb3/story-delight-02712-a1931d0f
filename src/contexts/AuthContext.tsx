@@ -58,18 +58,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('[AuthContext] Auth state change:', event, 'userId:', session?.user?.id, 'email:', session?.user?.email);
+        
         // Handle token refresh errors gracefully
         if (event === 'TOKEN_REFRESHED') {
           // PERFORMANCE: Token refresh handled silently
+          return; // Don't update session on refresh to prevent re-renders
         }
 
         if (event === 'SIGNED_OUT') {
+          console.log('[AuthContext] User signed out');
           setSession(null);
           setAuthLoading(false);
           return;
         }
 
-        setSession(session);
+        // Only update session if it actually changed
+        setSession(prevSession => {
+          const isDifferent = prevSession?.user?.id !== session?.user?.id;
+          if (isDifferent) {
+            console.log('[AuthContext] Session updated from', prevSession?.user?.id, 'to', session?.user?.id);
+          }
+          return session;
+        });
         
         // Ensure user scaffolding on sign in (fallback safety check)
         if (event === 'SIGNED_IN' && session?.user) {
@@ -90,6 +101,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('[AuthContext] Initial session check:', session?.user?.id, session?.user?.email);
       setSession(session);
       setAuthLoading(false);
       
@@ -103,7 +115,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log('[AuthContext] Cleaning up subscription');
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {

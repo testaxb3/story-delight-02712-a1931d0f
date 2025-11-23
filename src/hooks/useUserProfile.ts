@@ -101,12 +101,11 @@ export function useUserProfile(userId: string | undefined, email: string | undef
       }
     },
     enabled: !!userId && !!email,
-    staleTime: 0, // ✅ FIX: Always fetch fresh data (no cache staleness)
-    gcTime: 1 * 60 * 1000, // 1 minute cache
+    staleTime: 30 * 1000, // Cache for 30 seconds to prevent duplicate fetches
+    gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     retry: 1,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchInterval: 10 * 1000, // ✅ FIX: Refetch every 10s to catch database updates
+    refetchOnMount: false, // Don't refetch on every mount
+    refetchOnWindowFocus: false, // Don't refetch on window focus to prevent session conflicts
   });
 }
 
