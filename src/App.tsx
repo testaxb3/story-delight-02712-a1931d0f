@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 const PWAOnboarding = lazy(() => import("./pages/PWAOnboarding"));
 const PWAInstall = lazy(() => import("./pages/PWAInstall"));
 const PWACheck = lazy(() => import("./pages/PWACheck"));
+const ThemeSelection = lazy(() => import("./pages/ThemeSelection"));
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
 const Scripts = lazy(() => import("./pages/Scripts"));
@@ -102,6 +103,7 @@ function AppContent() {
         <Route path="/onboarding" element={<ProtectedRoute><PWAOnboarding /></ProtectedRoute>} />
         <Route path="/pwa-install" element={<ProtectedRoute><PWAInstall /></ProtectedRoute>} />
         <Route path="/pwa-check" element={<ProtectedRoute><PWACheck /></ProtectedRoute>} />
+        <Route path="/theme-selection" element={<ProtectedRoute><ThemeSelection /></ProtectedRoute>} />
         <Route
           path="/refund"
           element={

@@ -35,7 +35,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
   
   // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
-  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check'];
+  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
   console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
@@ -45,6 +45,15 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!pwaFlowCompleted && !isPWARoute && !isQuizRoute) {
     console.log('[ProtectedRoute] ⚠️ PWA flow não completado - redirecionando para /pwa-install');
     return <Navigate to="/pwa-install" replace />;
+  }
+
+  // 🎨 Theme Selection Check: If PWA flow completed but theme not selected, redirect to theme selection
+  const themeSelected = localStorage.getItem('theme_selected') === 'true';
+  const isThemeRoute = location.pathname === '/theme-selection';
+
+  if (pwaFlowCompleted && !themeSelected && !isThemeRoute && !isQuizRoute) {
+    console.log('[ProtectedRoute] ⚠️ Tema não selecionado - redirecionando para /theme-selection');
+    return <Navigate to="/theme-selection" replace />;
   }
 
   // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
