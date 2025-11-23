@@ -135,7 +135,7 @@ export default function CommunityFeed() {
     
     const { data, error } = await supabase
       .from('community_members')
-      .select('id, user_id, role, profiles(name, photo_url)')
+      .select('id, user_id, role, profiles!inner(name, photo_url)')
       .eq('community_id', currentCommunity.id)
       .order('role', { ascending: true });
 
