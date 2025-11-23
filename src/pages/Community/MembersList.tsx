@@ -35,8 +35,12 @@ export default function MembersList() {
   }, [communityId, user?.profileId]);
 
   const loadMembers = async () => {
-    if (!communityId) return;
+    if (!communityId) {
+      console.log('MembersList: No communityId provided');
+      return;
+    }
 
+    console.log('MembersList: Loading members for community:', communityId);
     setLoading(true);
 
     const { data, error } = await supabase
@@ -56,8 +60,10 @@ export default function MembersList() {
       .order('role', { ascending: true });
 
     if (error) {
-      console.error('Error loading members:', error);
+      console.error('MembersList: Error loading members:', error);
+      toast.error('Failed to load members');
     } else if (data) {
+      console.log('MembersList: Loaded members:', data);
       setMembers(data as any);
     }
 
@@ -72,7 +78,7 @@ export default function MembersList() {
       .select('role')
       .eq('community_id', communityId)
       .eq('user_id', user.profileId)
-      .single();
+      .maybeSingle();
 
     setIsLeader(data?.role === 'leader');
   };
