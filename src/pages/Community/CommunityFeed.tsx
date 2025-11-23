@@ -307,15 +307,65 @@ export default function CommunityFeed() {
   const handleAddReaction = async (emoji: string) => {
     if (!selectedPostId || !user?.profileId) return;
     
-    // TODO: Implement reaction logic in database
-    console.log('Add reaction:', emoji, 'to post:', selectedPostId);
+    try {
+      // Check if reaction already exists
+      const { data: existing } = await supabase
+        .from('group_reactions')
+        .select('id')
+        .eq('post_id', selectedPostId)
+        .eq('user_id', user.profileId)
+        .eq('emoji', emoji)
+        .single();
+
+      if (existing) {
+        // Remove reaction if already exists
+        const { error } = await supabase
+          .from('group_reactions')
+          .delete()
+          .eq('id', existing.id);
+        
+        if (error) throw error;
+        toast.success('Reaction removed');
+      } else {
+        // Add new reaction
+        const { error } = await supabase
+          .from('group_reactions')
+          .insert({
+            post_id: selectedPostId,
+            user_id: user.profileId,
+            emoji: emoji,
+          });
+        
+        if (error) throw error;
+        toast.success('Reaction added!');
+      }
+
+      // Reload posts to show updated reaction count
+      await loadPosts();
+    } catch (error: any) {
+      toast.error(`Error: ${error.message}`);
+    }
   };
 
   const handleAddComment = async (content: string) => {
-    if (!selectedPostId || !user?.profileId) return;
+    if (!selectedPostId || !user?.profileId || !content.trim()) return;
     
-    // TODO: Implement comment logic in database
-    console.log('Add comment:', content, 'to post:', selectedPostId);
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: selectedPostId,
+          user_id: user.profileId,
+          content: content.trim(),
+        });
+      
+      if (error) throw error;
+      
+      toast.success('Comment added!');
+      await loadPosts();
+    } catch (error: any) {
+      toast.error(`Error: ${error.message}`);
+    }
   };
 
   const handleImageSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {

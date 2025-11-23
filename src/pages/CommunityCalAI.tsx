@@ -39,27 +39,8 @@ export default function CommunityCalAI() {
     const onboardingComplete = (profile?.name && profile?.photo_url) || profile?.community_onboarding_completed || false;
     setHasCompletedOnboarding(onboardingComplete);
 
-    // Check if user belongs to any community
-    const { data: membership } = await supabase
-      .from('community_members')
-      .select('community_id, communities!inner(id, name, logo_emoji, logo_url, invite_code)')
-      .eq('user_id', user.profileId)
-      .limit(1)
-      .single();
-
-    if (membership?.communities && !inviteCode) {
-      // Redirect to feed with the community they belong to
-      const communityData = Array.isArray(membership.communities) 
-        ? membership.communities[0] 
-        : membership.communities;
-      
-      if (communityData) {
-        navigate('/community/feed', { 
-          state: { communityId: communityData.id },
-          replace: true 
-        });
-      }
-    } else if (inviteCode && onboardingComplete) {
+    // Only handle deep link if invite code is present
+    if (inviteCode && onboardingComplete) {
       handleDeepLink(inviteCode);
     }
   };
