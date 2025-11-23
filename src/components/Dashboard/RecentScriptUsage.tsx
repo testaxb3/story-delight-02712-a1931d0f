@@ -1,9 +1,10 @@
-import { Clock, BookOpen } from 'lucide-react';
+import { Clock } from 'lucide-react';
 import { GradientText } from '@/components/common/GradientText';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
 import type { RecentScript } from '@/hooks/useDashboardStats';
+import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 
 interface RecentScriptUsageProps {
   recentScripts: RecentScript[];
@@ -45,6 +46,12 @@ export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScri
     return colors[category] || 'bg-muted/10 text-muted-foreground border-border';
   };
 
+  // Get category emoji
+  const getCategoryEmoji = (category: string) => {
+    const categoryKey = category.toLowerCase().replace(/\s+/g, '_');
+    return CATEGORY_EMOJIS[categoryKey] || '🧠';
+  };
+
   return (
     <div className="card-elevated p-6 rounded-2xl animate-fade-in">
       {/* Header */}
@@ -62,9 +69,9 @@ export const RecentScriptUsage = ({ recentScripts, loading = false }: RecentScri
             key={script.id}
             className="flex items-center gap-3 p-3 rounded-xl bg-muted/20 hover:bg-muted/30 transition-all duration-200 hover:scale-[1.01] hover:translate-x-1 border border-border/50 cursor-pointer"
           >
-            {/* Icon */}
-            <div className="p-2 rounded-lg bg-gradient-primary transition-transform hover:rotate-12">
-              <BookOpen className="w-4 h-4 text-white" />
+            {/* Emoji */}
+            <div className="text-2xl transition-transform hover:scale-110">
+              {getCategoryEmoji(script.scriptCategory)}
             </div>
 
             {/* Content */}

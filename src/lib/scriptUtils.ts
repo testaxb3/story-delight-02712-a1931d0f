@@ -30,6 +30,11 @@ export const CATEGORY_EMOJIS: Record<string, string> = {
   morning_routines: '☀️',
   social: '👥',
   hygiene: '🪥',
+  homework: '📚',
+  learning: '🧠',
+  school: '🎒',
+  public_behavior: '🌍',
+  daily_responsibilities: '✅',
 };
 
 /**
