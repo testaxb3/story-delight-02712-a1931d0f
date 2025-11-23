@@ -127,13 +127,13 @@ export const QuizChallengeStep = memo(({
           {approachOptions.map((approach, index) => {
             const isSelected = triedApproaches.includes(approach);
             return (
-              <motion.button
+              <motion.div
                 key={approach}
                 onClick={() => onApproachToggle(approach)}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.05 }}
-                className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center gap-4 ${
+                className={`w-full p-4 rounded-xl border-2 transition-all text-left flex items-center gap-4 cursor-pointer ${
                   isSelected
                     ? 'border-foreground bg-foreground/5'
                     : 'border-border bg-card/50 hover:border-foreground/30'
@@ -141,9 +141,17 @@ export const QuizChallengeStep = memo(({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Checkbox checked={isSelected} className={isSelected ? 'bg-foreground border-foreground' : 'bg-card border-border'} />
+                <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                  isSelected ? 'bg-foreground border-foreground' : 'bg-card border-border'
+                }`}>
+                  {isSelected && (
+                    <svg className="w-3 h-3 text-background" viewBox="0 0 12 12" fill="none">
+                      <path d="M10 3L4.5 8.5L2 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
                 <span className="text-sm font-medium text-foreground">{approach}</span>
-              </motion.button>
+              </motion.div>
             );
           })}
         </div>
