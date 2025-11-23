@@ -3343,6 +3343,14 @@ export type Database = {
           total_chapters: number
         }[]
       }
+      get_post_reactions: {
+        Args: { p_post_id: string }
+        Returns: {
+          count: number
+          emoji: string
+          users: Json
+        }[]
+      }
       get_profile_data: {
         Args: { profile_user_id: string }
         Returns: {
@@ -3487,6 +3495,10 @@ export type Database = {
       }
       sync_bonus_progress: {
         Args: { p_ebook_id: string; p_user_id: string }
+        Returns: Json
+      }
+      toggle_group_reaction: {
+        Args: { p_emoji: string; p_post_id: string }
         Returns: Json
       }
       update_reading_time: {
