@@ -381,20 +381,17 @@ function BonusesContent() {
             categories={categories}
           />
 
-          {/* PERFORMANCE: AnimatePresence for smooth transitions - no layout shift */}
-          <AnimatePresence mode="wait" initial={false}>
+          {/* PERFORMANCE: AnimatePresence removed to prevent scroll jumps during tab switching */}
+          <div className="min-h-[60vh]">
             <motion.div
-              key={`content-${activeCategory}-${searchQuery}`}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
               transition={{ duration: 0.15 }}
-              style={{ willChange: 'opacity' }}
-              layout="position"
+              className="w-full"
             >
               {/* Unlocked Bonuses Grid */}
-              {unlockedBonuses.length > 0 && (
-                <div className="mb-8">
+                {unlockedBonuses.length > 0 && (
+                  <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
                     <h2 className="text-xl font-semibold text-white">Available Now</h2>
                     <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
@@ -443,9 +440,8 @@ function BonusesContent() {
                   </div>
                 </div>
               )}
-            </motion.div>
-          </AnimatePresence>
-
+                        </motion.div>
+                      </div>
           {/* Empty State */}
           {sortedBonuses.length === 0 && !isFetching && (
             <div className="text-center py-16">

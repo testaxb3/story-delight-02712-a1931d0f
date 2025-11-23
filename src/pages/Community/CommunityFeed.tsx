@@ -394,17 +394,24 @@ export default function CommunityFeed() {
 
   return (
     <MainLayout>
-      <div className="pb-24 bg-background min-h-screen">
+      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-24 relative overflow-hidden">
+        {/* Ambient Background Glows */}
+        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+
+        {/* Fixed Header Background for Status Bar */}
+        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
+
         {/* Enhanced Header with glassmorphism */}
         <motion.div 
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="sticky top-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-sm"
+          className="sticky top-0 z-50 px-4 py-4"
         >
-          <div className="px-4 py-4">
+          <div className="relative z-50 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg p-2">
             <div className="flex items-center justify-between">
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <DropdownMenuTrigger className="flex items-center gap-3 hover:opacity-80 transition-opacity px-2">
                   {currentCommunity?.logo_url ? (
                     <img src={currentCommunity.logo_url} alt="" className="w-10 h-10 rounded-full ring-2 ring-orange-500/20" />
                   ) : (
@@ -457,7 +464,7 @@ export default function CommunityFeed() {
           </div>
         </motion.div>
 
-        <div className="px-4 py-6 space-y-6">
+        <div className="px-4 py-2 space-y-6 relative z-10">
           {/* Enhanced Leaderboard with CalAI aesthetic */}
           <AnimatePresence>
             {currentCommunity && members.length > 0 && (
@@ -465,17 +472,20 @@ export default function CommunityFeed() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="bg-gradient-to-br from-card to-card/95 border border-border/50 rounded-2xl p-5 shadow-lg"
+                className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl relative overflow-hidden"
               >
+                {/* Background gradient accent */}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl -z-10" />
+                
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-base flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center">
+                  <h3 className="font-bold text-base flex items-center gap-2 text-white">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
                       <Crown className="w-4 h-4 text-white" />
                     </div>
                     Community Stars
                   </h3>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-xs font-medium">
-                    <Sparkles className="w-3.5 h-3.5 text-orange-500" />
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/80 backdrop-blur-sm">
+                    <Users className="w-3.5 h-3.5 text-yellow-400" />
                     {members.length} members
                   </div>
                 </div>
@@ -544,18 +554,19 @@ export default function CommunityFeed() {
               <motion.div 
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 px-6"
+                className="text-center py-20 px-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-xl"
               >
-                <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-orange-100 to-orange-200 dark:from-orange-900/20 dark:to-orange-800/20 flex items-center justify-center">
-                  <MessageCircle className="w-10 h-10 text-orange-500" />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500/20 to-orange-600/20 flex items-center justify-center shadow-lg shadow-orange-500/10">
+                  <MessageCircle className="w-10 h-10 text-orange-400" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">No posts yet</h3>
-                <p className="text-muted-foreground mb-6">Be the first to share your parenting win!</p>
+                <h3 className="text-xl font-bold mb-2 text-white">No posts yet</h3>
+                <p className="text-white/60 mb-8 max-w-xs mx-auto">Be the first to share your parenting win with the community!</p>
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowPostModal(true)}
-                  className="px-6 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-shadow"
+                  className="px-8 py-4 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl font-bold shadow-lg hover:shadow-orange-500/25 transition-shadow flex items-center gap-2 mx-auto"
                 >
+                  <Plus className="w-5 h-5" />
                   Share Your Story
                 </motion.button>
               </motion.div>
@@ -566,32 +577,32 @@ export default function CommunityFeed() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: idx * 0.05 }}
-                  className="bg-gradient-to-br from-card to-card/95 border border-border/50 rounded-2xl p-5 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl relative overflow-hidden group hover:bg-white/[0.07] transition-all duration-300"
                 >
                   {/* Enhanced Header */}
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center font-bold text-sm relative shadow-md ring-2 ring-purple-500/20">
+                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center font-bold text-sm relative shadow-lg shadow-purple-500/20">
                       {post.profiles?.photo_url ? (
-                        <img src={post.profiles.photo_url} alt="" className="w-full h-full rounded-full object-cover" />
+                        <img src={post.profiles.photo_url} alt="" className="w-full h-full rounded-2xl object-cover" />
                       ) : (
                         <span className="text-white">{getInitials(post.profiles?.username || post.profiles?.name || 'U')}</span>
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="font-bold text-sm">{post.profiles?.username || post.profiles?.name || 'User'}</p>
+                        <p className="font-bold text-sm text-white">{post.profiles?.username || post.profiles?.name || 'User'}</p>
                         {post.profiles?.brain_profile && (
                           <span className={cn(
-                            "text-xs px-2.5 py-0.5 rounded-full font-semibold",
-                            post.profiles.brain_profile === 'INTENSE' && "bg-gradient-to-r from-orange-500/10 to-orange-600/10 text-orange-600 dark:text-orange-400 border border-orange-500/20",
-                            post.profiles.brain_profile === 'DISTRACTED' && "bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/20",
-                            post.profiles.brain_profile === 'DEFIANT' && "bg-gradient-to-r from-red-500/10 to-red-600/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                            "text-[10px] px-2 py-0.5 rounded-lg font-bold uppercase tracking-wider",
+                            post.profiles.brain_profile === 'INTENSE' && "bg-orange-500/20 text-orange-400 border border-orange-500/30",
+                            post.profiles.brain_profile === 'DISTRACTED' && "bg-blue-500/20 text-blue-400 border border-blue-500/30",
+                            post.profiles.brain_profile === 'DEFIANT' && "bg-red-500/20 text-red-400 border border-red-500/30"
                           )}>
                             {post.profiles.brain_profile}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground font-medium">
+                      <p className="text-xs text-white/50 font-medium">
                         {new Date(post.created_at).toLocaleDateString(undefined, { 
                           month: 'short', 
                           day: 'numeric',
@@ -604,46 +615,46 @@ export default function CommunityFeed() {
 
                   {/* Enhanced Title */}
                   {post.title && (
-                    <h3 className="text-lg font-bold mb-3 leading-snug">{post.title}</h3>
+                    <h3 className="text-lg font-bold mb-3 leading-snug text-white/95">{post.title}</h3>
                   )}
 
                   {/* Enhanced Image with better styling */}
                   {post.image_url && (
-                    <div className="relative mb-4 -mx-1 overflow-hidden rounded-xl">
+                    <div className="relative mb-4 -mx-1 overflow-hidden rounded-2xl ring-1 ring-white/10">
                       <img 
                         src={post.image_url} 
                         alt="" 
-                        className="w-full object-cover max-h-[320px] hover:scale-105 transition-transform duration-300"
+                        className="w-full object-cover max-h-[320px]"
                       />
                     </div>
                   )}
 
                   {/* Enhanced Content */}
                   {post.content && (
-                    <p className="text-sm mb-4 text-foreground/80 leading-relaxed">{post.content}</p>
+                    <p className="text-sm mb-4 text-white/70 leading-relaxed">{post.content}</p>
                   )}
 
                   {/* Enhanced Metrics with CalAI style */}
                   {(post.script_used || post.duration_minutes || post.result_type) && (
                     <div className="flex items-center gap-2 mb-4 flex-wrap">
                       {post.script_used && (
-                        <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-blue-500/10 to-blue-600/10 text-blue-600 dark:text-blue-400 px-3 py-2 rounded-full border border-blue-500/20 font-semibold">
+                        <div className="flex items-center gap-2 text-xs bg-blue-500/10 text-blue-300 px-3 py-1.5 rounded-lg border border-blue-500/20 font-medium backdrop-blur-sm">
                           <span>🎯</span>
                           <span>{post.script_used}</span>
                         </div>
                       )}
                       {post.duration_minutes && (
-                        <div className="flex items-center gap-2 text-xs bg-gradient-to-r from-purple-500/10 to-purple-600/10 text-purple-600 dark:text-purple-400 px-3 py-2 rounded-full border border-purple-500/20 font-semibold">
+                        <div className="flex items-center gap-2 text-xs bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-500/20 font-medium backdrop-blur-sm">
                           <span>⏱️</span>
                           <span>{post.duration_minutes}min</span>
                         </div>
                       )}
                       {post.result_type && (
                         <div className={cn(
-                          "flex items-center gap-2 text-xs px-3 py-2 rounded-full border font-semibold",
-                          post.result_type === 'success' && "bg-gradient-to-r from-green-500/10 to-green-600/10 text-green-600 dark:text-green-400 border-green-500/20",
-                          post.result_type === 'partial' && "bg-gradient-to-r from-yellow-500/10 to-yellow-600/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20",
-                          post.result_type === 'needs_practice' && "bg-gradient-to-r from-orange-500/10 to-orange-600/10 text-orange-600 dark:text-orange-400 border-orange-500/20"
+                          "flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border font-medium backdrop-blur-sm",
+                          post.result_type === 'success' && "bg-green-500/10 text-green-300 border-green-500/20",
+                          post.result_type === 'partial' && "bg-yellow-500/10 text-yellow-300 border-yellow-500/20",
+                          post.result_type === 'needs_practice' && "bg-orange-500/10 text-orange-300 border-orange-500/20"
                         )}>
                           <TrendingUp className="w-3.5 h-3.5" />
                           <span>
@@ -657,22 +668,22 @@ export default function CommunityFeed() {
                   )}
 
                   {/* Enhanced Actions with better interaction feedback */}
-                  <div className="flex gap-2.5 pt-2 border-t border-border/50">
+                  <div className="flex gap-2.5 pt-2 border-t border-white/5">
                     <motion.button 
                       whileTap={{ scale: 0.97 }}
                       onClick={() => handleOpenReactions(post.id)}
-                      className="flex-1 h-11 rounded-xl bg-gradient-to-r from-muted to-muted/80 border border-border/50 flex items-center justify-center gap-2.5 hover:shadow-md transition-all font-semibold"
+                      className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
                     >
-                      <Heart className="w-4.5 h-4.5 text-orange-500" />
-                      <span className="text-sm">React</span>
+                      <Heart className="w-4 h-4 text-rose-500" />
+                      <span className="text-xs">React</span>
                     </motion.button>
                     <motion.button 
                       whileTap={{ scale: 0.97 }}
                       onClick={() => handleOpenReactions(post.id)}
-                      className="flex-1 h-11 rounded-xl bg-gradient-to-r from-muted to-muted/80 border border-border/50 flex items-center justify-center gap-2.5 hover:shadow-md transition-all font-semibold"
+                      className="flex-1 h-10 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 flex items-center justify-center gap-2.5 transition-all font-medium text-white/80"
                     >
-                      <MessageCircle className="w-4.5 h-4.5" />
-                      <span className="text-sm">Comment</span>
+                      <MessageCircle className="w-4 h-4 text-blue-400" />
+                      <span className="text-xs">Comment</span>
                     </motion.button>
                   </div>
                 </motion.div>
