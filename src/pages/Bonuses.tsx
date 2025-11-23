@@ -393,7 +393,7 @@ function BonusesContent() {
                 {unlockedBonuses.length > 0 && (
                   <div className="mb-8">
                   <div className="flex items-center gap-3 mb-4">
-                    <h2 className="text-xl font-semibold text-white">Available Now</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Available Now</h2>
                     <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
                       {unlockedBonuses.length}
                     </span>
@@ -419,7 +419,7 @@ function BonusesContent() {
               {lockedBonuses.length > 0 && (
                 <div className="mt-8">
                   <div className="flex items-center gap-3 mb-4">
-                    <h2 className="text-xl font-semibold text-white">Coming Soon</h2>
+                    <h2 className="text-xl font-semibold text-foreground">Coming Soon</h2>
                     <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs font-medium rounded-lg">
                       {lockedBonuses.length}
                     </span>

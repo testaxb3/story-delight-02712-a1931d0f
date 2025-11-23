@@ -64,7 +64,7 @@ export const BonusesHeader = memo(function BonusesHeader({
   return (
     <div className="mb-6 space-y-4">
       {/* Minimalist Title */}
-      <h1 className="text-3xl font-bold text-white px-1">Bonuses</h1>
+      <h1 className="text-3xl font-bold text-foreground px-1">Bonuses</h1>
 
       {/* Stats Grid - CalAI Style */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -79,16 +79,16 @@ export const BonusesHeader = memo(function BonusesHeader({
               </div>
             </div>
             <div className="flex items-baseline gap-1 mb-1">
-              <span className="text-2xl font-bold text-white">
+              <span className="text-2xl font-bold text-foreground">
                 {stat.value}
               </span>
               {stat.total && (
-                <span className="text-sm text-gray-500 font-medium">
+                <span className="text-sm text-muted-foreground font-medium">
                   /{stat.total}
                 </span>
               )}
             </div>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-muted-foreground">
               {stat.label}
             </p>
           </Card>
