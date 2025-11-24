@@ -13,76 +13,59 @@ interface BadgeStatsProps {
 }
 
 export const BadgeStats = memo(({ stats }: BadgeStatsProps) => {
-  const statCards = [
-    {
-      icon: Trophy,
-      label: 'Badges Unlocked',
-      value: `${stats.unlockedCount}/${stats.totalCount}`,
-      color: 'from-yellow-500 to-amber-500',
-      bgColor: 'bg-yellow-500/10'
-    },
-    {
-      icon: Target,
-      label: 'Completion',
-      value: `${stats.percentage}%`,
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-500/10'
-    },
-    {
-      icon: Flame,
-      label: 'Current Streak',
-      value: `${stats.currentStreak} days`,
-      color: 'from-orange-500 to-red-500',
-      bgColor: 'bg-orange-500/10'
-    },
-    {
-      icon: TrendingUp,
-      label: 'Longest Streak',
-      value: `${stats.longestStreak} days`,
-      color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-500/10'
-    }
-  ];
-
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      {statCards.map((stat, index) => {
-        const Icon = stat.icon;
-        
-        return (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.3 }}
-            className={`
-              relative overflow-hidden rounded-2xl border border-border
-              bg-card p-4 md:p-6
-              hover:shadow-lg transition-shadow duration-300
-            `}
-          >
-            {/* Background gradient */}
-            <div 
-              className={`absolute inset-0 opacity-5 bg-gradient-to-br ${stat.color}`} 
-            />
-
-            {/* Icon */}
-            <div className={`${stat.bgColor} w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-3 relative z-10`}>
-              <Icon className="w-5 h-5 md:w-6 md:h-6 text-foreground" />
+    <div className="grid grid-cols-2 gap-4">
+      {/* Day Streak */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-card rounded-2xl p-6 border border-border"
+      >
+        <div className="flex flex-col items-center text-center">
+          <div className="relative mb-3">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+              <Flame className="w-8 h-8 text-white" />
             </div>
+            {stats.currentStreak > 0 && (
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-background border-2 border-orange-500 rounded-full flex items-center justify-center text-xs font-bold">
+                {stats.currentStreak}
+              </div>
+            )}
+          </div>
+          <div className="text-sm font-semibold text-foreground mb-1">Day Streak</div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Flame className="w-3 h-3" />
+            <span>{stats.longestStreak} days</span>
+            <span className="text-muted-foreground/60">longest streak</span>
+          </div>
+        </div>
+      </motion.div>
 
-            {/* Value */}
-            <div className="relative z-10">
-              <p className="text-2xl md:text-3xl font-black text-foreground mb-1">
-                {stat.value}
-              </p>
-              <p className="text-xs md:text-sm text-muted-foreground font-medium">
-                {stat.label}
-              </p>
+      {/* Badges Earned */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.1 }}
+        className="bg-card rounded-2xl p-6 border border-border"
+      >
+        <div className="flex flex-col items-center text-center">
+          <div className="relative mb-3">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
+              <Trophy className="w-8 h-8 text-white" />
             </div>
-          </motion.div>
-        );
-      })}
+            {stats.unlockedCount > 0 && (
+              <div className="absolute -top-1 -right-1 w-6 h-6 bg-background border-2 border-purple-500 rounded-full flex items-center justify-center text-xs font-bold">
+                {stats.unlockedCount}
+              </div>
+            )}
+          </div>
+          <div className="text-sm font-semibold text-foreground mb-1">Badges earned</div>
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Trophy className="w-3 h-3" />
+            <span className="font-semibold text-foreground">{stats.unlockedCount}/{stats.totalCount} badges</span>
+          </div>
+        </div>
+      </motion.div>
     </div>
   );
 });
