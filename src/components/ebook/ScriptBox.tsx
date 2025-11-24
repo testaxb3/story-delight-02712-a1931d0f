@@ -58,6 +58,9 @@ export const ScriptBox = ({ content }: ScriptBoxProps) => {
   // Handle both string and array content
   let textContent = Array.isArray(content) ? content.join('\n') : content;
   
+  // Replace literal \n with actual newlines
+  textContent = textContent.replace(/\\n/g, '\n');
+  
   // Detect and format bullet points (•) by adding line breaks before each bullet
   if (textContent.includes('•') && !textContent.includes('\n•')) {
     textContent = textContent.replace(/\s*•\s*/g, '\n• ').trim();

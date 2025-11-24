@@ -176,17 +176,23 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
       {safeBlocks.map((block, index) => {
         switch (block.type) {
           case "heading":
+            let headingContent = typeof block.content === 'string' ? block.content : '';
+            headingContent = headingContent.replace(/\\n/g, '\n');
+            
             return (
               <h2
                 key={index}
                 className="font-display text-3xl md:text-4xl font-bold text-foreground mt-12 mb-6"
               >
-                {typeof block.content === 'string' && renderContent(block.content)}
+                {renderContent(headingContent)}
               </h2>
             );
 
           case "paragraph":
-            const paragraphContent = typeof block.content === 'string' ? block.content : '';
+            let paragraphContent = typeof block.content === 'string' ? block.content : '';
+            
+            // Replace literal \n with actual newlines
+            paragraphContent = paragraphContent.replace(/\\n/g, '\n');
             
             // Simply render with whitespace-pre-line to preserve all line breaks from database
             return (
@@ -201,15 +207,20 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
           case "list":
             return (
               <ul key={index} className="space-y-3 my-6 ml-6">
-                {Array.isArray(block.content) && block.content.map((item, itemIndex) => (
-                  <li
-                    key={itemIndex}
-                    className="text-lg leading-loose text-foreground/90 flex gap-3 select-text"
-                  >
-                    <span className="text-primary mt-1 flex-shrink-0">•</span>
-                    <span>{typeof item === 'string' && renderContent(item)}</span>
-                  </li>
-                ))}
+                {Array.isArray(block.content) && block.content.map((item, itemIndex) => {
+                  let listItem = typeof item === 'string' ? item : '';
+                  listItem = listItem.replace(/\\n/g, '\n');
+                  
+                  return (
+                    <li
+                      key={itemIndex}
+                      className="text-lg leading-loose text-foreground/90 flex gap-3 select-text"
+                    >
+                      <span className="text-primary mt-1 flex-shrink-0">•</span>
+                      <span className="whitespace-pre-line">{renderContent(listItem)}</span>
+                    </li>
+                  );
+                })}
               </ul>
             );
 
