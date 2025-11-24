@@ -20,7 +20,7 @@ const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 const getSystemTheme = (): "light" | "dark" => {
   if (typeof window === "undefined") {
-    return "dark";
+    return "light";
   }
 
   // Check if user has a stored preference in localStorage
@@ -29,8 +29,8 @@ const getSystemTheme = (): "light" | "dark" => {
     return storedTheme;
   }
 
-  // Default to dark theme for first-time users
-  return "dark";
+  // Default to light theme for first-time users
+  return "light";
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
