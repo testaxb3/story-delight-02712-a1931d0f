@@ -93,21 +93,22 @@ export const EbookReaderV2 = ({
 
   // Restore scroll position ONLY on initial mount
   useEffect(() => {
-    if (isInitialMount.current && initialScrollPosition > 0) {
-      setTimeout(() => {
-        window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
-        isInitialMount.current = false;
-      }, 100);
+    if (isInitialMount.current) {
+      if (initialScrollPosition > 0) {
+        setTimeout(() => {
+          window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
+        }, 100);
+      }
+      // Mark that initial mount is complete
+      isInitialMount.current = false;
     }
   }, [initialScrollPosition]);
 
   // ✅ CRITICAL: Force scroll to top when chapter changes
   useEffect(() => {
     if (!isInitialMount.current) {
-      // Force scroll to top with setTimeout to ensure it happens after render
-      setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'auto' });
-      }, 0);
+      // Scroll to top immediately when chapter changes
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [currentChapterIndex]);
 
