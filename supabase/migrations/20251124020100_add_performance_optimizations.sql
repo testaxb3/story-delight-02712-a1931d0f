@@ -44,18 +44,20 @@ GRANT EXECUTE ON FUNCTION get_user_streak(UUID) TO authenticated;
 -- =============================================================================
 -- Performance Index: Time-Based Badge Queries
 -- =============================================================================
--- Adds index for queries filtering on EXTRACT(HOUR FROM completed_at)
+-- Adds index for queries filtering on completed_at timestamp
 -- used by morning_person and night_owl special badges.
 --
--- Without this index, special badge calculations do full table scans.
+-- Note: We index completed_at directly instead of EXTRACT(HOUR FROM completed_at)
+-- because EXTRACT() is not IMMUTABLE and cannot be used in indexes.
+-- Queries can still filter efficiently using WHERE clauses on completed_at.
 
-CREATE INDEX IF NOT EXISTS idx_tracker_days_user_hour
-ON tracker_days(user_id, (EXTRACT(HOUR FROM completed_at)))
+CREATE INDEX IF NOT EXISTS idx_tracker_days_user_completed_at
+ON tracker_days(user_id, completed_at)
 WHERE completed = true;
 
-COMMENT ON INDEX idx_tracker_days_user_hour IS
+COMMENT ON INDEX idx_tracker_days_user_completed_at IS
 'Optimizes time-based badge queries (morning_person, night_owl) by indexing
-the hour extraction used in special badge requirements.';
+completed_at timestamp. Queries can filter by time ranges efficiently.';
 
 -- =============================================================================
 -- Composite Index: User + Date Lookups
