@@ -85,6 +85,21 @@ export const EbookReaderV2 = ({
     }
   }, [initialScrollPosition]);
 
+  // ✅ CRITICAL: Force scroll to top when chapter changes
+  useEffect(() => {
+    if (!isInitialMount.current) {
+      // Scroll to top immediately
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      
+      // Double-check after a brief delay
+      const timeout = setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }, 50);
+      
+      return () => clearTimeout(timeout);
+    }
+  }, [currentChapterIndex]);
+
   // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
     const handleScroll = () => {
@@ -132,12 +147,8 @@ export const EbookReaderV2 = ({
   const handleNext = useCallback(() => {
     if (currentChapterIndex < chapters.length - 1) {
       const nextIndex = currentChapterIndex + 1;
+      console.log('📖 Next chapter:', nextIndex);
       setCurrentChapterIndex(nextIndex);
-      // Force immediate scroll to top - multiple attempts for reliability
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-      });
       onChapterChange?.(nextIndex);
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
@@ -145,23 +156,15 @@ export const EbookReaderV2 = ({
   const handlePrevious = useCallback(() => {
     if (currentChapterIndex > 0) {
       const prevIndex = currentChapterIndex - 1;
+      console.log('📖 Previous chapter:', prevIndex);
       setCurrentChapterIndex(prevIndex);
-      // Force immediate scroll to top - multiple attempts for reliability
-      window.scrollTo(0, 0);
-      requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-      });
       onChapterChange?.(prevIndex);
     }
   }, [currentChapterIndex, onChapterChange]);
 
   const handleChapterSelect = useCallback((index: number) => {
+    console.log('📖 Select chapter:', index);
     setCurrentChapterIndex(index);
-    // Force immediate scroll to top - multiple attempts for reliability
-    window.scrollTo(0, 0);
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-    });
     onChapterChange?.(index);
   }, [onChapterChange]);
 
