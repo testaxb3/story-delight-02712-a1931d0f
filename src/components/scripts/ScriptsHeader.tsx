@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart3, TrendingUp } from 'lucide-react';
+import logo from '@/assets/logo.svg';
 
 interface ScriptsHeaderProps {
   totalScripts: number;
@@ -33,9 +34,7 @@ export function ScriptsHeader({
   return (
     <div className="flex items-start justify-between gap-4 flex-wrap">
       <div>
-        <h1 className="text-3xl sm:text-4xl font-black mb-3 bg-gradient-to-r from-primary via-purple-600 to-pink-600 bg-clip-text text-transparent">
-          NEP Scripts
-        </h1>
+        <img src={logo} alt="NEP" className="h-16 w-auto mb-3" />
         <div className="flex flex-wrap items-center gap-2">
           <Badge
             variant="secondary"
