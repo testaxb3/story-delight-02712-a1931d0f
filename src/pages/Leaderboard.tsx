@@ -34,7 +34,10 @@ export default function Leaderboard() {
         ...entry,
         rank: index + 1
       })) as (LeaderboardEntry & { rank: number })[];
-    }
+    },
+    staleTime: 0, // Always refetch
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   const getIconAndColor = (rank: number) => {
