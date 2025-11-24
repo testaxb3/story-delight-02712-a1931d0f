@@ -53,6 +53,7 @@ export const EbookReaderV2 = ({
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const scrollTimeout = useRef<NodeJS.Timeout>();
+  const isInitialMount = useRef(true);
   
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const { highlights, getChapterHighlights } = useHighlights();
@@ -74,14 +75,15 @@ export const EbookReaderV2 = ({
     }
   }, []);
 
-  // Restore scroll position when component mounts
+  // Restore scroll position ONLY on initial mount
   useEffect(() => {
-    if (initialScrollPosition > 0) {
+    if (isInitialMount.current && initialScrollPosition > 0) {
       setTimeout(() => {
         window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
+        isInitialMount.current = false;
       }, 100);
     }
-  }, []);
+  }, [initialScrollPosition]);
 
   // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
@@ -109,13 +111,13 @@ export const EbookReaderV2 = ({
         }
       }
 
-      // Debounced scroll position save (500ms for better responsiveness)
+      // Debounced scroll position save (2000ms to reduce server load)
       if (scrollTimeout.current) {
         clearTimeout(scrollTimeout.current);
       }
       scrollTimeout.current = setTimeout(() => {
         onScrollPositionChange?.(currentScrollY);
-      }, 500);
+      }, 2000);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -131,9 +133,11 @@ export const EbookReaderV2 = ({
     if (currentChapterIndex < chapters.length - 1) {
       const nextIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(nextIndex);
-      // Force immediate scroll to top
-      window.scrollTo({ top: 0, behavior: "instant" });
-      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
+      // Force immediate scroll to top - multiple attempts for reliability
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
       onChapterChange?.(nextIndex);
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
@@ -142,18 +146,22 @@ export const EbookReaderV2 = ({
     if (currentChapterIndex > 0) {
       const prevIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(prevIndex);
-      // Force immediate scroll to top
-      window.scrollTo({ top: 0, behavior: "instant" });
-      setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
+      // Force immediate scroll to top - multiple attempts for reliability
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
       onChapterChange?.(prevIndex);
     }
   }, [currentChapterIndex, onChapterChange]);
 
   const handleChapterSelect = useCallback((index: number) => {
     setCurrentChapterIndex(index);
-    // Force immediate scroll to top
-    window.scrollTo({ top: 0, behavior: "instant" });
-    setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 10);
+    // Force immediate scroll to top - multiple attempts for reliability
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
     onChapterChange?.(index);
   }, [onChapterChange]);
 
@@ -165,12 +173,12 @@ export const EbookReaderV2 = ({
 
   return (
     <div 
-      className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom))] font-serif"
+      className="min-h-screen bg-background pb-[calc(6rem+env(safe-area-inset-bottom))] font-serif"
       style={{ fontSize: `${fontSize}rem` }}
     >
       {/* Smart Header - Slides in/out */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 pt-[env(safe-area-inset-top)] ${
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 pt-[calc(0.75rem+env(safe-area-inset-top))] ${
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
@@ -227,7 +235,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-[calc(6rem+env(safe-area-inset-top))] pb-8 max-w-3xl">
+      <main className="container mx-auto px-4 pt-[calc(5rem+env(safe-area-inset-top))] pb-24 max-w-3xl">
         <ProgressBar 
           current={currentChapterIndex + 1}
           total={chapters.length}
