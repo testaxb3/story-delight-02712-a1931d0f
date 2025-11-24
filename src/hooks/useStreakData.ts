@@ -56,65 +56,38 @@ export function useStreakData(userId?: string, childId?: string) {
       setLoading(true);
 
       try {
-        // Get all tracker days, ordered by date
+        // IMPROVED: Get authoritative streak data from database function (source of truth)
+        const { data: streakStats, error: streakError } = await supabase
+          .rpc('get_user_streak', { p_user_id: userId });
+
+        if (streakError) {
+          console.error('Error fetching streak stats:', streakError);
+          // Fallback to old method if RPC fails
+        }
+
+        // Use database-calculated values as source of truth (matches badge logic)
+        const currentStreak = streakStats?.[0]?.current_streak || 0;
+        const longestStreak = streakStats?.[0]?.longest_streak || 0;
+        const totalDays = streakStats?.[0]?.total_days || 0;
+
+        // Get tracker days for UI visualization (last 30 days)
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
         const { data: trackerDays, error } = await supabase
           .from('tracker_days')
           .select('date, completed, completed_at')
           .eq('user_id', userId)
+          .gte('date', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
           .order('date', { ascending: false });
 
         if (error) {
-          console.error('Error fetching streak data:', error);
+          console.error('Error fetching tracker days:', error);
           setLoading(false);
           return;
         }
 
-        // Calculate current streak
-        let currentStreak = 0;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        if (trackerDays && trackerDays.length > 0) {
-          // Check if streak is still active (completed today or yesterday)
-          const mostRecentDate = new Date(trackerDays[0].date);
-          mostRecentDate.setHours(0, 0, 0, 0);
-
-          const daysDiff = Math.floor((today.getTime() - mostRecentDate.getTime()) / (1000 * 60 * 60 * 24));
-
-          if (daysDiff <= 1 && trackerDays[0].completed) {
-            // Streak is active, count consecutive days
-            for (const day of trackerDays) {
-              if (day.completed) {
-                currentStreak++;
-              } else {
-                break;
-              }
-            }
-          }
-        }
-
-        // Calculate longest streak
-        let longestStreak = 0;
-        let tempStreak = 0;
-
-        if (trackerDays) {
-          for (const day of trackerDays) {
-            if (day.completed) {
-              tempStreak++;
-              longestStreak = Math.max(longestStreak, tempStreak);
-            } else {
-              tempStreak = 0;
-            }
-          }
-        }
-
-        // Total completed days
-        const totalDays = trackerDays?.filter(d => d.completed).length || 0;
-
-        // Generate last 30 days data
+        // Generate last 30 days data for visualization
         const last30Days: StreakDay[] = [];
         for (let i = 29; i >= 0; i--) {
           const date = new Date(today);

@@ -12,7 +12,7 @@ interface Badge {
 
 interface UserBadge {
   badge_id: string;
-  earned_at: string;
+  unlocked_at: string;
 }
 
 interface UserStats {
@@ -96,7 +96,7 @@ export const useUserAchievements = (userId: string | undefined) => {
       // Fetch user's unlocked badges
       const { data: userBadges, error: userBadgesError } = await supabase
         .from('user_badges')
-        .select('badge_id, earned_at')
+        .select('badge_id, unlocked_at')
         .eq('user_id', userId);
 
       if (userBadgesError) throw userBadgesError;
@@ -113,7 +113,7 @@ export const useUserAchievements = (userId: string | undefined) => {
       // Create a map of unlocked badges
       const unlockedMap = new Map<string, string>();
       userBadges?.forEach((ub: UserBadge) => {
-        unlockedMap.set(ub.badge_id, ub.earned_at);
+        unlockedMap.set(ub.badge_id, ub.unlocked_at);
       });
 
       // Combine badge data with unlock status and progress
