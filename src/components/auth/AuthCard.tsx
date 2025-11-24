@@ -67,6 +67,11 @@ export const AuthCard = memo(function AuthCard({
                 ? 'Start your journey with NEP System'
                 : 'Continue your transformation'}
             </p>
+            {isSignUp && (
+              <p className="text-xs text-amber-600 dark:text-amber-500 mt-2 font-medium">
+                Use the same email from your purchase
+              </p>
+            )}
           </motion.div>
 
           {/* Form */}
