@@ -154,7 +154,7 @@ export default function DashboardCalAI() {
           transition={{ duration: 0.4 }}
           className="relative z-50 px-6 pt-[calc(env(safe-area-inset-top)+8px)] pb-6 flex items-center justify-between"
         >
-          <img src={logo} alt="NEP" className="h-8 w-auto" />
+          <img src={logo} alt="NEP" className="h-12 w-auto" />
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
