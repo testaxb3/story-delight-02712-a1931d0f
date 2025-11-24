@@ -106,24 +106,23 @@ const EbookReaderV2Page = () => {
         completedChapters={completedChapters}
         onChapterChange={(index) => {
           console.log('💾 Saving chapter progress:', index, 'ebook ID:', ebook?.id);
-          if (ebook?.id) {
-            updateCurrentChapter.mutate(index);
-          } else {
-            console.error('❌ Cannot save: ebook.id is undefined');
+          if (!ebook?.id) {
+            console.error('❌ Cannot save chapter: ebook.id is undefined');
+            return;
           }
+          updateCurrentChapter.mutate(index);
         }}
         onScrollPositionChange={(position) => {
-          if (ebook?.id) {
-            updateScrollPosition.mutate(position);
-          }
+          if (!ebook?.id) return;
+          updateScrollPosition.mutate(position);
         }}
         onChapterComplete={(index) => {
           console.log('✅ Marking chapter complete:', index);
-          if (ebook?.id) {
-            markChapterComplete.mutate(index);
-          } else {
+          if (!ebook?.id) {
             console.error('❌ Cannot mark complete: ebook.id is undefined');
+            return;
           }
+          markChapterComplete.mutate(index);
         }}
         onClose={handleClose}
       />

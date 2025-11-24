@@ -104,15 +104,10 @@ export const EbookReaderV2 = ({
   // ✅ CRITICAL: Force scroll to top when chapter changes
   useEffect(() => {
     if (!isInitialMount.current) {
-      // Scroll to top immediately
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      
-      // Double-check after a brief delay
-      const timeout = setTimeout(() => {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-      }, 50);
-      
-      return () => clearTimeout(timeout);
+      // Force scroll to top with setTimeout to ensure it happens after render
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }, 0);
     }
   }, [currentChapterIndex]);
 
@@ -201,7 +196,15 @@ export const EbookReaderV2 = ({
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
+        <div className="container mx-auto px-4 py-2 max-w-5xl" style={{ paddingTop: 'calc(0.5rem + env(safe-area-inset-top))' }}>
+          <ProgressBar 
+            current={currentChapterIndex + 1}
+            total={chapters.length}
+            percentage={progress}
+          />
+        </div>
+        
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl">
           <div className="flex items-center gap-2 min-w-0 flex-shrink">
             <Button
               variant="ghost"
@@ -254,13 +257,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-20 pb-24 max-w-3xl">
-        <ProgressBar 
-          current={currentChapterIndex + 1}
-          total={chapters.length}
-          percentage={progress}
-        />
-
+      <main className="container mx-auto px-4 pt-32 pb-24 max-w-3xl">
         <ChapterCoverV2
           chapterNumber={currentChapterIndex + 1}
           title={currentChapter?.title || 'Untitled Chapter'}
