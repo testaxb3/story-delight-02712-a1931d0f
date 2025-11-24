@@ -559,7 +559,7 @@ function ScriptsContent() {
         {/* Fixed Header Background for Status Bar */}
         <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
 
-        <div className="relative z-50 px-4 pt-[calc(env(safe-area-inset-top)+24px)] space-y-8">
+        <div className="relative z-50 px-4 pt-[calc(env(safe-area-inset-top)+8px)] space-y-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <ScriptsHeader
             totalScripts={brainScopedScripts.length}

@@ -36,6 +36,7 @@ const Community = lazy(() => import("./pages/CommunityCalAI"));
 const CreateGroupName = lazy(() => import("./pages/Community/CreateGroupName"));
 const AddGroupLogo = lazy(() => import("./pages/Community/AddGroupLogo"));
 const CommunityFeed = lazy(() => import("./pages/Community/CommunityFeed"));
+const CreatePost = lazy(() => import("./pages/Community/CreatePost"));
 const MembersList = lazy(() => import("./pages/Community/MembersList"));
 const JoinCommunity = lazy(() => import("./pages/Community/JoinCommunity"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
@@ -181,6 +182,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <CommunityFeed />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/community/create-post"
+          element={
+            <ProtectedRoute>
+              <CreatePost />
             </ProtectedRoute>
           }
         />

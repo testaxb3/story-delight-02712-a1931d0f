@@ -79,8 +79,9 @@ export function PostReactionsSheet({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[70vh]">
+      <DrawerContent className="max-h-[70vh]" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}>
         <DrawerHeader className="border-b border-border pb-4">
+          <DrawerTitle className="sr-only">Add Reaction or Comment</DrawerTitle>
           <div className="w-12 h-1.5 bg-muted rounded-full mx-auto mb-4" />
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-muted">
@@ -94,9 +95,9 @@ export function PostReactionsSheet({
           </Tabs>
         </DrawerHeader>
 
-        <div className="flex-1 overflow-y-auto px-4">
+        <div className="flex-1 overflow-y-auto px-4" style={{ paddingBottom: '120px' }}>
           {activeTab === 'reactions' && (
-            <div className="py-4 space-y-6 pb-20">
+            <div className="py-4 space-y-6">
               {/* Search */}
               <div className="relative sticky top-0 bg-background pb-2 z-10">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -156,8 +157,8 @@ export function PostReactionsSheet({
 
         {/* Category Navigation (only visible on reactions tab) */}
         {activeTab === 'reactions' && (
-          <div className="border-t border-border bg-background">
-            <div className="flex items-center justify-around px-2 py-2">
+          <div className="border-t border-border bg-background absolute bottom-0 left-0 right-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}>
+            <div className="flex items-center justify-around px-2 py-3">
               {Object.keys(EMOJI_CATEGORIES).map((category) => (
                 <button
                   key={category}
@@ -183,7 +184,7 @@ export function PostReactionsSheet({
 
         {/* Comment Input (only visible on comments tab) */}
         {activeTab === 'comments' && (
-          <div className="border-t border-border p-4 bg-background">
+          <div className="border-t border-border p-4 bg-background absolute bottom-0 left-0 right-0" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 100px)' }}>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center font-bold text-sm flex-shrink-0">
                 {userAvatar ? (

@@ -46,75 +46,70 @@ export const CommunityHeader = React.memo(function CommunityHeader({
   }, [navigate]);
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="sticky top-0 z-50 px-4 py-4"
+      className="sticky top-0 z-50 px-4 pt-2 pb-2 flex items-center justify-between gap-3"
     >
-      <div className="relative z-50 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-lg p-2">
-        <div className="flex items-center justify-between">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-3 hover:opacity-80 transition-opacity px-2">
+      <div className="flex-1 flex justify-center pl-12"> {/* Added padding to offset the right button and center the pill visually if needed, or just flex-1 */}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="outline-none">
+            <div className="bg-white dark:bg-white/10 backdrop-blur-xl border border-transparent dark:border-white/10 rounded-full shadow-md px-4 py-2 flex items-center gap-3 hover:scale-[1.02] transition-transform active:scale-95">
               {currentCommunity?.logo_url ? (
-                <img 
-                  src={currentCommunity.logo_url} 
-                  alt="" 
-                  className="w-10 h-10 rounded-full ring-2 ring-orange-500/20" 
+                <img
+                  src={currentCommunity.logo_url}
+                  alt=""
+                  className="w-8 h-8 rounded-full ring-2 ring-orange-500/20"
                 />
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-xl shadow-lg">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-sm shadow-sm text-white">
                   {currentCommunity?.logo_emoji || '💪'}
                 </div>
               )}
-              <div className="flex flex-col items-start">
-                <span className="font-bold text-base text-white">
-                  {currentCommunity?.name || 'Select Community'}
-                </span>
-                <span className="text-xs text-white/60">
-                  {memberCount} members
-                </span>
-              </div>
-              <ChevronDown className="w-4 h-4 text-white/60" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-64">
-              {communities.map((community) => (
-                <DropdownMenuItem
-                  key={community.id}
-                  onClick={() => onCommunityChange(community)}
-                  className="flex items-center gap-2"
-                >
-                  {community.logo_url ? (
-                    <img src={community.logo_url} alt="" className="w-6 h-6 rounded-full" />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-sm">
-                      {community.logo_emoji}
-                    </div>
-                  )}
-                  <span className="flex-1">{community.name}</span>
-                  {currentCommunity?.id === community.id && (
-                    <Check className="w-4 h-4" />
-                  )}
-                </DropdownMenuItem>
-              ))}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleJoinClick}>
-                Join Community
+              <span className="font-bold text-sm text-[#1A1A1A] dark:text-white leading-tight truncate max-w-[150px]">
+                {currentCommunity?.name || 'Select Community'}
+              </span>
+              <ChevronDown className="w-4 h-4 text-[#6B7280] dark:text-white/60" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="center" className="w-64 mt-2">
+            {communities.map((community) => (
+              <DropdownMenuItem
+                key={community.id}
+                onClick={() => onCommunityChange(community)}
+                className="flex items-center gap-2"
+              >
+                {community.logo_url ? (
+                  <img src={community.logo_url} alt="" className="w-6 h-6 rounded-full" />
+                ) : (
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-sm text-white">
+                    {community.logo_emoji}
+                  </div>
+                )}
+                <span className="flex-1 truncate">{community.name}</span>
+                {currentCommunity?.id === community.id && (
+                  <Check className="w-4 h-4" />
+                )}
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleCreateClick}>
-                Create Community
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={handleMembersClick}
-            className="w-11 h-11 rounded-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
-          >
-            <Users className="w-5 h-5" />
-          </motion.button>
-        </div>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleJoinClick}>
+              Join Community
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleCreateClick}>
+              Create Community
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
+
+      <motion.button
+        whileTap={{ scale: 0.95 }}
+        onClick={handleMembersClick}
+        className="w-12 h-12 rounded-full bg-white dark:bg-white/10 backdrop-blur-xl shadow-md flex items-center justify-center hover:scale-105 transition-transform active:scale-95 flex-shrink-0"
+      >
+        <Users className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
+      </motion.button>
     </motion.div>
   );
 });

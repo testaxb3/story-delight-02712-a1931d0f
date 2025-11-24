@@ -13,12 +13,17 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className={cn("bg-card rounded-[24px] p-6 flex items-center justify-between", className)}>
+    <div className={cn(
+      "bg-white dark:bg-card rounded-[32px] p-6 flex items-center justify-between",
+      "border border-[#E5E7EB] dark:border-transparent",
+      "shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none",
+      className
+    )}>
       {/* Left side - Big number */}
       <div>
-        <p className="text-6xl font-bold mb-2">{scriptsUsed}</p>
-        <p className="text-sm text-muted-foreground font-medium">Scripts Used</p>
-        <p className="text-xs text-muted-foreground mt-1">of {scriptsTotal} total</p>
+        <p className="text-6xl font-bold mb-2 text-[#1A1A1A] dark:text-white">{scriptsUsed}</p>
+        <p className="text-sm text-[#6B7280] dark:text-muted-foreground font-medium">Scripts Used</p>
+        <p className="text-xs text-[#9CA3AF] dark:text-muted-foreground mt-1">of {scriptsTotal} total</p>
       </div>
 
       {/* Right side - Progress Ring with Fire Icon */}
@@ -32,7 +37,7 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
             stroke="currentColor"
             strokeWidth="6"
             fill="none"
-            className="text-muted/20"
+            className="text-[#F3F4F6] dark:text-muted/20"
           />
           {/* Progress circle */}
           <circle
@@ -48,7 +53,7 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
             className="transition-all duration-1000 ease-out"
           />
         </svg>
-        
+
         {/* Center icon */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">

@@ -8,13 +8,13 @@ interface EmptyStateProps {
 
 export const EmptyState = React.memo(function EmptyState({ onCreatePost }: EmptyStateProps) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
-      className="text-center py-20 px-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-xl"
+      className="text-center py-20 px-6 bg-white dark:bg-white/5 backdrop-blur-xl border border-[#E5E7EB] dark:border-white/10 rounded-3xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] dark:shadow-xl"
     >
-      <motion.div 
+      <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.1, type: "spring" }}
@@ -22,21 +22,21 @@ export const EmptyState = React.memo(function EmptyState({ onCreatePost }: Empty
       >
         <MessageCircle className="w-10 h-10 text-orange-400" />
       </motion.div>
-      
-      <motion.h3 
+
+      <motion.h3
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="text-xl font-bold mb-2 text-white"
+        className="text-xl font-bold mb-2 text-[#1A1A1A] dark:text-white"
       >
         No posts yet
       </motion.h3>
-      
-      <motion.p 
+
+      <motion.p
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="text-white/60 mb-8 max-w-xs mx-auto"
+        className="text-[#6B7280] dark:text-white/60 mb-8 max-w-xs mx-auto"
       >
         Be the first to share your parenting win with the community!
       </motion.p>

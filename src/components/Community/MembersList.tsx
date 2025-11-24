@@ -24,59 +24,45 @@ export const MembersList = React.memo(function MembersList({ members }: MembersL
   if (members.length === 0) return null;
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl relative overflow-hidden"
+      className="relative"
     >
-      {/* Background gradient accent */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-500/10 to-orange-500/10 rounded-full blur-3xl -z-10" />
-      
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-bold text-base flex items-center gap-2 text-white">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/20">
-            <Crown className="w-4 h-4 text-white" />
-          </div>
-          Community Stars
-        </h3>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-white/80 backdrop-blur-sm">
-          <Users className="w-3.5 h-3.5 text-yellow-400" />
-          {members.length} members
-        </div>
-      </div>
-      
-      <div className="flex gap-4 overflow-x-auto pb-2 -mx-1 px-1 scrollbar-hide">
+      <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
         {sortedMembers.map((member, idx) => (
-          <motion.div 
+          <motion.div
             key={member.id}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: idx * 0.05, duration: 0.2 }}
-            className="flex flex-col items-center gap-2 flex-shrink-0"
+            transition={{ delay: idx * 0.03, duration: 0.2 }}
+            className="flex flex-col items-center gap-1.5 flex-shrink-0"
           >
             <div className="relative">
               {member.role === 'leader' && (
-                <motion.div 
+                <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 0.3, type: "spring" }}
-                  className="absolute -top-2 left-1/2 -translate-x-1/2 z-10"
+                  transition={{ delay: 0.2, type: "spring" }}
+                  className="absolute -top-1 -left-1 z-10"
                 >
-                  <Crown className="w-5 h-5 text-yellow-500 fill-yellow-500 drop-shadow-lg" />
+                  <div className="w-5 h-5 rounded-full bg-yellow-400 flex items-center justify-center">
+                    <Crown className="w-3 h-3 text-white fill-white drop-shadow-sm" />
+                  </div>
                 </motion.div>
               )}
               <div className={cn(
-                "w-[72px] h-[72px] rounded-full flex items-center justify-center font-bold text-lg shadow-xl ring-2 ring-offset-2 ring-offset-background transition-transform hover:scale-105",
-                member.role === 'leader' 
-                  ? "bg-gradient-to-br from-yellow-400 to-yellow-600 ring-yellow-500/20" 
-                  : "bg-gradient-to-br from-purple-500 to-purple-600 ring-purple-500/20"
+                "w-16 h-16 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white dark:ring-background transition-transform hover:scale-105 overflow-hidden",
+                member.role === 'leader'
+                  ? "bg-gradient-to-br from-pink-400 to-pink-600"
+                  : "bg-gradient-to-br from-orange-400 to-orange-600"
               )}>
                 {member.photo_url ? (
-                  <img 
-                    src={member.photo_url} 
-                    alt="" 
-                    className="w-full h-full rounded-full object-cover" 
+                  <img
+                    src={member.photo_url}
+                    alt=""
+                    className="w-full h-full object-cover"
                   />
                 ) : (
                   <span className="text-white">
@@ -85,13 +71,10 @@ export const MembersList = React.memo(function MembersList({ members }: MembersL
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-1.5 bg-gradient-to-r from-orange-500/10 to-orange-600/10 px-2.5 py-1 rounded-full border border-orange-500/20">
-              <Flame className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-xs font-bold text-orange-600 dark:text-orange-400">0</span>
+            <div className="flex items-center gap-1 bg-white dark:bg-white/10 px-2 py-0.5 rounded-full border border-[#E5E7EB] dark:border-white/20">
+              <Flame className="w-3 h-3 text-orange-500" />
+              <span className="text-xs font-bold text-[#1A1A1A] dark:text-white">{member.score || 0}</span>
             </div>
-            <span className="text-xs font-medium text-foreground/80 max-w-[72px] truncate text-center">
-              {member.name?.split(' ')[0] || 'User'}
-            </span>
           </motion.div>
         ))}
       </div>

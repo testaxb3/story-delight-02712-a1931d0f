@@ -56,11 +56,11 @@ const CommunityCard = memo(function CommunityCard({
       whileHover={{ scale: 1.02, y: -4 }}
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
-      className="relative rounded-3xl overflow-hidden group cursor-pointer shadow-lg hover:shadow-2xl transition-shadow"
+      className="relative rounded-3xl overflow-hidden group cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:shadow-lg dark:hover:shadow-2xl transition-all"
     >
       {/* Gradient background */}
       <div className={`absolute inset-0 bg-gradient-to-br ${community.gradient}`}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent dark:from-black/60 dark:via-black/20 dark:to-transparent" />
       </div>
       
       {/* Emoji decoration */}
@@ -221,10 +221,10 @@ export const CommunityLanding = memo(function CommunityLanding({
   const skeletonArray = useMemo(() => [0, 1, 2], []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-background/95 flex flex-col relative overflow-hidden">
-      {/* Ambient background glows */}
-      <div className="fixed top-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gradient-to-b dark:from-background dark:via-background dark:to-background/95 flex flex-col relative overflow-hidden">
+      {/* Ambient background glows - Only Dark Mode */}
+      <div className="hidden dark:block fixed top-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="hidden dark:block fixed bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
 
       {/* Top Section - Community Cards Grid */}
       <div className="flex-1 relative z-10" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
@@ -267,7 +267,7 @@ export const CommunityLanding = memo(function CommunityLanding({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.5 }}
-        className="relative z-10 bg-gradient-to-t from-background via-background to-transparent flex flex-col items-center justify-center px-6 py-12"
+        className="relative z-10 bg-gradient-to-t from-[#F8F9FA] via-[#F8F9FA] to-transparent dark:from-background dark:via-background dark:to-transparent flex flex-col items-center justify-center px-6 py-12"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
       >
         <div className="max-w-md w-full text-center">
@@ -279,7 +279,7 @@ export const CommunityLanding = memo(function CommunityLanding({
             className="flex items-center justify-center gap-3 mb-4"
           >
             <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent leading-tight">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:bg-gradient-to-r dark:from-foreground dark:to-foreground/70 dark:bg-clip-text dark:text-transparent leading-tight">
               Parenting is easier together
             </h1>
           </motion.div>
@@ -289,7 +289,7 @@ export const CommunityLanding = memo(function CommunityLanding({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.4 }}
-            className="text-base sm:text-lg text-muted-foreground mb-8 leading-relaxed"
+            className="text-base sm:text-lg text-[#6B7280] dark:text-muted-foreground mb-8 leading-relaxed"
           >
             Join a community and see how other parents are using NEP scripts
           </motion.p>

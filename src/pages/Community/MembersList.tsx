@@ -112,19 +112,19 @@ export default function MembersList() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0d0d0d] text-white">
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-[#0d0d0d] text-[#1A1A1A] dark:text-white">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-[#0d0d0d] border-b border-[#2a2a2a]">
+      <div className="fixed top-0 left-0 right-0 z-10 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-[#F8F9FA] dark:bg-[#0d0d0d] border-b border-[#E5E7EB] dark:border-[#2a2a2a]">
         <div className="flex items-center justify-between">
           <button
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:bg-[#333] transition-colors"
+            className="w-10 h-10 rounded-full bg-white dark:bg-[#2a2a2a] flex items-center justify-center hover:bg-[#F3F4F6] dark:hover:bg-[#333] transition-colors shadow-sm dark:shadow-none"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 text-[#1A1A1A] dark:text-white" />
           </button>
           <div className="flex-1 text-center">
-            <h1 className="text-xl font-bold">Members</h1>
-            <p className="text-sm text-gray-400">{members.length} members</p>
+            <h1 className="text-xl font-bold text-[#1A1A1A] dark:text-white">Members</h1>
+            <p className="text-sm text-[#6B7280] dark:text-gray-400">{members.length} members</p>
           </div>
           <div className="w-10" />
         </div>
@@ -134,41 +134,41 @@ export default function MembersList() {
       <div className="pt-[calc(env(safe-area-inset-top)+100px)] pb-[calc(env(safe-area-inset-bottom)+20px)] px-4">
         {loading ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">Loading members...</p>
+            <p className="text-[#6B7280] dark:text-gray-400">Loading members...</p>
           </div>
         ) : members.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400">No members yet</p>
+            <p className="text-[#6B7280] dark:text-gray-400">No members yet</p>
           </div>
         ) : (
           <div className="space-y-3">
             {members.map((member) => (
               <div
                 key={member.id}
-                className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl p-4 flex items-center gap-3"
+                className="bg-white dark:bg-[#1a1a1a] border border-[#E5E7EB] dark:border-[#2a2a2a] rounded-xl p-4 flex items-center gap-3 shadow-sm dark:shadow-none"
               >
                 <div className="relative flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.brain_profile)} flex items-center justify-center font-bold`}>
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.brain_profile)} flex items-center justify-center font-bold text-white overflow-hidden`}>
                     {member.photo_url ? (
-                      <img src={member.photo_url} alt="" className="w-full h-full rounded-full" />
+                      <img src={member.photo_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       getInitials(member.name || 'U')
                     )}
                   </div>
                   {member.role === 'leader' && (
-                    <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center">
-                      <Crown className="w-3 h-3 text-white" />
+                    <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center shadow-sm">
+                      <Crown className="w-3 h-3 text-white fill-white" />
                     </div>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold truncate">{member.name || 'User'}</p>
+                  <p className="font-semibold truncate text-[#1A1A1A] dark:text-white">{member.name || 'User'}</p>
                   {member.username && (
-                    <p className="text-sm text-gray-400 truncate">@{member.username}</p>
+                    <p className="text-sm text-[#6B7280] dark:text-gray-400 truncate">@{member.username}</p>
                   )}
                   {member.brain_profile && (
-                    <span className="inline-block mt-1 px-2 py-0.5 bg-accent/10 text-accent rounded-full text-xs">
+                    <span className="inline-block mt-1 px-2 py-0.5 bg-orange-500/10 text-orange-600 dark:text-orange-400 rounded-full text-xs font-medium">
                       {member.brain_profile}
                     </span>
                   )}

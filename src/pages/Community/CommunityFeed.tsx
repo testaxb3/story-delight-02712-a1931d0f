@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { PostReactionsSheet } from '@/components/Community/PostReactionsSheet';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -118,13 +118,13 @@ export default function CommunityFeed() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-b from-background via-background to-primary/5 dark:to-primary/10 pb-24 relative overflow-hidden">
-        {/* Ambient Background Glows */}
-        <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
-        <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gradient-to-b dark:from-background dark:via-background dark:to-primary/5 dark:dark:to-primary/10 pb-24 relative overflow-hidden">
+        {/* Ambient Background Glows - Only Dark Mode */}
+        <div className="hidden dark:block fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
+        <div className="hidden dark:block fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
         {/* Fixed Header Background for Status Bar */}
-        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background to-transparent pointer-events-none" />
+        <div className="fixed top-0 left-0 right-0 z-40 h-20 bg-gradient-to-b from-[#F8F9FA] via-[#F8F9FA]/80 to-transparent dark:from-background dark:via-background dark:to-transparent pointer-events-none" />
 
         {/* Header */}
         <CommunityHeader
@@ -134,7 +134,7 @@ export default function CommunityFeed() {
           onCommunityChange={setCurrentCommunity}
         />
 
-        <div className="px-4 py-2 space-y-6 relative z-10">
+        <div className="px-4 space-y-4 relative z-10">
           {/* Members List */}
           <AnimatePresence mode="wait">
             {membersLoading ? (
@@ -184,6 +184,21 @@ export default function CommunityFeed() {
         onAddReaction={handleAddReaction}
         onAddComment={() => {}}
       />
+
+      {/* Floating Add Post Button */}
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => navigate('/community/create-post', { state: { communityId: currentCommunity?.id } })}
+        className="fixed right-6 w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center z-50 hover:shadow-xl hover:shadow-orange-500/40 transition-shadow"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
+      >
+        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+        </svg>
+      </motion.button>
     </MainLayout>
   );
 }

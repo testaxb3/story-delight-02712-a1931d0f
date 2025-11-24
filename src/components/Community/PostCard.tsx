@@ -69,41 +69,31 @@ export const PostCard = React.memo(function PostCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
-      className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-5 shadow-xl relative overflow-hidden group hover:bg-white/[0.07] transition-all duration-300"
+      className="bg-white dark:bg-[#1A1A1A] rounded-3xl p-5 shadow-sm border border-transparent dark:border-white/5 relative overflow-hidden group transition-all duration-300"
     >
       {/* Header */}
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center font-bold text-sm relative shadow-lg shadow-purple-500/20">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-sm relative shadow-sm text-white shrink-0">
           {post.profiles?.photo_url ? (
-            <img 
-              src={post.profiles.photo_url} 
-              alt="" 
-              className="w-full h-full rounded-2xl object-cover" 
+            <img
+              src={post.profiles.photo_url}
+              alt=""
+              className="w-full h-full rounded-full object-cover"
             />
           ) : (
-            <span className="text-white">
+            <span>
               {getInitials(post.profiles?.username || post.profiles?.name || 'U')}
             </span>
           )}
         </div>
-        
+
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <p className="font-bold text-sm text-white">
+          <div className="flex items-center gap-2">
+            <p className="font-bold text-base text-[#1A1A1A] dark:text-white leading-tight">
               {post.profiles?.username || post.profiles?.name || 'User'}
             </p>
-            {post.profiles?.brain_profile && (
-              <span className={cn(
-                "text-[10px] px-2 py-0.5 rounded-lg font-bold uppercase tracking-wider",
-                post.profiles.brain_profile === 'INTENSE' && "bg-orange-500/20 text-orange-400 border border-orange-500/30",
-                post.profiles.brain_profile === 'DISTRACTED' && "bg-blue-500/20 text-blue-400 border border-blue-500/30",
-                post.profiles.brain_profile === 'DEFIANT' && "bg-red-500/20 text-red-400 border border-red-500/30"
-              )}>
-                {post.profiles.brain_profile}
-              </span>
-            )}
           </div>
-          <p className="text-xs text-white/50 font-medium">
+          <p className="text-xs text-[#9CA3AF] dark:text-white/40 font-medium mt-0.5">
             {formattedDate}
           </p>
         </div>
@@ -114,9 +104,9 @@ export const PostCard = React.memo(function PostCard({
             <DropdownMenuTrigger asChild>
               <motion.button
                 whileTap={{ scale: 0.95 }}
-                className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 flex items-center justify-center transition-colors"
               >
-                <MoreVertical className="w-4 h-4 text-white/60" />
+                <MoreVertical className="w-5 h-5 text-[#9CA3AF] dark:text-white/40" />
               </motion.button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -135,17 +125,17 @@ export const PostCard = React.memo(function PostCard({
 
       {/* Title */}
       {post.title && (
-        <h3 className="text-lg font-bold mb-3 leading-snug text-white/95">
+        <h3 className="text-lg font-bold mb-2 leading-snug text-[#1A1A1A] dark:text-white">
           {post.title}
         </h3>
       )}
 
       {/* Image */}
       {post.image_url && (
-        <div className="relative mb-4 -mx-1 overflow-hidden rounded-2xl ring-1 ring-white/10">
-          <img 
-            src={post.image_url} 
-            alt="" 
+        <div className="relative mb-4 -mx-1 overflow-hidden rounded-2xl">
+          <img
+            src={post.image_url}
+            alt=""
             className="w-full object-cover max-h-[320px]"
             loading="lazy"
           />
@@ -154,83 +144,87 @@ export const PostCard = React.memo(function PostCard({
 
       {/* Content */}
       {post.content && (
-        <p className="text-sm mb-4 text-white/70 leading-relaxed">
+        <p className="text-sm mb-5 text-[#4B5563] dark:text-white/70 leading-relaxed">
           {post.content}
         </p>
       )}
 
-      {/* Metrics */}
+      {/* Metrics Row - Styled like the reference */}
       {(post.script_used || post.duration_minutes || post.result_type) && (
-        <div className="flex items-center gap-2 mb-4 flex-wrap">
+        <div className="flex items-start gap-8 mb-5 border-t border-gray-100 dark:border-white/5 pt-4">
           {post.script_used && (
-            <div className="flex items-center gap-2 text-xs bg-blue-500/10 text-blue-300 px-3 py-1.5 rounded-lg border border-blue-500/20 font-medium backdrop-blur-sm">
-              <span>🎯</span>
-              <span>{post.script_used}</span>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-[#9CA3AF] dark:text-white/40 uppercase tracking-wide">
+                <span>🎯</span>
+                <span>Script</span>
+              </div>
+              <span className="font-bold text-[#1A1A1A] dark:text-white text-sm">
+                {post.script_used}
+              </span>
             </div>
           )}
+          
           {post.duration_minutes && (
-            <div className="flex items-center gap-2 text-xs bg-purple-500/10 text-purple-300 px-3 py-1.5 rounded-lg border border-purple-500/20 font-medium backdrop-blur-sm">
-              <span>⏱️</span>
-              <span>{post.duration_minutes}min</span>
+            <div className="flex flex-col gap-1">
+               <div className="flex items-center gap-1.5 text-xs font-medium text-[#9CA3AF] dark:text-white/40 uppercase tracking-wide">
+                <span>⏱️</span>
+                <span>Time</span>
+              </div>
+              <span className="font-bold text-[#1A1A1A] dark:text-white text-sm">
+                {post.duration_minutes}m
+              </span>
             </div>
           )}
+
           {post.result_type && (
-            <div className={cn(
-              "flex items-center gap-2 text-xs px-3 py-1.5 rounded-lg border font-medium backdrop-blur-sm",
-              post.result_type === 'success' && "bg-green-500/10 text-green-300 border-green-500/20",
-              post.result_type === 'partial' && "bg-yellow-500/10 text-yellow-300 border-yellow-500/20",
-              post.result_type === 'needs_practice' && "bg-orange-500/10 text-orange-300 border-orange-500/20"
-            )}>
-              <TrendingUp className="w-3.5 h-3.5" />
-              <span>
-                {post.result_type === 'success' && 'Success'}
-                {post.result_type === 'partial' && 'Partial'}
-                {post.result_type === 'needs_practice' && 'Practice'}
+            <div className="flex flex-col gap-1">
+               <div className="flex items-center gap-1.5 text-xs font-medium text-[#9CA3AF] dark:text-white/40 uppercase tracking-wide">
+                <TrendingUp className="w-3 h-3" />
+                <span>Result</span>
+              </div>
+              <span className="font-bold text-[#1A1A1A] dark:text-white text-sm capitalize">
+                {post.result_type.replace('_', ' ')}
               </span>
             </div>
           )}
         </div>
       )}
 
-      {/* Reactions Display */}
+      {/* Reactions Display - Small row above footer if any */}
       {reactions.length > 0 && (
-        <div className="flex items-center gap-2 flex-wrap px-1 mb-3">
+        <div className="flex items-center gap-2 flex-wrap mb-4">
           {reactions
             .sort((a, b) => b.count - a.count)
             .slice(0, 5)
             .map((reaction, idx) => (
-              <motion.div
+              <div
                 key={`${reaction.emoji}-${idx}`}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: idx * 0.05 }}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/10"
               >
-                <span className="text-sm">{reaction.emoji}</span>
-                <span className="text-xs font-bold text-white/80">{reaction.count}</span>
-              </motion.div>
+                <span className="text-xs">{reaction.emoji}</span>
+                <span className="text-[10px] font-bold text-gray-600 dark:text-gray-300">{reaction.count}</span>
+              </div>
             ))}
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-3 border-t border-white/5">
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+      {/* Footer Actions */}
+      <div className="flex items-center pt-3 border-t border-gray-100 dark:border-white/5">
+        <button
           onClick={handleReact}
-          className="flex-1 h-11 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center gap-2 font-medium text-sm text-white/80 transition-colors border border-white/10"
+          className="flex-1 flex items-center justify-center gap-2 py-2 text-[#6B7280] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-colors"
         >
-          <span className="text-base">❤️</span>
-          <span>React</span>
-        </motion.button>
-        <motion.button
-          whileTap={{ scale: 0.95 }}
+          <span className="text-lg opacity-70">☺</span>
+          <span className="font-medium text-sm">React</span>
+        </button>
+        <div className="w-px h-6 bg-gray-100 dark:bg-white/10" /> {/* Small vertical divider */}
+        <button
           onClick={handleComment}
-          className="flex-1 h-11 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center gap-2 font-medium text-sm text-white/80 transition-colors border border-white/10"
+          className="flex-1 flex items-center justify-center gap-2 py-2 text-[#6B7280] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-colors"
         >
-          <MessageCircle className="w-4 h-4" />
-          <span>Comment</span>
-        </motion.button>
+          <MessageCircle className="w-4.5 h-4.5 opacity-70" />
+          <span className="font-medium text-sm">Comment</span>
+        </button>
       </div>
     </motion.div>
   );
