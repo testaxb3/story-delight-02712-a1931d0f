@@ -116,7 +116,7 @@ export function useCommunityFeed(communityId: string | null) {
       )
       .subscribe();
 
-    // Subscribe to reaction changes (usando post_likes ao invés de group_reactions)
+    // Subscribe to reaction changes
     const reactionsChannel = supabase
       .channel(`post_likes:${communityId}`)
       .on(
@@ -135,11 +135,18 @@ export function useCommunityFeed(communityId: string | null) {
       )
       .subscribe();
 
+    // Listen for manual reload events
+    const handleReload = () => {
+      loadPosts();
+    };
+    window.addEventListener('reload-posts', handleReload);
+
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(reactionsChannel);
+      window.removeEventListener('reload-posts', handleReload);
     };
-  }, [communityId, loadPosts]);
+  }, [communityId, loadPosts, posts]);
 
   return {
     posts,
