@@ -44,8 +44,9 @@ const categoryColors: Record<string, string> = {
 };
 
 export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: BadgeCardProps) => {
-  const isNew = badge.unlockedAt && 
-    new Date().getTime() - new Date(badge.unlockedAt).getTime() < 24 * 60 * 60 * 1000;
+  const isRecentlyUnlocked = (unlockedDate: string) => {
+    return new Date().getTime() - new Date(unlockedDate).getTime() < 7 * 24 * 60 * 60 * 1000;
+  };
 
   return (
     <TooltipProvider>
@@ -57,61 +58,60 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
             whileHover={{ scale: badge.unlocked ? 1.05 : 1 }}
             className="relative flex flex-col items-center gap-2"
           >
-            {/* Badge Circle */}
-            <div
-              className={`
-                ${sizeClasses[size]} 
-                rounded-full 
-                flex items-center justify-center 
-                relative
-                transition-all duration-300
-                ${badge.unlocked 
-                  ? `bg-gradient-to-br ${categoryColors[badge.category]} shadow-lg` 
-                  : 'bg-muted border-2 border-border grayscale opacity-50'
-                }
-                ${isNew ? 'ring-4 ring-yellow-400 animate-pulse' : ''}
-              `}
-            >
-              {/* Icon */}
-              <span className={`${iconSizes[size]} ${badge.unlocked ? '' : 'opacity-40'}`}>
-                {badge.icon}
-              </span>
+            {/* Hexagonal Badge Icon */}
+            <div className="relative">
+              <div
+                className={`
+                  w-20 h-20 rounded-2xl flex items-center justify-center 
+                  transition-all rotate-45 overflow-hidden
+                  ${badge.unlocked 
+                    ? `bg-gradient-to-br ${categoryColors[badge.category]} shadow-lg` 
+                    : 'bg-muted/80 border-2 border-border'
+                  }
+                `}
+              >
+                <div className="-rotate-45 flex items-center justify-center">
+                  <div
+                    className={`
+                      text-3xl transition-all
+                      ${badge.unlocked ? 'opacity-100 drop-shadow-lg' : 'opacity-30 grayscale'}
+                    `}
+                  >
+                    {badge.icon}
+                  </div>
+                </div>
+              </div>
 
-              {/* Lock Overlay for Locked Badges */}
+              {/* Lock Icon for Locked Badges */}
               {!badge.unlocked && (
-                <div className="absolute inset-0 flex items-center justify-center bg-background/60 backdrop-blur-[1px] rounded-full">
-                  <Lock className="w-6 h-6 text-muted-foreground" />
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-background border-2 border-border rounded-full flex items-center justify-center">
+                  <Lock className="w-3 h-3 text-muted-foreground" />
                 </div>
               )}
 
-              {/* New Badge Indicator */}
-              {isNew && (
-                <div className="absolute -top-1 -right-1 bg-yellow-400 text-black text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  NEW
+              {/* NEW Badge Indicator */}
+              {badge.unlocked && badge.unlockedAt && isRecentlyUnlocked(badge.unlockedAt) && (
+                <div className="absolute -top-1 -right-1 w-6 h-6 bg-success border-2 border-background rounded-full flex items-center justify-center">
+                  <span className="text-xs font-bold text-success-foreground">!</span>
                 </div>
               )}
             </div>
 
-            {/* Badge Name */}
-            <div className="text-center">
-              <p className={`text-sm font-semibold ${badge.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
+            {/* Badge Name and Description */}
+            <div className="text-center max-w-[100px]">
+              <div className={`font-semibold text-sm mb-1 ${badge.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {badge.name}
-              </p>
+              </div>
               
-              {/* Progress Bar for Locked Badges */}
-              {!badge.unlocked && showProgress && badge.progress && (
-                <div className="mt-1 w-20">
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary transition-all duration-500"
-                      style={{ width: `${Math.min((badge.progress.current / badge.progress.required) * 100, 100)}%` }}
-                    />
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">
-                    {badge.progress.current}/{badge.progress.required}
-                  </p>
-                </div>
-              )}
+              {/* Requirement/Description */}
+              <div className="text-xs text-muted-foreground/80 line-clamp-2">
+                {!badge.unlocked 
+                  ? badge.description
+                  : badge.unlockedAt 
+                    ? `Logged ${new Date(badge.unlockedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+                    : badge.description
+                }
+              </div>
             </div>
           </motion.div>
         </TooltipTrigger>
