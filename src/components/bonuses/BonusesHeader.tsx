@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
+import logo from "@/assets/logo.svg";
 
 interface BonusesHeaderProps {
   userName?: string;
@@ -63,8 +64,8 @@ export const BonusesHeader = memo(function BonusesHeader({
 
   return (
     <div className="mb-6 space-y-4">
-      {/* Minimalist Title */}
-      <h1 className="text-3xl font-bold text-foreground px-1">Bonuses</h1>
+      {/* Logo */}
+      <img src={logo} alt="NEP" className="h-16 w-auto" />
 
       {/* Stats Grid - CalAI Style */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
