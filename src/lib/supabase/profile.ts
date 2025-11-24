@@ -180,6 +180,8 @@ const buildDefaultProfile = (
     quiz_in_progress: false,
     username: null,
     welcome_modal_shown: null,
+    nickname: null,
+    theme: null,
   };
 };
 

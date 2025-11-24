@@ -36,7 +36,7 @@ export function useScripts({ brainProfile, enabled = true }: UseScriptsOptions =
     },
     enabled: enabled && !!brainProfile,
     staleTime: 5 * 60 * 1000, // 5 minutes - scripts don't change often
-    cacheTime: 10 * 60 * 1000, // 10 minutes - keep in cache
+    gcTime: 10 * 60 * 1000, // 10 minutes - keep in cache
     refetchOnWindowFocus: false, // Don't refetch on window focus
     refetchOnMount: false, // Use cache if available
   });

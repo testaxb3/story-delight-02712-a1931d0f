@@ -261,7 +261,7 @@ function ScriptsContent() {
 
   // Separate effect to update selectedScriptRow when scripts change
   useEffect(() => {
-    if (selectedScript) {
+    if (selectedScript && Array.isArray(scripts)) {
       const scriptRow = scripts.find(s => s.id === selectedScript.id);
       setSelectedScriptRow(scriptRow || null);
     } else {
@@ -270,6 +270,7 @@ function ScriptsContent() {
   }, [selectedScript?.id, scripts]);
 
   const formattedScripts = useMemo<ScriptItem[]>(() => {
+    if (!Array.isArray(scripts)) return [];
     return scripts.map((script) => ({
       id: script.id,
       title: script.title,
@@ -338,6 +339,7 @@ function ScriptsContent() {
   const filteredScripts = useMemo(() => {
     // ✅ PERFORMANCE: No need to filter by profile - already filtered on server
     // Apply category filter first
+    if (!Array.isArray(scripts)) return [];
     const categoryFiltered = selectedCategory
       ? scripts.filter(
           (script) => script.category.toLowerCase() === selectedCategory.toLowerCase(),
@@ -418,8 +420,10 @@ function ScriptsContent() {
     if (script) {
       setSelectedScript(script);
       // Also set the ScriptRow for the modal
-      const scriptRow = scripts.find(s => s.id === scriptId);
-      setSelectedScriptRow(scriptRow || null);
+      if (Array.isArray(scripts)) {
+        const scriptRow = scripts.find(s => s.id === scriptId);
+        setSelectedScriptRow(scriptRow || null);
+      }
     }
   };
 
@@ -427,8 +431,10 @@ function ScriptsContent() {
   const handleSelectScript = (scriptItem: ScriptItem) => {
     setSelectedScript(scriptItem);
     // Find the corresponding ScriptRow
-    const scriptRow = scripts.find(s => s.id === scriptItem.id);
-    setSelectedScriptRow(scriptRow || null);
+    if (Array.isArray(scripts)) {
+      const scriptRow = scripts.find(s => s.id === scriptItem.id);
+      setSelectedScriptRow(scriptRow || null);
+    }
   };
 
   const getRelatedScripts = (scriptIds: string[] | null) => {
