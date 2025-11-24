@@ -12,28 +12,80 @@ interface ChapterContentV2Props {
 }
 
 const renderContent = (content: string): JSX.Element => {
-  const parts = content.split(/(`[^`]+`|\*\*[^*]+\*\*|\*[^*]+\*)/g);
-  
-  return (
-    <>
-      {parts.map((part, index) => {
-        if (part.startsWith("`") && part.endsWith("`")) {
-          return (
-            <code key={index} className="px-2 py-1 bg-muted/50 rounded font-mono text-sm">
-              {part.slice(1, -1)}
-            </code>
-          );
-        }
-        if (part.startsWith("**") && part.endsWith("**")) {
-          return <strong key={index} className="font-bold text-foreground">{part.slice(2, -2)}</strong>;
-        }
-        if (part.startsWith("*") && part.endsWith("*")) {
-          return <em key={index} className="italic">{part.slice(1, -1)}</em>;
-        }
-        return <span key={index}>{part}</span>;
-      })}
-    </>
-  );
+  const elements: JSX.Element[] = [];
+  let currentIndex = 0;
+  let elementKey = 0;
+
+  while (currentIndex < content.length) {
+    // Check for code (highest priority)
+    if (content[currentIndex] === '`') {
+      const endIndex = content.indexOf('`', currentIndex + 1);
+      if (endIndex !== -1) {
+        const codeText = content.slice(currentIndex + 1, endIndex);
+        elements.push(
+          <code key={elementKey++} className="px-2 py-1 bg-muted/50 rounded font-mono text-sm">
+            {codeText}
+          </code>
+        );
+        currentIndex = endIndex + 1;
+        continue;
+      }
+    }
+
+    // Check for bold
+    if (content[currentIndex] === '*' && content[currentIndex + 1] === '*') {
+      const endIndex = content.indexOf('**', currentIndex + 2);
+      if (endIndex !== -1) {
+        const boldText = content.slice(currentIndex + 2, endIndex);
+        elements.push(
+          <strong key={elementKey++} className="font-bold text-foreground">
+            {boldText}
+          </strong>
+        );
+        currentIndex = endIndex + 2;
+        continue;
+      }
+    }
+
+    // Check for italic
+    if (content[currentIndex] === '*') {
+      const endIndex = content.indexOf('*', currentIndex + 1);
+      if (endIndex !== -1) {
+        const italicText = content.slice(currentIndex + 1, endIndex);
+        elements.push(
+          <em key={elementKey++} className="italic">
+            {italicText}
+          </em>
+        );
+        currentIndex = endIndex + 1;
+        continue;
+      }
+    }
+
+    // Regular text - find next special character
+    let nextSpecial = content.length;
+    const nextBacktick = content.indexOf('`', currentIndex);
+    const nextAsterisk = content.indexOf('*', currentIndex);
+
+    if (nextBacktick !== -1) nextSpecial = Math.min(nextSpecial, nextBacktick);
+    if (nextAsterisk !== -1) nextSpecial = Math.min(nextSpecial, nextAsterisk);
+
+    const text = content.slice(currentIndex, nextSpecial);
+    if (text.length > 0) {
+      elements.push(<span key={elementKey++}>{text}</span>);
+    }
+    currentIndex = nextSpecial;
+
+    // Safety check to prevent infinite loops
+    if (currentIndex === nextSpecial && nextSpecial === content.length) {
+      break;
+    }
+    if (currentIndex < content.length && nextSpecial === content.length) {
+      currentIndex++;
+    }
+  }
+
+  return <>{elements}</>;
 };
 
 export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props) => {
