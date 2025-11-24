@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart3, TrendingUp } from 'lucide-react';
-import logo from '@/assets/logo.svg';
+import logo from '@/assets/logo-nep-ai.svg';
 
 interface ScriptsHeaderProps {
   totalScripts: number;

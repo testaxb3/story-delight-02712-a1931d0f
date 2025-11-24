@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo-nep-ai.svg";
 
 interface BonusesHeaderProps {
   userName?: string;
