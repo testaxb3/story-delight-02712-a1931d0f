@@ -612,6 +612,7 @@ export type Database = {
           author_brain_type: string | null
           author_name: string | null
           author_photo_url: string | null
+          community_id: string | null
           content: string
           created_at: string
           id: string
@@ -627,6 +628,7 @@ export type Database = {
           author_brain_type?: string | null
           author_name?: string | null
           author_photo_url?: string | null
+          community_id?: string | null
           content: string
           created_at?: string
           id?: string
@@ -642,6 +644,7 @@ export type Database = {
           author_brain_type?: string | null
           author_name?: string | null
           author_photo_url?: string | null
+          community_id?: string | null
           content?: string
           created_at?: string
           id?: string
@@ -654,6 +657,13 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "community_posts_community_id_fkey"
+            columns: ["community_id"]
+            isOneToOne: false
+            referencedRelation: "communities"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
