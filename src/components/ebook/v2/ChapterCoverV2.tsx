@@ -5,8 +5,12 @@ interface ChapterCoverV2Props {
 }
 
 export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV2Props) => {
+  console.log('🎯 ChapterCoverV2:', { chapterNumber, title, subtitle });
+  
   const cleanTitle = title?.trim() || 'Untitled';
   const cleanSubtitle = subtitle?.trim();
+  
+  console.log('🎯 Clean values:', { cleanTitle, cleanSubtitle });
   
   return (
     <div className="relative mb-16 py-12 px-6 rounded-2xl bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10 border border-primary/10 overflow-hidden">
