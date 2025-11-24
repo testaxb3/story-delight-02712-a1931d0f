@@ -138,7 +138,7 @@ export default function ProfileCalAI() {
             <MenuItem
               icon={() => <Crown className="w-5 h-5 text-yellow-500 dark:text-yellow-400 fill-yellow-500/20 dark:fill-yellow-400/20" />}
               title="Try Premium for Free"
-              subtitle="Unlock Cal AI free for 7 days"
+              subtitle="Unlock NEP Premium for 7 days"
               showChevron={true}
             />
           </Card>
