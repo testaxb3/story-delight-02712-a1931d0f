@@ -8,12 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface LeaderboardEntry {
-  rank: number;
-  anonymous_name: string;
-  brain_profile: string | null;
-  completed_days: number;
+  id: string;
+  full_name: string;
+  photo_url: string | null;
+  scripts_used: number;
   current_streak: number;
-  last_active_date: string;
+  longest_streak: number;
+  total_xp: number;
 }
 
 export default function Leaderboard() {
@@ -21,13 +22,18 @@ export default function Leaderboard() {
     queryKey: ['leaderboard'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('leaderboard')
+        .from('leaderboard_cache')
         .select('*')
-        .order('rank', { ascending: true })
+        .order('total_xp', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      return (data || []) as LeaderboardEntry[];
+      
+      // Add rank to each entry
+      return (data || []).map((entry, index) => ({
+        ...entry,
+        rank: index + 1
+      })) as (LeaderboardEntry & { rank: number })[];
     }
   });
 
@@ -70,7 +76,7 @@ export default function Leaderboard() {
               leaders?.map((leader) => {
                 const { icon: Icon, color } = getIconAndColor(leader.rank);
                 return (
-                  <Card key={leader.rank} className={leader.rank <= 3 ? "border-primary/50" : ""}>
+                  <Card key={leader.id} className={leader.rank <= 3 ? "border-primary/50" : ""}>
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -78,18 +84,16 @@ export default function Leaderboard() {
                             #{leader.rank}
                           </div>
                           <Avatar className="w-12 h-12">
-                            <AvatarFallback>{getInitials(leader.anonymous_name)}</AvatarFallback>
+                            <AvatarFallback>{getInitials(leader.full_name)}</AvatarFallback>
                           </Avatar>
                           <div>
-                            <p className="font-semibold text-lg">{leader.anonymous_name}</p>
+                            <p className="font-semibold text-lg">{leader.full_name}</p>
                             <p className="text-sm text-muted-foreground">
-                              {leader.completed_days} days • {leader.current_streak} day streak
+                              {leader.longest_streak} day streak • {leader.scripts_used} scripts
                             </p>
-                            {leader.brain_profile && (
-                              <Badge variant="outline" className="mt-1 text-xs">
-                                {leader.brain_profile}
-                              </Badge>
-                            )}
+                            <Badge variant="outline" className="mt-1 text-xs">
+                              {leader.total_xp} XP
+                            </Badge>
                           </div>
                         </div>
                         {Icon && (
