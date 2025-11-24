@@ -96,7 +96,7 @@ export default function Dashboard() {
   };
   const scriptsUsed = scriptsUsedCount;
   const videosWatched = 0; // TODO: implement from dashboard_stats
-  const currentStreak = Math.max(trackerSummary.totalEntries, 1);
+  const currentStreak = dashboardStats?.currentStreak ?? 0;
 
   // Track initial loading state
   const [isInitialLoading, setIsInitialLoading] = useState(true);

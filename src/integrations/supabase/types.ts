@@ -54,6 +54,13 @@ export type Database = {
             foreignKeyName: "admin_audit_log_admin_id_fkey"
             columns: ["admin_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_log_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -173,6 +180,13 @@ export type Database = {
             foreignKeyName: "approved_users_approved_by_fkey"
             columns: ["approved_by"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "approved_users_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -196,6 +210,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "approved_users_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "approved_users_user_id_fkey"
@@ -326,6 +347,13 @@ export type Database = {
             foreignKeyName: "bonuses_archived_by_fkey"
             columns: ["archived_by"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -413,6 +441,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "child_profiles_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "child_profiles_parent_id_fkey"
@@ -630,6 +665,13 @@ export type Database = {
             foreignKeyName: "community_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -724,6 +766,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "community_posts_user_id_fkey"
@@ -972,6 +1021,13 @@ export type Database = {
             foreignKeyName: "group_posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "group_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1073,6 +1129,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "notifications_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "notifications_actor_id_fkey"
@@ -1246,6 +1309,13 @@ export type Database = {
             foreignKeyName: "post_comments_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_comments_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -1375,6 +1445,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "post_likes_user_id_fkey"
@@ -1675,6 +1752,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "script_feedback_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "script_feedback_user_id_fkey"
@@ -2205,6 +2289,13 @@ export type Database = {
             foreignKeyName: "user_badges_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2330,6 +2421,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_bonuses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "user_bonuses_user_id_fkey"
@@ -2515,6 +2613,13 @@ export type Database = {
             foreignKeyName: "user_followers_follower_id_fkey"
             columns: ["follower_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_followers_follower_id_fkey"
+            columns: ["follower_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2538,6 +2643,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_followers_following_id_fkey"
+            columns: ["following_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "user_followers_following_id_fkey"
@@ -2881,6 +2993,13 @@ export type Database = {
             foreignKeyName: "bonuses_archived_by_fkey"
             columns: ["archived_by"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonuses_archived_by_fkey"
+            columns: ["archived_by"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -2970,6 +3089,13 @@ export type Database = {
             foreignKeyName: "community_posts_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -3017,6 +3143,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "community_posts_user_id_fkey"
@@ -3118,14 +3251,15 @@ export type Database = {
         }
         Relationships: []
       }
-      leaderboard: {
+      leaderboard_cache: {
         Row: {
-          anonymous_name: string | null
-          brain_profile: string | null
-          completed_days: number | null
           current_streak: number | null
-          last_active_date: string | null
-          rank: number | null
+          full_name: string | null
+          id: string | null
+          longest_streak: number | null
+          photo_url: string | null
+          scripts_used: number | null
+          total_xp: number | null
         }
         Relationships: []
       }
@@ -3158,6 +3292,13 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "dashboard_stats"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "community_posts_user_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
           },
           {
             foreignKeyName: "community_posts_user_id_fkey"
@@ -3350,7 +3491,6 @@ export type Database = {
       }
       user_achievements_stats: {
         Row: {
-          badges_unlocked: number | null
           current_streak: number | null
           days_completed: number | null
           longest_streak: number | null
