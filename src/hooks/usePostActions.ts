@@ -37,7 +37,7 @@ export function usePostActions() {
 
     try {
       const { error } = await supabase
-        .from('group_posts')
+        .from('community_posts')
         .delete()
         .eq('id', postId);
 
@@ -82,7 +82,7 @@ export function usePostActions() {
       }
 
       const { error } = await supabase
-        .from('group_posts')
+        .from('community_posts')
         .insert({
           community_id: communityId,
           user_id: userId,

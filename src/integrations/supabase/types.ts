@@ -615,12 +615,16 @@ export type Database = {
           community_id: string | null
           content: string
           created_at: string
+          duration_minutes: number | null
           id: string
           image_thumbnail_url: string | null
           image_url: string | null
           is_seed_post: boolean | null
           post_type: string | null
+          result_type: string | null
+          script_used: string | null
           search_vector: unknown
+          title: string | null
           updated_at: string
           user_id: string | null
         }
@@ -631,12 +635,16 @@ export type Database = {
           community_id?: string | null
           content: string
           created_at?: string
+          duration_minutes?: number | null
           id?: string
           image_thumbnail_url?: string | null
           image_url?: string | null
           is_seed_post?: boolean | null
           post_type?: string | null
+          result_type?: string | null
+          script_used?: string | null
           search_vector?: unknown
+          title?: string | null
           updated_at?: string
           user_id?: string | null
         }
@@ -647,12 +655,16 @@ export type Database = {
           community_id?: string | null
           content?: string
           created_at?: string
+          duration_minutes?: number | null
           id?: string
           image_thumbnail_url?: string | null
           image_url?: string | null
           is_seed_post?: boolean | null
           post_type?: string | null
+          result_type?: string | null
+          script_used?: string | null
           search_vector?: unknown
+          title?: string | null
           updated_at?: string
           user_id?: string | null
         }
