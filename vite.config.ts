@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => ({
       includeAssets: [
         "favicon.ico",
         "robots.txt",
-        "logo.svg",
+        "logo-nep-ai.svg",
         "OneSignalSDKWorker.js", // Service Worker principal do OneSignal
         "OneSignalSDK.sw.js", // Service Worker alternativo do OneSignal
         "browser-polyfill-pwa.js" // Polyfill para compatibilidade com extensões
@@ -43,13 +43,13 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait",
         icons: [
           {
-            src: "/logo.svg",
+            src: "/logo-nep-ai.svg",
             sizes: "192x192",
             type: "image/svg+xml",
             purpose: "any maskable"
           },
           {
-            src: "/logo.svg",
+            src: "/logo-nep-ai.svg",
             sizes: "512x512",
             type: "image/svg+xml",
             purpose: "any maskable"
