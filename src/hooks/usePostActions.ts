@@ -6,6 +6,20 @@ export function usePostActions() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingPostId, setDeletingPostId] = useState<string | null>(null);
 
+  // Map emojis to reaction types
+  const getReactionType = (emoji: string): string => {
+    const emojiMap: Record<string, string> = {
+      '❤️': 'love',
+      '👍': 'like',
+      '🎉': 'celebrate',
+      '💪': 'strong',
+      '💡': 'insightful',
+      '🤝': 'helpful',
+      '🙏': 'empathy',
+    };
+    return emojiMap[emoji] || 'like';
+  };
+
   const addReaction = useCallback(async (postId: string, emoji: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -14,12 +28,15 @@ export function usePostActions() {
         return false;
       }
 
-      // Check if reaction already exists
+      const reactionType = getReactionType(emoji);
+
+      // Check if this specific reaction type already exists
       const { data: existing, error: checkError } = await supabase
         .from('post_likes')
         .select('id')
         .eq('post_id', postId)
         .eq('user_id', user.id)
+        .eq('reaction_type', reactionType)
         .maybeSingle();
 
       if (checkError) {
@@ -28,7 +45,7 @@ export function usePostActions() {
       }
 
       if (existing) {
-        // Remove existing reaction
+        // Remove this specific reaction
         const { error: deleteError } = await supabase
           .from('post_likes')
           .delete()
@@ -40,7 +57,7 @@ export function usePostActions() {
         }
         toast.success('Reaction removed');
         
-        // Trigger a reload by invalidating queries
+        // Trigger a reload
         window.dispatchEvent(new CustomEvent('reload-posts'));
         return true;
       } else {
@@ -50,7 +67,7 @@ export function usePostActions() {
           .insert({
             post_id: postId,
             user_id: user.id,
-            reaction_type: 'like'
+            reaction_type: reactionType
           });
 
         if (insertError) {
@@ -59,7 +76,7 @@ export function usePostActions() {
         }
         toast.success('Reaction added');
         
-        // Trigger a reload by invalidating queries
+        // Trigger a reload
         window.dispatchEvent(new CustomEvent('reload-posts'));
         return true;
       }
