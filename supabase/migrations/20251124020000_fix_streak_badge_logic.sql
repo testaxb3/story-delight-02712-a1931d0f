@@ -48,7 +48,13 @@ BEGIN
   LOOP
     -- Parse requirement (format: "type:value")
     v_requirement_type := split_part(v_badge.requirement, ':', 1);
-    v_requirement_value := CAST(split_part(v_badge.requirement, ':', 2) AS INT);
+
+    -- Only parse value as INT if it's not a special badge (special badges use badge name instead of numeric value)
+    IF v_requirement_type != 'special' THEN
+      v_requirement_value := CAST(split_part(v_badge.requirement, ':', 2) AS INT);
+    ELSE
+      v_requirement_value := 0; -- Not used for special badges
+    END IF;
 
     -- Check if requirement is met
     v_unlocked := FALSE;
