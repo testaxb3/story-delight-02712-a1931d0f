@@ -48,15 +48,18 @@ export function useEbookContent(ebookId: string | undefined) {
         contentType: typeof data.content,
         isArray: Array.isArray(data.content),
         hasChaptersProperty: data.content?.chapters !== undefined,
-        contentKeys: data.content ? Object.keys(data.content) : []
+        contentKeys: data.content ? Object.keys(data.content) : [],
+        firstItem: Array.isArray(data.content) ? data.content[0] : null
       });
       
       if (Array.isArray(data.content)) {
-        // Direct array format (old format)
+        // Direct array format - this is what we have
         rawChapters = data.content;
+        console.log('✅ Using direct array format, chapters count:', rawChapters.length);
       } else if (data.content?.chapters && Array.isArray(data.content.chapters)) {
-        // Object with chapters property (new format)
+        // Object with chapters property (alternative format)
         rawChapters = data.content.chapters;
+        console.log('✅ Using object.chapters format, chapters count:', rawChapters.length);
       } else {
         console.error('❌ Unknown ebook content format:', data.content);
       }
@@ -66,19 +69,23 @@ export function useEbookContent(ebookId: string | undefined) {
         // Handle different content field names - prioritize sections over content
         const content = chapter.sections || chapter.content || [];
         
-        console.log(`📖 Chapter ${index} content source:`, {
+        console.log(`📖 Chapter ${index + 1} "${chapter.title}":`, {
+          title: chapter.title,
+          subtitle: chapter.subtitle,
           hasSections: !!chapter.sections,
           hasContent: !!chapter.content,
           contentLength: Array.isArray(content) ? content.length : 0,
-          title: chapter.title,
-          firstContentBlock: Array.isArray(content) ? content[0] : null
+          firstContentBlock: Array.isArray(content) && content[0] ? {
+            type: content[0].type,
+            hasContent: !!content[0].content
+          } : null
         });
         
         return {
           ...chapter,
           id: chapter.id || chapter.number?.toString() || `chapter-${index + 1}`,
           title: (chapter.title || `Chapter ${index + 1}`).trim(),
-          subtitle: (chapter.subtitle || '').trim(),
+          subtitle: chapter.subtitle ? chapter.subtitle.trim() : undefined,
           content: Array.isArray(content) ? content : [],
         };
       });
