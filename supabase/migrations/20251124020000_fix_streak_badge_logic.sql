@@ -11,7 +11,7 @@
 -- 20251124015513_a8799881-3456-4769-b732-c5e5c415dfe4.sql
 
 CREATE OR REPLACE FUNCTION check_and_unlock_badges(p_user_id UUID)
-RETURNS TABLE(badge_id UUID, badge_name TEXT, badge_icon TEXT)
+RETURNS TABLE(unlocked_badge_id UUID, unlocked_badge_name TEXT, unlocked_badge_icon TEXT)
 LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
@@ -100,9 +100,9 @@ BEGIN
       ON CONFLICT (user_id, badge_id) DO NOTHING;
 
       -- Return the newly unlocked badge
-      badge_id := v_badge.id;
-      badge_name := v_badge.name;
-      badge_icon := v_badge.icon;
+      unlocked_badge_id := v_badge.id;
+      unlocked_badge_name := v_badge.name;
+      unlocked_badge_icon := v_badge.icon;
       RETURN NEXT;
     END IF;
   END LOOP;
