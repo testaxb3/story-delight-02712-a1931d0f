@@ -27,6 +27,8 @@ export default defineConfig(({ mode }) => ({
         "favicon.ico",
         "robots.txt",
         "logo-nep-ai.svg",
+        "apple-touch-icon.png",
+        "icon-512.png",
         "OneSignalSDKWorker.js", // Service Worker principal do OneSignal
         "OneSignalSDK.sw.js", // Service Worker alternativo do OneSignal
         "browser-polyfill-pwa.js" // Polyfill para compatibilidade com extensões
@@ -43,16 +45,28 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait",
         icons: [
           {
-            src: "/logo-nep-ai.svg",
+            src: "/apple-touch-icon.png",
             sizes: "192x192",
-            type: "image/svg+xml",
-            purpose: "any maskable"
+            type: "image/png",
+            purpose: "any"
           },
           {
-            src: "/logo-nep-ai.svg",
+            src: "/apple-touch-icon.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "maskable"
+          },
+          {
+            src: "/icon-512.png",
             sizes: "512x512",
-            type: "image/svg+xml",
-            purpose: "any maskable"
+            type: "image/png",
+            purpose: "any"
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable"
           }
         ]
       },
