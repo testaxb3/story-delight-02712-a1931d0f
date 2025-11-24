@@ -71,8 +71,14 @@ const Auth = memo(function Auth() {
         : await signIn(email, password);
 
       if (error) {
-        const errorMessage = error.message;
-        if (errorMessage.includes('restricted') || errorMessage.includes('Access')) {
+        const errorMessage = error.message || 'An error occurred';
+        
+        // Enhanced error messages for common issues
+        if (errorMessage.includes('500') || errorMessage.includes('EOF')) {
+          toast.error('Connection issue. Please try again.', { duration: 4000 });
+        } else if (errorMessage.includes('Connection failed') || errorMessage.includes('internet')) {
+          toast.error('Please check your internet connection and try again.', { duration: 5000 });
+        } else if (errorMessage.includes('restricted') || errorMessage.includes('Access')) {
           toast.error(errorMessage, { duration: 6000 });
         } else if (errorMessage.includes('Invalid')) {
           toast.error('Invalid email or password', { duration: 4000 });

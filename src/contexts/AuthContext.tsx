@@ -155,49 +155,72 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` } };
     }
 
-    try {
-      const { error, data } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+    // ✅ NETWORK ERROR HANDLING: Retry logic for transient failures
+    const maxRetries = 2;
+    let lastError: any = null;
 
-      if (error) {
-        return { error };
-      }
-
-      // 💾 Save session for PWA
-      if (data?.session) {
-        localStorage.setItem('saved_pwa_session', JSON.stringify({
-          access_token: data.session.access_token,
-          refresh_token: data.session.refresh_token
-        }));
-      }
-
-      // ✅ CRITICAL FIX: Force immediate refetch instead of just invalidating
-      // This ensures quiz_completed status is fresh before redirect
-      if (data?.user?.id) {
-        console.log('[AuthContext] 🔄 Forçando refetch do perfil após login');
-        
-        // Invalidate first to clear stale data
-        queryClient.invalidateQueries({ queryKey: ['user-profile', data.user.id] });
-        queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
-        
-        // Force immediate refetch and WAIT for it to complete
-        await queryClient.refetchQueries({ 
-          queryKey: ['user-profile', data.user.id],
-          exact: true 
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const { error, data } = await supabase.auth.signInWithPassword({
+          email,
+          password
         });
-        
-        // Small delay to ensure state propagation
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        console.log('[AuthContext] ✅ Profile refetchado após login');
-      }
 
-      return { error: null };
-    } catch (error: any) {
-      return { error: { message: error.message || 'Failed to sign in' } };
+        if (error) {
+          // Check if it's a network/server error that might be transient
+          if (error.message?.includes('500') || 
+              error.message?.includes('EOF') || 
+              error.message?.includes('network') ||
+              error.status === 500) {
+            lastError = error;
+            if (attempt < maxRetries) {
+              console.log(`[AuthContext] Network error on attempt ${attempt + 1}, retrying...`);
+              await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+              continue;
+            }
+          }
+          return { error };
+        }
+
+        // 💾 Save session for PWA
+        if (data?.session) {
+          localStorage.setItem('saved_pwa_session', JSON.stringify({
+            access_token: data.session.access_token,
+            refresh_token: data.session.refresh_token
+          }));
+        }
+
+        // ✅ Simplified profile refresh - let React Query handle it
+        if (data?.user?.id) {
+          console.log('[AuthContext] 🔄 Invalidating profile cache after login');
+          queryClient.invalidateQueries({ queryKey: ['user-profile', data.user.id] });
+          queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
+        }
+
+        return { error: null };
+      } catch (error: any) {
+        console.error(`[AuthContext] SignIn attempt ${attempt + 1} failed:`, error);
+        lastError = error;
+        
+        // Retry on network errors
+        if (attempt < maxRetries && (
+          error.message?.includes('Failed to fetch') ||
+          error.message?.includes('Network') ||
+          error.message?.includes('timeout')
+        )) {
+          await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+          continue;
+        }
+        
+        return { error: { message: error.message || 'Failed to sign in. Please check your connection.' } };
+      }
     }
+
+    return { 
+      error: { 
+        message: lastError?.message || 'Connection failed. Please check your internet and try again.' 
+      } 
+    };
   };
 
   const signUp = async (email: string, password: string) => {
