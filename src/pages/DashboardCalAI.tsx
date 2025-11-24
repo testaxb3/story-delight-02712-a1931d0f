@@ -18,6 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
+import logo from '@/assets/logo.svg';
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
@@ -153,7 +154,7 @@ export default function DashboardCalAI() {
           transition={{ duration: 0.4 }}
           className="relative z-50 px-6 pt-[calc(env(safe-area-inset-top)+8px)] pb-6 flex items-center justify-between"
         >
-          <h1 className="text-3xl font-bold text-foreground tracking-tight font-relative">NEP</h1>
+          <img src={logo} alt="NEP" className="h-8 w-auto" />
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
