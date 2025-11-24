@@ -18,7 +18,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
-import logo from "@/assets/logo.svg";
+import logo from "@/assets/logo-nep-ai.svg";
 
 export default function DashboardCalAI() {
   const { user } = useAuth();
