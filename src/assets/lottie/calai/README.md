@@ -1,6 +1,6 @@
-# CalAI Lottie Animations
+# NEP Lottie Animations
 
-Premium animations imported from CalAI app for use in NEP System.
+Premium animations for use in NEP System.
 
 ## Available Animations
 
@@ -50,7 +50,7 @@ function CelebrationComponent() {
 ## Typography Integration
 
 The **Relative** font family is also available and integrated:
-- `font-relative` - Use this Tailwind class for CalAI-inspired typography
+- `font-relative` - Use this Tailwind class for NEP typography
 - Weights: Book (400), Medium (500), Bold (700)
 
 Example:
