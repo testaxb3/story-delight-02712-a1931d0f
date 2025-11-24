@@ -22,7 +22,10 @@ export function usePostActions() {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (checkError) throw checkError;
+      if (checkError) {
+        console.error('Check error:', checkError);
+        throw checkError;
+      }
 
       if (existing) {
         // Remove existing reaction
@@ -31,8 +34,14 @@ export function usePostActions() {
           .delete()
           .eq('id', existing.id);
 
-        if (deleteError) throw deleteError;
+        if (deleteError) {
+          console.error('Delete error:', deleteError);
+          throw deleteError;
+        }
         toast.success('Reaction removed');
+        
+        // Trigger a reload by invalidating queries
+        window.dispatchEvent(new CustomEvent('reload-posts'));
         return true;
       } else {
         // Add new reaction
@@ -44,11 +53,18 @@ export function usePostActions() {
             reaction_type: 'like'
           });
 
-        if (insertError) throw insertError;
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw insertError;
+        }
         toast.success('Reaction added');
+        
+        // Trigger a reload by invalidating queries
+        window.dispatchEvent(new CustomEvent('reload-posts'));
         return true;
       }
     } catch (error: any) {
+      console.error('Reaction error:', error);
       toast.error(`Error: ${error.message}`);
       return false;
     }
