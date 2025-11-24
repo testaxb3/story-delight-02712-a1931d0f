@@ -15,6 +15,7 @@ import { useHaptic } from '@/hooks/useHaptic';
 import { toast } from 'sonner';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { ChildSelector } from '@/components/Profile/ChildSelector';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -130,6 +131,12 @@ export default function ProfileCalAI() {
             </div>
             <ChevronRight className="w-5 h-5 text-[#9CA3AF] dark:text-gray-500" />
           </Card>
+
+          {/* My Children Section */}
+          <SectionTitle>My Children</SectionTitle>
+          <div className="mb-6">
+            <ChildSelector />
+          </div>
 
           {/* Premium Section - More Vibrant */}
           <SectionTitle>Premium</SectionTitle>
