@@ -61,6 +61,7 @@ export function useUserProfile(userId: string | undefined, email: string | undef
         console.log('[useUserProfile] Profile loaded:', {
           userId,
           email,
+          name: profile?.name,
           quiz_completed: profile?.quiz_completed,
           quiz_in_progress: profile?.quiz_in_progress,
           timestamp: new Date().toISOString()
@@ -104,7 +105,7 @@ export function useUserProfile(userId: string | undefined, email: string | undef
     staleTime: 30 * 1000, // Cache for 30 seconds to prevent duplicate fetches
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     retry: 1,
-    refetchOnMount: false, // Don't refetch on every mount
+    refetchOnMount: 'always', // Always refetch on mount to ensure fresh data after profile edits
     refetchOnWindowFocus: false, // Don't refetch on window focus to prevent session conflicts
   });
 }

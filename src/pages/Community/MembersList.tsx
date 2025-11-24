@@ -148,13 +148,16 @@ export default function MembersList() {
                 className="bg-white dark:bg-[#1a1a1a] border border-[#E5E7EB] dark:border-[#2a2a2a] rounded-xl p-4 flex items-center gap-3 shadow-sm dark:shadow-none"
               >
                 <div className="relative flex-shrink-0">
-                  <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.brain_profile)} flex items-center justify-center font-bold text-white overflow-hidden`}>
+                  <button
+                    onClick={() => navigate(`/user/${member.user_id}`)}
+                    className={`w-12 h-12 rounded-full bg-gradient-to-br ${getBrainProfileColor(member.brain_profile)} flex items-center justify-center font-bold text-white overflow-hidden cursor-pointer transition-transform hover:scale-105`}
+                  >
                     {member.photo_url ? (
                       <img src={member.photo_url} alt="" className="w-full h-full object-cover" />
                     ) : (
                       getInitials(member.name || 'U')
                     )}
-                  </div>
+                  </button>
                   {member.role === 'leader' && (
                     <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center shadow-sm">
                       <Crown className="w-3 h-3 text-white fill-white" />

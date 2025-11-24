@@ -43,6 +43,18 @@ const categoryColors: Record<string, string> = {
   special: 'from-yellow-500 to-amber-500'
 };
 
+const getGradientColors = (category: string): string => {
+  const gradients: Record<string, string> = {
+    streak: '#f97316, #dc2626',
+    scripts: '#a855f7, #3b82f6',
+    videos: '#ec4899, #a855f7',
+    tracker: '#10b981, #059669',
+    community: '#3b82f6, #06b6d4',
+    special: '#eab308, #f59e0b'
+  };
+  return gradients[category] || '#6b7280, #4b5563';
+};
+
 export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: BadgeCardProps) => {
   const isRecentlyUnlocked = (unlockedDate: string) => {
     return new Date().getTime() - new Date(unlockedDate).getTime() < 7 * 24 * 60 * 60 * 1000;
@@ -56,27 +68,29 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             whileHover={{ scale: badge.unlocked ? 1.05 : 1 }}
-            className="relative flex flex-col items-center gap-2"
+            className="relative flex flex-col items-center gap-2.5"
           >
-            {/* Hexagonal Badge Icon */}
+            {/* Hexagonal Badge Container */}
             <div className="relative">
+              {/* Hexagon shape using clip-path */}
               <div
                 className={`
-                  w-20 h-20 rounded-2xl flex items-center justify-center 
-                  transition-all rotate-45 overflow-hidden
-                  ${badge.unlocked 
-                    ? `bg-gradient-to-br ${categoryColors[badge.category]} shadow-lg` 
-                    : 'bg-muted/80 border-2 border-border'
+                  w-[70px] h-[70px] flex items-center justify-center
+                  transition-all duration-300
+                  ${badge.unlocked
+                    ? 'opacity-100'
+                    : 'opacity-40 grayscale'
                   }
                 `}
+                style={{
+                  clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                  background: badge.unlocked
+                    ? `linear-gradient(135deg, ${getGradientColors(badge.category)})`
+                    : '#e5e7eb',
+                }}
               >
-                <div className="-rotate-45 flex items-center justify-center">
-                  <div
-                    className={`
-                      text-3xl transition-all
-                      ${badge.unlocked ? 'opacity-100 drop-shadow-lg' : 'opacity-30 grayscale'}
-                    `}
-                  >
+                <div className="flex items-center justify-center">
+                  <div className={`text-3xl ${badge.unlocked ? 'drop-shadow-md' : ''}`}>
                     {badge.icon}
                   </div>
                 </div>
@@ -84,30 +98,23 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
 
               {/* Lock Icon for Locked Badges */}
               {!badge.unlocked && (
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-background border-2 border-border rounded-full flex items-center justify-center">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-background border border-border rounded-full flex items-center justify-center shadow-sm">
                   <Lock className="w-3 h-3 text-muted-foreground" />
-                </div>
-              )}
-
-              {/* NEW Badge Indicator */}
-              {badge.unlocked && badge.unlockedAt && isRecentlyUnlocked(badge.unlockedAt) && (
-                <div className="absolute -top-1 -right-1 w-6 h-6 bg-success border-2 border-background rounded-full flex items-center justify-center">
-                  <span className="text-xs font-bold text-success-foreground">!</span>
                 </div>
               )}
             </div>
 
             {/* Badge Name and Description */}
-            <div className="text-center max-w-[100px]">
-              <div className={`font-semibold text-sm mb-1 ${badge.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
+            <div className="text-center max-w-[90px]">
+              <div className={`font-medium text-xs mb-0.5 ${badge.unlocked ? 'text-foreground' : 'text-muted-foreground'}`}>
                 {badge.name}
               </div>
-              
+
               {/* Requirement/Description */}
-              <div className="text-xs text-muted-foreground/80 line-clamp-2">
-                {!badge.unlocked 
+              <div className="text-[10px] text-muted-foreground/70 line-clamp-2 leading-tight">
+                {!badge.unlocked
                   ? badge.description
-                  : badge.unlockedAt 
+                  : badge.unlockedAt
                     ? `Logged ${new Date(badge.unlockedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
                     : badge.description
                 }

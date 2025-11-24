@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Crown, Users, Flame } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Member } from '@/hooks/useCommunityMembers';
 
@@ -13,6 +14,8 @@ const getInitials = (name: string) => {
 };
 
 export const MembersList = React.memo(function MembersList({ members }: MembersListProps) {
+  const navigate = useNavigate();
+
   const sortedMembers = React.useMemo(() => {
     return [...members].sort((a, b) => {
       if (a.role === 'leader' && b.role !== 'leader') return -1;
@@ -52,12 +55,15 @@ export const MembersList = React.memo(function MembersList({ members }: MembersL
                   </div>
                 </motion.div>
               )}
-              <div className={cn(
-                "w-16 h-16 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white dark:ring-background transition-transform hover:scale-105 overflow-hidden",
-                member.role === 'leader'
-                  ? "bg-gradient-to-br from-pink-400 to-pink-600"
-                  : "bg-gradient-to-br from-orange-400 to-orange-600"
-              )}>
+              <button
+                onClick={() => navigate(`/user/${member.user_id}`)}
+                className={cn(
+                  "w-16 h-16 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white dark:ring-background transition-transform hover:scale-105 overflow-hidden cursor-pointer",
+                  member.role === 'leader'
+                    ? "bg-gradient-to-br from-pink-400 to-pink-600"
+                    : "bg-gradient-to-br from-orange-400 to-orange-600"
+                )}
+              >
                 {member.photo_url ? (
                   <img
                     src={member.photo_url}
@@ -69,7 +75,7 @@ export const MembersList = React.memo(function MembersList({ members }: MembersL
                     {getInitials(member.name || 'U')}
                   </span>
                 )}
-              </div>
+              </button>
             </div>
             <div className="flex items-center gap-1 bg-white dark:bg-white/10 px-2 py-0.5 rounded-full border border-[#E5E7EB] dark:border-white/20">
               <Flame className="w-3 h-3 text-orange-500" />

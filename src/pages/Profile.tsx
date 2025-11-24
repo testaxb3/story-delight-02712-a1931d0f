@@ -9,6 +9,7 @@ import { ProfileHeader } from '@/components/Profile/ProfileHeader';
 import { QuickActionsGrid } from '@/components/Profile/QuickActionsGrid';
 import { RecentActivityCard } from '@/components/Profile/RecentActivityCard';
 import { ChildProfilesCard } from '@/components/Profile/ChildProfilesCard';
+import { ChildSelector } from '@/components/Profile/ChildSelector';
 import { ProfileSettingsCard } from '@/components/Profile/ProfileSettingsCard';
 import { ProfileActionsSection } from '@/components/Profile/ProfileActionsSection';
 import { LevelBadge } from '@/components/Profile/LevelBadge';
@@ -253,6 +254,15 @@ export default function Profile() {
 
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4 mt-0">
+          {/* My Children Section */}
+          <Card className="p-5">
+            <h3 className="text-lg font-bold text-foreground mb-1">My Children</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Manage your children's profiles. Tap to switch active child.
+            </p>
+            <ChildSelector />
+          </Card>
+
           {/* Settings, Notifications, PWA, Refund */}
           <ProfileSettingsCard
             activeChild={activeChild}

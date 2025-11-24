@@ -52,13 +52,25 @@ export async function ensureUserScaffolding(userId: string, email: string) {
   const defaultName = normalizedEmail.split("@")[0] ?? "Parent";
 
   try {
-    // Don't pass quizCompleted to avoid overwriting existing status
-    await saveChildProfile({
-      parentName: defaultName,
-      email: normalizedEmail,
-    });
+    // Check if profile already exists with a custom name
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("name")
+      .eq("id", userId)
+      .maybeSingle();
 
-    console.log(`Profile scaffolded or updated for user ${userId}.`);
+    // Only scaffold if profile doesn't exist or has no name set
+    // Don't overwrite user-customized names!
+    if (!existingProfile || !existingProfile.name || existingProfile.name === defaultName) {
+      await saveChildProfile({
+        parentName: defaultName,
+        email: normalizedEmail,
+      });
+
+      console.log(`Profile scaffolded or updated for user ${userId}.`);
+    } else {
+      console.log(`Profile already exists with custom name for user ${userId}, skipping scaffold.`);
+    }
   } catch (error) {
     console.error(`Failed to scaffold profile information for user ${userId}`, error);
   }
