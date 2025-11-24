@@ -153,7 +153,7 @@ export default function DashboardCalAI() {
           transition={{ duration: 0.4 }}
           className="relative z-50 px-6 pt-[calc(env(safe-area-inset-top)+8px)] pb-6 flex items-center justify-between"
         >
-          <h1 className="text-3xl font-bold text-[#1A1A1A] dark:text-white tracking-tight font-relative">Cal AI</h1>
+          <h1 className="text-3xl font-bold text-[#1A1A1A] dark:text-white tracking-tight font-relative">NEP</h1>
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}

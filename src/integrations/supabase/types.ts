@@ -2170,20 +2170,20 @@ export type Database = {
       user_badges: {
         Row: {
           badge_id: string
-          earned_at: string | null
           id: string
+          unlocked_at: string | null
           user_id: string
         }
         Insert: {
           badge_id: string
-          earned_at?: string | null
           id?: string
+          unlocked_at?: string | null
           user_id: string
         }
         Update: {
           badge_id?: string
-          earned_at?: string | null
           id?: string
+          unlocked_at?: string | null
           user_id?: string
         }
         Relationships: [
@@ -3498,9 +3498,9 @@ export type Database = {
       check_and_unlock_badges: {
         Args: { p_user_id: string }
         Returns: {
-          badge_icon: string
-          badge_id: string
-          badge_name: string
+          unlocked_badge_icon: string
+          unlocked_badge_id: string
+          unlocked_badge_name: string
         }[]
       }
       check_streak_milestone: {
@@ -3590,6 +3590,14 @@ export type Database = {
       get_user_likes_count: {
         Args: { target_user_id: string }
         Returns: number
+      }
+      get_user_streak: {
+        Args: { p_user_id: string }
+        Returns: {
+          current_streak: number
+          longest_streak: number
+          total_days: number
+        }[]
       }
       has_role: {
         Args: {
