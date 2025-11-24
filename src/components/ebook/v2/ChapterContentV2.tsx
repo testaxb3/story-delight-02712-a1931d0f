@@ -41,6 +41,12 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
   const [selectedText, setSelectedText] = useState("");
   const [selectionPosition, setSelectionPosition] = useState<{ x: number; y: number } | null>(null);
 
+  console.log('📝 ChapterContentV2:', { 
+    chapterIndex, 
+    blocksCount: blocks?.length,
+    blocks: blocks?.slice(0, 3) // Show first 3 blocks
+  });
+
   useEffect(() => {
     const handleSelection = () => {
       const selection = window.getSelection();
@@ -85,6 +91,22 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
 
   // Safety check: ensure blocks is an array
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
+
+  console.log('📝 Rendering blocks:', {
+    blocksLength: safeBlocks.length,
+    firstBlock: safeBlocks[0],
+    allBlockTypes: safeBlocks.map(b => b.type)
+  });
+
+  if (safeBlocks.length === 0) {
+    return (
+      <article className="space-y-8">
+        <p className="text-center text-muted-foreground py-12">
+          No content available for this chapter.
+        </p>
+      </article>
+    );
+  }
 
   return (
     <article className="space-y-8">
