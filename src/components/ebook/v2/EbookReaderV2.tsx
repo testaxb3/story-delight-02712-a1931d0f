@@ -106,9 +106,16 @@ export const EbookReaderV2 = ({
 
   // ✅ CRITICAL: Force scroll to top when chapter changes
   useEffect(() => {
+    console.log('🔝 Scroll effect triggered:', { 
+      currentChapterIndex, 
+      isInitialMount: isInitialMount.current,
+      currentScroll: window.scrollY 
+    });
+    
     if (!isInitialMount.current) {
       // Scroll to top immediately when chapter changes
       window.scrollTo({ top: 0, behavior: 'instant' });
+      console.log('✅ Scrolled to top, new position:', window.scrollY);
     }
   }, [currentChapterIndex]);
 
@@ -159,26 +166,32 @@ export const EbookReaderV2 = ({
   const handleNext = useCallback(() => {
     if (currentChapterIndex < chapters.length - 1) {
       const nextIndex = currentChapterIndex + 1;
-      console.log('📖 Next chapter:', nextIndex);
+      console.log('📖 Next chapter clicked:', { from: currentChapterIndex, to: nextIndex });
       setCurrentChapterIndex(nextIndex);
       onChapterChange?.(nextIndex);
+      // Force scroll immediately
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
 
   const handlePrevious = useCallback(() => {
     if (currentChapterIndex > 0) {
       const prevIndex = currentChapterIndex - 1;
-      console.log('📖 Previous chapter:', prevIndex);
+      console.log('📖 Previous chapter clicked:', { from: currentChapterIndex, to: prevIndex });
       setCurrentChapterIndex(prevIndex);
       onChapterChange?.(prevIndex);
+      // Force scroll immediately
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
   }, [currentChapterIndex, onChapterChange]);
 
   const handleChapterSelect = useCallback((index: number) => {
-    console.log('📖 Select chapter:', index);
+    console.log('📖 Chapter selected from menu:', { from: currentChapterIndex, to: index });
     setCurrentChapterIndex(index);
     onChapterChange?.(index);
-  }, [onChapterChange]);
+    // Force scroll immediately
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentChapterIndex, onChapterChange]);
 
   const handleToggleBookmark = useCallback(() => {
     toggleBookmark(currentChapterIndex);
