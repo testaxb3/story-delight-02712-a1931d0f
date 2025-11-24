@@ -8,21 +8,29 @@ export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV
   const cleanTitle = title?.trim() || 'Untitled';
   const cleanSubtitle = subtitle?.trim();
   
+  console.log('🎨 ChapterCoverV2 rendering:', { 
+    chapterNumber, 
+    title, 
+    subtitle,
+    cleanTitle, 
+    cleanSubtitle 
+  });
+  
   return (
-    <div className="relative mb-12 py-8 px-4 rounded-xl bg-gradient-to-br from-primary/5 to-accent/5 border border-border">
-      <div className="text-center space-y-4">
+    <div className="relative mb-16 py-12 px-6 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary/20 shadow-lg">
+      <div className="text-center space-y-6">
         <div>
-          <span className="text-xs font-sans font-semibold tracking-widest uppercase text-muted-foreground">
+          <span className="text-sm font-sans font-bold tracking-widest uppercase text-primary">
             Chapter {chapterNumber}
           </span>
         </div>
         
-        <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground leading-snug">
+        <h1 className="font-display font-bold text-4xl md:text-5xl text-foreground leading-tight">
           {cleanTitle}
         </h1>
         
         {cleanSubtitle && (
-          <p className="text-base md:text-lg text-muted-foreground font-serif leading-relaxed">
+          <p className="text-lg md:text-xl text-foreground/80 font-serif leading-relaxed max-w-2xl mx-auto">
             {cleanSubtitle}
           </p>
         )}
