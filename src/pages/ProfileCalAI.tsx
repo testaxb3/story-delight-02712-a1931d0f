@@ -197,7 +197,7 @@ export default function ProfileCalAI() {
           <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
             <MenuItem
               icon={Megaphone}
-              title="Request a Feature"
+              title="Request a Script"
               onClick={() => navigate('/script-requests')}
             />
             <MenuItem
@@ -229,17 +229,17 @@ export default function ProfileCalAI() {
             <MenuItem
               icon={Instagram}
               title="Instagram"
-              onClick={() => window.open('https://instagram.com', '_blank')}
+              showChevron={false}
             />
             <MenuItem
               icon={MessageCircle}
               title="TikTok"
-              onClick={() => window.open('https://tiktok.com', '_blank')}
+              showChevron={false}
             />
             <MenuItem
               icon={Twitter}
               title="X"
-              onClick={() => window.open('https://twitter.com', '_blank')}
+              showChevron={false}
             />
           </Card>
 
