@@ -10,6 +10,9 @@
 -- Rollback: Run the previous version of this function from migration
 -- 20251124015513_a8799881-3456-4769-b732-c5e5c415dfe4.sql
 
+-- Drop existing function first (required when changing return type)
+DROP FUNCTION IF EXISTS check_and_unlock_badges(UUID);
+
 CREATE OR REPLACE FUNCTION check_and_unlock_badges(p_user_id UUID)
 RETURNS TABLE(unlocked_badge_id UUID, unlocked_badge_name TEXT, unlocked_badge_icon TEXT)
 LANGUAGE plpgsql
