@@ -165,12 +165,12 @@ export const EbookReaderV2 = ({
 
   return (
     <div 
-      className="min-h-screen bg-background pb-20 font-serif"
+      className="min-h-screen bg-background pb-[calc(5rem+env(safe-area-inset-bottom))] font-serif"
       style={{ fontSize: `${fontSize}rem` }}
     >
       {/* Smart Header - Slides in/out */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 pt-[env(safe-area-inset-top)] ${
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
@@ -227,7 +227,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-24 max-w-3xl">
+      <main className="container mx-auto px-4 pt-[calc(6rem+env(safe-area-inset-top))] pb-8 max-w-3xl">
         <ProgressBar 
           current={currentChapterIndex + 1}
           total={chapters.length}
