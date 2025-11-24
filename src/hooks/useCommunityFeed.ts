@@ -70,6 +70,17 @@ export function useCommunityFeed(communityId: string | null) {
 
       if (error) throw error;
 
+      // Map reaction types to emojis
+      const reactionTypeToEmoji: Record<string, string> = {
+        'love': '❤️',
+        'like': '👍',
+        'celebrate': '🎉',
+        'strong': '💪',
+        'insightful': '💡',
+        'helpful': '🤝',
+        'empathy': '🙏',
+      };
+
       // Group reactions by post_id
       const reactionsByPost: Record<string, PostReaction[]> = {};
       
@@ -78,7 +89,7 @@ export function useCommunityFeed(communityId: string | null) {
           reactionsByPost[reaction.post_id] = [];
         }
         
-        const emoji = '❤️'; // Using heart emoji for likes
+        const emoji = reactionTypeToEmoji[reaction.reaction_type] || '❤️';
         const existingReaction = reactionsByPost[reaction.post_id].find(r => r.emoji === emoji);
         if (existingReaction) {
           existingReaction.count++;
