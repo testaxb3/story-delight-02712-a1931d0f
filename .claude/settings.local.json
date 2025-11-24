@@ -52,7 +52,10 @@
       "Bash(git rm -rf .)",
       "Bash(git log:*)",
       "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\TESTE APP NOOVOOOO\\story-delight-02712\\supabase\\migrations\\20251114160000_fix_app_version_tracking.sql\")",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "WebFetch(domain:web.dev)",
+      "Bash(netstat:*)",
+      "Bash(tasklist:*)"
     ],
     "deny": [],
     "ask": []

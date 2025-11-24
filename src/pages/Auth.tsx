@@ -84,18 +84,14 @@ const Auth = memo(function Auth() {
           toast.success('Welcome! Let\'s get you set up', {
             duration: 3000,
           });
-          // Wait for profile refetch to complete (300ms) + propagation buffer
-          setTimeout(() => {
-            navigate('/onboarding', { replace: true });
-          }, 600);
+          // Navigate immediately - profile is created by Supabase trigger
+          navigate('/pwa-install', { replace: true });
         } else {
           toast.success('Welcome back!', {
             duration: 3000,
           });
-          // Wait for profile refetch to complete (300ms) + propagation buffer
-          setTimeout(() => {
-            navigate('/', { replace: true });
-          }, 600);
+          // Navigate immediately - session is established
+          navigate('/', { replace: true });
         }
       }
     } catch (error: any) {

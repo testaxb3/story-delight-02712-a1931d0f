@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users as UsersIcon, Sparkles } from 'lucide-react';
+import { Users as UsersIcon, Sparkles, ArrowRight } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -24,10 +24,10 @@ interface DefaultCommunity {
   profile: string;
 }
 
-const PROFILE_GRADIENTS: Record<string, string> = {
-  'INTENSE': 'from-orange-500/90 to-orange-600/90',
-  'DEFIANT': 'from-purple-500/90 to-purple-600/90',
-  'DISTRACTED': 'from-blue-500/90 to-blue-600/90',
+const PROFILE_CONFIG: Record<string, { gradient: string; icon: string }> = {
+  'INTENSE': { gradient: 'from-orange-500 via-orange-600 to-red-600', icon: '🔥' },
+  'DEFIANT': { gradient: 'from-purple-500 via-purple-600 to-indigo-600', icon: '👊' },
+  'DISTRACTED': { gradient: 'from-blue-500 via-blue-600 to-cyan-600', icon: '✨' },
 };
 
 // Memoized Community Card Component
@@ -44,58 +44,82 @@ const CommunityCard = memo(function CommunityCard({
     onJoin(community);
   }, [community, onJoin]);
 
+  const config = PROFILE_CONFIG[community.profile] || PROFILE_CONFIG['DISTRACTED'];
+
   return (
     <motion.button
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ 
-        delay: index * 0.1,
-        duration: 0.3,
-        ease: [0.4, 0, 0.2, 1]
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        delay: index * 0.15,
+        duration: 0.5,
+        ease: [0.16, 1, 0.3, 1]
       }}
-      whileHover={{ scale: 1.02, y: -4 }}
+      whileHover={{ y: -8, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
-      className="relative rounded-3xl overflow-hidden group cursor-pointer shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.12)] dark:shadow-lg dark:hover:shadow-2xl transition-all"
+      className="relative rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
     >
-      {/* Gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${community.gradient}`}>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent dark:from-black/60 dark:via-black/20 dark:to-transparent" />
+      {/* Glassmorphic gradient background */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-95`}>
+        {/* Animated gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/20" />
+
+        {/* Noise texture for depth */}
+        <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
+             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+        />
       </div>
-      
-      {/* Emoji decoration */}
-      <div className="absolute top-4 right-4 text-5xl opacity-30 group-hover:opacity-40 transition-opacity">
-        {community.logo_emoji}
+
+      {/* Large decorative icon */}
+      <div className="absolute top-4 right-4 text-[5rem] opacity-20 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500 select-none">
+        {config.icon}
+      </div>
+
+      {/* Animated shine effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+        <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/25 to-transparent" />
       </div>
 
       {/* Content */}
-      <div className="relative h-full min-h-[200px] p-5 flex flex-col justify-end">
+      <div className="relative h-56 p-6 flex flex-col justify-between">
+        {/* Top: Badge */}
         <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: index * 0.1 + 0.2 }}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.15 + 0.2 }}
         >
-          <h3 className="text-white font-bold text-xl mb-2 drop-shadow-lg text-left leading-tight">
+          <Badge
+            variant="secondary"
+            className="text-[0.7rem] bg-white/25 text-white border border-white/40 backdrop-blur-xl font-semibold px-3 py-1.5 shadow-lg"
+          >
+            {community.profile}
+          </Badge>
+        </motion.div>
+
+        {/* Bottom: Name and Stats */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.15 + 0.3 }}
+          className="space-y-3"
+        >
+          <h3 className="text-white font-black text-2xl drop-shadow-2xl text-left leading-tight tracking-tight">
             {community.name}
           </h3>
-          <div className="flex items-center gap-2">
-            <Badge
-              variant="secondary"
-              className="text-xs bg-white/20 text-white border-white/30 backdrop-blur-md font-medium px-2.5 py-1"
-            >
-              {community.profile}
-            </Badge>
-            <div className="flex items-center gap-1.5 bg-white/20 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/30">
-              <UsersIcon className="w-3.5 h-3.5 text-white" />
-              <span className="text-white text-xs font-semibold">{community.memberCount}</span>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 bg-black/25 backdrop-blur-xl rounded-full px-3.5 py-2 border border-white/30 shadow-lg">
+              <UsersIcon className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-bold">{community.memberCount}</span>
+              <span className="text-white/80 text-xs font-medium">members</span>
+            </div>
+
+            <div className="bg-white/25 backdrop-blur-xl rounded-full p-2 border border-white/40 group-hover:bg-white/40 transition-colors">
+              <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" />
             </div>
           </div>
         </motion.div>
-      </div>
-
-      {/* Shine effect on hover */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
       </div>
     </motion.button>
   );
@@ -107,24 +131,23 @@ const CommunitySkeleton = memo(function CommunitySkeleton({ index }: { index: nu
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay: index * 0.05 }}
-      className="relative rounded-3xl overflow-hidden bg-muted/50 h-[200px] animate-pulse"
+      transition={{ delay: index * 0.1 }}
+      className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-muted to-muted/50 h-56 animate-pulse shadow-xl"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-muted to-muted/50" />
-      <div className="relative h-full p-5 flex flex-col justify-end">
-        <div className="bg-muted-foreground/20 h-6 w-32 rounded-lg mb-2" />
-        <div className="flex items-center gap-2">
-          <div className="bg-muted-foreground/20 h-6 w-20 rounded-full" />
-          <div className="bg-muted-foreground/20 h-6 w-12 rounded-full" />
+      <div className="relative h-full p-6 flex flex-col justify-between">
+        <div className="bg-white/20 h-7 w-24 rounded-full" />
+        <div className="space-y-3">
+          <div className="bg-white/20 h-8 w-40 rounded-lg" />
+          <div className="bg-white/20 h-10 w-32 rounded-full" />
         </div>
       </div>
     </motion.div>
   );
 });
 
-export const CommunityLanding = memo(function CommunityLanding({ 
-  onCreateCommunity, 
-  onJoinCommunity 
+export const CommunityLanding = memo(function CommunityLanding({
+  onCreateCommunity,
+  onJoinCommunity
 }: CommunityLandingProps) {
   const [communities, setCommunities] = useState<DefaultCommunity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -149,11 +172,11 @@ export const CommunityLanding = memo(function CommunityLanding({
             .eq('community_id', community.id);
 
           const profile = community.invite_code.replace('2024', '');
-          
+
           return {
             ...community,
             memberCount: count || 0,
-            gradient: PROFILE_GRADIENTS[profile] || 'from-gray-500/90 to-gray-600/90',
+            gradient: PROFILE_CONFIG[profile]?.gradient || 'from-gray-500 to-gray-600',
             profile: profile,
           };
         })
@@ -221,13 +244,37 @@ export const CommunityLanding = memo(function CommunityLanding({
   const skeletonArray = useMemo(() => [0, 1, 2], []);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] dark:bg-gradient-to-b dark:from-background dark:via-background dark:to-background/95 flex flex-col relative overflow-hidden">
-      {/* Ambient background glows - Only Dark Mode */}
-      <div className="hidden dark:block fixed top-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="hidden dark:block fixed bottom-0 right-0 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <div
+      className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col overflow-hidden relative"
+      style={{
+        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1rem)',
+        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)'
+      }}
+    >
+      {/* Ambient background elements */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
-      {/* Top Section - Community Cards Grid */}
-      <div className="flex-1 relative z-10" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 16px)' }}>
+      {/* Header Section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="relative z-10 px-6 mb-6"
+      >
+        <div className="flex items-center gap-3 mb-2">
+          <Sparkles className="w-7 h-7 text-primary" />
+          <h1 className="text-3xl font-black text-foreground tracking-tight">
+            Communities
+          </h1>
+        </div>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          Join parents using NEP AI scripts
+        </p>
+      </motion.div>
+
+      {/* Communities Grid - Centered */}
+      <div className="flex-1 relative z-10 px-6 flex items-center justify-center overflow-hidden">
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div
@@ -235,7 +282,7 @@ export const CommunityLanding = memo(function CommunityLanding({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-2 gap-4 px-4 pt-4"
+              className="w-full max-w-2xl grid grid-cols-1 gap-5"
             >
               {skeletonArray.map((i) => (
                 <CommunitySkeleton key={i} index={i} />
@@ -247,7 +294,7 @@ export const CommunityLanding = memo(function CommunityLanding({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="grid grid-cols-2 gap-4 px-4 pt-4"
+              className="w-full max-w-2xl grid grid-cols-1 gap-5"
             >
               {communities.map((community, index) => (
                 <CommunityCard
@@ -262,62 +309,28 @@ export const CommunityLanding = memo(function CommunityLanding({
         </AnimatePresence>
       </div>
 
-      {/* Bottom Section - Content and CTAs */}
-      <motion.div 
+      {/* Bottom CTAs - Fixed */}
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-        className="relative z-10 bg-gradient-to-t from-[#F8F9FA] via-[#F8F9FA] to-transparent dark:from-background dark:via-background dark:to-transparent flex flex-col items-center justify-center px-6 py-12"
-        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
+        transition={{ delay: 0.5, duration: 0.5 }}
+        className="relative z-10 px-6 flex flex-col gap-3 mt-6"
       >
-        <div className="max-w-md w-full text-center">
-          {/* Title with icon */}
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="flex items-center justify-center gap-3 mb-4"
-          >
-            <Sparkles className="w-8 h-8 text-primary" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:bg-gradient-to-r dark:from-foreground dark:to-foreground/70 dark:bg-clip-text dark:text-transparent leading-tight">
-              Parenting is easier together
-            </h1>
-          </motion.div>
-
-          {/* Subtitle */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
-            className="text-base sm:text-lg text-[#6B7280] dark:text-muted-foreground mb-8 leading-relaxed"
-          >
-            Join a community and see how other parents are using NEP scripts
-          </motion.p>
-
-          {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.4 }}
-            className="flex flex-col gap-3"
-          >
-            <Button
-              size="lg"
-              onClick={onCreateCommunity}
-              className="w-full h-14 text-base bg-primary hover:bg-primary/90 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all"
-            >
-              Create New Community
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={onJoinCommunity}
-              className="w-full h-14 text-base border-2 hover:bg-accent rounded-full font-semibold transition-all"
-            >
-              Join Existing Community
-            </Button>
-          </motion.div>
-        </div>
+        <Button
+          size="lg"
+          onClick={onCreateCommunity}
+          className="w-full h-14 text-base bg-primary hover:bg-primary/90 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
+        >
+          Create New Community
+        </Button>
+        <Button
+          variant="outline"
+          size="lg"
+          onClick={onJoinCommunity}
+          className="w-full h-14 text-base border-2 hover:bg-accent rounded-2xl font-bold transition-all"
+        >
+          Join Existing Community
+        </Button>
       </motion.div>
     </div>
   );

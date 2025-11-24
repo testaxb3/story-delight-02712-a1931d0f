@@ -1,0 +1,54 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle with Gradient -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B35;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#F7931E;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFC857;stop-opacity:1" />
+    </linearGradient>
+
+    <linearGradient id="flameGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFFFFF;stop-opacity:0.9" />
+    </linearGradient>
+
+    <!-- Shadow -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="0" dy="4" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.2"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Main Circle Background -->
+  <circle cx="60" cy="60" r="56" fill="url(#bgGradient)" filter="url(#shadow)"/>
+
+  <!-- Stylized Flame Icon (Minimalist) -->
+  <path d="M60 25 C60 25, 48 40, 48 52 C48 64, 52 68, 60 72 C68 68, 72 64, 72 52 C72 40, 60 25, 60 25 Z"
+        fill="url(#flameGradient)"
+        opacity="0.95"/>
+
+  <!-- Inner flame detail -->
+  <path d="M60 35 C60 35, 54 44, 54 52 C54 58, 56 62, 60 64 C64 62, 66 58, 66 52 C66 44, 60 35, 60 35 Z"
+        fill="white"
+        opacity="0.4"/>
+
+  <!-- Letter N (Geometric, Modern) -->
+  <path d="M 42 75 L 48 75 L 48 92 L 60 78 L 60 95 L 54 95 L 54 78 L 42 92 Z"
+        fill="white"
+        opacity="0.95"
+        stroke="white"
+        stroke-width="0.5"/>
+
+  <path d="M 65 75 L 78 75 L 78 81 L 71 81 L 71 82.5 L 77 82.5 L 77 88 L 71 88 L 71 89.5 L 78 89.5 L 78 95 L 65 95 Z"
+        fill="white"
+        opacity="0.95"
+        stroke="white"
+        stroke-width="0.5"/>
+</svg>

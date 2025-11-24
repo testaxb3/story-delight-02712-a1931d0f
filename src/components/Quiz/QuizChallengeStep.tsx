@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizChallengeStepProps {
   challengeLevel: number;
@@ -35,6 +36,23 @@ export const QuizChallengeStep = memo(({
   onDurationChange,
   onApproachToggle,
 }: QuizChallengeStepProps) => {
+  const { triggerHaptic } = useHaptic();
+
+  const handleLevelChange = (value: number[]) => {
+    triggerHaptic('light');
+    onLevelChange(value[0]);
+  };
+
+  const handleDurationChange = (duration: string) => {
+    triggerHaptic('light');
+    onDurationChange(duration);
+  };
+
+  const handleApproachToggle = (approach: string) => {
+    triggerHaptic('light');
+    onApproachToggle(approach);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -72,7 +90,7 @@ export const QuizChallengeStep = memo(({
 
           <Slider
             value={[challengeLevel]}
-            onValueChange={(value) => onLevelChange(value[0])}
+            onValueChange={handleLevelChange}
             min={1}
             max={10}
             step={1}
@@ -95,7 +113,7 @@ export const QuizChallengeStep = memo(({
           {durationOptions.map((option, index) => (
             <motion.button
               key={option.value}
-              onClick={() => onDurationChange(option.value)}
+              onClick={() => handleDurationChange(option.value)}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + index * 0.05 }}
@@ -129,7 +147,7 @@ export const QuizChallengeStep = memo(({
             return (
               <motion.div
                 key={approach}
-                onClick={() => onApproachToggle(approach)}
+                onClick={() => handleApproachToggle(approach)}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 + index * 0.05 }}

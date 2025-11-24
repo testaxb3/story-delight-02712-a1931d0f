@@ -82,13 +82,15 @@ export function useQuizSubmission() {
           refreshChildren(),
           refreshUser(),
         ]);
-        
+
         queryClient.invalidateQueries({ queryKey: ['children'] });
-        setActiveChild(newProfile);
-        
+
+        // ✅ Fix: Pass child ID (string) instead of full profile object
+        setActiveChild(newProfile.id);
+
         toast.success(`Profile for ${data.childName} saved successfully!`);
         logger.debug(`Child profile created`, { childId: newProfile.id, name: data.childName });
-        
+
         return newProfile;
       }
 

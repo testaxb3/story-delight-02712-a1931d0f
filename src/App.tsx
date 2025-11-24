@@ -21,7 +21,6 @@ import NotFound from "./pages/NotFound";
 
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting
 // This reduces initial bundle size and improves Time to Interactive (TTI)
-const PWAOnboarding = lazy(() => import("./pages/PWAOnboarding"));
 const PWAInstall = lazy(() => import("./pages/PWAInstall"));
 const PWACheck = lazy(() => import("./pages/PWACheck"));
 const ThemeSelection = lazy(() => import("./pages/ThemeSelection"));
@@ -40,6 +39,7 @@ const CreatePost = lazy(() => import("./pages/Community/CreatePost"));
 const MembersList = lazy(() => import("./pages/Community/MembersList"));
 const JoinCommunity = lazy(() => import("./pages/Community/JoinCommunity"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
+const Progress = lazy(() => import("./pages/ProgressCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
@@ -103,7 +103,6 @@ function AppContent() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/auth" element={<Auth />} />
-        <Route path="/onboarding" element={<ProtectedRoute><PWAOnboarding /></ProtectedRoute>} />
         <Route path="/pwa-install" element={<ProtectedRoute><PWAInstall /></ProtectedRoute>} />
         <Route path="/pwa-check" element={<ProtectedRoute><PWACheck /></ProtectedRoute>} />
         <Route path="/theme-selection" element={<ProtectedRoute><ThemeSelection /></ProtectedRoute>} />
@@ -224,6 +223,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Tracker />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute>
+              <Progress />
             </ProtectedRoute>
           }
         />

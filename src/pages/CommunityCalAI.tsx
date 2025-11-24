@@ -31,12 +31,12 @@ export default function CommunityCalAI() {
     // Check if user has completed community onboarding
     const { data: profile } = await supabase
       .from('profiles')
-      .select('name, photo_url, community_onboarding_completed')
+      .select('name, nickname, photo_url, community_onboarding_completed')
       .eq('id', user.profileId)
       .single();
 
-    // User has completed onboarding if they have name and photo, OR if the flag is set
-    const onboardingComplete = (profile?.name && profile?.photo_url) || profile?.community_onboarding_completed || false;
+    // User has completed onboarding if they have name, nickname and photo, OR if the flag is set
+    const onboardingComplete = (profile?.name && profile?.nickname && profile?.photo_url) || profile?.community_onboarding_completed || false;
     setHasCompletedOnboarding(onboardingComplete);
 
     // Only handle deep link if invite code is present

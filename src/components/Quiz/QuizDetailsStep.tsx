@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizDetailsStepProps {
   childAge: number;
@@ -9,6 +10,13 @@ interface QuizDetailsStepProps {
 }
 
 export const QuizDetailsStep = memo(({ childAge, onChange }: QuizDetailsStepProps) => {
+  const { triggerHaptic } = useHaptic();
+
+  const handleAgeChange = (value: number[]) => {
+    triggerHaptic('light');
+    onChange(value[0]);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -52,7 +60,7 @@ export const QuizDetailsStep = memo(({ childAge, onChange }: QuizDetailsStepProp
         >
           <Slider
             value={[childAge]}
-            onValueChange={(value) => onChange(value[0])}
+            onValueChange={handleAgeChange}
             min={1}
             max={18}
             step={1}

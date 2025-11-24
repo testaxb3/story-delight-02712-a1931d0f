@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { ConfirmNameStep } from './onboarding/ConfirmNameStep';
+import { NicknameStep } from './onboarding/NicknameStep';
 import { ProfilePhotoStep } from './onboarding/ProfilePhotoStep';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -10,10 +11,11 @@ interface CommunityOnboardingProps {
 }
 
 export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
-  const [currentStep, setCurrentStep] = useState<'name' | 'photo'>('name');
+  const [currentStep, setCurrentStep] = useState<'name' | 'nickname' | 'photo'>('name');
   const [userData, setUserData] = useState({
     firstName: '',
     lastName: '',
+    nickname: '',
     photoUrl: '',
   });
   const { toast } = useToast();
@@ -28,7 +30,7 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('name, photo_url')
+      .select('name, nickname, photo_url')
       .eq('id', user.id)
       .single();
 
@@ -37,6 +39,7 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
       setUserData({
         firstName: firstName || '',
         lastName: lastNameParts.join(' ') || '',
+        nickname: profile.nickname || '',
         photoUrl: profile.photo_url || '',
       });
     }
@@ -44,6 +47,11 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
 
   const handleNameComplete = (firstName: string, lastName: string) => {
     setUserData({ ...userData, firstName, lastName });
+    setCurrentStep('nickname');
+  };
+
+  const handleNicknameComplete = (nickname: string) => {
+    setUserData({ ...userData, nickname });
     setCurrentStep('photo');
   };
 
@@ -58,6 +66,7 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
         .from('profiles')
         .update({
           name: fullName,
+          nickname: userData.nickname,
           photo_url: photoUrl,
           community_onboarding_completed: true,
         })
@@ -82,10 +91,11 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
   };
 
   const handleBack = () => {
-    if (currentStep === 'photo') setCurrentStep('name');
+    if (currentStep === 'photo') setCurrentStep('nickname');
+    else if (currentStep === 'nickname') setCurrentStep('name');
   };
 
-  const canGoBack = currentStep === 'photo';
+  const canGoBack = currentStep === 'photo' || currentStep === 'nickname';
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -103,10 +113,17 @@ export function CommunityOnboarding({ onComplete }: CommunityOnboardingProps) {
 
       <div className="flex-1 px-6 pb-safe">
         {currentStep === 'name' && (
-          <ConfirmNameStep 
+          <ConfirmNameStep
             initialFirstName={userData.firstName}
             initialLastName={userData.lastName}
-            onContinue={handleNameComplete} 
+            onContinue={handleNameComplete}
+          />
+        )}
+
+        {currentStep === 'nickname' && (
+          <NicknameStep
+            initialNickname={userData.nickname}
+            onContinue={handleNicknameComplete}
           />
         )}
 

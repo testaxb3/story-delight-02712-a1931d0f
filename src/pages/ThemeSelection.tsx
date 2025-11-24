@@ -5,21 +5,38 @@ import { Sun, Moon, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { trackEvent } from "@/lib/analytics";
 import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const ThemeSelection = () => {
   const navigate = useNavigate();
   const { setTheme } = useTheme();
+  const { user } = useAuth();
   const [selectedTheme, setSelectedTheme] = useState<"light" | "dark" | null>(null);
 
   useEffect(() => {
     trackEvent("theme_selection_page_viewed");
   }, []);
 
-  const handleThemeSelect = (theme: "light" | "dark") => {
+  const handleThemeSelect = async (theme: "light" | "dark") => {
     setSelectedTheme(theme);
     setTheme(theme);
     localStorage.setItem("theme_selected", "true");
     trackEvent("theme_selected", { theme });
+
+    // Save theme to database
+    if (user?.id) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ theme })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error saving theme:', error);
+        toast.error('Theme saved locally only');
+      }
+    }
 
     // Smooth transition to quiz
     setTimeout(() => {

@@ -1,6 +1,10 @@
-import { Flame, Calendar } from 'lucide-react';
+import { Flame, Calendar, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 
 interface UnifiedStatsCardProps {
   scriptsUsed: number;
@@ -10,19 +14,50 @@ interface UnifiedStatsCardProps {
 
 export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: UnifiedStatsCardProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { activeChild } = useChildProfiles();
+  const [isLoggedToday, setIsLoggedToday] = useState(false);
+  const [checking, setChecking] = useState(true);
+
   const percentage = scriptsTotal > 0 ? (scriptsUsed / scriptsTotal) * 100 : 0;
   const circumference = 2 * Math.PI * 45; // radius = 45
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
+  // Check if today is already logged
+  useEffect(() => {
+    const checkTodayLog = async () => {
+      if (!user?.id || !activeChild?.id) {
+        setChecking(false);
+        return;
+      }
+
+      const today = new Date().toISOString().split('T')[0];
+
+      const { data, error } = await supabase
+        .from('tracker_days')
+        .select('id, completed')
+        .eq('user_id', user.id)
+        .eq('child_profile_id', activeChild.id)
+        .eq('date', today)
+        .eq('completed', true)
+        .single();
+
+      setIsLoggedToday(!!data && !error);
+      setChecking(false);
+    };
+
+    checkTodayLog();
+  }, [user?.id, activeChild?.id]);
+
   return (
     <div className={cn(
-      "bg-white dark:bg-card rounded-[32px] p-6 flex flex-col",
+      "bg-white dark:bg-card rounded-[32px] p-6 flex flex-col h-[280px]",
       "border border-[#E5E7EB] dark:border-transparent",
       "shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none",
       className
     )}>
       {/* Top section - Stats and Progress Ring */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 flex-1">
         {/* Left side - Big number */}
         <div>
           <p className="text-6xl font-bold mb-2 text-[#1A1A1A] dark:text-white">{scriptsUsed}</p>
@@ -69,11 +104,27 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
 
       {/* Bottom section - Log Button */}
       <button
-        onClick={() => navigate('/tracker')}
-        className="w-full h-12 bg-[#F3F4F6] dark:bg-muted hover:bg-[#E5E7EB] dark:hover:bg-muted/80 rounded-xl flex items-center justify-center gap-2 text-sm font-medium text-[#1A1A1A] dark:text-foreground transition-colors"
+        onClick={() => !isLoggedToday && navigate('/progress')}
+        disabled={isLoggedToday || checking}
+        className={cn(
+          "w-full h-12 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all",
+          isLoggedToday
+            ? "bg-accent/10 text-accent cursor-not-allowed"
+            : "bg-[#F3F4F6] dark:bg-muted hover:bg-[#E5E7EB] dark:hover:bg-muted/80 text-[#1A1A1A] dark:text-foreground cursor-pointer",
+          checking && "opacity-50 cursor-wait"
+        )}
       >
-        <Calendar className="w-4 h-4" />
-        Log Today
+        {isLoggedToday ? (
+          <>
+            <Check className="w-4 h-4" />
+            Already Logged
+          </>
+        ) : (
+          <>
+            <Calendar className="w-4 h-4" />
+            Log Today
+          </>
+        )}
       </button>
     </div>
   );

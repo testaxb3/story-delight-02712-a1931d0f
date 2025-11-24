@@ -17,7 +17,7 @@ interface ChildProfilesContextValue {
   loading: boolean;
   onboardingRequired: boolean;
   refreshChildren: () => Promise<void>;
-  setActiveChild: (childId: string) => void;
+  setActiveChild: (childId: string | ChildProfile) => void;
 }
 
 const ChildProfilesContext = createContext<ChildProfilesContextValue | undefined>(undefined);
@@ -130,10 +130,14 @@ export function ChildProfilesProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.profileId]);
 
-  const setActiveChild = (childId: string) => {
+  const setActiveChild = (childId: string | ChildProfile) => {
     if (!user?.id) return;
-    setActiveChildId(childId);
-    persistActiveChild(user.id, childId);
+
+    // Extract ID if a full profile object is passed
+    const id = typeof childId === 'string' ? childId : childId.id;
+
+    setActiveChildId(id);
+    persistActiveChild(user.id, id);
   };
 
   const activeChild = useMemo(() => {

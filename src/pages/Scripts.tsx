@@ -29,6 +29,7 @@ import { useScriptCollections } from '@/hooks/useScriptCollections';
 import { useChildRecommendations } from '@/hooks/useChildRecommendations';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useFavoriteScripts } from '@/hooks/useFavoriteScripts';
+import { useScripts } from '@/hooks/useScripts';
 import { ScriptCardSkeletonList } from '@/components/Skeletons/ScriptCardSkeleton';
 import { ScriptModal } from '@/components/scripts/ScriptModal';
 import { CelebrationModal } from '@/components/scripts/CelebrationModal';
@@ -63,9 +64,14 @@ function ScriptsContent() {
   const [selectedScript, setSelectedScript] = useState<ScriptItem | null>(null);
   const [used, setUsed] = useState<Set<string>>(new Set());
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  const [scripts, setScripts] = useState<ScriptRow[]>([]);
-  const [loadingScripts, setLoadingScripts] = useState(false);
   const { activeChild, onboardingRequired } = useChildProfiles();
+
+  // ✅ PERFORMANCE: React Query for caching and automatic refetching
+  const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
+  const { scripts, isLoading: loadingScripts } = useScripts({
+    brainProfile: currentBrain,
+    enabled: !onboardingRequired,
+  });
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -182,25 +188,6 @@ function ScriptsContent() {
     }
   };
 
-  const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
-
-  const fetchScripts = useCallback(async () => {
-    setLoadingScripts(true);
-    const { data, error } = await supabase
-      .from('scripts')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Failed to load scripts', error);
-      toast({ title: 'Unable to load scripts', description: error.message, variant: 'destructive' });
-      setScripts([]);
-    } else {
-      setScripts(data ?? []);
-    }
-
-    setLoadingScripts(false);
-  }, []);
 
   const loadFeedback = useCallback(async (scriptId: string) => {
     if (!activeChild?.id || !user?.id) {
@@ -231,9 +218,7 @@ function ScriptsContent() {
     setLoadingFeedback(false);
   }, [activeChild?.id, user?.id]);
 
-  useEffect(() => {
-    fetchScripts();
-  }, [fetchScripts]);
+  // ✅ Removed: fetchScripts and useEffect - React Query handles this automatically
 
   // Load scripts used today
   useEffect(() => {
@@ -269,14 +254,20 @@ function ScriptsContent() {
       loadFeedback(selectedScript.id);
       setFeedbackOutcome('worked');
       setFeedbackNotes('');
-      // Load the original script row for the modal
+    } else {
+      setFeedbackHistory([]);
+    }
+  }, [loadFeedback, selectedScript]);
+
+  // Separate effect to update selectedScriptRow when scripts change
+  useEffect(() => {
+    if (selectedScript) {
       const scriptRow = scripts.find(s => s.id === selectedScript.id);
       setSelectedScriptRow(scriptRow || null);
     } else {
-      setFeedbackHistory([]);
       setSelectedScriptRow(null);
     }
-  }, [loadFeedback, selectedScript, scripts]);
+  }, [selectedScript?.id, scripts]);
 
   const formattedScripts = useMemo<ScriptItem[]>(() => {
     return scripts.map((script) => ({
@@ -307,10 +298,9 @@ function ScriptsContent() {
   }, [formattedScripts]);
 
   const brainScopedScripts = useMemo(() => {
-    return formattedScripts.filter(
-      (script) => script.brainType && currentBrain && script.brainType.toUpperCase() === currentBrain.toUpperCase(),
-    );
-  }, [formattedScripts, currentBrain]);
+    // ✅ PERFORMANCE: Scripts already filtered by profile on server
+    return formattedScripts;
+  }, [formattedScripts]);
 
   const recommendationMeta = useMemo(() => {
     const meta = new Map<string, { successScore: number | null; feedbackCount: number | null }>();
@@ -346,17 +336,13 @@ function ScriptsContent() {
   // FIM DO CÓDIGO CORRIGIDO DO CONFLITO
 
   const filteredScripts = useMemo(() => {
-    // Get scripts as ScriptRow[] for intelligent search
-    const scriptRows = scripts.filter(
-      (script) => script.profile && currentBrain && script.profile.toUpperCase() === currentBrain.toUpperCase(),
-    );
-
+    // ✅ PERFORMANCE: No need to filter by profile - already filtered on server
     // Apply category filter first
     const categoryFiltered = selectedCategory
-      ? scriptRows.filter(
+      ? scripts.filter(
           (script) => script.category.toLowerCase() === selectedCategory.toLowerCase(),
         )
-      : scriptRows;
+      : scripts;
 
     // If no search query, return category filtered
     if (!searchQuery.trim()) {
@@ -365,7 +351,7 @@ function ScriptsContent() {
 
     // Use intelligent search if query exists
     return intelligentSearch(searchQuery, categoryFiltered);
-  }, [scripts, currentBrain, searchQuery, selectedCategory]);
+  }, [scripts, searchQuery, selectedCategory]);
 
   // Removed old toggleFavorite function - now using useFavoriteScripts hook
 

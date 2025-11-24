@@ -34,7 +34,7 @@ export default function EditProfile() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('name, username, photo_url')
+        .select('name, nickname, photo_url')
         .eq('id', user.profileId)
         .single();
 
@@ -44,8 +44,8 @@ export default function EditProfile() {
         const nameParts = (data.name || '').split(' ');
         setFirstName(nameParts[0] || '');
         setLastName(nameParts.slice(1).join(' ') || '');
-        setUsername(data.username || '');
-        setOriginalUsername(data.username || '');
+        setUsername(data.nickname || '');
+        setOriginalUsername(data.nickname || '');
         setPhotoUrl(data.photo_url || '');
       }
     } catch (error) {
@@ -119,8 +119,8 @@ export default function EditProfile() {
     const timer = setTimeout(async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('username')
-        .eq('username', username)
+        .select('nickname')
+        .eq('nickname', username)
         .single();
 
       if (error && error.code === 'PGRST116') {
@@ -188,7 +188,7 @@ export default function EditProfile() {
       
       const updateData = {
         name: fullName,
-        username: username.trim().toLowerCase(),
+        nickname: username.trim().toLowerCase(),
         photo_url: photoUrl || null,
         community_onboarding_completed: true,
       };
