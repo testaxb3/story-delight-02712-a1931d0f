@@ -102,11 +102,11 @@ export function useUserProfile(userId: string | undefined, email: string | undef
       }
     },
     enabled: !!userId && !!email,
-    staleTime: 0, // Always treat data as stale to ensure fresh data
+    staleTime: 0, // Always treat data as stale - CRITICAL for quiz_completed accuracy
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
-    retry: 1,
-    refetchOnMount: true, // Always refetch on mount to ensure fresh data after profile edits
-    refetchOnWindowFocus: false, // Don't refetch on window focus to prevent session conflicts
+    retry: 2, // Increased retry to handle transient failures
+    refetchOnMount: 'always', // ✅ CRITICAL: Always refetch to get fresh quiz_completed state
+    refetchOnWindowFocus: false,
   });
 }
 
