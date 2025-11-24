@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 type UsernameStatus = 'idle' | 'checking' | 'available' | 'taken' | 'invalid';
 
 export default function EditProfile() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
+  const queryClient = useQueryClient();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -209,6 +211,14 @@ export default function EditProfile() {
       }
 
       console.log('Profile updated successfully, refreshing user...');
+      
+      // Invalidate all related queries to force fresh data
+      queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
+      
+      // Wait for queries to refetch
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       await refreshUser();
       
       toast.success('Profile updated successfully');

@@ -102,10 +102,10 @@ export function useUserProfile(userId: string | undefined, email: string | undef
       }
     },
     enabled: !!userId && !!email,
-    staleTime: 30 * 1000, // Cache for 30 seconds to prevent duplicate fetches
+    staleTime: 0, // Always treat data as stale to ensure fresh data
     gcTime: 5 * 60 * 1000, // Keep in cache for 5 minutes
     retry: 1,
-    refetchOnMount: 'always', // Always refetch on mount to ensure fresh data after profile edits
+    refetchOnMount: true, // Always refetch on mount to ensure fresh data after profile edits
     refetchOnWindowFocus: false, // Don't refetch on window focus to prevent session conflicts
   });
 }
