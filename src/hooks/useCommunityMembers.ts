@@ -26,14 +26,48 @@ export function useCommunityMembers(communityId: string | null, userId: string |
     }
 
     try {
-      // Use RPC function for better performance
-      const { data, error } = await supabase.rpc('get_community_members', {
-        p_community_id: communityId
-      });
+      // Fetch members with their scores from leaderboard_cache
+      const { data, error } = await supabase
+        .from('community_members')
+        .select(`
+          id,
+          user_id,
+          role,
+          joined_at,
+          profiles:user_id (
+            name,
+            username,
+            photo_url,
+            brain_profile
+          )
+        `)
+        .eq('community_id', communityId);
 
       if (error) throw error;
 
-      setMembers((data || []) as any);
+      // Now fetch scores from leaderboard_cache
+      const userIds = data?.map(m => m.user_id) || [];
+      const { data: scores } = await supabase
+        .from('leaderboard_cache')
+        .select('id, current_streak')
+        .in('id', userIds);
+
+      // Map scores to members
+      const scoreMap = new Map(scores?.map(s => [s.id, s.current_streak]) || []);
+
+      const membersData = data?.map(member => ({
+        id: member.id,
+        user_id: member.user_id,
+        role: member.role,
+        joined_at: member.joined_at,
+        name: (member.profiles as any)?.name || 'Unknown',
+        username: (member.profiles as any)?.username || null,
+        photo_url: (member.profiles as any)?.photo_url || null,
+        brain_profile: (member.profiles as any)?.brain_profile || null,
+        score: scoreMap.get(member.user_id) || 0,
+      })) || [];
+
+      setMembers(membersData);
     } catch (error) {
       console.error('Error loading members:', error);
       toast.error('Failed to load members');
