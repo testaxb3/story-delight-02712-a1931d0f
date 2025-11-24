@@ -18,7 +18,7 @@ const EbookReaderV2Page = () => {
     updateCurrentChapter, 
     updateScrollPosition,
     markChapterComplete 
-  } = useEbookProgress(ebookId);
+  } = useEbookProgress(ebook?.id); // Use the actual UUID from ebook
 
   const handleClose = () => {
     navigate('/bonuses');
@@ -87,17 +87,17 @@ const EbookReaderV2Page = () => {
         initialScrollPosition={initialScrollPosition}
         completedChapters={completedChapters}
         onChapterChange={(index) => {
-          if (ebookId) {
+          if (ebook?.id) {
             updateCurrentChapter.mutate(index);
           }
         }}
         onScrollPositionChange={(position) => {
-          if (ebookId) {
+          if (ebook?.id) {
             updateScrollPosition.mutate(position);
           }
         }}
         onChapterComplete={(index) => {
-          if (ebookId) {
+          if (ebook?.id) {
             markChapterComplete.mutate(index);
           }
         }}

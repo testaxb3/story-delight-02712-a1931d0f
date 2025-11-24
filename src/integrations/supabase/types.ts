@@ -1493,12 +1493,14 @@ export type Database = {
           is_admin: boolean
           likes_received_count: number
           name: string | null
+          nickname: string | null
           photo_url: string | null
           posts_count: number
           premium: boolean
           quiz_completed: boolean
           quiz_in_progress: boolean
           role: string | null
+          theme: string | null
           updated_at: string | null
           username: string | null
           welcome_modal_shown: boolean | null
@@ -1519,12 +1521,14 @@ export type Database = {
           is_admin?: boolean
           likes_received_count?: number
           name?: string | null
+          nickname?: string | null
           photo_url?: string | null
           posts_count?: number
           premium?: boolean
           quiz_completed?: boolean
           quiz_in_progress?: boolean
           role?: string | null
+          theme?: string | null
           updated_at?: string | null
           username?: string | null
           welcome_modal_shown?: boolean | null
@@ -1545,12 +1549,14 @@ export type Database = {
           is_admin?: boolean
           likes_received_count?: number
           name?: string | null
+          nickname?: string | null
           photo_url?: string | null
           posts_count?: number
           premium?: boolean
           quiz_completed?: boolean
           quiz_in_progress?: boolean
           role?: string | null
+          theme?: string | null
           updated_at?: string | null
           username?: string | null
           welcome_modal_shown?: boolean | null
@@ -2501,36 +2507,7 @@ export type Database = {
           sessions_count?: number | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
-            columns: ["ebook_id"]
-            isOneToOne: false
-            referencedRelation: "bonuses_with_user_progress"
-            referencedColumns: ["ebook_id"]
-          },
-          {
-            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
-            columns: ["ebook_id"]
-            isOneToOne: false
-            referencedRelation: "ebooks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
-            columns: ["ebook_id"]
-            isOneToOne: false
-            referencedRelation: "ebooks_with_stats"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_ebook_progress_ebook_id_fkey"
-            columns: ["ebook_id"]
-            isOneToOne: false
-            referencedRelation: "user_recent_ebooks"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_favorites: {
         Row: {
@@ -3609,15 +3586,25 @@ export type Database = {
     }
     Functions: {
       acknowledge_app_update: { Args: never; Returns: Json }
-      add_bookmark: {
-        Args: {
-          p_chapter: number
-          p_ebook_id: string
-          p_label?: string
-          p_position: number
-        }
-        Returns: undefined
-      }
+      add_bookmark:
+        | {
+            Args: {
+              p_chapter: number
+              p_ebook_id: string
+              p_label?: string
+              p_position: number
+            }
+            Returns: undefined
+          }
+        | {
+            Args: {
+              p_chapter: number
+              p_ebook_id: string
+              p_label?: string
+              p_position: number
+            }
+            Returns: undefined
+          }
       admin_delete_script: {
         Args: { script_id_param: string }
         Returns: undefined
@@ -3760,10 +3747,15 @@ export type Database = {
         Returns: boolean
       }
       is_email_approved: { Args: { p_email: string }; Returns: boolean }
-      mark_chapter_complete: {
-        Args: { p_chapter_index: number; p_ebook_id: string }
-        Returns: undefined
-      }
+      mark_chapter_complete:
+        | {
+            Args: { p_chapter_index: number; p_ebook_id: string }
+            Returns: undefined
+          }
+        | {
+            Args: { p_chapter_index: number; p_ebook_id: string }
+            Returns: undefined
+          }
       require_admin: { Args: never; Returns: undefined }
       restore_bonus: { Args: { p_bonus_id: string }; Returns: Json }
       save_child_profile: {
@@ -3790,12 +3782,14 @@ export type Database = {
           is_admin: boolean
           likes_received_count: number
           name: string | null
+          nickname: string | null
           photo_url: string | null
           posts_count: number
           premium: boolean
           quiz_completed: boolean
           quiz_in_progress: boolean
           role: string | null
+          theme: string | null
           updated_at: string | null
           username: string | null
           welcome_modal_shown: boolean | null
@@ -3845,10 +3839,15 @@ export type Database = {
         Args: { p_emoji: string; p_post_id: string }
         Returns: Json
       }
-      update_reading_time: {
-        Args: { p_ebook_id: string; p_minutes_delta: number }
-        Returns: undefined
-      }
+      update_reading_time:
+        | {
+            Args: { p_ebook_id: string; p_minutes_delta: number }
+            Returns: undefined
+          }
+        | {
+            Args: { p_ebook_id: string; p_minutes_delta: number }
+            Returns: undefined
+          }
       verify_schema_fixes: {
         Args: never
         Returns: {

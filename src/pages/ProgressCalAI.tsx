@@ -31,7 +31,7 @@ interface DayData {
   isToday: boolean;
   hasData: boolean;
   stress_level?: number;
-  entry?: TrackerEntry;
+  entry?: TrackerDay;
 }
 
 type TimePeriod = '90D' | '6M' | '1Y' | 'ALL';
