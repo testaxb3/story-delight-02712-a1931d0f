@@ -64,13 +64,13 @@ export function useCommunityFeed(communityId: string | null) {
 
     try {
       const { data, error } = await supabase
-        .from('group_reactions')
-        .select('post_id, emoji, user_id')
+        .from('post_likes')
+        .select('post_id, reaction_type, user_id')
         .in('post_id', postIds);
 
       if (error) throw error;
 
-      // Group reactions by post_id and emoji
+      // Group reactions by post_id
       const reactionsByPost: Record<string, PostReaction[]> = {};
       
       (data || []).forEach((reaction: any) => {
@@ -78,11 +78,12 @@ export function useCommunityFeed(communityId: string | null) {
           reactionsByPost[reaction.post_id] = [];
         }
         
-        const existingReaction = reactionsByPost[reaction.post_id].find(r => r.emoji === reaction.emoji);
+        const emoji = '❤️'; // Using heart emoji for likes
+        const existingReaction = reactionsByPost[reaction.post_id].find(r => r.emoji === emoji);
         if (existingReaction) {
           existingReaction.count++;
         } else {
-          reactionsByPost[reaction.post_id].push({ emoji: reaction.emoji, count: 1 });
+          reactionsByPost[reaction.post_id].push({ emoji, count: 1 });
         }
       });
 

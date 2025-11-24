@@ -8,20 +8,45 @@ export function usePostActions() {
 
   const addReaction = useCallback(async (postId: string, emoji: string) => {
     try {
-      const { data, error } = await supabase
-        .rpc('toggle_group_reaction', {
-          p_post_id: postId,
-          p_emoji: emoji
-        });
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to react');
+        return false;
+      }
 
-      if (error) throw error;
-      
-      if (data?.success) {
-        toast.success(data.message);
+      // Check if reaction already exists
+      const { data: existing, error: checkError } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('post_id', postId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+
+      if (existing) {
+        // Remove existing reaction
+        const { error: deleteError } = await supabase
+          .from('post_likes')
+          .delete()
+          .eq('id', existing.id);
+
+        if (deleteError) throw deleteError;
+        toast.success('Reaction removed');
         return true;
       } else {
-        toast.error(data?.message || 'Failed to update reaction');
-        return false;
+        // Add new reaction
+        const { error: insertError } = await supabase
+          .from('post_likes')
+          .insert({
+            post_id: postId,
+            user_id: user.id,
+            reaction_type: 'like'
+          });
+
+        if (insertError) throw insertError;
+        toast.success('Reaction added');
+        return true;
       }
     } catch (error: any) {
       toast.error(`Error: ${error.message}`);
