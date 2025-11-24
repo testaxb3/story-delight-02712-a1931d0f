@@ -11,6 +11,7 @@ export interface Member {
   username: string | null;
   photo_url: string | null;
   brain_profile: string | null;
+  score?: number;
 }
 
 export function useCommunityMembers(communityId: string | null, userId: string | null) {
