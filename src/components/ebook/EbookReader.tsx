@@ -232,7 +232,7 @@ export const EbookReader = ({
         
         {/* Chapter Content */}
         <div className="mt-8 animate-fade-in">
-          <ChapterContent blocks={currentChapter.content} />
+          <ChapterContent blocks={currentChapter.content || []} />
         </div>
         
         {/* Page Number */}

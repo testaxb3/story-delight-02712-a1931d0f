@@ -178,31 +178,31 @@ export const EbookReaderV2 = ({
     >
       {/* Smart Header - Slides in/out */}
       <header 
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 pt-[calc(0.75rem+env(safe-area-inset-top))] ${
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 ${
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between max-w-5xl">
-          <div className="flex items-center gap-3">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
+          <div className="flex items-center gap-2 min-w-0 flex-shrink">
             <Button
               variant="ghost"
               size="icon"
               onClick={onClose}
-              className="hover:bg-accent/50"
+              className="hover:bg-accent/50 flex-shrink-0"
               aria-label="Close ebook"
             >
               <X className="h-5 w-5" />
             </Button>
             
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground font-sans">
-              <Home className="h-4 w-4" />
-              <span>Chapter {currentChapterIndex + 1}</span>
-              <span>•</span>
-              <span className="max-w-[200px] truncate">{currentChapter.title}</span>
+            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground font-sans min-w-0">
+              <Home className="h-4 w-4 flex-shrink-0" />
+              <span className="flex-shrink-0">Chapter {currentChapterIndex + 1}</span>
+              <span className="flex-shrink-0">•</span>
+              <span className="truncate max-w-[150px]">{currentChapter.title}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 flex-shrink-0">
             <TableOfContents 
               chapters={chapters}
               currentChapter={currentChapterIndex}
@@ -235,7 +235,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-[calc(5rem+env(safe-area-inset-top))] pb-24 max-w-3xl">
+      <main className="container mx-auto px-4 pt-24 pb-24 max-w-3xl" style={{ paddingTop: 'calc(5rem + env(safe-area-inset-top))' }}>
         <ProgressBar 
           current={currentChapterIndex + 1}
           total={chapters.length}
@@ -249,7 +249,7 @@ export const EbookReaderV2 = ({
         />
 
         <ChapterContentV2 
-          blocks={currentChapter.sections || currentChapter.content || []}
+          blocks={currentChapter.content}
           chapterIndex={currentChapterIndex}
         />
 
