@@ -106,16 +106,11 @@ export const EbookReaderV2 = ({
 
   // ✅ CRITICAL: Force scroll to top when chapter changes
   useEffect(() => {
-    console.log('🔝 Scroll effect triggered:', { 
-      currentChapterIndex, 
-      isInitialMount: isInitialMount.current,
-      currentScroll: window.scrollY 
-    });
-    
     if (!isInitialMount.current) {
-      // Scroll to top immediately when chapter changes
-      window.scrollTo({ top: 0, behavior: 'instant' });
-      console.log('✅ Scrolled to top, new position:', window.scrollY);
+      // Multiple scroll methods to ensure it works across all browsers
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     }
   }, [currentChapterIndex]);
 
@@ -166,32 +161,41 @@ export const EbookReaderV2 = ({
   const handleNext = useCallback(() => {
     if (currentChapterIndex < chapters.length - 1) {
       const nextIndex = currentChapterIndex + 1;
-      console.log('📖 Next chapter clicked:', { from: currentChapterIndex, to: nextIndex });
       setCurrentChapterIndex(nextIndex);
       onChapterChange?.(nextIndex);
-      // Force scroll immediately
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Scroll to top immediately - multiple attempts to ensure it works
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
 
   const handlePrevious = useCallback(() => {
     if (currentChapterIndex > 0) {
       const prevIndex = currentChapterIndex - 1;
-      console.log('📖 Previous chapter clicked:', { from: currentChapterIndex, to: prevIndex });
       setCurrentChapterIndex(prevIndex);
       onChapterChange?.(prevIndex);
-      // Force scroll immediately
-      window.scrollTo({ top: 0, behavior: 'instant' });
+      // Scroll to top immediately - multiple attempts to ensure it works
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+      });
     }
   }, [currentChapterIndex, onChapterChange]);
 
   const handleChapterSelect = useCallback((index: number) => {
-    console.log('📖 Chapter selected from menu:', { from: currentChapterIndex, to: index });
     setCurrentChapterIndex(index);
     onChapterChange?.(index);
-    // Force scroll immediately
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [currentChapterIndex, onChapterChange]);
+    // Scroll to top immediately - multiple attempts to ensure it works
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    });
+  }, [onChapterChange]);
 
   const handleToggleBookmark = useCallback(() => {
     toggleBookmark(currentChapterIndex);
