@@ -44,18 +44,34 @@ export function useEbookContent(ebookId: string | undefined) {
       // Parse JSONB content - handle multiple possible structures
       let rawChapters: any[] = [];
       
+      console.log('📦 Parsing ebook content:', {
+        contentType: typeof data.content,
+        isArray: Array.isArray(data.content),
+        hasChaptersProperty: data.content?.chapters !== undefined,
+        contentKeys: data.content ? Object.keys(data.content) : []
+      });
+      
       if (Array.isArray(data.content)) {
         // Direct array format (old format)
         rawChapters = data.content;
       } else if (data.content?.chapters && Array.isArray(data.content.chapters)) {
         // Object with chapters property (new format)
         rawChapters = data.content.chapters;
+      } else {
+        console.error('❌ Unknown ebook content format:', data.content);
       }
       
       // Ensure each chapter has required fields
       const chapters: Chapter[] = rawChapters.map((chapter: any, index: number) => {
         // Handle different content field names
         const content = chapter.content || chapter.sections || [];
+        
+        console.log(`📖 Chapter ${index}:`, {
+          hasContent: !!content,
+          contentLength: Array.isArray(content) ? content.length : 0,
+          title: chapter.title,
+          firstContentBlock: Array.isArray(content) ? content[0] : null
+        });
         
         return {
           ...chapter,

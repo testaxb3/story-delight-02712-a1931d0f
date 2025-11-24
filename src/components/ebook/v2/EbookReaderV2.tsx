@@ -35,6 +35,12 @@ export const EbookReaderV2 = ({
   onScrollPositionChange,
   onClose 
 }: EbookReaderV2Props) => {
+  console.log('📖 EbookReaderV2 mounted:', { 
+    chaptersCount: chapters?.length,
+    initialChapter,
+    firstChapter: chapters?.[0]
+  });
+
   if (!chapters || chapters.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -59,7 +65,17 @@ export const EbookReaderV2 = ({
   const { highlights, getChapterHighlights } = useHighlights();
 
   const currentChapter = chapters[currentChapterIndex];
-  const progress = chapters.length > 0 
+  
+  if (!currentChapter) {
+    console.error('❌ Current chapter not found:', currentChapterIndex);
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Chapter not found.</p>
+      </div>
+    );
+  }
+
+  const progress = chapters.length > 0
     ? Math.round(((currentChapterIndex + 1) / chapters.length) * 100)
     : 0;
 
@@ -238,7 +254,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-24 pb-24 max-w-3xl" style={{ paddingTop: 'calc(5rem + env(safe-area-inset-top))' }}>
+      <main className="container mx-auto px-4 pt-20 pb-24 max-w-3xl">
         <ProgressBar 
           current={currentChapterIndex + 1}
           total={chapters.length}
@@ -247,12 +263,12 @@ export const EbookReaderV2 = ({
 
         <ChapterCoverV2
           chapterNumber={currentChapterIndex + 1}
-          title={currentChapter.title}
-          subtitle={currentChapter.subtitle}
+          title={currentChapter?.title || 'Untitled Chapter'}
+          subtitle={currentChapter?.subtitle}
         />
 
         <ChapterContentV2 
-          blocks={currentChapter.content}
+          blocks={currentChapter?.content || []}
           chapterIndex={currentChapterIndex}
         />
 

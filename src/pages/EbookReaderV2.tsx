@@ -17,8 +17,17 @@ const EbookReaderV2Page = () => {
     progress, 
     updateCurrentChapter, 
     updateScrollPosition,
-    markChapterComplete 
-  } = useEbookProgress(ebook?.id); // Use the actual UUID from ebook
+    markChapterComplete,
+    saveHighlight
+  } = useEbookProgress(ebook?.id);
+
+  console.log('📊 Progress loaded:', {
+    ebookId: ebook?.id,
+    hasProgress: !!progress,
+    currentChapter: progress?.current_chapter,
+    completedChapters: progress?.completed_chapters,
+    highlights: progress?.highlights
+  });
 
   const handleClose = () => {
     navigate('/bonuses');
@@ -54,6 +63,15 @@ const EbookReaderV2Page = () => {
 
   // Use dynamic chapters if available, fallback to hardcoded
   const finalChapters = chapters && chapters.length > 0 ? chapters : ebookContent;
+
+  console.log('🔍 Ebook Debug:', { 
+    ebookId, 
+    hasEbook: !!ebook, 
+    ebookTitle: ebook?.title,
+    chaptersCount: chapters?.length,
+    finalChaptersCount: finalChapters?.length,
+    firstChapter: finalChapters?.[0]
+  });
 
   if (!finalChapters || finalChapters.length === 0) {
     return (
