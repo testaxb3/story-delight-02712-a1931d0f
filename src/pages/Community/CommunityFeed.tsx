@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { PostReactionsSheet } from '@/components/Community/PostReactionsSheet';
+import { CreatePostModal } from '@/components/Community/CreatePostModal';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -34,10 +35,11 @@ export default function CommunityFeed() {
   const [currentCommunity, setCurrentCommunity] = useState<Community | null>(null);
   const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [showReactionsSheet, setShowReactionsSheet] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [isUserAdmin, setIsUserAdmin] = useState(false);
 
   // Use custom hooks for data management
-  const { posts, postReactions, loading: postsLoading } = useCommunityFeed(currentCommunity?.id || null);
+  const { posts, postReactions, loading: postsLoading, loadPosts } = useCommunityFeed(currentCommunity?.id || null);
   const { members, loading: membersLoading } = useCommunityMembers(currentCommunity?.id || null, user?.profileId || null);
   const { addReaction, deletePost, deletingPostId } = usePostActions();
 
@@ -151,7 +153,7 @@ export default function CommunityFeed() {
             {postsLoading ? (
               <PostsFeedSkeleton count={3} />
             ) : posts.length === 0 ? (
-              <EmptyState onCreatePost={() => handleOpenReactions('')} />
+              <EmptyState onCreatePost={() => setShowCreateModal(true)} />
             ) : (
               <div className="space-y-5">
                 {posts.map((post, idx) => (
@@ -185,13 +187,24 @@ export default function CommunityFeed() {
         onAddComment={() => {}}
       />
 
+      {/* Create Post Modal */}
+      {currentCommunity && user?.profileId && (
+        <CreatePostModal
+          open={showCreateModal}
+          onOpenChange={setShowCreateModal}
+          communityId={currentCommunity.id}
+          userId={user.profileId}
+          onSuccess={loadPosts}
+        />
+      )}
+
       {/* Floating Add Post Button */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => navigate('/community/create-post', { state: { communityId: currentCommunity?.id } })}
+        onClick={() => setShowCreateModal(true)}
         className="fixed right-6 w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center z-50 hover:shadow-xl hover:shadow-orange-500/40 transition-shadow"
         style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
       >
