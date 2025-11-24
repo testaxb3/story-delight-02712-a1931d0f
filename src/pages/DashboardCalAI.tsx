@@ -137,14 +137,14 @@ export default function DashboardCalAI() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
-        className="min-h-screen bg-[#F8F9FA] dark:bg-background pb-32 relative overflow-hidden transition-colors duration-300"
+        className="min-h-screen bg-background pb-32 relative overflow-hidden transition-colors duration-300"
       >
         {/* Ambient Background Effect - Removed for cleaner light mode */}
         <div className="hidden dark:block fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
         <div className="hidden dark:block fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
         {/* Fixed Header Background for Status Bar */}
-        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-[#F8F9FA] via-[#F8F9FA]/80 to-transparent dark:from-background dark:via-background dark:to-transparent pointer-events-none" />
+        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-background via-background/80 to-transparent pointer-events-none" />
 
         {/* Header - Logo & Streak */}
         <motion.header 
@@ -153,7 +153,7 @@ export default function DashboardCalAI() {
           transition={{ duration: 0.4 }}
           className="relative z-50 px-6 pt-[calc(env(safe-area-inset-top)+8px)] pb-6 flex items-center justify-between"
         >
-          <h1 className="text-3xl font-bold text-[#1A1A1A] dark:text-white tracking-tight font-relative">NEP</h1>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight font-relative">NEP</h1>
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -161,14 +161,14 @@ export default function DashboardCalAI() {
               triggerHaptic('light');
               navigate('/achievements');
             }}
-            className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-[#E5E7EB] dark:border-white/5 px-4 py-2 rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-lg cursor-pointer"
+            className="flex items-center gap-2 bg-card backdrop-blur-md border border-border px-4 py-2 rounded-full shadow-sm cursor-pointer"
           >
             <Flame className="w-5 h-5 text-orange-500 fill-orange-500" />
             <motion.span
               key={currentStreak}
               initial={{ scale: 1.3, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="font-bold text-lg text-[#1A1A1A] dark:text-white"
+              className="font-bold text-lg text-foreground"
             >
               {currentStreak}
             </motion.span>
@@ -182,7 +182,7 @@ export default function DashboardCalAI() {
           transition={{ delay: 0.1, duration: 0.4 }}
           className="px-4 mb-8"
         >
-          <div className="flex justify-between items-center bg-white dark:bg-[#1C1C1E]/50 backdrop-blur-sm p-4 rounded-3xl border border-[#E5E7EB] dark:border-white/5 shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none">
+          <div className="flex justify-between items-center bg-card/50 backdrop-blur-sm p-4 rounded-3xl border border-border shadow-sm">
             {weekDays.map((day, index) => (
               <motion.button
                 key={day.label}
@@ -195,15 +195,15 @@ export default function DashboardCalAI() {
               >
                 <span className={cn(
                   "text-[11px] font-medium uppercase tracking-wider transition-colors",
-                  day.isToday ? "text-[#1A1A1A] dark:text-white" : "text-[#6B7280] dark:text-gray-500 group-hover:text-[#374151] dark:group-hover:text-gray-400"
+                  day.isToday ? "text-foreground" : "text-muted-foreground group-hover:text-foreground/80"
                 )}>
                   {day.label}
                 </span>
                 <div className={cn(
                   "w-10 h-10 rounded-full flex items-center justify-center text-base font-bold transition-all relative",
                   day.isToday
-                    ? "bg-[#1A1A1A] text-white dark:bg-white dark:text-black shadow-[0_2px_8px_rgba(0,0,0,0.12)] dark:shadow-[0_0_15px_rgba(255,255,255,0.3)] scale-110"
-                    : "text-[#9CA3AF] dark:text-gray-400 group-hover:bg-[#F3F4F6] dark:group-hover:bg-white/5"
+                    ? "bg-primary text-primary-foreground shadow-lg scale-110"
+                    : "text-muted-foreground group-hover:bg-muted"
                 )}>
                   {day.date}
                   {/* Activity indicator dots */}
@@ -258,12 +258,12 @@ export default function DashboardCalAI() {
                 triggerHaptic('medium');
                 navigate('/tracker');
               }}
-              className="h-full bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-[#333] rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none"
+              className="h-full bg-card border border-border rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-sm"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
 
               <div className="flex justify-between items-start mb-4">
-                <div className="p-3 bg-[#EEF2FF] dark:bg-[#2C2C2E] rounded-2xl">
+                <div className="p-3 bg-blue-500/10 rounded-2xl">
                   <Calendar className="w-6 h-6 text-blue-500 dark:text-blue-400" />
                 </div>
                 <div className="bg-blue-500/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full text-xs font-bold">
@@ -272,9 +272,9 @@ export default function DashboardCalAI() {
               </div>
 
               <div>
-                <h3 className="text-2xl font-bold text-[#1A1A1A] dark:text-white mb-1">Daily Log</h3>
-                <p className="text-[#6B7280] dark:text-gray-400 text-sm mb-4">Track meltdowns and progress.</p>
-                <div className="w-full bg-[#F3F4F6] dark:bg-[#2C2C2E] h-12 rounded-xl flex items-center justify-center text-sm font-medium text-[#1A1A1A] dark:text-white group-hover:bg-[#E5E7EB] dark:group-hover:bg-[#3C3C3E] transition-colors">
+                <h3 className="text-2xl font-bold text-foreground mb-1">Daily Log</h3>
+                <p className="text-muted-foreground text-sm mb-4">Track meltdowns and progress.</p>
+                <div className="w-full bg-muted h-12 rounded-xl flex items-center justify-center text-sm font-medium text-foreground group-hover:bg-muted/80 transition-colors">
                   Log Today
                 </div>
               </div>
@@ -296,12 +296,12 @@ export default function DashboardCalAI() {
                   triggerHaptic('medium');
                   navigate('/bonuses?category=video');
                 }}
-                className="h-full bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-[#333] rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none"
+                className="h-full bg-card border border-border rounded-[32px] p-6 flex flex-col justify-between relative overflow-hidden group cursor-pointer shadow-sm"
               >
                 <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-2xl -mr-10 -mt-10 pointer-events-none" />
 
                 <div className="flex justify-between items-start mb-4">
-                  <div className="p-3 bg-[#FAF5FF] dark:bg-[#2C2C2E] rounded-2xl">
+                  <div className="p-3 bg-purple-500/10 rounded-2xl">
                     <Play className="w-6 h-6 text-purple-500 dark:text-purple-400 fill-purple-500 dark:fill-purple-400" />
                   </div>
                   <div className="bg-purple-500/10 text-purple-600 dark:text-purple-400 px-3 py-1 rounded-full text-xs font-bold">
@@ -310,9 +310,9 @@ export default function DashboardCalAI() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-1 line-clamp-1">{latestVideo.title}</h3>
-                  <p className="text-[#6B7280] dark:text-gray-400 text-sm mb-4 line-clamp-1">Latest expert guidance</p>
-                  <div className="w-full bg-[#F3F4F6] dark:bg-[#2C2C2E] h-12 rounded-xl flex items-center justify-center text-sm font-medium text-[#1A1A1A] dark:text-white group-hover:bg-[#E5E7EB] dark:group-hover:bg-[#3C3C3E] transition-colors">
+                  <h3 className="text-lg font-bold text-foreground mb-1 line-clamp-1">{latestVideo.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-1">Latest expert guidance</p>
+                  <div className="w-full bg-muted h-12 rounded-xl flex items-center justify-center text-sm font-medium text-foreground group-hover:bg-muted/80 transition-colors">
                     Watch Now
                   </div>
                 </div>
@@ -328,16 +328,12 @@ export default function DashboardCalAI() {
               key={index}
               animate={{
                 width: activeCarouselIndex === index ? 16 : 8,
-                backgroundColor: activeCarouselIndex === index ? 'var(--primary)' : 'var(--muted)'
               }}
               transition={{ duration: 0.3 }}
-              className="h-2 rounded-full bg-slate-200 dark:bg-[#333]"
-              style={{
-                // Use CSS vars for dynamic theme colors if preferred, or inline conditional styles
-                backgroundColor: activeCarouselIndex === index 
-                  ? (document.documentElement.classList.contains('dark') ? '#ffffff' : '#0f172a') 
-                  : (document.documentElement.classList.contains('dark') ? '#333333' : '#cbd5e1')
-              }}
+              className={cn(
+                "h-2 rounded-full transition-colors",
+                activeCarouselIndex === index ? "bg-primary" : "bg-muted"
+              )}
             />
           ))}
         </div>
@@ -364,7 +360,7 @@ export default function DashboardCalAI() {
           transition={{ delay: 0.6 }}
           className="px-6 mb-8"
         >
-          <h2 className="text-xl font-bold text-[#1A1A1A] dark:text-white mb-4">Quick Stats</h2>
+          <h2 className="text-xl font-bold text-foreground mb-4">Quick Stats</h2>
           <div className="grid grid-cols-2 gap-4">
             <AnimatedStatsCard
               value={dashboardStats?.totalScripts ?? 0}
@@ -428,8 +424,8 @@ export default function DashboardCalAI() {
             className="px-6"
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#1A1A1A] dark:text-white">Recently Added</h2>
-              <button onClick={() => navigate('/scripts')} className="text-xs font-bold text-[#6B7280] hover:text-[#1A1A1A] dark:text-gray-500 dark:hover:text-white transition-colors">
+              <h2 className="text-xl font-bold text-foreground">Recently Added</h2>
+              <button onClick={() => navigate('/scripts')} className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors">
                 SEE ALL
               </button>
             </div>
@@ -445,18 +441,18 @@ export default function DashboardCalAI() {
                     triggerHaptic('light');
                     navigate('/scripts');
                   }}
-                  className="bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-[#333] rounded-2xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform hover:bg-[#F9FAFB] dark:hover:bg-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none"
+                  className="bg-card border border-border rounded-2xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform hover:bg-muted/50 shadow-sm"
                 >
-                  <div className="w-14 h-14 rounded-xl bg-[#F3F4F6] dark:bg-[#2C2C2E] flex items-center justify-center text-2xl">
+                  <div className="w-14 h-14 rounded-xl bg-muted flex items-center justify-center text-2xl">
                     {getCategoryEmoji(script.category)}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-[#1A1A1A] dark:text-white font-bold text-sm truncate">{script.title}</h3>
-                    <p className="text-[#6B7280] dark:text-gray-500 text-xs truncate">
+                    <h3 className="text-foreground font-bold text-sm truncate">{script.title}</h3>
+                    <p className="text-muted-foreground text-xs truncate">
                       {script.duration_minutes} min • {script.category}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-[#9CA3AF] dark:text-gray-600" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </motion.div>
               ))}
             </div>
