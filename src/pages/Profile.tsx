@@ -89,8 +89,8 @@ export default function Profile() {
     );
   }
 
-  // Show loading state while fetching stats
-  if (loadingStats) {
+  // Show loading state while fetching stats (with timeout fallback)
+  if (loadingStats && !stats) {
     return (
       <MainLayout>
         <div className="flex items-center justify-center min-h-[50vh]">
@@ -208,16 +208,16 @@ export default function Profile() {
         <TabsContent value="overview" className="space-y-4 mt-0">
           {/* Quick Stats Grid - Simplified */}
           <QuickActionsGrid
-            scriptsUsed={stats.scriptsUsed}
-            videosWatched={stats.videosWatched}
-            postsCreated={stats.postsCreated}
+            scriptsUsed={stats?.scriptsUsed ?? 0}
+            videosWatched={stats?.videosWatched ?? 0}
+            postsCreated={stats?.postsCreated ?? 0}
           />
 
           {/* Level Badge - Gamification */}
           <Card className="p-4 bg-gradient-to-br from-primary/5 via-accent/5 to-background border-primary/10">
             <LevelBadge 
-              completedDays={stats.completedDays}
-              scriptsUsed={stats.scriptsUsed}
+              completedDays={stats?.completedDays ?? 0}
+              scriptsUsed={stats?.scriptsUsed ?? 0}
             />
           </Card>
 
@@ -238,15 +238,25 @@ export default function Profile() {
         <TabsContent value="stats" className="space-y-4 mt-0">
           {/* Enhanced Stats with Real Data */}
           <EnhancedStatsCard 
-            completedDays={stats.completedDays}
+            completedDays={stats?.completedDays ?? 0}
             totalDays={30}
-            scriptsUsed={stats.scriptsUsed}
-            currentStreak={stats.currentStreak}
-            avgStress={stats.avgStressLevel}
+            scriptsUsed={stats?.scriptsUsed ?? 0}
+            currentStreak={stats?.currentStreak ?? 0}
+            avgStress={stats?.avgStressLevel ?? 0}
           />
 
           {/* Achievements Gallery - Gamified */}
-          <AchievementsGallery stats={stats} />
+          <AchievementsGallery stats={stats ?? {
+            completedDays: 0,
+            scriptsUsed: 0,
+            videosWatched: 0,
+            postsCreated: 0,
+            currentStreak: 0,
+            avgStressLevel: 0,
+            dayStreak: 0,
+            bestStreak: 0,
+            totalDays: 0
+          }} />
 
           {/* Full Recent Activity */}
           <RecentActivityCard activities={recentActivity} />
