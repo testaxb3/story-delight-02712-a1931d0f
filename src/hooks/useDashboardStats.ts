@@ -39,6 +39,10 @@ export interface DashboardStats {
   scriptUsesWeek: number;
   postsThisWeek: number;
   
+  // Streak data
+  currentStreak: number;
+  longestStreak: number;
+  
   // Recent activity
   recentScriptUsage: RecentScript[];
   weeklyWins: WeeklyWin[];
@@ -58,8 +62,7 @@ export function useDashboardStats() {
         throw new Error('User not authenticated');
       }
 
-      // ✅ PERFORMANCE: Select specific columns (dashboard_stats is a view with all needed data)
-      // Note: This view aggregates multiple tables, so select * is acceptable here
+      // Fetch dashboard stats
       const { data, error } = await supabase
         .from('dashboard_stats')
         .select('*')
@@ -68,6 +71,13 @@ export function useDashboardStats() {
 
       if (error) throw error;
       if (!data) throw new Error('No dashboard data found');
+
+      // Fetch streak data from user_achievements_stats
+      const { data: streakData } = await supabase
+        .from('user_achievements_stats')
+        .select('current_streak, longest_streak')
+        .eq('user_id', user.id)
+        .single();
 
       // Transform snake_case to camelCase
       return {
@@ -85,6 +95,8 @@ export function useDashboardStats() {
         activeUsersWeek: data.active_users_week,
         scriptUsesWeek: data.script_uses_week,
         postsThisWeek: data.posts_this_week,
+        currentStreak: streakData?.current_streak ?? 0,
+        longestStreak: streakData?.longest_streak ?? 0,
         recentScriptUsage: Array.isArray(data.recent_script_usage) ? data.recent_script_usage : [],
         weeklyWins: Array.isArray(data.weekly_wins) ? data.weekly_wins : [],
       } as DashboardStats;

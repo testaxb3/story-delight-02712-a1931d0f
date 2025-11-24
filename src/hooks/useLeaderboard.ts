@@ -91,7 +91,7 @@ export function useLeaderboard(
               score = entry.scripts_used || 0;
               break;
             case 'streak':
-              score = entry.current_streak || 0;
+              score = entry.longest_streak || 0; // Use longest_streak instead of current_streak
               break;
           }
 
@@ -104,7 +104,7 @@ export function useLeaderboard(
             photoUrl: entry.photo_url || undefined,
             brainType,
             score,
-            streak: entry.current_streak || 0,
+            streak: entry.longest_streak || 0, // Use longest_streak for display
             isCurrentUser: entry.id === currentUserId,
           };
         });
