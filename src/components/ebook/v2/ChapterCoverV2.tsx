@@ -5,19 +5,8 @@ interface ChapterCoverV2Props {
 }
 
 export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV2Props) => {
-  console.log('🎨 ChapterCoverV2 render:', { 
-    chapterNumber, 
-    title, 
-    titleType: typeof title,
-    titleLength: title?.length,
-    subtitle,
-    subtitleType: typeof subtitle 
-  });
-  
   const cleanTitle = title?.trim() || 'Untitled';
   const cleanSubtitle = subtitle?.trim();
-  
-  console.log('🎨 After cleaning:', { cleanTitle, cleanSubtitle });
   
   return (
     <div className="relative mb-16 py-20 px-8 rounded-2xl bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10 border border-primary/10 overflow-hidden">
@@ -33,7 +22,7 @@ export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV
           </span>
         </div>
         
-        <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl gradient-text leading-tight max-w-2xl mx-auto">
+        <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl text-foreground leading-tight max-w-2xl mx-auto">
           {cleanTitle}
         </h1>
         

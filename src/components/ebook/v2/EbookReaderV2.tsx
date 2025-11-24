@@ -66,14 +66,6 @@ export const EbookReaderV2 = ({
 
   const currentChapter = chapters[currentChapterIndex];
   
-  console.log('📖 Current chapter data:', {
-    currentChapterIndex,
-    hasChapter: !!currentChapter,
-    title: currentChapter?.title,
-    subtitle: currentChapter?.subtitle,
-    contentLength: currentChapter?.content?.length
-  });
-  
   if (!currentChapter) {
     console.error('❌ Current chapter not found:', currentChapterIndex);
     return (
