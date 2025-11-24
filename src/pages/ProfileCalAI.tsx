@@ -5,7 +5,7 @@ import {
   Globe, Users, Target, Flag, Clock, 
   Mail, Megaphone, RefreshCw, FileText, 
   Shield, Instagram, MessageCircle, Twitter,
-  LogOut, UserX, ChevronRight, Moon, Sun, DollarSign
+  LogOut, UserX, ChevronRight, Moon, Sun, DollarSign, Award
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -174,6 +174,12 @@ export default function ProfileCalAI() {
           {/* Goals & Tracking */}
           <SectionTitle>Goals & Tracking</SectionTitle>
           <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
+            <MenuItem
+              icon={Award}
+              title="My Achievements"
+              subtitle="View your badges and progress"
+              onClick={() => navigate('/achievements')}
+            />
             <MenuItem
               icon={Target}
               title="Edit Your Goals"

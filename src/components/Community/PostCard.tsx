@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { MoreVertical, Trash2, MessageCircle, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Post, PostReaction } from '@/hooks/useCommunityFeed';
 import {
@@ -37,10 +38,18 @@ export const PostCard = React.memo(function PostCard({
   isDeletingPost,
   index,
 }: PostCardProps) {
+  const navigate = useNavigate();
+  
   const canDelete = useMemo(() => 
     currentUserId && (post.user_id === currentUserId || isAdmin),
     [currentUserId, post.user_id, isAdmin]
   );
+
+  const handleProfileClick = useCallback(() => {
+    if (post.user_id) {
+      navigate(`/user/${post.user_id}`);
+    }
+  }, [navigate, post.user_id]);
 
   const handleDelete = useCallback(() => {
     onDelete(post.id);
@@ -73,7 +82,12 @@ export const PostCard = React.memo(function PostCard({
     >
       {/* Header */}
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-sm relative shadow-sm text-white shrink-0">
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={handleProfileClick}
+          className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-sm relative shadow-sm text-white shrink-0 cursor-pointer"
+        >
           {post.profiles?.photo_url ? (
             <img
               src={post.profiles.photo_url}
@@ -85,13 +99,16 @@ export const PostCard = React.memo(function PostCard({
               {getInitials(post.profiles?.username || post.profiles?.name || 'U')}
             </span>
           )}
-        </div>
+        </motion.div>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <p className="font-bold text-base text-[#1A1A1A] dark:text-white leading-tight">
+            <button
+              onClick={handleProfileClick}
+              className="font-bold text-base text-[#1A1A1A] dark:text-white leading-tight hover:underline cursor-pointer"
+            >
               {post.profiles?.username || post.profiles?.name || 'User'}
-            </p>
+            </button>
           </div>
           <p className="text-xs text-[#9CA3AF] dark:text-white/40 font-medium mt-0.5">
             {formattedDate}

@@ -159,7 +159,7 @@ export default function DashboardCalAI() {
             whileTap={{ scale: 0.95 }}
             onClick={() => {
               triggerHaptic('light');
-              navigate('/tracker');
+              navigate('/achievements');
             }}
             className="flex items-center gap-2 bg-white dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-[#E5E7EB] dark:border-white/5 px-4 py-2 rounded-full shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-lg cursor-pointer"
           >
