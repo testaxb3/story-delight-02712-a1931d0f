@@ -114,10 +114,11 @@ export const EbookReaderV2 = ({
   // ✅ CRITICAL: Force scroll to top when chapter changes
   useEffect(() => {
     if (!isInitialMount.current) {
-      // Multiple scroll methods to ensure it works across all browsers
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+      console.log('📍 Scrolling to top for chapter:', currentChapterIndex);
+      // Scroll with offset to account for fixed header
+      window.scrollTo({ top: 200, behavior: 'instant' });
+      document.documentElement.scrollTop = 200;
+      document.body.scrollTop = 200;
     }
   }, [currentChapterIndex]);
 
@@ -170,11 +171,11 @@ export const EbookReaderV2 = ({
       const nextIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(nextIndex);
       onChapterChange?.(nextIndex);
-      // Scroll to top immediately - multiple attempts to ensure it works
+      // Scroll with offset to account for fixed header
       requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
+        window.scrollTo({ top: 200, behavior: 'instant' });
+        document.documentElement.scrollTop = 200;
+        document.body.scrollTop = 200;
       });
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
@@ -184,11 +185,11 @@ export const EbookReaderV2 = ({
       const prevIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(prevIndex);
       onChapterChange?.(prevIndex);
-      // Scroll to top immediately - multiple attempts to ensure it works
+      // Scroll with offset to account for fixed header
       requestAnimationFrame(() => {
-        window.scrollTo(0, 0);
-        document.documentElement.scrollTop = 0;
-        document.body.scrollTop = 0;
+        window.scrollTo({ top: 200, behavior: 'instant' });
+        document.documentElement.scrollTop = 200;
+        document.body.scrollTop = 200;
       });
     }
   }, [currentChapterIndex, onChapterChange]);
@@ -196,11 +197,11 @@ export const EbookReaderV2 = ({
   const handleChapterSelect = useCallback((index: number) => {
     setCurrentChapterIndex(index);
     onChapterChange?.(index);
-    // Scroll to top immediately - multiple attempts to ensure it works
+    // Scroll with offset to account for fixed header
     requestAnimationFrame(() => {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
+      window.scrollTo({ top: 200, behavior: 'instant' });
+      document.documentElement.scrollTop = 200;
+      document.body.scrollTop = 200;
     });
   }, [onChapterChange]);
 
@@ -282,7 +283,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-32 pb-24 max-w-3xl">
+      <main className="container mx-auto px-4 pt-44 pb-24 max-w-3xl">
         <ChapterCoverV2
           chapterNumber={currentChapterIndex + 1}
           title={currentChapter?.title || 'Untitled Chapter'}
