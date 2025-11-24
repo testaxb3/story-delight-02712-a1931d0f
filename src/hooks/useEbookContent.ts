@@ -60,8 +60,8 @@ export function useEbookContent(ebookId: string | undefined) {
         return {
           ...chapter,
           id: chapter.id || chapter.number?.toString() || `chapter-${index + 1}`,
-          title: chapter.title || `Chapter ${index + 1}`,
-          subtitle: chapter.subtitle || '',
+          title: (chapter.title || `Chapter ${index + 1}`).trim(),
+          subtitle: (chapter.subtitle || '').trim(),
           content: Array.isArray(content) ? content : [],
         };
       });

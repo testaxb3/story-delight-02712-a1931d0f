@@ -5,6 +5,9 @@ interface ChapterCoverV2Props {
 }
 
 export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV2Props) => {
+  const cleanTitle = title?.trim() || 'Untitled';
+  const cleanSubtitle = subtitle?.trim();
+  
   return (
     <div className="relative mb-16 py-20 px-8 rounded-2xl bg-gradient-to-br from-primary/5 via-accent/5 to-primary/10 border border-primary/10 overflow-hidden">
       {/* Decorative background pattern */}
@@ -20,12 +23,12 @@ export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV
         </div>
         
         <h1 className="font-display font-bold text-5xl md:text-6xl lg:text-7xl gradient-text leading-tight max-w-2xl mx-auto">
-          {title}
+          {cleanTitle}
         </h1>
         
-        {subtitle && (
+        {cleanSubtitle && (
           <p className="text-xl md:text-2xl text-muted-foreground font-serif max-w-xl mx-auto leading-relaxed">
-            {subtitle}
+            {cleanSubtitle}
           </p>
         )}
         
