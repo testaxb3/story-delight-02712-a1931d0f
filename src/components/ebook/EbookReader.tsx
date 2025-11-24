@@ -51,6 +51,7 @@ export const EbookReader = ({
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
   const scrollTimeout = useRef<NodeJS.Timeout>();
+  const isInitialMount = useRef(true);
   
   const { toggleBookmark, isBookmarked } = useBookmarks();
 
@@ -71,14 +72,15 @@ export const EbookReader = ({
     }
   }, []);
 
-  // Restore scroll position when component mounts
+  // Restore scroll position ONLY on initial mount
   useEffect(() => {
-    if (initialScrollPosition > 0) {
+    if (isInitialMount.current && initialScrollPosition > 0) {
       setTimeout(() => {
         window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
+        isInitialMount.current = false;
       }, 100);
     }
-  }, []);
+  }, [initialScrollPosition]);
 
   // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
@@ -108,11 +110,11 @@ export const EbookReader = ({
         }
       }
 
-      // Debounce scroll position save
+      // Debounce scroll position save (2000ms to reduce server load)
       if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
       scrollTimeout.current = setTimeout(() => {
         onScrollPositionChange?.(Math.floor(currentScrollY));
-      }, 1000);
+      }, 2000);
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -127,7 +129,11 @@ export const EbookReader = ({
       const newIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(newIndex);
       onChapterChange?.(newIndex);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Force immediate scroll to top - multiple attempts for reliability
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
     }
   };
 
@@ -136,14 +142,22 @@ export const EbookReader = ({
       const newIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(newIndex);
       onChapterChange?.(newIndex);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      // Force immediate scroll to top - multiple attempts for reliability
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, 0);
+      });
     }
   };
 
   const handleChapterSelect = (index: number) => {
     setCurrentChapterIndex(index);
     onChapterChange?.(index);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    // Force immediate scroll to top - multiple attempts for reliability
+    window.scrollTo(0, 0);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+    });
   };
 
   const handleToggleBookmark = () => {
