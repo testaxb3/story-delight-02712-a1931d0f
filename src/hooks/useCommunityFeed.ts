@@ -38,8 +38,8 @@ export function useCommunityFeed(communityId: string | null) {
 
     try {
       const { data, error } = await supabase
-        .from('group_posts')
-        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles(username, name, photo_url, brain_profile)')
+        .from('community_posts')
+        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles:user_id(username, name, photo_url, brain_profile)')
         .eq('community_id', communityId)
         .order('created_at', { ascending: false });
 
@@ -100,13 +100,13 @@ export function useCommunityFeed(communityId: string | null) {
 
     // Subscribe to post changes
     const postsChannel = supabase
-      .channel(`group_posts:${communityId}`)
+      .channel(`community_posts:${communityId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'group_posts',
+          table: 'community_posts',
           filter: `community_id=eq.${communityId}`,
         },
         () => {
@@ -115,15 +115,15 @@ export function useCommunityFeed(communityId: string | null) {
       )
       .subscribe();
 
-    // Subscribe to reaction changes
+    // Subscribe to reaction changes (usando post_likes ao invés de group_reactions)
     const reactionsChannel = supabase
-      .channel(`group_reactions:${communityId}`)
+      .channel(`post_likes:${communityId}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'group_reactions',
+          table: 'post_likes',
         },
         () => {
           const postIds = posts.map(p => p.id);
