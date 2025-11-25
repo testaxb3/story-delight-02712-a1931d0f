@@ -23,12 +23,12 @@ export function AuthWelcome({ onGetStarted, onSignIn }: AuthWelcomeProps) {
       </div>
 
       {/* Animation - ocupa ~60% da altura */}
-      <div className="flex-1 flex items-center justify-center px-6 pt-20 pb-10">
+      <div className="flex-1 max-h-[55vh] flex items-center justify-center px-6 pt-20 pb-10">
         <AppShowcaseAnimation />
       </div>
 
       {/* Bottom content */}
-      <div className="px-6 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] space-y-6">
+      <div className="shrink-0 px-6 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] space-y-6">
         {/* Title */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
