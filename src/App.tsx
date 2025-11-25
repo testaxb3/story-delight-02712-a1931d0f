@@ -54,6 +54,11 @@ const GenerateWelcomePDF = lazy(() => import("./pages/GenerateWelcomePDF"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 
+// Tools
+const RoutineBuilder = lazy(() => import("./pages/tools/RoutineBuilder"));
+const RoutineEditor = lazy(() => import("./pages/tools/RoutineEditor"));
+const RoutinePlayer = lazy(() => import("./pages/tools/RoutinePlayer"));
+
 // Loading fallback component for Suspense
 const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen">
@@ -321,6 +326,32 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Tool Routes */}
+        <Route
+          path="/tools/routine-builder"
+          element={
+            <ProtectedRoute>
+              <RoutineBuilder />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tools/routine-builder/:routineId/edit"
+          element={
+            <ProtectedRoute>
+              <RoutineEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tools/routine-builder/:routineId/play"
+          element={
+            <ProtectedRoute>
+              <RoutinePlayer />
             </ProtectedRoute>
           }
         />
