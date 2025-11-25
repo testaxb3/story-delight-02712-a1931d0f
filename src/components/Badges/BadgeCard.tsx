@@ -109,7 +109,8 @@ export const BadgeCard = memo(({ badge, size = 'md', featured = false }: BadgeCa
     }
   }, [badge.progress, progressPercent, badge.unlocked]);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (badge.unlocked) {
       triggerHaptic('light');
     }
