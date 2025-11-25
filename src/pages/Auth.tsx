@@ -140,7 +140,7 @@ const Auth = memo(function Auth() {
   }, [email, password, isSignUp, signIn, signUp, navigate, loginRateLimit]);
 
   return (
-    <div className="min-h-screen relative flex flex-col font-relative overflow-hidden">
+    <div className="min-h-screen relative flex flex-col font-relative">
       {/* Dark Background */}
       <AuthBackground />
 
