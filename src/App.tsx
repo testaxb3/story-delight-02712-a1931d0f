@@ -340,6 +340,14 @@ function AppContent() {
           }
         />
         <Route
+          path="/tools/routine-builder/new"
+          element={
+            <ProtectedRoute>
+              <RoutineEditor />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/tools/routine-builder/:routineId/edit"
           element={
             <ProtectedRoute>
