@@ -7,17 +7,27 @@ import { useRoutinePlayer } from '@/hooks/useRoutinePlayer';
 import { StepTimer } from '@/components/Routines/StepTimer';
 import { MoodSelector } from '@/components/Routines/MoodSelector';
 import { CelebrationAnimation } from '@/components/Routines/CelebrationAnimation';
+import { CompletionSummary } from '@/components/Routines/CompletionSummary';
+import { ActivityRing } from '@/components/Routines/ActivityRing';
+import { useRoutineStreak } from '@/hooks/useRoutineStreak';
+import { useAuth } from '@/contexts/AuthContext';
+import { useHaptic } from '@/hooks/useHaptic';
 
 export default function RoutinePlayer() {
   const { routineId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { routines } = useRoutines();
   const routine = routines?.find((r) => r.id === routineId);
   const steps = routine?.routine_steps || [];
+  const { triggerHaptic } = useHaptic();
+  const { streak, refreshStreak } = useRoutineStreak(user?.id || '');
 
   const [showMoodBefore, setShowMoodBefore] = useState(true);
   const [showMoodAfter, setShowMoodAfter] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [completionTime, setCompletionTime] = useState(0);
 
   const {
     currentStep,
@@ -43,12 +53,26 @@ export default function RoutinePlayer() {
   const handleStartAfterMood = (mood: 'happy' | 'neutral' | 'sad' | 'frustrated') => {
     setMoodBefore(mood);
     setShowMoodBefore(false);
+    triggerHaptic('light');
     startRoutine();
   };
 
   const handleComplete = (mood: 'happy' | 'neutral' | 'sad' | 'frustrated') => {
     setMoodAfter(mood);
     setShowMoodAfter(false);
+    setShowSummary(true);
+    triggerHaptic('success');
+    
+    // Calculate total time
+    const totalDuration = steps.reduce((sum, s) => sum + s.duration_seconds, 0);
+    setCompletionTime(totalDuration);
+    
+    // Refresh streak
+    refreshStreak();
+  };
+
+  const handleSummaryComplete = () => {
+    setShowSummary(false);
     setShowCelebration(true);
   };
 
@@ -90,6 +114,29 @@ export default function RoutinePlayer() {
     );
   }
 
+  if (showSummary) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-4">
+        <div className="w-full max-w-sm space-y-6">
+          <CompletionSummary
+            totalTime={completionTime}
+            stepsCompleted={totalSteps}
+            totalSteps={totalSteps}
+            moodBefore={moodBefore}
+            moodAfter={moodAfter}
+            streak={streak}
+          />
+          <button
+            onClick={handleSummaryComplete}
+            className="w-full h-14 rounded-2xl bg-foreground text-background font-semibold"
+          >
+            Continue
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (showMoodAfter) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -110,7 +157,13 @@ export default function RoutinePlayer() {
   }
 
   if (showCelebration) {
-    return <CelebrationAnimation onComplete={handleCelebrationComplete} />;
+    return (
+      <CelebrationAnimation 
+        onComplete={handleCelebrationComplete}
+        streak={streak}
+        isNewRecord={streak > 0 && streak % 7 === 0}
+      />
+    );
   }
 
   if (isComplete) {
@@ -118,8 +171,27 @@ export default function RoutinePlayer() {
     return null;
   }
 
+  // Trigger haptic on step change
+  const handleNextStep = () => {
+    triggerHaptic('light');
+    nextStep();
+  };
+
+  const handlePreviousStep = () => {
+    triggerHaptic('light');
+    previousStep();
+  };
+
+  const handlePlayPause = () => {
+    triggerHaptic('medium');
+    isPlaying ? pauseRoutine() : startRoutine();
+  };
+
+  const totalProgress = ((currentStepIndex + 1) / totalSteps) * 100;
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Header */}
       <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
         <div className="px-4 h-14 flex items-center justify-between">
           <button
@@ -135,51 +207,104 @@ export default function RoutinePlayer() {
           </div>
           <div className="w-10" />
         </div>
+
+        {/* Progress dots */}
+        <div className="flex justify-center gap-2 pb-3">
+          {steps.map((_, index) => (
+            <motion.div
+              key={index}
+              className={`h-1.5 rounded-full ${
+                index <= currentStepIndex ? 'bg-primary' : 'bg-border'
+              }`}
+              initial={{ width: 8 }}
+              animate={{ 
+                width: index === currentStepIndex ? 32 : 8,
+              }}
+              transition={{ duration: 0.3 }}
+            />
+          ))}
+        </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-20 pb-32 space-y-8">
-        <AnimatePresence mode="wait">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-24 pb-40 space-y-8">
+        {/* Overall progress ring (small, top) */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <ActivityRing 
+            progress={totalProgress} 
+            size={80}
+            strokeWidth={6}
+            color="hsl(var(--primary))"
+          />
+        </motion.div>
+
+        {/* Step content with carousel animation */}
+        <AnimatePresence mode="popLayout">
           <motion.div
             key={currentStepIndex}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
-            className="text-center space-y-4"
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -50 }}
+            transition={{ 
+              type: "spring", 
+              damping: 25, 
+              stiffness: 300 
+            }}
+            className="text-center space-y-6"
           >
-            <div className="text-8xl">{currentStep?.icon}</div>
-            <h2 className="text-4xl font-bold">{currentStep?.title}</h2>
+            <motion.div 
+              className="text-8xl"
+              animate={{
+                rotate: [0, -5, 5, -5, 0],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            >
+              {currentStep?.icon}
+            </motion.div>
+            <h2 className="text-4xl font-bold px-6">{currentStep?.title}</h2>
           </motion.div>
         </AnimatePresence>
 
+        {/* Timer */}
         <StepTimer
           timeRemaining={timeRemaining}
           totalTime={currentStep?.duration_seconds || 0}
         />
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border p-4 space-y-4">
+      {/* Controls */}
+      <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border p-6 space-y-4">
         <div className="flex justify-center gap-4">
-          <button
-            onClick={previousStep}
+          <motion.button
+            onClick={handlePreviousStep}
             disabled={currentStepIndex === 0}
             className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center disabled:opacity-30"
+            whileTap={{ scale: 0.95 }}
           >
             <SkipBack className="w-6 h-6" />
-          </button>
+          </motion.button>
 
-          <button
-            onClick={isPlaying ? pauseRoutine : startRoutine}
-            className="w-20 h-20 rounded-full bg-foreground text-background flex items-center justify-center"
+          <motion.button
+            onClick={handlePlayPause}
+            className="w-20 h-20 rounded-full bg-foreground text-background flex items-center justify-center shadow-lg"
+            whileTap={{ scale: 0.95 }}
           >
             {isPlaying ? <Pause className="w-8 h-8" /> : <Play className="w-8 h-8 ml-1" />}
-          </button>
+          </motion.button>
 
-          <button
-            onClick={nextStep}
+          <motion.button
+            onClick={handleNextStep}
             className="w-14 h-14 rounded-full bg-card border border-border flex items-center justify-center"
+            whileTap={{ scale: 0.95 }}
           >
             <SkipForward className="w-6 h-6" />
-          </button>
+          </motion.button>
         </div>
       </div>
     </div>

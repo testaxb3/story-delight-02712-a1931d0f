@@ -3,11 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useRoutines } from '@/hooks/useRoutines';
 import { RoutineCard } from '@/components/Routines/RoutineCard';
+import { RoutineStats } from '@/components/Routines/RoutineStats';
+import { StreakBadge } from '@/components/Routines/StreakBadge';
+import { useRoutineStreak } from '@/hooks/useRoutineStreak';
+import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 export default function RoutineBuilder() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { routines, isLoading, deleteRoutine } = useRoutines();
+  const { streak, isAtRisk } = useRoutineStreak(user?.id || '');
 
   const handleDelete = (id: string) => {
     if (confirm('Delete this routine?')) {
@@ -29,7 +35,12 @@ export default function RoutineBuilder() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <h1 className="text-xl font-bold">Visual Routines</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-semibold">Routines</h1>
+            {streak > 0 && (
+              <StreakBadge streak={streak} isRisk={isAtRisk} size="sm" />
+            )}
+          </div>
           <button
             onClick={() => navigate('/tools/routine-builder/new')}
             className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center"
@@ -41,6 +52,33 @@ export default function RoutineBuilder() {
 
       {/* Content */}
       <div className="pt-20 pb-24 px-4 space-y-4">
+        {/* Stats Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <RoutineStats />
+        </motion.div>
+
+        {/* Streak Alert */}
+        {isAtRisk && streak > 0 && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 flex items-center gap-3"
+          >
+            <span className="text-3xl">⚠️</span>
+            <div>
+              <p className="font-semibold text-yellow-600 dark:text-yellow-400">
+                Streak at risk!
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Complete a routine today to keep your {streak}-day streak alive
+              </p>
+            </div>
+          </motion.div>
+        )}
+
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
