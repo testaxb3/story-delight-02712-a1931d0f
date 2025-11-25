@@ -59,7 +59,7 @@ export const AuthCard = memo(function AuthCard({
               placeholder="Email"
               value={email}
               onChange={(e) => onEmailChange(e.target.value)}
-              className="h-12 px-4 bg-transparent border border-border rounded-xl text-base placeholder:text-muted-foreground focus:border-accent transition-colors"
+              className="h-12 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl text-base placeholder:text-muted-foreground focus:border-zinc-900 dark:focus:border-zinc-100 transition-colors"
               required
               disabled={loading}
             />
@@ -70,7 +70,7 @@ export const AuthCard = memo(function AuthCard({
               placeholder="Password"
               value={password}
               onChange={(e) => onPasswordChange(e.target.value)}
-              className="h-12 px-4 bg-transparent border border-border rounded-xl text-base placeholder:text-muted-foreground focus:border-accent transition-colors"
+              className="h-12 px-4 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl text-base placeholder:text-muted-foreground focus:border-zinc-900 dark:focus:border-zinc-100 transition-colors"
               required
               disabled={loading}
             />
@@ -80,10 +80,10 @@ export const AuthCard = memo(function AuthCard({
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 mt-6 rounded-xl text-base font-medium bg-accent text-white hover:bg-accent/90 transition-colors"
+            className="w-full h-12 mt-6 rounded-xl text-base font-medium bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors"
           >
             {loading ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white/30 dark:border-zinc-900/30 border-t-white dark:border-t-zinc-900 rounded-full animate-spin" />
             ) : (
               'Continue'
             )}
