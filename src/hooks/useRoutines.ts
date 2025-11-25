@@ -27,9 +27,17 @@ export const useRoutines = (childProfileId?: string) => {
 
   const createRoutine = useMutation({
     mutationFn: async (routine: Partial<Routine>) => {
+      // Get authenticated user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) throw new Error('User not authenticated');
+      
       const { data, error } = await supabase
         .from('routines')
-        .insert(routine)
+        .insert({
+          ...routine,
+          user_id: user.id,
+        })
         .select()
         .single();
       if (error) throw error;
