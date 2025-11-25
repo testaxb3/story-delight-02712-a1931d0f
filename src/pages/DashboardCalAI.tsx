@@ -256,7 +256,7 @@ export default function DashboardCalAI() {
               <motion.button
                 whileTap={{ scale: 0.98 }}
                 onClick={() => navigate('/progress')}
-                className="col-span-2 bg-gradient-to-br from-primary to-primary/90 text-primary-foreground p-5 rounded-[2rem] shadow-lg shadow-primary/20 flex items-center justify-between h-24 relative overflow-hidden group"
+                className="col-span-2 bg-gradient-to-br from-accent to-accent/90 text-white p-5 rounded-[2rem] shadow-lg shadow-accent/20 flex items-center justify-between h-24 relative overflow-hidden group"
               >
                 <div className="flex items-center gap-4 relative z-10">
                   <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
