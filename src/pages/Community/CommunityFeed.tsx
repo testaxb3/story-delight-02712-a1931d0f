@@ -137,8 +137,11 @@ export default function CommunityFeed() {
   return (
     <MainLayout>
       <div className="min-h-screen bg-background pb-24 relative">
+        {/* Header Spacer for status bar */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
         {/* Apple Style Header */}
-        <header className="px-5 pt-[calc(env(safe-area-inset-top)+8px)] pb-4 sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+        <header className="px-5 pb-4 sticky top-[calc(env(safe-area-inset-top)+20px)] z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
           <div className="flex items-center justify-between">
             {/* Community Selector (Pill) */}
             <DropdownMenu>

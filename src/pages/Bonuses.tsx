@@ -110,14 +110,14 @@ function BonusesContent() {
         <div className="fixed top-[-20%] left-[-20%] w-[80%] h-[80%] bg-purple-500/5 rounded-full blur-[150px] pointer-events-none z-0" />
         <div className="fixed bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
-        {/* Header Spacer */}
-        <div className="w-full h-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50" />
+        {/* Header Spacer for status bar */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
-        <main className="px-5 pt-[calc(env(safe-area-inset-top)+20px)] relative z-10 space-y-10">
+        <main className="px-5 relative z-10 space-y-10">
           
           {/* Editorial Header */}
           <header>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-2">Library</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-2">Bonuses</h1>
             <p className="text-muted-foreground">Exclusive resources for your journey.</p>
           </header>
 

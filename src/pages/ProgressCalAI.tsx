@@ -300,13 +300,28 @@ export default function ProgressCalAI() {
         <div className="fixed top-[-15%] left-[-15%] w-[60%] h-[60%] bg-green-500/5 dark:bg-green-900/10 rounded-full blur-[140px] pointer-events-none z-0" />
         <div className="fixed bottom-[-15%] right-[-15%] w-[60%] h-[60%] bg-blue-500/5 dark:bg-blue-900/10 rounded-full blur-[140px] pointer-events-none z-0" />
 
+        {/* Header Spacer for status bar */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
         {/* Header */}
         <motion.header
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="relative z-10 px-6 pt-[calc(env(safe-area-inset-top)+16px)] pb-6"
+          className="relative z-10 px-6 pb-6"
         >
+          <div className="flex items-center justify-between mb-4">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => navigate('/')}
+              className="w-10 h-10 rounded-full bg-secondary/50 backdrop-blur-sm flex items-center justify-center hover:bg-secondary transition-colors border border-border/50"
+              aria-label="Go back to home"
+            >
+              <svg className="w-5 h-5 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </motion.button>
+          </div>
           <h1 className="text-3xl font-bold text-foreground tracking-tight">Progress</h1>
           <p className="text-muted-foreground/80 text-sm mt-1">Track your improvement journey</p>
         </motion.header>

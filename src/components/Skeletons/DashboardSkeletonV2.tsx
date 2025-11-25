@@ -2,7 +2,11 @@ import { ImprovedSkeleton } from "@/components/common/ImprovedSkeleton";
 
 export const DashboardSkeletonV2 = () => {
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <>
+      {/* Header Spacer for status bar */}
+      <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
+      <div className="space-y-6 animate-in fade-in duration-500">
       {/* Hero Section Skeleton */}
       <div className="rounded-3xl bg-gradient-to-br from-primary/10 via-accent/10 to-primary/10 p-8 sm:p-10">
         <div className="space-y-6">
@@ -86,5 +90,6 @@ export const DashboardSkeletonV2 = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };

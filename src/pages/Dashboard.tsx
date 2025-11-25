@@ -262,24 +262,15 @@ export default function Dashboard() {
 
   return (
     <MainLayout>
-      <PWAInstallPrompt
-        open={showPWAPrompt}
-        onOpenGuide={() => {
-          setShowPWAPrompt(false);
-          setShowPWAGuide(true);
-        }}
-        onClose={() => setShowPWAPrompt(false)}
-      />
-      <PWAInstallGuide
-        open={showPWAGuide}
-        onClose={() => setShowPWAGuide(false)}
-      />
-      
-      {/* Show premium loading state on initial load */}
-      {isInitialLoading ? (
-        <DashboardSkeletonV2 />
-      ) : (
-        <div className="space-y-8 pb-8">
+      <div className="min-h-screen bg-background pb-32 relative">
+        {/* Header Spacer for status bar */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
+        {/* Show premium loading state on initial load */}
+        {isInitialLoading ? (
+          <DashboardSkeletonV2 />
+        ) : (
+          <div className="space-y-8 pb-8 px-5">
         {/* Hero Recommendation - Your Next Win */}
         <HeroRecommendation 
           brainProfile={activeChild?.brain_profile || null}
@@ -351,10 +342,25 @@ export default function Dashboard() {
           brainProfile={activeChild?.brain_profile || null}
         />
 
-        {/* Compact Success Story at bottom */}
-        <CompactSuccessStory story={currentStory} />
+          {/* Compact Success Story at bottom */}
+          <CompactSuccessStory story={currentStory} />
+        </div>
+        )}
       </div>
-      )}
+
+      {/* PWA Modals */}
+      <PWAInstallPrompt
+        open={showPWAPrompt}
+        onOpenGuide={() => {
+          setShowPWAPrompt(false);
+          setShowPWAGuide(true);
+        }}
+        onClose={() => setShowPWAPrompt(false)}
+      />
+      <PWAInstallGuide
+        open={showPWAGuide}
+        onClose={() => setShowPWAGuide(false)}
+      />
 
       {/* Onboarding Modal */}
       <Dialog open={showOnboardingModal} onOpenChange={setShowOnboardingModal}>
