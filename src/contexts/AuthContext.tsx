@@ -28,8 +28,8 @@ interface AuthContextType {
   user: User | null;
   session: any;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any; user: any | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: any; user: any | null }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     if (password.length < MIN_PASSWORD_LENGTH) {
-      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` } };
+      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` }, user: null };
     }
 
     // ✅ NETWORK ERROR HANDLING: Retry logic for transient failures
@@ -185,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               continue;
             }
           }
-          return { error };
+          return { error, user: null };
         }
 
         // 💾 Save session for PWA
@@ -204,7 +204,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.log('[AuthContext] ✅ Cache limpo - dados frescos serão carregados');
         }
 
-        return { error: null };
+        return { error: null, user: data.user };
       } catch (error: any) {
         console.error(`[AuthContext] SignIn attempt ${attempt + 1} failed:`, error);
         lastError = error;
@@ -219,20 +219,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           continue;
         }
 
-        return { error: { message: error.message || 'Failed to sign in. Please check your connection.' } };
+        return { error: { message: error.message || 'Failed to sign in. Please check your connection.' }, user: null };
       }
     }
 
     return {
       error: {
         message: lastError?.message || 'Connection failed. Please check your internet and try again.'
-      }
+      },
+      user: null
     };
   };
 
   const signUp = async (email: string, password: string) => {
     if (password.length < MIN_PASSWORD_LENGTH) {
-      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` } };
+      return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` }, user: null };
     }
 
     try {
@@ -251,7 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Signup error:', error);
-        return { error };
+        return { error, user: null };
       }
 
       // 💾 Save session for PWA
@@ -270,10 +271,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       // Profile and user_progress are created automatically by the handle_new_user() trigger
-      return { error: null };
+      return { error: null, user: data.user };
     } catch (error: any) {
       console.error('SignUp exception:', error);
-      return { error: { message: error.message || 'Failed to sign up' } };
+      return { error: { message: error.message || 'Failed to sign up' }, user: null };
     }
   };
 

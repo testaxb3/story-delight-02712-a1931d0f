@@ -67,7 +67,7 @@ const Auth = memo(function Auth() {
         return;
       }
 
-      const { error } = isSignUp
+      const { error, user: signedInUser } = isSignUp
         ? await signUp(email, password)
         : await signIn(email, password);
 
@@ -94,11 +94,11 @@ const Auth = memo(function Auth() {
           // Navigate immediately - profile is created by Supabase trigger
           navigate('/pwa-install', { replace: true });
         } else {
-          // ✅ FIX: Check quiz_completed status before redirecting to avoid double redirect
+          // ✅ FIX: Use signedInUser from return instead of context user to avoid race condition
           const { data: profile } = await supabase
             .from('profiles')
             .select('quiz_completed')
-            .eq('id', user.id)
+            .eq('id', signedInUser.id)
             .single();
 
           toast.success('Welcome back!', {
