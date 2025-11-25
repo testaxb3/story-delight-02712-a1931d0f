@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import confetti from 'canvas-confetti';
+import { useHaptic } from './useHaptic';
 
 interface Badge {
   id: string;
@@ -8,6 +12,7 @@ interface Badge {
   icon: string;
   category: string;
   requirement: string;
+  rarity?: string;
 }
 
 interface UserBadge {
@@ -34,6 +39,7 @@ export interface BadgeWithProgress {
   category: string;
   unlocked: boolean;
   unlockedAt?: string;
+  rarity?: string;
   progress?: {
     current: number;
     required: number;
@@ -80,7 +86,10 @@ const calculateProgress = (badge: Badge, stats: UserStats): { current: number; r
 };
 
 export const useUserAchievements = (userId: string | undefined) => {
-  return useQuery({
+  const { triggerHaptic } = useHaptic();
+  const previousBadgesRef = useRef<BadgeWithProgress[]>([]);
+
+  const query = useQuery({
     queryKey: ['user-achievements', userId],
     queryFn: async () => {
       if (!userId) throw new Error('User ID required');
@@ -128,6 +137,7 @@ export const useUserAchievements = (userId: string | undefined) => {
           description: badge.description,
           icon: badge.icon,
           category: badge.category,
+          rarity: badge.rarity,
           unlocked,
           unlockedAt,
           progress
@@ -160,4 +170,43 @@ export const useUserAchievements = (userId: string | undefined) => {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000 // 10 minutes
   });
+
+  // Detect new unlocks and show celebration
+  useEffect(() => {
+    if (!query.data?.badges) return;
+
+    const currentBadges = query.data.badges;
+    const previousBadges = previousBadgesRef.current;
+
+    if (previousBadges.length > 0) {
+      const newUnlocks = currentBadges.filter(
+        current => current.unlocked && 
+          !previousBadges.find(prev => prev.id === current.id)?.unlocked
+      );
+
+      newUnlocks.forEach(badge => {
+        // Confetti explosion
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+
+        // Haptic feedback
+        triggerHaptic('medium');
+        setTimeout(() => triggerHaptic('light'), 200);
+        setTimeout(() => triggerHaptic('light'), 400);
+
+        // Toast notification
+        toast.success(`🏆 Badge Unlocked: ${badge.name}`, {
+          description: badge.description,
+          duration: 5000,
+        });
+      });
+    }
+
+    previousBadgesRef.current = currentBadges;
+  }, [query.data?.badges, triggerHaptic]);
+
+  return query;
 };

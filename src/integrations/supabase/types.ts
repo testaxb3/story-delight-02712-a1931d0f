@@ -249,6 +249,7 @@ export type Database = {
           icon: string | null
           id: string
           name: string
+          rarity: string | null
           requirement: string | null
         }
         Insert: {
@@ -258,6 +259,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name: string
+          rarity?: string | null
           requirement?: string | null
         }
         Update: {
@@ -267,6 +269,7 @@ export type Database = {
           icon?: string | null
           id?: string
           name?: string
+          rarity?: string | null
           requirement?: string | null
         }
         Relationships: []

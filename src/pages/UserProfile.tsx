@@ -189,7 +189,7 @@ export default function UserProfile() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.03, type: 'spring', stiffness: 200 }}
                 >
-                  <BadgeCard badge={badge} showProgress={false} />
+                  <BadgeCard badge={badge} />
                 </motion.div>
               ))}
             </div>
