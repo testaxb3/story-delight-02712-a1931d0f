@@ -50,6 +50,15 @@ export const AuthCard = memo(function AuthCard({
           </p>
         </div>
 
+        {/* Purchase Email Notice */}
+        {isSignUp && (
+          <div className="mb-6 p-4 bg-zinc-50 dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800">
+            <p className="text-sm text-center text-foreground leading-relaxed">
+              Use the same email address you used for your purchase to access your content.
+            </p>
+          </div>
+        )}
+
         {/* Form */}
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="space-y-3">
