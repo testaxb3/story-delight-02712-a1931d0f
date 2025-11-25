@@ -10,6 +10,7 @@ interface StickyHeaderProps {
   showProgress?: boolean;
   progressValue?: number;
   transparent?: boolean;
+  static?: boolean;
   children?: ReactNode;
 }
 
@@ -21,6 +22,7 @@ export function StickyHeader({
   showProgress,
   progressValue = 0,
   transparent = false,
+  static: isStatic = false,
   children,
 }: StickyHeaderProps) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -37,15 +39,16 @@ export function StickyHeader({
   return (
     <motion.header
       className={cn(
-        'sticky top-0 z-50 w-full transition-all duration-200',
+        isStatic ? 'relative' : 'sticky top-0',
+        'z-50 w-full transition-all duration-200',
         'pt-[env(safe-area-inset-top)]',
-        isScrolled && !transparent
+        !isStatic && isScrolled && !transparent
           ? 'bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
           : 'bg-transparent'
       )}
       initial={false}
       animate={{
-        backgroundColor: isScrolled && !transparent ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0)',
+        backgroundColor: !isStatic && isScrolled && !transparent ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0)',
       }}
     >
       {/* Progress Bar */}
