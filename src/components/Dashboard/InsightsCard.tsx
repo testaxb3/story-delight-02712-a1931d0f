@@ -25,12 +25,12 @@ export function InsightsCard({ meltdownsBefore, meltdownsAfter, averageStress, t
             className="px-6 mb-6"
           >
             <div className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-sm">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 dark:bg-purple-500/10 rounded-full blur-2xl" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full blur-2xl" />
 
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-4">
                   <div className="p-2 bg-purple-500/10 rounded-xl">
-                    <Sparkles className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+                    <Sparkles className="w-5 h-5 text-purple-500" />
                   </div>
                   <h3 className="text-lg font-bold text-foreground">Your Insights</h3>
                 </div>
@@ -63,17 +63,17 @@ export function InsightsCard({ meltdownsBefore, meltdownsAfter, averageStress, t
             transition={{ delay: 0.3 }}
             className="px-6 mb-6"
           >
-            <div className="bg-card dark:bg-gradient-to-br dark:from-green-500/10 dark:to-emerald-500/10 border border-border dark:border-green-500/20 rounded-3xl p-6 relative overflow-hidden shadow-sm">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 dark:bg-green-500/10 rounded-full blur-2xl" />
+            <div className="bg-card border border-border rounded-3xl p-6 relative overflow-hidden shadow-sm">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/5 rounded-full blur-2xl" />
 
               <div className="relative z-10">
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-green-500/10 rounded-xl">
                       {isImproving ? (
-                        <TrendingUp className="w-5 h-5 text-green-500 dark:text-green-400" />
+                        <TrendingUp className="w-5 h-5 text-green-500" />
                       ) : (
-                        <TrendingDown className="w-5 h-5 text-orange-500 dark:text-orange-400" />
+                        <TrendingDown className="w-5 h-5 text-orange-500" />
                       )}
                     </div>
                     <h3 className="text-lg font-bold text-foreground">Your Progress</h3>
@@ -86,24 +86,24 @@ export function InsightsCard({ meltdownsBefore, meltdownsAfter, averageStress, t
                       transition={{ delay: 0.6, type: "spring" }}
                       className="px-3 py-1 bg-green-500/10 rounded-full"
                     >
-                      <span className="text-green-600 dark:text-green-400 font-bold text-sm">↓ {improvement}%</span>
+                      <span className="text-green-600 font-bold text-sm">↓ {improvement}%</span>
                     </motion.div>
                   )}
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-4 border border-transparent">
+                  <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-4 border border-border/20">
                     <div className="text-2xl font-bold text-foreground mb-1">{meltdownsBefore}</div>
                     <div className="text-xs text-muted-foreground">Before Day 7</div>
                   </div>
 
-                  <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-4 border border-transparent">
-                    <div className="text-2xl font-bold text-green-600 dark:text-green-400 mb-1">{meltdownsAfter}</div>
+                  <div className="bg-muted/50 backdrop-blur-sm rounded-xl p-4 border border-border/20">
+                    <div className="text-2xl font-bold text-green-600 mb-1">{meltdownsAfter}</div>
                     <div className="text-xs text-muted-foreground">After Day 7</div>
                   </div>
                 </div>
 
-                <div className="mt-4 p-4 bg-muted/50 backdrop-blur-sm rounded-xl border border-transparent">
+                <div className="mt-4 p-4 bg-muted/50 backdrop-blur-sm rounded-xl border border-border/20">
                   <div className="text-sm text-muted-foreground mb-2">Average Stress Level</div>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-muted h-2 rounded-full overflow-hidden">
