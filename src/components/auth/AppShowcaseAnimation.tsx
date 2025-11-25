@@ -1,8 +1,10 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Brain, Zap, BookOpen, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export function AppShowcaseAnimation() {
-  // Simula cards de scripts deslizando
+  const [currentIndex, setCurrentIndex] = useState(0);
+
   const cards = [
     {
       icon: Brain,
@@ -30,118 +32,76 @@ export function AppShowcaseAnimation() {
     }
   ];
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % cards.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [cards.length]);
+
+  const currentCard = cards[currentIndex];
+  const Icon = currentCard.icon;
+
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
+    <div className="relative w-full h-full flex flex-col items-center justify-center px-6">
       {/* Glow effect */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-[300px] h-[300px] bg-gradient-to-br from-orange-500/20 to-purple-500/20 rounded-full blur-3xl" />
       </div>
 
-      {/* Cards deslizando */}
-      <div className="relative w-full max-w-[280px] h-[400px]">
-        {cards.map((card, index) => {
-          const Icon = card.icon;
-          return (
-            <motion.div
-              key={index}
-              className="absolute inset-0"
-              initial={{ 
-                x: index * 20,
-                y: index * 20,
-                scale: 1 - index * 0.05,
-                opacity: 1 - index * 0.2,
-                rotate: index * 2
-              }}
-              animate={{
-                x: [
-                  index * 20,
-                  (index - 1) * 20,
-                  (index - 2) * 20,
-                  (index - 3) * 20,
-                  index * 20
-                ],
-                y: [
-                  index * 20,
-                  (index - 1) * 20,
-                  (index - 2) * 20,
-                  (index - 3) * 20,
-                  index * 20
-                ],
-                scale: [
-                  1 - index * 0.05,
-                  1 - (index - 1 < 0 ? 3 : index - 1) * 0.05,
-                  1 - (index - 2 < 0 ? 3 : index - 2) * 0.05,
-                  1 - (index - 3 < 0 ? 3 : index - 3) * 0.05,
-                  1 - index * 0.05
-                ],
-                opacity: [
-                  1 - index * 0.2,
-                  1 - (index - 1 < 0 ? 3 : index - 1) * 0.2,
-                  1 - (index - 2 < 0 ? 3 : index - 2) * 0.2,
-                  1 - (index - 3 < 0 ? 3 : index - 3) * 0.2,
-                  1 - index * 0.2
-                ],
-                rotate: [
-                  index * 2,
-                  (index - 1) * 2,
-                  (index - 2) * 2,
-                  (index - 3) * 2,
-                  index * 2
-                ]
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "linear",
-                delay: index * 0.5
-              }}
-            >
-              <div className={`
-                w-full h-[180px] rounded-3xl
-                bg-gradient-to-br ${card.gradient}
-                p-6 shadow-2xl
-                backdrop-blur-sm
-              `}>
-                <div className="flex flex-col h-full justify-between">
-                  <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-bold text-lg mb-1">
-                      {card.title}
-                    </h3>
-                    <p className="text-white/80 text-sm">
-                      {card.description}
-                    </p>
-                  </div>
+      {/* Card carousel */}
+      <div className="relative w-full max-w-[320px] h-[240px] mb-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentIndex}
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -20 }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <div className={`
+              w-full h-full rounded-3xl
+              bg-gradient-to-br ${currentCard.gradient}
+              p-8 shadow-2xl
+              backdrop-blur-sm
+            `}>
+              <div className="flex flex-col h-full justify-between">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                  <Icon className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-2xl mb-2">
+                    {currentCard.title}
+                  </h3>
+                  <p className="text-white/90 text-base">
+                    {currentCard.description}
+                  </p>
                 </div>
               </div>
-            </motion.div>
-          );
-        })}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-2 h-2 bg-white/30 rounded-full blur-sm"
-          initial={{
-            x: Math.random() * 300 - 150,
-            y: Math.random() * 400 - 200
-          }}
-          animate={{
-            x: Math.random() * 300 - 150,
-            y: Math.random() * 400 - 200,
-            opacity: [0.3, 0.7, 0.3]
-          }}
-          transition={{
-            duration: 3 + Math.random() * 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
-      ))}
+      {/* Dot indicators */}
+      <div className="flex gap-2">
+        {cards.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`
+              w-2 h-2 rounded-full transition-all duration-300
+              ${index === currentIndex 
+                ? 'bg-white w-6' 
+                : 'bg-white/40'
+              }
+            `}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
     </div>
   );
 }
