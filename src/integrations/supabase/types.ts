@@ -1664,6 +1664,172 @@ export type Database = {
         }
         Relationships: []
       }
+      routine_completions: {
+        Row: {
+          child_profile_id: string | null
+          completed_at: string | null
+          duration_seconds: number | null
+          id: string
+          mood_after: string | null
+          mood_before: string | null
+          routine_id: string
+          steps_completed: number | null
+          user_id: string
+        }
+        Insert: {
+          child_profile_id?: string | null
+          completed_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          mood_after?: string | null
+          mood_before?: string | null
+          routine_id: string
+          steps_completed?: number | null
+          user_id: string
+        }
+        Update: {
+          child_profile_id?: string | null
+          completed_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          mood_after?: string | null
+          mood_before?: string | null
+          routine_id?: string
+          steps_completed?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_completions_child_profile_id_fkey"
+            columns: ["child_profile_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "routine_completions_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routine_steps: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          icon: string | null
+          id: string
+          position: number
+          routine_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          icon?: string | null
+          id?: string
+          position: number
+          routine_id: string
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          icon?: string | null
+          id?: string
+          position?: number
+          routine_id?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routine_steps_routine_id_fkey"
+            columns: ["routine_id"]
+            isOneToOne: false
+            referencedRelation: "routines"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      routine_templates: {
+        Row: {
+          brain_profile: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          template_steps: Json
+          title: string
+        }
+        Insert: {
+          brain_profile?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          template_steps: Json
+          title: string
+        }
+        Update: {
+          brain_profile?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          template_steps?: Json
+          title?: string
+        }
+        Relationships: []
+      }
+      routines: {
+        Row: {
+          active: boolean | null
+          child_profile_id: string | null
+          color: string | null
+          created_at: string | null
+          icon: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          active?: boolean | null
+          child_profile_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          active?: boolean | null
+          child_profile_id?: string | null
+          color?: string | null
+          created_at?: string | null
+          icon?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "routines_child_profile_id_fkey"
+            columns: ["child_profile_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       script_collections: {
         Row: {
           created_at: string

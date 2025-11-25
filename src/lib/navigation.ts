@@ -48,6 +48,11 @@ export const routes = {
   scriptRequests: '/script-requests',
   generateWelcomePDF: '/generate-welcome-pdf',
   
+  // Tools
+  routineBuilder: '/tools/routine-builder',
+  routineEditor: (routineId: string) => `/tools/routine-builder/${routineId}/edit`,
+  routinePlayer: (routineId: string) => `/tools/routine-builder/${routineId}/play`,
+  
   // Legal Pages
   terms: '/terms',
   privacy: '/privacy',
