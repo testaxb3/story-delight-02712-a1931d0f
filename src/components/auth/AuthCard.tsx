@@ -2,6 +2,7 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import brainIcon from '@/assets/brain-icon.png';
 
 interface AuthCardProps {
   isSignUp: boolean;
@@ -33,9 +34,15 @@ export const AuthCard = memo(function AuthCard({
     >
       <div className="flex flex-col">
         
-        {/* App Name */}
-        <div className="text-center mb-12">
-          <h2 className="text-sm font-medium text-muted-foreground">NEP System</h2>
+        {/* Logo + App Name */}
+        <div className="text-center mb-12 flex flex-col items-center">
+          <img 
+            src={brainIcon} 
+            alt="NEP" 
+            className="w-20 h-20 mb-4 object-contain"
+          />
+          <h2 className="text-lg font-semibold text-foreground">NEP</h2>
+          <p className="text-sm font-medium text-muted-foreground">System</p>
         </div>
 
         {/* Title */}
