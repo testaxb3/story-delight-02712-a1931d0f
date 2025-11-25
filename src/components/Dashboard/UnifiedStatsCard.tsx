@@ -110,7 +110,7 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
           "w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all",
           isLoggedToday
             ? "bg-accent/10 text-accent cursor-not-allowed"
-            : "bg-muted hover:bg-muted/80 text-foreground cursor-pointer active:scale-[0.98]",
+            : "bg-secondary/80 hover:bg-secondary text-foreground cursor-pointer active:scale-[0.98]",
           checking && "opacity-50 cursor-wait"
         )}
       >
