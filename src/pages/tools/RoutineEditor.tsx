@@ -9,7 +9,7 @@ import type { RoutineStep } from '@/types/routine';
 export default function RoutineEditor() {
   const { routineId } = useParams();
   const navigate = useNavigate();
-  const isNew = routineId === 'new';
+  const isNew = !routineId || routineId === 'new';
   
   const { routines, createRoutine, updateRoutine, createStep, deleteStep } = useRoutines();
   const { templates } = useRoutineTemplates();
@@ -183,6 +183,17 @@ export default function RoutineEditor() {
       </div>
 
       <div className="pt-20 px-4 space-y-6">
+        {isNew && (
+          <div className="bg-accent/10 rounded-xl p-4">
+            <h3 className="font-medium">How it works:</h3>
+            <ol className="text-sm text-muted-foreground mt-2 space-y-1">
+              <li>1. Name your routine</li>
+              <li>2. Choose an emoji and color</li>
+              <li>3. Add steps with time for each</li>
+            </ol>
+          </div>
+        )}
+
         <div className="space-y-4">
           <div>
             <label className="text-sm text-muted-foreground">Routine Name</label>
@@ -197,11 +208,14 @@ export default function RoutineEditor() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="text-sm text-muted-foreground">Icon</label>
+              <label className="text-sm text-muted-foreground">
+                Icon <span className="text-xs">(use an emoji)</span>
+              </label>
               <input
                 type="text"
                 value={icon}
                 onChange={(e) => setIcon(e.target.value)}
+                placeholder="📋"
                 className="w-full h-12 px-4 rounded-xl border border-border bg-transparent mt-2 text-center text-2xl"
               />
             </div>
@@ -229,6 +243,17 @@ export default function RoutineEditor() {
             </button>
           </div>
 
+          {steps.length === 0 && (
+            <div className="text-center py-8 border border-dashed border-border rounded-xl">
+              <p className="text-muted-foreground">
+                Add steps to build your routine
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Each step has a name, emoji, and duration
+              </p>
+            </div>
+          )}
+
           {steps.map((step, index) => (
             <div key={index} className="bg-card border border-border rounded-xl p-3 space-y-3">
               <div className="flex items-start gap-2">
@@ -246,27 +271,34 @@ export default function RoutineEditor() {
                     className="w-full h-10 px-3 rounded-lg border border-border bg-transparent"
                   />
                   <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      value={step.icon}
-                      onChange={(e) => {
-                        const newSteps = [...steps];
-                        newSteps[index].icon = e.target.value;
-                        setSteps(newSteps);
-                      }}
-                      className="h-10 px-3 rounded-lg border border-border bg-transparent text-center"
-                    />
-                    <input
-                      type="number"
-                      value={Math.floor((step.duration_seconds || 0) / 60)}
-                      onChange={(e) => {
-                        const newSteps = [...steps];
-                        newSteps[index].duration_seconds = parseInt(e.target.value) * 60;
-                        setSteps(newSteps);
-                      }}
-                      placeholder="Minutes"
-                      className="h-10 px-3 rounded-lg border border-border bg-transparent"
-                    />
+                    <div>
+                      <span className="text-xs text-muted-foreground">Emoji</span>
+                      <input
+                        type="text"
+                        value={step.icon}
+                        onChange={(e) => {
+                          const newSteps = [...steps];
+                          newSteps[index].icon = e.target.value;
+                          setSteps(newSteps);
+                        }}
+                        placeholder="✓ 🦷 🧹"
+                        className="h-10 px-3 rounded-lg border border-border bg-transparent text-center w-full"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-xs text-muted-foreground">Duration (min)</span>
+                      <input
+                        type="number"
+                        value={Math.floor((step.duration_seconds || 0) / 60)}
+                        onChange={(e) => {
+                          const newSteps = [...steps];
+                          newSteps[index].duration_seconds = parseInt(e.target.value) * 60;
+                          setSteps(newSteps);
+                        }}
+                        placeholder="5"
+                        className="h-10 px-3 rounded-lg border border-border bg-transparent w-full"
+                      />
+                    </div>
                   </div>
                 </div>
                 <button
