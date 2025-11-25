@@ -6,6 +6,7 @@ import { loginSchema } from '@/lib/validations';
 import { useRateLimit } from '@/hooks/useRateLimit';
 import { AuthCard } from '@/components/auth/AuthCard';
 import { AuthBackground } from '@/components/auth/AuthBackground';
+import { supabase } from '@/integrations/supabase/client';
 
 const Auth = memo(function Auth() {
   const [email, setEmail] = useState('');
@@ -93,11 +94,23 @@ const Auth = memo(function Auth() {
           // Navigate immediately - profile is created by Supabase trigger
           navigate('/pwa-install', { replace: true });
         } else {
+          // ✅ FIX: Check quiz_completed status before redirecting to avoid double redirect
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('quiz_completed')
+            .eq('id', user.id)
+            .single();
+
           toast.success('Welcome back!', {
             duration: 3000,
           });
-          // Navigate immediately - session is established
-          navigate('/', { replace: true });
+          
+          // Redirect based on quiz completion status
+          if (profile?.quiz_completed) {
+            navigate('/', { replace: true });
+          } else {
+            navigate('/quiz', { replace: true });
+          }
         }
       }
     } catch (error: any) {

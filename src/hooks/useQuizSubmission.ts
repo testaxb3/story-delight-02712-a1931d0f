@@ -153,7 +153,15 @@ export function useQuizSubmission() {
   const completeQuiz = useCallback(async (data: SubmissionData) => {
     if (!user?.id) return false;
     
-    // ✅ OPTIMISTIC UPDATE: Update cache IMMEDIATELY before DB save
+    // ✅ FIX: Save child profile FIRST before optimistic update to avoid race condition
+    const profile = await saveChildProfile(data);
+    
+    if (!profile) {
+      logger.error('Failed to save child profile during quiz completion');
+      return false;
+    }
+
+    // ✅ OPTIMISTIC UPDATE: Update cache AFTER successful save
     queryClient.setQueryData(['user-profile', user.id], (oldData: any) => {
       if (!oldData) return oldData;
       return {
@@ -163,24 +171,7 @@ export function useQuizSubmission() {
       };
     });
     
-    logger.debug('🟢 [completeQuiz] Cache updated optimistically');
-    
-    // Save child profile first
-    const profile = await saveChildProfile(data);
-    
-    if (!profile) {
-      // ❌ Rollback optimistic update if save fails
-      queryClient.setQueryData(['user-profile', user.id], (oldData: any) => {
-        if (!oldData) return oldData;
-        return {
-          ...oldData,
-          quiz_completed: false,
-          quiz_in_progress: true
-        };
-      });
-      logger.error('Failed to save child profile during quiz completion - rolled back cache');
-      return false;
-    }
+    logger.debug('🟢 [completeQuiz] Child profile saved, cache updated optimistically');
 
     // Mark quiz as completed
     const success = await markQuizCompleted();
