@@ -12,7 +12,7 @@ export function AuthWelcome({ onGetStarted, onSignIn }: AuthWelcomeProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, x: -50 }}
-      className="min-h-screen w-full flex flex-col"
+      className="min-h-screen w-full flex flex-col justify-between"
       style={{ background: '#0D0D0D' }}
     >
       {/* Language badge */}
@@ -22,13 +22,13 @@ export function AuthWelcome({ onGetStarted, onSignIn }: AuthWelcomeProps) {
         </div>
       </div>
 
-      {/* Animation - ocupa ~60% da altura */}
-      <div className="flex-1 max-h-[55vh] flex items-center justify-center px-6 pt-20 pb-10">
+      {/* Animation - ocupa ~50% da altura */}
+      <div className="h-[50vh] flex items-center justify-center px-6 pt-16">
         <AppShowcaseAnimation />
       </div>
 
       {/* Bottom content */}
-      <div className="shrink-0 px-6 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] space-y-6">
+      <div className="px-6 pt-6 pb-[calc(env(safe-area-inset-bottom,0px)+2rem)] space-y-6">
         {/* Title */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}

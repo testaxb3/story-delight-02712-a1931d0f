@@ -51,7 +51,7 @@ export function AppShowcaseAnimation() {
       </div>
 
       {/* Card carousel */}
-      <div className="relative w-full max-w-[320px] h-[240px] mb-8">
+      <div className="relative w-full max-w-[280px] h-[200px] mb-6">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
