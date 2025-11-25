@@ -33,7 +33,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Check if PWA flow is completed (before quiz)
   const pwaFlowCompleted = localStorage.getItem('pwa_flow_completed') === 'true';
   const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
-  
+
   // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
   const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
@@ -60,17 +60,29 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // Isso resolve loops de redirecionamento causados por cache stale
   if (user.quiz_completed === true) {
     console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
+    console.log('[ProtectedRoute] 📊 Estado completo:', {
+      quiz_completed: user.quiz_completed,
+      quiz_in_progress: user.quiz_in_progress,
+      userId: user.id,
+      email: user.email,
+      timestamp: new Date().toISOString()
+    });
+
     // Limpar sessionStorage se quiz confirmado completo
     if (sessionStorage.getItem('quizJustCompletedAt')) {
       sessionStorage.removeItem('quizJustCompletedAt');
       console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
     }
-    // ✅ Garantir que os flags PWA estejam setados para não pedir novamente
+
+    // ✅ CRITICAL FIX: Garantir que os flags PWA estejam setados para não pedir novamente
+    // Isso é especialmente importante para PWAs no iPhone onde o usuário pode reinstalar o app
     if (!localStorage.getItem('pwa_flow_completed')) {
       localStorage.setItem('pwa_flow_completed', 'true');
+      console.log('[ProtectedRoute] ✅ Setou pwa_flow_completed=true');
     }
     if (!localStorage.getItem('theme_selected')) {
       localStorage.setItem('theme_selected', 'true');
+      console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
     }
     return <>{children}</>;
   }
@@ -78,7 +90,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // ✅ FIX: Permitir navegação imediatamente após concluir quiz (janela de 10 minutos - increased)
   const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
   const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 600000; // ✅ 10 minutos
-  
+
   if (withinGracePeriod) {
     console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
     return <>{children}</>;

@@ -63,6 +63,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Validate and restore session
         if (savedSession?.access_token && savedSession?.refresh_token) {
           console.log('[AuthContext] 🔄 Restoring saved PWA session');
+
+          // ✅ CRITICAL FIX: Limpar TODO o cache do React Query ao restaurar sessão PWA
+          // Isso garante que dados frescos sejam carregados, especialmente quiz_completed
+          console.log('[AuthContext] 🧹 Limpando cache do React Query para sessão PWA');
+          queryClient.clear();
+
           supabase.auth.setSession({
             access_token: savedSession.access_token,
             refresh_token: savedSession.refresh_token
@@ -78,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('[AuthContext] Auth state change:', event, 'userId:', session?.user?.id, 'email:', session?.user?.email);
-        
+
         // Handle token refresh errors gracefully
         if (event === 'TOKEN_REFRESHED') {
           // PERFORMANCE: Token refresh handled silently
@@ -102,7 +108,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return session;
         });
-        
+
         // 💾 Save session for PWA reinstalls
         if (session?.access_token && session?.refresh_token) {
           localStorage.setItem('saved_pwa_session', JSON.stringify({
@@ -110,7 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             refresh_token: session.refresh_token
           }));
         }
-        
+
         // Ensure user scaffolding on sign in (fallback safety check)
         if (event === 'SIGNED_IN' && session?.user) {
           setTimeout(() => {
@@ -119,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           }, 0);
         }
-        
+
         // PERFORMANCE: Profile will be fetched automatically by useUserProfile hook
         // No need for manual fetchUserProfile call here
         if (!session?.user) {
@@ -133,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('[AuthContext] Initial session check:', session?.user?.id, session?.user?.email);
       setSession(session);
       setAuthLoading(false);
-      
+
       // Ensure scaffolding for existing session (fallback)
       if (session?.user) {
         setTimeout(() => {
@@ -168,10 +174,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         if (error) {
           // Check if it's a network/server error that might be transient
-          if (error.message?.includes('500') || 
-              error.message?.includes('EOF') || 
-              error.message?.includes('network') ||
-              error.status === 500) {
+          if (error.message?.includes('500') ||
+            error.message?.includes('EOF') ||
+            error.message?.includes('network') ||
+            error.status === 500) {
             lastError = error;
             if (attempt < maxRetries) {
               console.log(`[AuthContext] Network error on attempt ${attempt + 1}, retrying...`);
@@ -190,18 +196,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }));
         }
 
-        // ✅ Simplified profile refresh - let React Query handle it
+        // ✅ CRITICAL FIX: Limpar TODO o cache após login para evitar dados stale
+        // Especialmente importante para PWA no iPhone onde cache pode persistir
         if (data?.user?.id) {
-          console.log('[AuthContext] 🔄 Invalidating profile cache after login');
-          queryClient.invalidateQueries({ queryKey: ['user-profile', data.user.id] });
-          queryClient.invalidateQueries({ queryKey: ['child-profiles'] });
+          console.log('[AuthContext] 🧹 Limpando TODO o cache do React Query após login');
+          queryClient.clear();
+          console.log('[AuthContext] ✅ Cache limpo - dados frescos serão carregados');
         }
 
         return { error: null };
       } catch (error: any) {
         console.error(`[AuthContext] SignIn attempt ${attempt + 1} failed:`, error);
         lastError = error;
-        
+
         // Retry on network errors
         if (attempt < maxRetries && (
           error.message?.includes('Failed to fetch') ||
@@ -211,15 +218,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
           continue;
         }
-        
+
         return { error: { message: error.message || 'Failed to sign in. Please check your connection.' } };
       }
     }
 
-    return { 
-      error: { 
-        message: lastError?.message || 'Connection failed. Please check your internet and try again.' 
-      } 
+    return {
+      error: {
+        message: lastError?.message || 'Connection failed. Please check your internet and try again.'
+      }
     };
   };
 
@@ -270,18 +277,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearUserContext();
     // Reset analytics user identification
     resetUser();
-    
+
     // Limpar marcadores de sessão e update
     localStorage.removeItem('app_session_start');
     localStorage.removeItem('app_version_acknowledged');
     localStorage.removeItem('saved_pwa_session');
-    
+
     // Note: We DON'T clear 'pwa_flow_completed' so user doesn't see PWA flow again on re-login
   };
 
   const refreshUser = async () => {
     if (!session?.user?.id) return;
-    
+
     // PERFORMANCE: Use React Query's refresh mechanism
     await refreshProfile(session.user.id);
     await refetchProfile();
