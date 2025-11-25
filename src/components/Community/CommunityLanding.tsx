@@ -244,23 +244,17 @@ export const CommunityLanding = memo(function CommunityLanding({
   const skeletonArray = useMemo(() => [0, 1, 2], []);
 
   return (
-    <div
-      className="h-screen bg-gradient-to-br from-background via-background to-muted/30 flex flex-col overflow-hidden relative"
-      style={{
-        paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1rem)',
-        paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)'
-      }}
-    >
+    <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted/30 flex flex-col relative pb-32">
       {/* Ambient background elements */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+      <div className="fixed top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+      <div className="fixed bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
       {/* Header Section */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 px-6 mb-6"
+        className="relative z-10 px-6 pt-8 mb-6"
       >
         <div className="flex items-center gap-3 mb-2">
           <Sparkles className="w-7 h-7 text-primary" />
@@ -273,8 +267,8 @@ export const CommunityLanding = memo(function CommunityLanding({
         </p>
       </motion.div>
 
-      {/* Communities Grid - Centered */}
-      <div className="flex-1 relative z-10 px-6 flex items-center justify-center overflow-hidden">
+      {/* Communities Grid */}
+      <div className="flex-1 relative z-10 px-6 w-full max-w-2xl mx-auto">
         <AnimatePresence mode="wait">
           {loading ? (
             <motion.div
@@ -282,7 +276,7 @@ export const CommunityLanding = memo(function CommunityLanding({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="w-full max-w-2xl grid grid-cols-1 gap-5"
+              className="grid grid-cols-1 gap-5"
             >
               {skeletonArray.map((i) => (
                 <CommunitySkeleton key={i} index={i} />
@@ -294,7 +288,7 @@ export const CommunityLanding = memo(function CommunityLanding({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="w-full max-w-2xl grid grid-cols-1 gap-5"
+              className="grid grid-cols-1 gap-5"
             >
               {communities.map((community, index) => (
                 <CommunityCard
@@ -309,12 +303,12 @@ export const CommunityLanding = memo(function CommunityLanding({
         </AnimatePresence>
       </div>
 
-      {/* Bottom CTAs - Fixed */}
+      {/* Bottom CTAs */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5, duration: 0.5 }}
-        className="relative z-10 px-6 flex flex-col gap-3 mt-6"
+        className="relative z-10 px-6 flex flex-col gap-3 mt-8 w-full max-w-2xl mx-auto"
       >
         <Button
           size="lg"

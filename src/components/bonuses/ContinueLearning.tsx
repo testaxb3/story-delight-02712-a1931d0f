@@ -94,7 +94,7 @@ export const ContinueLearning = memo(function ContinueLearning({ inProgressBonus
                   {/* Action */}
                   <Button
                     size="sm"
-                    className="w-full gradient-primary text-white"
+                    className="w-full"
                     onClick={() => onContinue(bonus)}
                   >
                     <Play className="w-3 h-3 mr-2" />

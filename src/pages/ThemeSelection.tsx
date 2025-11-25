@@ -38,9 +38,13 @@ const ThemeSelection = () => {
       }
     }
 
-    // Smooth transition to quiz
+    // Smooth transition to quiz or dashboard if already completed
     setTimeout(() => {
-      navigate("/quiz");
+      if (user?.quiz_completed) {
+        navigate("/");
+      } else {
+        navigate("/quiz");
+      }
     }, 500);
   };
 

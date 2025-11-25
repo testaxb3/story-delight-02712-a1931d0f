@@ -1,5 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { isStandaloneMode } from '@/utils/platform';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -13,7 +14,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     email: user?.email,
     quiz_completed: user?.quiz_completed,
     quiz_in_progress: user?.quiz_in_progress,
-    pathname: location.pathname
+    pathname: location.pathname,
+    isStandalone: isStandaloneMode()
   });
 
   if (loading) {
@@ -31,6 +33,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   // Check if PWA flow is completed (before quiz)
+  // ✅ FIX: If running in standalone mode, consider flow completed automatically
+  const isStandalone = isStandaloneMode();
+  if (isStandalone && !localStorage.getItem('pwa_flow_completed')) {
+    console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA');
+    localStorage.setItem('pwa_flow_completed', 'true');
+  }
+
   const pwaFlowCompleted = localStorage.getItem('pwa_flow_completed') === 'true';
   const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
 

@@ -306,7 +306,10 @@ export const EbookReaderV2 = ({
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
+        {/* Status Bar Spacer for PWA */}
+        <div className="w-full" style={{ height: 'env(safe-area-inset-top)' }} />
+        
+        <div className="container mx-auto px-4 pt-2 pb-4 flex items-center justify-between gap-2 max-w-5xl">
           <div className="flex items-center gap-3 min-w-0 flex-shrink">
             <Button
               variant="ghost"
@@ -365,9 +368,9 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-28 pb-24 max-w-3xl">
+      <main className="container mx-auto px-4 pb-24 max-w-3xl" style={{ paddingTop: 'calc(6rem + env(safe-area-inset-top))' }}>
         {/* Spacer to push content down */}
-        <div className="h-12"></div>
+        <div className="h-4"></div>
 
         {/* Progress Bar */}
         <div className="mb-8">

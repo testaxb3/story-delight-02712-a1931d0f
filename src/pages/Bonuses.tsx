@@ -458,7 +458,7 @@ function BonusesContent() {
                     setActiveCategory("all");
                     setSearchQuery("");
                   }}
-                  className="bg-white text-black hover:bg-gray-200"
+                  variant="outline"
                 >
                   Clear Filters
                 </Button>
