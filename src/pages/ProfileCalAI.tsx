@@ -152,22 +152,10 @@ export default function ProfileCalAI() {
           <div className="mb-8">
             <div className="flex items-center justify-between px-1 mb-3">
               <h3 className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">My Family</h3>
-              <button onClick={() => navigate('/profile')} className="text-blue-500 text-[15px] font-medium">Edit</button>
+              <button onClick={() => toast.info('Manage children in Quiz settings')} className="text-blue-500 text-[15px] font-medium">Manage</button>
             </div>
             
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-              {/* Add Child Button */}
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/profile')}
-                className="flex flex-col items-center gap-2 min-w-[80px]"
-              >
-                <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-[#2C2C2E] flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
-                  <Plus className="w-8 h-8" />
-                </div>
-                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Add Child</span>
-              </motion.button>
-
               {/* Children List */}
               {childProfiles.map((child) => (
                 <motion.button
@@ -193,7 +181,7 @@ export default function ProfileCalAI() {
                     </Avatar>
                   </div>
                   <span className={cn(
-                    "text-xs font-medium truncate w-full text-center",
+                    "text-xs font-medium truncate w-full text-center max-w-[80px]",
                     activeChild?.id === child.id ? "text-blue-600 dark:text-blue-400 font-bold" : "text-gray-900 dark:text-white"
                   )}>
                     {child.name}
