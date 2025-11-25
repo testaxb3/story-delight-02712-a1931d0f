@@ -34,7 +34,10 @@ const ThemeSelection = () => {
 
       if (error) {
         console.error('Error saving theme:', error);
-        toast.error('Theme saved locally only');
+        // ✅ FIX: Clearer warning that indicates theme will sync when connection restores
+        toast.warning('Theme saved locally. Will sync to cloud when connection restores.', {
+          duration: 4000
+        });
       }
     }
 

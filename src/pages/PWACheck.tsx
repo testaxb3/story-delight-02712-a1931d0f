@@ -46,6 +46,16 @@ const PWACheck = () => {
   };
 
   const handleContinueAnyway = () => {
+    // ✅ FIX: Add confirmation before allowing skip to increase installation rates
+    const confirmed = window.confirm(
+      "Are you sure you want to continue without installing the app? You'll miss out on push notifications, offline access, and other premium features."
+    );
+    
+    if (!confirmed) {
+      trackEvent('pwa_check_skip_cancelled');
+      return;
+    }
+    
     trackEvent('pwa_check_clicked_continue_anyway');
     localStorage.setItem('pwa_flow_completed', 'true');
     localStorage.setItem('pwa_install_skipped', Date.now().toString());

@@ -262,6 +262,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
 
+      // ✅ FIX: Clear React Query cache on sign-up to prevent stale data
+      if (data?.user?.id) {
+        console.log('[AuthContext] 🧹 Clearing React Query cache after sign-up');
+        queryClient.clear();
+        console.log('[AuthContext] ✅ Cache cleared - fresh data will be loaded');
+      }
+
       // Profile and user_progress are created automatically by the handle_new_user() trigger
       return { error: null };
     } catch (error: any) {

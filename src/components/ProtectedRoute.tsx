@@ -36,8 +36,10 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   // ✅ FIX: If running in standalone mode, consider flow completed automatically
   const isStandalone = isStandaloneMode();
   if (isStandalone && !localStorage.getItem('pwa_flow_completed')) {
-    console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA');
+    console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA e tema');
     localStorage.setItem('pwa_flow_completed', 'true');
+    // ✅ FIX: Also auto-complete theme selection in standalone mode
+    localStorage.setItem('theme_selected', 'true');
   }
 
   const pwaFlowCompleted = localStorage.getItem('pwa_flow_completed') === 'true';
@@ -96,9 +98,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
   }
 
-  // ✅ FIX: Permitir navegação imediatamente após concluir quiz (janela de 10 minutos - increased)
+  // ✅ FIX: Reduced grace period from 10 minutes to 2 minutes to rely more on DB state
   const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
-  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 600000; // ✅ 10 minutos
+  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000; // ✅ 2 minutos
 
   if (withinGracePeriod) {
     console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
