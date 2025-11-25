@@ -28,16 +28,13 @@ const Logo = memo(function Logo() {
       {/* Logo container */}
       <div className="relative w-20 h-20 rounded-3xl bg-gradient-to-br from-orange-500 via-rose-500 to-pink-600 p-[1px] shadow-2xl shadow-orange-500/20">
         <div className="w-full h-full rounded-3xl bg-gradient-to-br from-orange-500 via-rose-500 to-pink-600 flex items-center justify-center">
-          {/* Simple elegant brain/parenting icon */}
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Heart shape representing parenting love */}
-            <path
-              d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+          {/* NEP icon - simplified brain/neural network */}
+          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path 
+              d="M20 8C14.477 8 10 12.477 10 18c0 4.418 2.865 8.166 6.839 9.489.5.092.683-.217.683-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.341-3.369-1.341-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.071 1.531 1.031 1.531 1.031.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.268 2.75 1.026A9.578 9.578 0 0120 13.125c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.026 2.747-1.026.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C27.137 26.163 30 22.418 30 18c0-5.523-4.477-10-10-10z" 
               fill="white"
               fillOpacity="0.95"
             />
-            {/* Small sparkle for "NEP" touch */}
-            <circle cx="12" cy="10" r="1.5" fill="white" fillOpacity="0.8" />
           </svg>
         </div>
       </div>
@@ -162,13 +159,12 @@ export const AuthWelcome = memo(function AuthWelcome({
       transition={{ duration: 0.5 }}
       className="min-h-screen w-full flex flex-col relative"
     >
-      {/* Language selector - minimal with safe area */}
-      <motion.div
+      {/* Language selector - minimal */}
+      <motion.div 
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.2, duration: 0.5 }}
-        className="absolute top-[max(env(safe-area-inset-top),44px)] right-6 z-20"
-        style={{ paddingTop: '0.5rem' }}
+        className="absolute top-6 right-6 z-20"
       >
         <button className="px-3 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-white/50 text-sm font-medium hover:bg-white/[0.06] hover:text-white/70 transition-all">
           EN
@@ -207,11 +203,11 @@ export const AuthWelcome = memo(function AuthWelcome({
         </motion.p>
 
         {/* Feature pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
+        <div className="flex flex-wrap justify-center gap-2 mb-16">
           {features.map((feature, i) => (
-            <FeaturePill
-              key={feature}
-              text={feature}
+            <FeaturePill 
+              key={feature} 
+              text={feature} 
               delay={0.7 + i * 0.1}
             />
           ))}

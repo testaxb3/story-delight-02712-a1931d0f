@@ -130,7 +130,7 @@ const Auth = memo(function Auth() {
   }, [email, password, isSignUp, signIn, signUp, navigate, loginRateLimit]);
 
   return (
-    <div className="min-h-screen relative flex flex-col overflow-hidden bg-[#030303]">
+    <div className="min-h-screen relative flex flex-col overflow-hidden">
       {/* Premium background layer */}
       <PremiumBackground />
 

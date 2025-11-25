@@ -69,7 +69,7 @@ const PremiumInput = memo(function PremiumInput({
 
       {/* Input container */}
       <div className="relative">
-        {/* Glow effect on focus - INCREASED VISIBILITY */}
+        {/* Glow effect on focus */}
         <motion.div
           animate={{
             opacity: isFocused ? 1 : 0,
@@ -77,8 +77,8 @@ const PremiumInput = memo(function PremiumInput({
           }}
           transition={{ duration: 0.3 }}
           className={`
-            absolute -inset-[2px] rounded-2xl blur-md
-            ${error ? 'bg-red-500/40' : 'bg-white/30'}
+            absolute -inset-[1px] rounded-2xl blur-sm
+            ${error ? 'bg-red-500/20' : 'bg-white/10'}
           `}
         />
 
@@ -247,8 +247,8 @@ const SubmitButton = memo(function SubmitButton({
         relative w-full h-14 rounded-2xl font-semibold text-lg
         overflow-hidden
         transition-all duration-300
-        ${disabled
-          ? 'bg-white/20 text-white/50 cursor-not-allowed'
+        ${disabled 
+          ? 'bg-white/10 text-white/30 cursor-not-allowed' 
           : 'bg-white text-black hover:bg-white/95'
         }
       `}
@@ -346,16 +346,16 @@ export const AuthForm = memo(function AuthForm({
       initial={{ x: '100%', opacity: 0.8 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: '100%', opacity: 0.8 }}
-      transition={{
-        type: 'spring',
-        damping: 30,
+      transition={{ 
+        type: 'spring', 
+        damping: 30, 
         stiffness: 300,
         mass: 0.8,
       }}
-      className="min-h-screen w-full flex flex-col"
+      className="min-h-screen w-full flex flex-col bg-[#0A0A0A]"
     >
-      {/* Header with safe area - status bar space */}
-      <div className="px-6 pt-[max(env(safe-area-inset-top),44px)] pb-4">
+      {/* Header */}
+      <div className="px-6 pt-6 pb-4">
         <BackButton onClick={onBack} />
       </div>
 
