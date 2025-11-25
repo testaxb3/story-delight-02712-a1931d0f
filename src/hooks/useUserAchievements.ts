@@ -185,23 +185,36 @@ export const useUserAchievements = (userId: string | undefined) => {
       );
 
       newUnlocks.forEach(badge => {
+        console.log('🎉 Badge unlocked:', badge.name);
+        
         // Confetti explosion
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 }
-        });
+        try {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+          });
+          console.log('✨ Confetti triggered successfully');
+        } catch (error) {
+          console.error('❌ Confetti failed:', error);
+        }
 
         // Haptic feedback
-        triggerHaptic('medium');
-        setTimeout(() => triggerHaptic('light'), 200);
-        setTimeout(() => triggerHaptic('light'), 400);
+        try {
+          triggerHaptic('medium');
+          setTimeout(() => triggerHaptic('light'), 200);
+          setTimeout(() => triggerHaptic('light'), 400);
+          console.log('📳 Haptic feedback triggered');
+        } catch (error) {
+          console.error('❌ Haptic failed:', error);
+        }
 
         // Toast notification
         toast.success(`🏆 Badge Unlocked: ${badge.name}`, {
           description: badge.description,
           duration: 5000,
         });
+        console.log('🔔 Toast notification displayed');
       });
     }
 

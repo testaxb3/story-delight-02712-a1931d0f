@@ -17,6 +17,7 @@ export default function Achievements() {
     <div className="min-h-screen bg-background">
       <StickyHeader
         title="Milestones"
+        static
         leftAction={
           <Button
             variant="ghost"

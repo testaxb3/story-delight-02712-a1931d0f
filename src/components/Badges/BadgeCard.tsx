@@ -4,6 +4,7 @@ import { Lock } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { badgeRarity, categoryColors, easeOutQuart } from '@/styles/badgeTokens';
 import { useHaptic } from '@/hooks/useHaptic';
+import { toast } from 'sonner';
 // React Icons
 import {
   FaFire, FaBolt, FaDumbbell, FaTrophy, FaLock, FaGem, FaCrown,
@@ -91,6 +92,7 @@ export const BadgeCard = memo(({ badge, size = 'md', featured = false }: BadgeCa
   // Animate progress ring
   useEffect(() => {
     if (!badge.unlocked && badge.progress) {
+      console.log(`🎨 Animating progress ring for ${badge.name}: ${progressPercent}%`);
       let frame: number;
       let start = 0;
       const animate = (timestamp: number) => {
@@ -102,6 +104,8 @@ export const BadgeCard = memo(({ badge, size = 'md', featured = false }: BadgeCa
         
         if (progress < 1) {
           frame = requestAnimationFrame(animate);
+        } else {
+          console.log(`✅ Animation complete: ${badge.name}`);
         }
       };
       frame = requestAnimationFrame(animate);
@@ -113,6 +117,14 @@ export const BadgeCard = memo(({ badge, size = 'md', featured = false }: BadgeCa
     e.stopPropagation();
     if (badge.unlocked) {
       triggerHaptic('light');
+    } else {
+      triggerHaptic('warning');
+      toast.info(`${badge.name} is locked`, {
+        description: badge.progress 
+          ? `Progress: ${badge.progress.current}/${badge.progress.required} ${badge.progress.label}`
+          : badge.description,
+        duration: 2000
+      });
     }
   };
 
@@ -136,10 +148,11 @@ export const BadgeCard = memo(({ badge, size = 'md', featured = false }: BadgeCa
             <div className={`relative ${actualSize}`}>
               {/* Progress Ring for Locked Badges */}
               {!badge.unlocked && (
-                <svg 
-                  className="absolute inset-0 -rotate-90 w-full h-full"
-                  viewBox="0 0 100 100"
-                >
+            <svg 
+              className="absolute inset-0 -rotate-90 w-full h-full"
+              style={{ willChange: 'stroke-dashoffset' }}
+              viewBox="0 0 100 100"
+            >
                   {/* Background ring */}
                   <circle
                     cx="50"
