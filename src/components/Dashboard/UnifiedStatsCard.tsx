@@ -51,18 +51,18 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
 
   return (
     <div className={cn(
-      "bg-white dark:bg-card rounded-[32px] p-6 flex flex-col h-[280px]",
-      "border border-[#E5E7EB] dark:border-transparent",
-      "shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-none",
+      "bg-card rounded-3xl p-6 flex flex-col h-[280px]",
+      "border border-border/10",
+      "shadow-sm",
       className
     )}>
       {/* Top section - Stats and Progress Ring */}
       <div className="flex items-center justify-between mb-4 flex-1">
         {/* Left side - Big number */}
         <div>
-          <p className="text-6xl font-bold mb-2 text-[#1A1A1A] dark:text-white">{scriptsUsed}</p>
-          <p className="text-sm text-[#6B7280] dark:text-muted-foreground font-medium">Scripts Used</p>
-          <p className="text-xs text-[#9CA3AF] dark:text-muted-foreground mt-1">of {scriptsTotal} total</p>
+          <p className="text-6xl font-bold mb-2 text-foreground">{scriptsUsed}</p>
+          <p className="text-sm text-muted-foreground font-medium">Scripts Used</p>
+          <p className="text-xs text-muted-foreground/60 mt-1">of {scriptsTotal} total</p>
         </div>
 
         {/* Right side - Progress Ring with Fire Icon */}
@@ -76,7 +76,7 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
               stroke="currentColor"
               strokeWidth="6"
               fill="none"
-              className="text-[#F3F4F6] dark:text-muted/20"
+              className="text-muted/20"
             />
             {/* Progress circle */}
             <circle
@@ -107,10 +107,10 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
         onClick={() => !isLoggedToday && navigate('/progress')}
         disabled={isLoggedToday || checking}
         className={cn(
-          "w-full h-12 rounded-xl flex items-center justify-center gap-2 text-sm font-medium transition-all",
+          "w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all",
           isLoggedToday
             ? "bg-accent/10 text-accent cursor-not-allowed"
-            : "bg-[#F3F4F6] dark:bg-muted hover:bg-[#E5E7EB] dark:hover:bg-muted/80 text-[#1A1A1A] dark:text-foreground cursor-pointer",
+            : "bg-secondary/50 hover:bg-secondary/70 text-foreground cursor-pointer active:scale-[0.98]",
           checking && "opacity-50 cursor-wait"
         )}
       >
