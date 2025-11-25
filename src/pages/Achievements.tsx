@@ -22,9 +22,9 @@ export default function Achievements() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/')}
             className="w-10 h-10 rounded-full bg-card hover:bg-card/80"
-            aria-label="Back to dashboard"
+            aria-label="Back to home"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
