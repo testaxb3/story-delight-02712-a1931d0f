@@ -662,6 +662,7 @@ export default function ProgressCalAI() {
               <Button
                 onClick={handleLogToday}
                 disabled={saving}
+                variant="secondary"
                 className="w-full h-12 text-base font-bold"
               >
                 {saving ? 'Saving...' : 'Log Today'}
