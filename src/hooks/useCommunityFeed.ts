@@ -12,6 +12,7 @@ export interface Post {
   result_type: 'success' | 'partial' | 'needs_practice' | null;
   created_at: string;
   user_id: string;
+  comment_count?: number;
   profiles: {
     username: string | null;
     name: string;
@@ -39,17 +40,22 @@ export function useCommunityFeed(communityId: string | null) {
     try {
       const { data, error } = await supabase
         .from('community_posts')
-        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles:user_id(username, name, photo_url, brain_profile)')
+        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles:user_id(username, name, photo_url, brain_profile), post_comments(count)')
         .eq('community_id', communityId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
 
-      setPosts((data || []) as any);
+      const formattedPosts = (data || []).map((post: any) => ({
+        ...post,
+        comment_count: post.post_comments?.[0]?.count || 0
+      }));
+
+      setPosts(formattedPosts as Post[]);
 
       // Load reactions for all posts
       if (data && data.length > 0) {
-        await loadPostReactions(data.map(p => p.id));
+        await loadPostReactions(data.map((p: any) => p.id));
       }
     } catch (error) {
       console.error('Error loading posts:', error);
@@ -146,6 +152,22 @@ export function useCommunityFeed(communityId: string | null) {
       )
       .subscribe();
 
+    // Subscribe to comment changes
+    const commentsChannel = supabase
+      .channel(`post_comments:${communityId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'post_comments',
+        },
+        () => {
+          loadPosts();
+        }
+      )
+      .subscribe();
+
     // Listen for manual reload events
     const handleReload = () => {
       loadPosts();
@@ -155,6 +177,7 @@ export function useCommunityFeed(communityId: string | null) {
     return () => {
       supabase.removeChannel(postsChannel);
       supabase.removeChannel(reactionsChannel);
+      supabase.removeChannel(commentsChannel);
       window.removeEventListener('reload-posts', handleReload);
     };
   }, [communityId, loadPosts, posts]);

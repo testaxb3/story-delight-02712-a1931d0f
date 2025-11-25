@@ -96,7 +96,7 @@ export function BottomNavCalAI() {
   return (
     <nav 
       className="fixed left-6 right-6 z-[100] md:hidden pointer-events-auto"
-      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 1.5rem)` }}
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 0.5rem)` }}
     >
       <div className="bg-card/80 backdrop-blur-xl rounded-full px-4 py-3 shadow-2xl border border-border">
         <div className="flex justify-between items-center gap-2">

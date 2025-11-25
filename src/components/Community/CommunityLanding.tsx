@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Users as UsersIcon, Sparkles, ArrowRight } from 'lucide-react';
+import { Users as UsersIcon, Sparkles, ArrowRight, Plus, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface CommunityLandingProps {
   onCreateCommunity: () => void;
@@ -22,16 +23,29 @@ interface DefaultCommunity {
   memberCount: number;
   gradient: string;
   profile: string;
+  image?: string;
 }
 
-const PROFILE_CONFIG: Record<string, { gradient: string; icon: string }> = {
-  'INTENSE': { gradient: 'from-orange-500 via-orange-600 to-red-600', icon: '🔥' },
-  'DEFIANT': { gradient: 'from-purple-500 via-purple-600 to-indigo-600', icon: '👊' },
-  'DISTRACTED': { gradient: 'from-blue-500 via-blue-600 to-cyan-600', icon: '✨' },
+const PROFILE_CONFIG: Record<string, { gradient: string; icon: string; image: string }> = {
+  'INTENSE': { 
+    gradient: 'from-orange-500 via-red-500 to-rose-600', 
+    icon: '🔥',
+    image: 'https://images.unsplash.com/photo-1596464716127-f2a82984de30?q=80&w=2070&auto=format&fit=crop' // Intense/Fire
+  },
+  'DEFIANT': { 
+    gradient: 'from-purple-600 via-indigo-600 to-blue-600', 
+    icon: '👊',
+    image: 'https://images.unsplash.com/photo-1508898578281-774ac4893c0c?q=80&w=1974&auto=format&fit=crop' // Bold/Dark
+  },
+  'DISTRACTED': { 
+    gradient: 'from-cyan-400 via-sky-500 to-blue-500', 
+    icon: '✨',
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop' // Space/Light
+  },
 };
 
-// Memoized Community Card Component
-const CommunityCard = memo(function CommunityCard({
+// Poster Style Card - Immersive
+const CommunityPoster = memo(function CommunityPoster({
   community,
   index,
   onJoin,
@@ -40,105 +54,62 @@ const CommunityCard = memo(function CommunityCard({
   index: number;
   onJoin: (community: DefaultCommunity) => void;
 }) {
-  const handleClick = useCallback(() => {
-    onJoin(community);
-  }, [community, onJoin]);
-
   const config = PROFILE_CONFIG[community.profile] || PROFILE_CONFIG['DISTRACTED'];
 
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: index * 0.15,
-        duration: 0.5,
-        ease: [0.16, 1, 0.3, 1]
-      }}
-      whileHover={{ y: -8, scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={handleClick}
-      className="relative rounded-[2rem] overflow-hidden group cursor-pointer shadow-xl hover:shadow-2xl transition-all duration-300"
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: index * 0.1, duration: 0.4 }}
+      onClick={() => onJoin(community)}
+      className="relative aspect-[4/5] rounded-[32px] overflow-hidden cursor-pointer group shadow-xl"
     >
-      {/* Glassmorphic gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-95`}>
-        {/* Animated gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-black/40 via-transparent to-white/20" />
-
-        {/* Noise texture for depth */}
-        <div className="absolute inset-0 opacity-[0.015] mix-blend-overlay"
-             style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 400 400\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.9\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <img 
+          src={config.image} 
+          alt={community.name}
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
-      </div>
-
-      {/* Large decorative icon */}
-      <div className="absolute top-4 right-4 text-[5rem] opacity-20 group-hover:opacity-30 group-hover:scale-110 transition-all duration-500 select-none">
-        {config.icon}
-      </div>
-
-      {/* Animated shine effect */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-        <div className="absolute inset-0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 ease-in-out bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+        {/* Gradient Overlay */}
+        <div className={cn(
+          "absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80",
+          "mix-blend-multiply"
+        )} />
+        {/* Tint Overlay */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-40 mix-blend-overlay`} />
       </div>
 
       {/* Content */}
-      <div className="relative h-56 p-6 flex flex-col justify-between">
-        {/* Top: Badge */}
-        <motion.div
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.15 + 0.2 }}
-        >
-          <Badge
-            variant="secondary"
-            className="text-[0.7rem] bg-white/25 text-white border border-white/40 backdrop-blur-xl font-semibold px-3 py-1.5 shadow-lg"
-          >
-            {community.profile}
-          </Badge>
-        </motion.div>
+      <div className="absolute inset-0 p-6 flex flex-col justify-between">
+        {/* Top Badge */}
+        <div className="flex justify-end">
+          <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-2xl">
+            {config.icon}
+          </div>
+        </div>
 
-        {/* Bottom: Name and Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.15 + 0.3 }}
-          className="space-y-3"
-        >
-          <h3 className="text-white font-black text-2xl drop-shadow-2xl text-left leading-tight tracking-tight">
+        {/* Bottom Info */}
+        <div className="space-y-3">
+          <Badge 
+            variant="outline" 
+            className="bg-white/10 border-white/20 text-white backdrop-blur-md font-bold tracking-widest text-[10px] uppercase"
+          >
+            {community.profile} TRIBE
+          </Badge>
+          
+          <h3 className="text-3xl font-black text-white leading-none tracking-tight drop-shadow-lg">
             {community.name}
           </h3>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 bg-black/25 backdrop-blur-xl rounded-full px-3.5 py-2 border border-white/30 shadow-lg">
-              <UsersIcon className="w-4 h-4 text-white" />
-              <span className="text-white text-sm font-bold">{community.memberCount}</span>
-              <span className="text-white/80 text-xs font-medium">members</span>
+          
+          <div className="flex items-center gap-3 text-white/80">
+            <div className="flex -space-x-2">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/10" />
+              ))}
             </div>
-
-            <div className="bg-white/25 backdrop-blur-xl rounded-full p-2 border border-white/40 group-hover:bg-white/40 transition-colors">
-              <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" />
-            </div>
+            <span className="text-xs font-medium">{community.memberCount} members</span>
           </div>
-        </motion.div>
-      </div>
-    </motion.button>
-  );
-});
-
-// Loading Skeleton Component
-const CommunitySkeleton = memo(function CommunitySkeleton({ index }: { index: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: index * 0.1 }}
-      className="relative rounded-[2rem] overflow-hidden bg-gradient-to-br from-muted to-muted/50 h-56 animate-pulse shadow-xl"
-    >
-      <div className="relative h-full p-6 flex flex-col justify-between">
-        <div className="bg-white/20 h-7 w-24 rounded-full" />
-        <div className="space-y-3">
-          <div className="bg-white/20 h-8 w-40 rounded-lg" />
-          <div className="bg-white/20 h-10 w-32 rounded-full" />
         </div>
       </div>
     </motion.div>
@@ -241,91 +212,68 @@ export const CommunityLanding = memo(function CommunityLanding({
     }
   }, [user?.profileId, navigate]);
 
-  const skeletonArray = useMemo(() => [0, 1, 2], []);
-
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-br from-background via-background to-muted/30 flex flex-col relative pb-32">
-      {/* Ambient background elements */}
-      <div className="fixed top-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-      <div className="fixed bottom-0 right-0 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+    <div className="min-h-[100dvh] bg-background pb-32 overflow-x-hidden">
+      {/* Header Spacer */}
+      <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
-      {/* Header Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="relative z-10 px-6 pt-8 mb-6"
-      >
-        <div className="flex items-center gap-3 mb-2">
-          <Sparkles className="w-7 h-7 text-primary" />
-          <h1 className="text-3xl font-black text-foreground tracking-tight">
-            Communities
-          </h1>
+      {/* Header */}
+      <div className="px-5 mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Tribes</h1>
+            <p className="text-muted-foreground">Find your people. Join the movement.</p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="icon" 
+            className="rounded-full w-10 h-10 border-2"
+            onClick={onJoinCommunity}
+          >
+            <Search className="w-5 h-5" />
+          </Button>
         </div>
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          Join parents using NEP AI scripts
-        </p>
-      </motion.div>
+      </div>
 
-      {/* Communities Grid */}
-      <div className="flex-1 relative z-10 px-6 w-full max-w-2xl mx-auto">
-        <AnimatePresence mode="wait">
+      {/* Horizontal Scroll Snap Container */}
+      <div className="px-5 mb-10">
+        <div className="flex gap-4 overflow-x-auto pb-8 -mx-5 px-5 scrollbar-hide snap-x snap-mandatory">
           {loading ? (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 gap-5"
-            >
-              {skeletonArray.map((i) => (
-                <CommunitySkeleton key={i} index={i} />
-              ))}
-            </motion.div>
+            [...Array(3)].map((_, i) => (
+              <div key={i} className="min-w-[85vw] sm:min-w-[320px] aspect-[4/5] rounded-[32px] bg-muted animate-pulse snap-center" />
+            ))
           ) : (
-            <motion.div
-              key="content"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="grid grid-cols-1 gap-5"
-            >
-              {communities.map((community, index) => (
-                <CommunityCard
-                  key={community.id}
+            communities.map((community, index) => (
+              <div key={community.id} className="min-w-[85vw] sm:min-w-[320px] snap-center">
+                <CommunityPoster
                   community={community}
                   index={index}
                   onJoin={handleJoinCommunity}
                 />
-              ))}
-            </motion.div>
+              </div>
+            ))
           )}
-        </AnimatePresence>
+        </div>
       </div>
 
-      {/* Bottom CTAs */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5, duration: 0.5 }}
-        className="relative z-10 px-6 flex flex-col gap-3 mt-8 w-full max-w-2xl mx-auto"
-      >
-        <Button
-          size="lg"
+      {/* Create CTA */}
+      <div className="px-5">
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
           onClick={onCreateCommunity}
-          className="w-full h-14 text-base bg-primary hover:bg-primary/90 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all"
+          className="w-full bg-secondary/50 border-2 border-dashed border-border hover:border-primary/50 hover:bg-secondary transition-all rounded-[24px] p-6 flex flex-col items-center text-center gap-3 group"
         >
-          Create New Community
-        </Button>
-        <Button
-          variant="outline"
-          size="lg"
-          onClick={onJoinCommunity}
-          className="w-full h-14 text-base border-2 hover:bg-accent rounded-2xl font-bold transition-all"
-        >
-          Join Existing Community
-        </Button>
-      </motion.div>
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Plus className="w-6 h-6 text-primary" />
+          </div>
+          <div>
+            <h3 className="font-bold text-foreground">Create Your Own Tribe</h3>
+            <p className="text-sm text-muted-foreground">Start a private community for your circle</p>
+          </div>
+        </motion.button>
+      </div>
     </div>
   );
 });

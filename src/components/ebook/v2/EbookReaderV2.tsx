@@ -297,7 +297,7 @@ export const EbookReaderV2 = ({
 
   return (
     <div 
-      className="min-h-screen bg-background pb-[calc(6rem+env(safe-area-inset-bottom))] font-serif"
+      className="min-h-screen bg-background pb-[env(safe-area-inset-bottom)] font-serif"
       style={{ fontSize: `${fontSize}rem` }}
     >
       {/* Smart Header - Slides in/out */}
@@ -368,7 +368,7 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pb-24 max-w-3xl" style={{ paddingTop: 'calc(6rem + env(safe-area-inset-top))' }}>
+      <main className="container mx-auto px-4 pb-8 max-w-3xl" style={{ paddingTop: 'calc(6rem + env(safe-area-inset-top))' }}>
         {/* Spacer to push content down */}
         <div className="h-4"></div>
 

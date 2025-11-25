@@ -87,6 +87,60 @@ export function usePostActions() {
     }
   }, []);
 
+  const addComment = useCallback(async (postId: string, content: string) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('You must be logged in to comment');
+        return false;
+      }
+
+      if (!content.trim()) return false;
+
+      const { error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          content: content.trim()
+        });
+
+      if (error) throw error;
+
+      toast.success('Comment added');
+      
+      // Trigger a reload
+      window.dispatchEvent(new CustomEvent('reload-posts'));
+      return true;
+    } catch (error: any) {
+      console.error('Comment error:', error);
+      toast.error(`Error: ${error.message}`);
+      return false;
+    }
+  }, []);
+
+  const deleteComment = useCallback(async (commentId: string) => {
+    const confirmDelete = window.confirm('Delete this comment?');
+    if (!confirmDelete) return false;
+
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .delete()
+        .eq('id', commentId);
+
+      if (error) throw error;
+
+      toast.success('Comment deleted');
+      window.dispatchEvent(new CustomEvent('reload-posts'));
+      return true;
+    } catch (error: any) {
+      console.error('Error deleting comment:', error);
+      toast.error(`Failed to delete: ${error.message}`);
+      return false;
+    }
+  }, []);
+
   const deletePost = useCallback(async (postId: string) => {
     const confirmDelete = window.confirm('Are you sure you want to delete this post?');
     if (!confirmDelete) return false;
@@ -166,6 +220,8 @@ export function usePostActions() {
 
   return {
     addReaction,
+    addComment,
+    deleteComment,
     deletePost,
     createPost,
     isSubmitting,

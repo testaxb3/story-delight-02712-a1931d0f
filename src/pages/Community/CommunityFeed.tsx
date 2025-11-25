@@ -10,11 +10,18 @@ import { toast } from 'sonner';
 import { useCommunityFeed } from '@/hooks/useCommunityFeed';
 import { useCommunityMembers } from '@/hooks/useCommunityMembers';
 import { usePostActions } from '@/hooks/usePostActions';
-import { CommunityHeader } from '@/components/Community/CommunityHeader';
-import { MembersList } from '@/components/Community/MembersList';
+import { CommunityLeaderboard } from '@/components/Community/CommunityLeaderboard';
 import { PostCard } from '@/components/Community/PostCard';
 import { EmptyState } from '@/components/Community/EmptyState';
 import { PostsFeedSkeleton, MembersListSkeleton } from '@/components/Community/LoadingStates';
+import { ChevronDown, PenSquare, MessageSquare } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Community {
   id: string;
@@ -41,7 +48,7 @@ export default function CommunityFeed() {
   // Use custom hooks for data management
   const { posts, postReactions, loading: postsLoading, loadPosts } = useCommunityFeed(currentCommunity?.id || null);
   const { members, loading: membersLoading } = useCommunityMembers(currentCommunity?.id || null, user?.profileId || null);
-  const { addReaction, deletePost, deletingPostId } = usePostActions();
+  const { addReaction, addComment, deleteComment, deletePost, deletingPostId } = usePostActions();
 
   useEffect(() => {
     if (user?.profileId) {
@@ -101,6 +108,15 @@ export default function CommunityFeed() {
     setShowReactionsSheet(false);
   }, [selectedPostId, addReaction]);
 
+  const handleAddComment = useCallback(async (content: string) => {
+    if (!selectedPostId) return;
+    await addComment(selectedPostId, content);
+  }, [selectedPostId, addComment]);
+
+  const handleDeleteComment = useCallback(async (commentId: string) => {
+    return await deleteComment(commentId);
+  }, [deleteComment]);
+
   const handleDeletePost = useCallback(async (postId: string) => {
     await deletePost(postId);
   }, [deletePost]);
@@ -120,33 +136,77 @@ export default function CommunityFeed() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#F8F9FA] dark:bg-gradient-to-b dark:from-background dark:via-background dark:to-primary/5 dark:dark:to-primary/10 pb-24 relative overflow-hidden">
-        {/* Ambient Background Glows - Only Dark Mode */}
-        <div className="hidden dark:block fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
-        <div className="hidden dark:block fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="min-h-screen bg-background pb-24 relative">
+        {/* Apple Style Header */}
+        <header className="px-5 pt-[calc(env(safe-area-inset-top)+8px)] pb-4 sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+          <div className="flex items-center justify-between">
+            {/* Community Selector (Pill) */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <motion.button
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-3"
+                >
+                  {currentCommunity ? (
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-xl border border-border/50">
+                        {currentCommunity.logo_url ? (
+                          <img src={currentCommunity.logo_url} alt="" className="w-full h-full rounded-full object-cover" />
+                        ) : (
+                          currentCommunity.logo_emoji || '💬'
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <div className="flex items-center gap-1.5">
+                          <h1 className="text-lg font-bold text-foreground leading-none">{currentCommunity.name}</h1>
+                          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                        </div>
+                        <p className="text-xs text-muted-foreground font-medium mt-0.5">{members.length} members</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-10 w-32 bg-secondary/50 rounded-full animate-pulse" />
+                  )}
+                </motion.button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-64 rounded-xl p-2 bg-popover/95 backdrop-blur-xl border-border/50 shadow-xl">
+                {communities.map((comm) => (
+                  <DropdownMenuItem
+                    key={comm.id}
+                    onClick={() => setCurrentCommunity(comm)}
+                    className="flex items-center gap-3 p-3 rounded-lg cursor-pointer focus:bg-accent focus:text-accent-foreground"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-lg border border-border/50">
+                      {comm.logo_url ? (
+                        <img src={comm.logo_url} alt="" className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        comm.logo_emoji || '💬'
+                      )}
+                    </div>
+                    <span className="font-semibold text-sm">{comm.name}</span>
+                    {currentCommunity?.id === comm.id && (
+                      <div className="ml-auto w-2 h-2 rounded-full bg-primary" />
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-        {/* Fixed Header Background for Status Bar */}
-        <div className="fixed top-0 left-0 right-0 z-40 h-20 bg-gradient-to-b from-[#F8F9FA] via-[#F8F9FA]/80 to-transparent dark:from-background dark:via-background dark:to-transparent pointer-events-none" />
+            {/* Top Action */}
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="w-10 h-10 rounded-full bg-secondary/50 hover:bg-secondary flex items-center justify-center transition-colors"
+            >
+              <PenSquare className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
+        </header>
 
-        {/* Header */}
-        <CommunityHeader
-          communities={communities}
-          currentCommunity={currentCommunity}
-          memberCount={members.length}
-          onCommunityChange={setCurrentCommunity}
-        />
-
-        <div className="px-4 space-y-4 relative z-10">
-          {/* Members List */}
-          <AnimatePresence mode="wait">
-            {membersLoading ? (
-              <MembersListSkeleton />
-            ) : (
-              currentCommunity && members.length > 0 && (
-                <MembersList members={members} />
-              )
-            )}
-          </AnimatePresence>
+        <main className="px-4 space-y-6 relative z-10 mt-4">
+          {/* Leaderboard (Stories Style) */}
+          {currentCommunity && (
+            <CommunityLeaderboard communityId={currentCommunity.id} />
+          )}
 
           {/* Posts Feed */}
           <AnimatePresence mode="wait">
@@ -155,7 +215,7 @@ export default function CommunityFeed() {
             ) : posts.length === 0 ? (
               <EmptyState onCreatePost={() => setShowCreateModal(true)} />
             ) : (
-              <div className="space-y-5">
+              <div className="space-y-6 pb-32">
                 {posts.map((post, idx) => (
                   <PostCard
                     key={post.id}
@@ -173,7 +233,7 @@ export default function CommunityFeed() {
               </div>
             )}
           </AnimatePresence>
-        </div>
+        </main>
       </div>
 
       {/* Reactions Sheet */}
@@ -181,10 +241,13 @@ export default function CommunityFeed() {
         open={showReactionsSheet}
         onOpenChange={setShowReactionsSheet}
         postId={selectedPostId || ''}
-        userAvatar={undefined}
+        userAvatar={user?.user_metadata?.avatar_url || user?.photo_url || undefined}
         userName={user?.email || 'User'}
+        currentUserId={user?.profileId || null}
+        isAdmin={isUserAdmin}
         onAddReaction={handleAddReaction}
-        onAddComment={() => {}}
+        onAddComment={handleAddComment}
+        onDeleteComment={handleDeleteComment}
       />
 
       {/* Create Post Modal */}
@@ -198,19 +261,16 @@ export default function CommunityFeed() {
         />
       )}
 
-      {/* Floating Add Post Button */}
+      {/* FAB (Only visible when scrolling down, logic can be added later) */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed right-6 w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-full shadow-lg shadow-orange-500/30 flex items-center justify-center z-50 hover:shadow-xl hover:shadow-orange-500/40 transition-shadow"
-        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)' }}
+        className="fixed right-6 bottom-24 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 flex items-center justify-center z-50 hover:shadow-xl transition-all"
       >
-        <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
-        </svg>
+        <MessageSquare className="w-6 h-6" />
       </motion.button>
     </MainLayout>
   );

@@ -15,7 +15,7 @@ export const NavigationButtons = ({
   hasNext,
 }: NavigationButtonsProps) => {
   return (
-    <div className="flex items-center justify-between gap-4 mt-12 pt-8 border-t border-border">
+    <div className="flex items-center justify-between gap-4 mt-8 pt-6 pb-4 border-t border-border">
       <Button
         variant="ghost"
         size="lg"

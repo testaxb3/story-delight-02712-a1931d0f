@@ -1,87 +1,47 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useScriptRequests, CreateScriptRequestData } from '@/hooks/useScriptRequests';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, Check, Home, School, Car, Users, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { useHaptic } from '@/hooks/useHaptic';
 
-const requestSchema = z.object({
-  situation_description: z.string().min(20, 'Descreva a situação com pelo menos 20 caracteres'),
+// Wizard Steps Schema
+const step1Schema = z.object({
+  situation_description: z.string().min(10, 'Tell us a bit more about the situation.'),
+});
+
+const step2Schema = z.object({
   child_brain_profile: z.string().optional(),
-  child_age: z.coerce.number().min(1).max(18).optional(),
-  location_type: z.array(z.string()).optional(),
   parent_emotional_state: z.string().optional(),
-  urgency_level: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+  location_type: z.array(z.string()).optional(),
+});
+
+const step3Schema = z.object({
+  urgency_level: z.enum(['low', 'medium', 'high', 'urgent']),
   additional_notes: z.string().optional(),
 });
 
+// Combined Schema for final submission
+const requestSchema = step1Schema.merge(step2Schema).merge(step3Schema);
 type RequestFormValues = z.infer<typeof requestSchema>;
 
-const LOCATION_OPTIONS = [
-  { id: 'home', label: 'Home' },
-  { id: 'school', label: 'School' },
-  { id: 'public', label: 'Public places' },
-  { id: 'transport', label: 'Transportation' },
-  { id: 'family', label: 'Family events' },
-];
-
-const BRAIN_PROFILES = [
-  'DEFIANT',
-  'INTENSE',
-  'SENSITIVE',
-  'HYPERFOCUS',
-];
-
-const EMOTIONAL_STATES = [
-  'calm',
-  'stressed',
-  'frustrated',
-  'exhausted',
-  'overwhelmed',
-];
-
-const URGENCY_LEVELS = [
-  { value: 'low', label: 'Low - Future planning' },
-  { value: 'medium', label: 'Medium - Happens regularly' },
-  { value: 'high', label: 'High - Happens daily' },
-  { value: 'urgent', label: 'Urgent - Need help now!' },
-];
-
-interface RequestScriptModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-}
-
-export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalProps) {
+export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
   const { createRequest, isCreating } = useScriptRequests();
-  const [selectedLocations, setSelectedLocations] = useState<string[]>([]);
+  const { triggerHaptic } = useHaptic();
+  const [currentStep, setCurrentStep] = useState(1);
+  const totalSteps = 3;
 
   const form = useForm<RequestFormValues>({
     resolver: zodResolver(requestSchema),
@@ -89,16 +49,40 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
       situation_description: '',
       urgency_level: 'medium',
       location_type: [],
+      parent_emotional_state: '',
       additional_notes: '',
     },
+    mode: 'onChange',
   });
 
+  const { watch, setValue, handleSubmit, formState: { errors, isValid } } = form;
+  const formValues = watch();
+
+  // Navigation Handlers
+  const handleNext = async () => {
+    triggerHaptic('light');
+    let isStepValid = false;
+
+    if (currentStep === 1) {
+      isStepValid = await form.trigger('situation_description');
+    } else if (currentStep === 2) {
+      isStepValid = true; // Optional fields, always valid
+    }
+
+    if (isStepValid) setCurrentStep((prev) => Math.min(prev + 1, totalSteps));
+  };
+
+  const handleBack = () => {
+    triggerHaptic('light');
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
   const onSubmit = (values: RequestFormValues) => {
+    triggerHaptic('medium');
     const requestData: CreateScriptRequestData = {
       situation_description: values.situation_description,
       child_brain_profile: values.child_brain_profile,
-      child_age: values.child_age,
-      location_type: selectedLocations.length > 0 ? selectedLocations : undefined,
+      location_type: values.location_type,
       parent_emotional_state: values.parent_emotional_state,
       urgency_level: values.urgency_level,
       additional_notes: values.additional_notes,
@@ -106,212 +90,264 @@ export function RequestScriptModal({ open, onOpenChange }: RequestScriptModalPro
 
     createRequest(requestData, {
       onSuccess: () => {
+        triggerHaptic('success');
+        setCurrentStep(1);
         form.reset();
-        setSelectedLocations([]);
         onOpenChange(false);
       },
     });
   };
 
+  // UI Components for Steps
+  const renderStep1 = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-6"
+    >
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">What's happening?</h2>
+        <p className="text-muted-foreground">Describe the challenge you're facing with your child.</p>
+      </div>
+
+      <div className="space-y-4">
+        <div className="relative">
+          <Textarea
+            placeholder="My child refuses to get dressed in the morning and throws a tantrum when I insist..."
+            className="min-h-[200px] text-lg p-6 rounded-3xl bg-secondary/30 border-transparent focus:border-primary/20 focus:bg-secondary/50 resize-none transition-all"
+            {...form.register('situation_description')}
+            autoFocus
+          />
+          <div className="absolute bottom-4 right-4 text-xs text-muted-foreground">
+            {formValues.situation_description?.length || 0} chars
+          </div>
+        </div>
+        {errors.situation_description && (
+          <p className="text-sm text-red-500 text-center animate-pulse">{errors.situation_description.message}</p>
+        )}
+      </div>
+    </motion.div>
+  );
+
+  const renderStep2 = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-8"
+    >
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Add Context</h2>
+        <p className="text-muted-foreground">Help us understand the environment and emotions.</p>
+      </div>
+
+      {/* Locations */}
+      <div className="space-y-3">
+        <label className="text-sm font-medium text-muted-foreground ml-1">Where does it happen?</label>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { id: 'home', label: 'Home', icon: Home },
+            { id: 'school', label: 'School', icon: School },
+            { id: 'public', label: 'Public', icon: Users },
+            { id: 'transit', label: 'Transit', icon: Car },
+          ].map((loc) => {
+            const isSelected = formValues.location_type?.includes(loc.id);
+            return (
+              <button
+                key={loc.id}
+                type="button"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  const current = formValues.location_type || [];
+                  const next = isSelected ? current.filter(i => i !== loc.id) : [...current, loc.id];
+                  setValue('location_type', next, { shouldValidate: true });
+                }}
+                className={cn(
+                  "flex items-center gap-3 p-4 rounded-2xl border transition-all",
+                  isSelected 
+                    ? "bg-primary/10 border-primary text-primary" 
+                    : "bg-card border-border hover:bg-accent"
+                )}
+              >
+                <loc.icon className="w-5 h-5" />
+                <span className="font-medium">{loc.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Emotions */}
+      <div className="space-y-3">
+        <label className="text-sm font-medium text-muted-foreground ml-1">How do you feel?</label>
+        <div className="flex flex-wrap gap-2">
+          {['Stressed', 'Anxious', 'Angry', 'Exhausted', 'Calm', 'Confused'].map((emotion) => {
+            const isSelected = formValues.parent_emotional_state === emotion;
+            return (
+              <button
+                key={emotion}
+                type="button"
+                onClick={() => {
+                  triggerHaptic('selection');
+                  setValue('parent_emotional_state', isSelected ? '' : emotion, { shouldValidate: true });
+                }}
+                className={cn(
+                  "px-4 py-2 rounded-full text-sm font-medium border transition-all",
+                  isSelected
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-transparent border-border hover:border-primary/50"
+                )}
+              >
+                {emotion}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const renderStep3 = () => (
+    <motion.div
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: -20 }}
+      className="space-y-8"
+    >
+      <div className="text-center space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">Final Check</h2>
+        <p className="text-muted-foreground">How urgent is this request?</p>
+      </div>
+
+      {/* Urgency Selection */}
+      <div className="space-y-4">
+        {[
+          { value: 'low', label: 'Future Planning', desc: 'Just curious, no rush', color: 'bg-blue-500' },
+          { value: 'medium', label: 'Regular Issue', desc: 'Happens a few times a week', color: 'bg-yellow-500' },
+          { value: 'high', label: 'Daily Struggle', desc: 'Happens every day, exhausting', color: 'bg-orange-500' },
+          { value: 'urgent', label: 'SOS / Crisis', desc: 'Need help immediately', color: 'bg-red-500' },
+        ].map((level) => {
+          const isSelected = formValues.urgency_level === level.value;
+          return (
+            <button
+              key={level.value}
+              type="button"
+              onClick={() => {
+                triggerHaptic('medium');
+                setValue('urgency_level', level.value as any);
+              }}
+              className={cn(
+                "w-full flex items-center p-4 rounded-2xl border transition-all relative overflow-hidden group",
+                isSelected 
+                  ? "border-primary ring-1 ring-primary bg-primary/5" 
+                  : "border-border hover:bg-accent/50"
+              )}
+            >
+              <div className={cn("w-3 h-full absolute left-0 top-0 bottom-0", level.color, isSelected ? "opacity-100" : "opacity-30 group-hover:opacity-60")} />
+              <div className="pl-6 flex-1 text-left">
+                <div className="font-bold text-foreground">{level.label}</div>
+                <div className="text-sm text-muted-foreground">{level.desc}</div>
+              </div>
+              {isSelected && (
+                <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                  <Check className="w-4 h-4" />
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Additional Notes */}
+      <div className="pt-4">
+        <Input 
+          placeholder="Any extra details? (Optional)" 
+          className="h-12 bg-secondary/30 border-transparent focus:bg-secondary/50 rounded-xl"
+          {...form.register('additional_notes')}
+        />
+      </div>
+    </motion.div>
+  );
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <AlertCircle className="h-5 w-5 text-primary" />
-            Request New Script
-          </DialogTitle>
-          <DialogDescription>
-            Describe the situation you're facing and our team will create a personalized script for you.
-          </DialogDescription>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] p-0 gap-0 bg-background border-none shadow-2xl overflow-hidden flex flex-col rounded-[32px]">
+        {/* Progress Bar */}
+        <div className="h-1.5 w-full bg-secondary/30">
+          <motion.div 
+            className="h-full bg-primary"
+            initial={{ width: 0 }}
+            animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+
+        {/* Header */}
+        <DialogHeader className="p-6 pb-2">
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+              Step {currentStep} of {totalSteps}
+            </DialogTitle>
+            <button 
+              onClick={() => onOpenChange(false)}
+              className="p-2 -mr-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </DialogHeader>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            {/* Situation */}
-            <FormField
-              control={form.control}
-              name="situation_description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Describe the Situation *</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Ex: My 6-year-old has meltdowns every morning before school. He screams, throws himself on the floor and refuses to get dressed..."
-                      className="min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Be specific about what happens, when it happens, and how your child reacts
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-6 pt-2">
+          <AnimatePresence mode="wait">
+            <motion.div key={currentStep} className="h-full">
+              {currentStep === 1 && renderStep1()}
+              {currentStep === 2 && renderStep2()}
+              {currentStep === 3 && renderStep3()}
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Brain Profile */}
-              <FormField
-                control={form.control}
-                name="child_brain_profile"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child's Brain Profile</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select profile" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {BRAIN_PROFILES.map((profile) => (
-                          <SelectItem key={profile} value={profile}>
-                            {profile}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {/* Age */}
-              <FormField
-                control={form.control}
-                name="child_age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Child's Age</FormLabel>
-                    <FormControl>
-                      <Input type="number" min="1" max="18" placeholder="Ex: 7" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            {/* Location */}
-            <FormItem>
-              <FormLabel>Where does it happen?</FormLabel>
-              <div className="grid grid-cols-2 gap-3 mt-2">
-                {LOCATION_OPTIONS.map((location) => (
-                  <div key={location.id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={location.id}
-                      checked={selectedLocations.includes(location.id)}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedLocations([...selectedLocations, location.id]);
-                        } else {
-                          setSelectedLocations(selectedLocations.filter((l) => l !== location.id));
-                        }
-                      }}
-                    />
-                    <label
-                      htmlFor={location.id}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      {location.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </FormItem>
-
-            {/* Parent Emotional State */}
-            <FormField
-              control={form.control}
-              name="parent_emotional_state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>How do you usually feel in this situation?</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your emotional state" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {EMOTIONAL_STATES.map((state) => (
-                        <SelectItem key={state} value={state}>
-                          {state.charAt(0).toUpperCase() + state.slice(1)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>
-                    This helps us create a script suitable for your emotional state
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Urgency Level */}
-            <FormField
-              control={form.control}
-              name="urgency_level"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Urgency Level *</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {URGENCY_LEVELS.map((level) => (
-                        <SelectItem key={level.value} value={level.value}>
-                          {level.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {/* Additional Notes */}
-            <FormField
-              control={form.control}
-              name="additional_notes"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Additional Information</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Any other information that might be helpful..."
-                      className="min-h-[80px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end gap-3 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isCreating}
+        {/* Footer */}
+        <div className="p-6 border-t border-border bg-background/80 backdrop-blur-xl">
+          <div className="flex gap-3">
+            {currentStep > 1 && (
+              <Button 
+                variant="outline" 
+                onClick={handleBack}
+                className="h-14 px-6 rounded-2xl border-2 border-border hover:bg-secondary font-semibold"
               >
-                Cancel
+                Back
               </Button>
-              <Button type="submit" disabled={isCreating}>
-                {isCreating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Submit Request
-              </Button>
-            </div>
-          </form>
-        </Form>
+            )}
+            
+            <Button 
+              onClick={currentStep === totalSteps ? handleSubmit(onSubmit) : handleNext}
+              disabled={isCreating || (currentStep === 1 && !formValues.situation_description)}
+              className="flex-1 h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/25 transition-all active:scale-95"
+            >
+              {isCreating ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : currentStep === totalSteps ? (
+                'Submit Request'
+              ) : (
+                <>
+                  Next <ArrowRight className="w-5 h-5 ml-2" />
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function X({ className }: { className?: string }) {
+  return (
+    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+    </svg>
   );
 }

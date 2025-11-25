@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Search, Clock, Utensils, Smile, Coffee, Car, Lightbulb, Hash, Flag } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Search, Clock, Utensils, Smile, Coffee, Car, Lightbulb, Hash, Flag, Send, Trash2 } from 'lucide-react';
 import {
   Drawer,
   DrawerContent,
@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
+import { supabase } from '@/integrations/supabase/client';
 
 interface PostReactionsSheetProps {
   open: boolean;
@@ -17,8 +18,11 @@ interface PostReactionsSheetProps {
   postId: string;
   userAvatar?: string;
   userName?: string;
+  currentUserId: string | null;
+  isAdmin: boolean;
   onAddReaction: (emoji: string) => void;
   onAddComment: (content: string) => void;
+  onDeleteComment: (commentId: string) => Promise<boolean>;
 }
 
 const EMOJI_CATEGORIES = {
@@ -43,14 +47,40 @@ export function PostReactionsSheet({
   postId,
   userAvatar,
   userName,
+  currentUserId,
+  isAdmin,
   onAddReaction,
   onAddComment,
+  onDeleteComment,
 }: PostReactionsSheetProps) {
   const [activeTab, setActiveTab] = useState('reactions');
   const [activeCategory, setActiveCategory] = useState('Suggested');
   const [searchQuery, setSearchQuery] = useState('');
   const [commentText, setCommentText] = useState('');
+  const [comments, setComments] = useState<any[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
   const { triggerHaptic } = useHaptic();
+
+  // Fetch comments when tab is active or sheet opens
+  useEffect(() => {
+    if (open && activeTab === 'comments' && postId) {
+      loadComments();
+    }
+  }, [open, activeTab, postId]);
+
+  const loadComments = async () => {
+    setLoadingComments(true);
+    const { data, error } = await supabase
+      .from('post_comments')
+      .select('*, profiles:user_id(username, name, photo_url)')
+      .eq('post_id', postId)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setComments(data);
+    }
+    setLoadingComments(false);
+  };
 
   const handleEmojiClick = (emoji: string) => {
     triggerHaptic('light');
@@ -58,10 +88,21 @@ export function PostReactionsSheet({
     onOpenChange(false);
   };
 
-  const handleSendComment = () => {
+  const handleSendComment = async () => {
+    console.log('Sending comment:', commentText);
     if (commentText.trim()) {
-      onAddComment(commentText.trim());
+      // Optimistically add comment or wait for reload
+      await onAddComment(commentText.trim());
       setCommentText('');
+      // Reload comments to show the new one
+      loadComments();
+    }
+  };
+
+  const handleDelete = async (commentId: string) => {
+    const success = await onDeleteComment(commentId);
+    if (success) {
+      loadComments();
     }
   };
 
@@ -130,27 +171,67 @@ export function PostReactionsSheet({
           )}
 
           {activeTab === 'comments' && (
-            <div className="py-4">
-              {/* Empty State */}
-              <div className="flex flex-col items-center justify-center py-12">
-                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
-                  <svg
-                    className="w-8 h-8 text-muted-foreground"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
+            <div className="py-4 space-y-4">
+              {loadingComments ? (
+                <div className="text-center py-8 text-muted-foreground">Loading comments...</div>
+              ) : comments.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+                    <svg
+                      className="w-8 h-8 text-muted-foreground"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-1">No comments yet</h3>
+                  <p className="text-sm text-muted-foreground">Be the first to comment!</p>
                 </div>
-                <h3 className="text-lg font-semibold mb-1">No comments yet</h3>
-                <p className="text-sm text-muted-foreground">Be the first to comment!</p>
-              </div>
+              ) : (
+                comments.map((comment) => {
+                  const canDelete = currentUserId === comment.user_id || isAdmin;
+                  return (
+                    <div key={comment.id} className="flex gap-3 group">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden">
+                        {comment.profiles?.photo_url ? (
+                          <img src={comment.profiles.photo_url} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          getInitials(comment.profiles?.name || 'User')
+                        )}
+                      </div>
+                      <div className="flex-1 space-y-1">
+                        <div className="bg-muted/50 p-3 rounded-2xl rounded-tl-none relative">
+                          <p className="text-xs font-bold text-foreground mb-0.5">
+                            {comment.profiles?.name || 'User'}
+                          </p>
+                          <p className="text-sm text-foreground/90 pr-6">{comment.content}</p>
+                          
+                          {/* Delete Button */}
+                          {canDelete && (
+                            <button
+                              onClick={() => handleDelete(comment.id)}
+                              className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                              title="Delete comment"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground px-2">
+                          {new Date(comment.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
         </div>
@@ -210,19 +291,7 @@ export function PostReactionsSheet({
                 disabled={!commentText.trim()}
                 className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-                  />
-                </svg>
+                <Send className="w-5 h-5 ml-0.5" />
               </button>
             </div>
           </div>

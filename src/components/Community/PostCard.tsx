@@ -240,7 +240,11 @@ export const PostCard = React.memo(function PostCard({
           className="flex-1 flex items-center justify-center gap-2 py-2 text-[#6B7280] dark:text-white/60 hover:bg-gray-50 dark:hover:bg-white/5 rounded-xl transition-colors"
         >
           <MessageCircle className="w-4.5 h-4.5 opacity-70" />
-          <span className="font-medium text-sm">Comment</span>
+          <span className="font-medium text-sm">
+            {post.comment_count && post.comment_count > 0 
+              ? `${post.comment_count} Comment${post.comment_count > 1 ? 's' : ''}` 
+              : 'Comment'}
+          </span>
         </button>
       </div>
     </motion.div>

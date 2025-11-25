@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Sparkles } from 'lucide-react';
+import { Mail, Lock, Sparkles, ArrowRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -28,215 +28,146 @@ export const AuthCard = memo(function AuthCard({
 }: AuthCardProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, ease: "easeOut" }}
-      className="w-full max-w-md"
-      style={{ willChange: 'opacity, transform' }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }} // Apple-style easing
+      className="w-full max-w-[400px] mx-auto"
     >
-      {/* Glassmorphism Card with Gradient */}
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-card to-card/95 backdrop-blur-xl border border-border/50 shadow-2xl">
-        {/* Ambient Light Effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 pointer-events-none" />
+      <div className="flex flex-col items-center text-center">
         
-        <div className="relative p-8 md:p-10">
-          {/* Logo/Icon Header */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1, duration: 0.2 }}
-            className="flex justify-center mb-6"
+        {/* Animated Icon */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8 w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shadow-inner border border-white/10"
+        >
+          <Sparkles className="w-10 h-10 text-primary" />
+        </motion.div>
+
+        {/* Typography - Editorial Style */}
+        <motion.div 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mb-10 space-y-2"
+        >
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            {isSignUp ? 'Create account' : 'Welcome back'}
+          </h1>
+          <p className="text-muted-foreground text-[15px]">
+            {isSignUp 
+              ? 'Enter your details to get started.' 
+              : 'Enter your credentials to continue.'}
+          </p>
+          
+          {/* Purchase Email Warning */}
+          <motion.div 
+            initial={{ opacity: 0, y: 5 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="mt-3 inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-600/90 dark:text-amber-400/90 text-xs font-medium border border-amber-500/20"
           >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-lg shadow-primary/20">
-              <Sparkles className="w-8 h-8 text-primary-foreground" />
-            </div>
+            Please use the email from your purchase
           </motion.div>
+        </motion.div>
 
-          {/* Title */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.15, duration: 0.2 }}
-            className="text-center mb-8"
-          >
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent mb-2">
-              {isSignUp ? 'Create Account' : 'Welcome Back'}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {isSignUp
-                ? 'Start your journey with NEP System'
-                : 'Continue your transformation'}
-            </p>
-            {isSignUp && (
-              <p className="text-xs text-amber-600 dark:text-amber-500 mt-2 font-medium">
-                Use the same email from your purchase
-              </p>
-            )}
-          </motion.div>
-
-          {/* Form */}
-          <form onSubmit={onSubmit} className="space-y-5">
-            {/* Email Field */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.2 }}
-              className="space-y-2"
-            >
-              <label htmlFor="email" className="text-sm font-medium text-foreground/90 flex items-center gap-2">
-                <Mail className="w-4 h-4 text-primary" />
-                Email
-              </label>
-              <div className="relative group">
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => onEmailChange(e.target.value)}
-                  className="h-12 bg-muted/50 border-border/50 rounded-xl text-base 
-                    placeholder:text-muted-foreground/60 
-                    focus:border-primary/50 focus:ring-2 focus:ring-primary/20
-                    transition-all duration-200
-                    group-hover:border-border"
-                  required
-                  disabled={loading}
-                />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
+        {/* Form - Floating Inputs */}
+        <motion.form 
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          onSubmit={onSubmit} 
+          className="w-full space-y-4"
+        >
+          <div className="space-y-4">
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+                <Mail className="w-5 h-5" />
               </div>
-            </motion.div>
-
-            {/* Password Field */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.25, duration: 0.2 }}
-              className="space-y-2"
-            >
-              <label htmlFor="password" className="text-sm font-medium text-foreground/90 flex items-center gap-2">
-                <Lock className="w-4 h-4 text-primary" />
-                Password
-              </label>
-              <div className="relative group">
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => onPasswordChange(e.target.value)}
-                  className="h-12 bg-muted/50 border-border/50 rounded-xl text-base 
-                    placeholder:text-muted-foreground/60 
-                    focus:border-primary/50 focus:ring-2 focus:ring-primary/20
-                    transition-all duration-200
-                    group-hover:border-border"
-                  required
-                  disabled={loading}
-                />
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-primary/0 via-primary/5 to-primary/0 opacity-0 group-focus-within:opacity-100 transition-opacity pointer-events-none" />
-              </div>
-            </motion.div>
-
-            {/* Submit Button */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.2 }}
-            >
-              <Button
-                type="submit"
+              <Input
+                id="email"
+                type="email"
+                placeholder="Email address"
+                value={email}
+                onChange={(e) => onEmailChange(e.target.value)}
+                className="h-14 pl-12 bg-secondary/30 border-transparent focus:bg-background focus:border-border/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
+                required
                 disabled={loading}
-                className="w-full h-14 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground 
-                  hover:shadow-lg hover:shadow-primary/20
-                  active:scale-[0.98]
-                  text-base font-semibold rounded-xl 
-                  transition-all duration-150
-                  disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="flex items-center gap-2"
-                  >
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full"
-                    />
-                    <span>Processing...</span>
-                  </motion.div>
-                ) : (
-                  <span>{isSignUp ? 'Create Account' : 'Sign In'}</span>
-                )}
-              </Button>
-            </motion.div>
-          </form>
+              />
+            </div>
 
-          {/* Toggle Mode */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.35, duration: 0.2 }}
-            className="text-center mt-6"
+            <div className="relative group">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+                <Lock className="w-5 h-5" />
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => onPasswordChange(e.target.value)}
+                className="h-14 pl-12 bg-secondary/30 border-transparent focus:bg-background focus:border-border/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
+                required
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          {/* Primary Action */}
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full h-14 mt-6 rounded-2xl text-[16px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
           >
-            <button
-              type="button"
-              onClick={onToggleMode}
-              disabled={loading}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 disabled:opacity-50"
-            >
-              {isSignUp
-                ? 'Already have an account? '
-                : "Don't have an account? "}
-              <span className="text-primary font-medium">
-                {isSignUp ? 'Sign in' : 'Sign up'}
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <span className="flex items-center justify-center gap-2">
+                Continue <ArrowRight className="w-4 h-4 opacity-70" />
               </span>
-            </button>
-          </motion.div>
+            )}
+          </Button>
+        </motion.form>
 
-          {/* Purchase Link */}
+        {/* Footer / Toggle */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8 text-center"
+        >
+          <button
+            type="button"
+            onClick={onToggleMode}
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
+          >
+            {isSignUp ? "Already have an account? " : "Don't have an account? "}
+            <span className="text-primary underline decoration-border/50 underline-offset-4">
+              {isSignUp ? 'Sign in' : 'Sign up'}
+            </span>
+          </button>
+
           {isSignUp && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.2 }}
-              className="pt-6 mt-6 border-t border-border/50"
-            >
-              <p className="text-xs text-muted-foreground mb-3 text-center">
-                Need access to NEP System?
-              </p>
+            <div className="mt-8 pt-6 border-t border-border/40 w-full">
+              <p className="text-xs text-muted-foreground mb-3">Don't have access yet?</p>
               <a
                 href="https://gtmsinop.mycartpanda.com/checkout/200782040:1"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full py-3 px-4 text-center text-sm font-medium 
-                  text-foreground bg-muted/50 hover:bg-muted 
-                  rounded-xl transition-all duration-200
-                  hover:scale-[1.02] active:scale-[0.98]
-                  border border-border/50"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-xl bg-secondary/50 hover:bg-secondary border border-border/50 text-sm font-medium transition-all hover:scale-105 active:scale-95"
               >
-                Purchase Access →
+                Purchase NEP System
               </a>
-            </motion.div>
+            </div>
           )}
+          
+          <div className="mt-8 flex justify-center gap-6 text-xs text-muted-foreground/60">
+            <Link to="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
+          </div>
+        </motion.div>
 
-          {/* Terms */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45, duration: 0.2 }}
-            className="text-xs text-center text-muted-foreground/70 mt-6"
-          >
-            By continuing, you agree to our{" "}
-            <Link to="/terms" className="text-muted-foreground hover:text-foreground underline transition-colors">
-              Terms
-            </Link>{" "}
-            and{" "}
-            <Link to="/privacy" className="text-muted-foreground hover:text-foreground underline transition-colors">
-              Privacy Policy
-            </Link>
-          </motion.p>
-        </div>
       </div>
     </motion.div>
   );

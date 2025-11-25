@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  User, Crown, UserPlus, CreditCard, Settings, 
+  User, Crown, Plus, CreditCard, Settings, 
   Globe, Users, Target, Flag, Clock, 
   Mail, Megaphone, RefreshCw, FileText, 
   Shield, Instagram, MessageCircle, Twitter,
-  LogOut, UserX, ChevronRight, Moon, Sun, DollarSign, Award
+  LogOut, ChevronRight, Moon, Sun, Star, 
+  Bell, HelpCircle, Lock, Zap, Smartphone
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -13,9 +14,11 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { useHaptic } from '@/hooks/useHaptic';
 import { toast } from 'sonner';
-import { Card } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { ChildSelector } from '@/components/Profile/ChildSelector';
+import { useChildProfiles } from '@/contexts/ChildProfilesContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -23,242 +26,291 @@ export default function ProfileCalAI() {
   const { isAdmin } = useAdminStatus();
   const { triggerHaptic } = useHaptic();
   const navigate = useNavigate();
-  const [lastSync] = useState(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }));
+  const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
+  
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
   const handleLogout = async () => {
+    triggerHaptic('medium');
     await signOut();
-    toast.success('Logged out successfully');
+    toast.success('See you soon!');
     navigate('/auth');
   };
 
-  const getName = () => {
-    return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-  };
-  
-  const getInitials = () => {
-    const name = getName();
-    return name
-      .split(' ')
-      .map((n: string) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
+  const getName = () => user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Parent';
+  const getEmail = () => user?.email || '';
+  const getInitials = (name: string) => name.substring(0, 2).toUpperCase();
 
-  const MenuItem = ({
-    icon: Icon,
-    title,
-    subtitle,
-    onClick,
-    showChevron = true,
-    className = "",
-    value
+  // Reusable "Apple Style" Row Component
+  const SettingsRow = ({ 
+    icon: Icon, 
+    iconColor = "bg-blue-500", 
+    label, 
+    value, 
+    onClick, 
+    isDestructive = false,
+    hasSwitch = false,
+    switchValue = false,
+    onSwitchChange,
+    showChevron = true 
   }: {
-    icon?: any;
-    title: string;
-    subtitle?: string;
-    onClick?: () => void;
-    showChevron?: boolean;
-    className?: string;
-    value?: React.ReactNode;
+    icon: any,
+    iconColor?: string,
+    label: string,
+    value?: string | React.ReactNode,
+    onClick?: () => void,
+    isDestructive?: boolean,
+    hasSwitch?: boolean,
+    switchValue?: boolean,
+    onSwitchChange?: (val: boolean) => void,
+    showChevron?: boolean
   }) => {
-    const handleClick = () => {
-      triggerHaptic('light');
-      onClick?.();
-    };
-
     return (
-      <button
-        onClick={handleClick}
-        className={cn(
-          "w-full flex items-center justify-between p-4 hover:bg-[#F9FAFB] dark:hover:bg-white/5 active:bg-[#F3F4F6] dark:active:bg-white/10 transition-colors group",
-          className
-        )}
+      <motion.div 
+        whileTap={{ backgroundColor: "rgba(0,0,0,0.05)" }}
+        onClick={!hasSwitch ? onClick : undefined}
+        className="flex items-center justify-between p-4 bg-white dark:bg-[#1C1C1E] active:bg-gray-50 dark:active:bg-[#2C2C2E] cursor-pointer transition-colors min-h-[56px]"
       >
-        <div className="flex items-center gap-4">
-          {Icon && <Icon className="w-5 h-5 text-[#6B7280] dark:text-gray-400 group-hover:text-[#1A1A1A] dark:group-hover:text-white transition-colors" />}
-          <div className="text-left">
-            <p className="font-medium text-[#1A1A1A] dark:text-white text-[15px]">{title}</p>
-            {subtitle && <p className="text-xs text-[#6B7280] dark:text-gray-500 mt-0.5">{subtitle}</p>}
+        <div className="flex items-center gap-4 overflow-hidden">
+          <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center text-white shadow-sm flex-shrink-0", iconColor)}>
+            <Icon className="w-5 h-5" />
           </div>
+          <span className={cn("text-[17px] font-medium truncate", isDestructive ? "text-red-500" : "text-gray-900 dark:text-white")}>
+            {label}
+          </span>
         </div>
-        <div className="flex items-center gap-3">
-          {value}
-          {showChevron && <ChevronRight className="w-5 h-5 text-[#9CA3AF] dark:text-gray-600 group-hover:text-[#6B7280] dark:group-hover:text-gray-400 transition-colors" />}
+
+        <div className="flex items-center gap-3 pl-4 flex-shrink-0">
+          {value && <span className="text-[17px] text-gray-500 dark:text-gray-400">{value}</span>}
+          
+          {hasSwitch ? (
+            <Switch 
+              checked={switchValue} 
+              onCheckedChange={(checked) => {
+                triggerHaptic('light');
+                onSwitchChange?.(checked);
+              }}
+            />
+          ) : (
+            showChevron && <ChevronRight className="w-5 h-5 text-gray-300 dark:text-gray-600" />
+          )}
         </div>
-      </button>
+      </motion.div>
     );
   };
 
-  const SectionTitle = ({ children }: { children: string }) => (
-    <h2 className="text-[13px] font-medium text-[#9CA3AF] dark:text-gray-500 px-4 mb-2 mt-6 uppercase tracking-wide">{children}</h2>
+  const SettingsGroup = ({ title, children }: { title?: string, children: React.ReactNode }) => (
+    <div className="mb-8">
+      {title && (
+        <h3 className="px-4 pb-2 text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+          {title}
+        </h3>
+      )}
+      <div className="bg-white dark:bg-[#1C1C1E] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 divide-y divide-gray-100 dark:divide-gray-800 shadow-sm">
+        {children}
+      </div>
+    </div>
   );
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#F8F9FA] dark:bg-background relative overflow-hidden pb-32">
-        {/* Ambient Background Glows - Only Dark Mode */}
-        <div className="hidden dark:block fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-purple-900/20 rounded-full blur-[120px] pointer-events-none z-0" />
-        <div className="hidden dark:block fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32">
+        {/* Header Spacer */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
-        {/* Fixed Header Background for Status Bar */}
-        <div className="fixed top-0 left-0 right-0 z-40 h-[calc(env(safe-area-inset-top)+80px)] bg-gradient-to-b from-[#F8F9FA] via-[#F8F9FA]/80 to-transparent dark:from-background dark:via-background dark:to-transparent pointer-events-none" />
-
-        <div className="px-4 pt-[calc(env(safe-area-inset-top)+8px)] relative z-50">
-          {/* Title */}
-          <h1 className="text-3xl font-bold text-[#1A1A1A] dark:text-white mb-6 px-1">Profile</h1>
-
-          {/* User Profile Card */}
-          <Card
-            onClick={() => {
-              triggerHaptic('light');
-              navigate('/profile/edit');
-            }}
-            className="mb-6 bg-white dark:bg-[#1C1C1E]/80 backdrop-blur-md border border-[#E5E7EB] dark:border-white/5 rounded-2xl p-4 flex items-center justify-between hover:bg-[#F9FAFB] dark:hover:bg-[#2C2C2E] transition-colors cursor-pointer shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-lg"
+        {/* Hero Profile Card - Floating Style */}
+        <div className="px-4 mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-6 tracking-tight px-1">Profile</h1>
+          
+          <motion.div 
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/profile/edit')}
+            className="bg-white dark:bg-[#1C1C1E] p-5 rounded-[22px] flex items-center gap-5 shadow-sm border border-gray-200 dark:border-gray-800 relative overflow-hidden"
           >
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center text-xl font-bold text-white shadow-inner ring-2 ring-black/20">
-                {user?.photo_url ? (
-                  <img src={user.photo_url} alt="Profile" className="w-full h-full rounded-full object-cover" />
-                ) : (
-                  getInitials()
-                )}
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white">{getName()}</h2>
-                <p className="text-sm text-[#6B7280] dark:text-gray-500">@{getName().toLowerCase().replace(/\s/g, '')}</p>
+            <Avatar className="w-20 h-20 border-2 border-white dark:border-[#2C2C2E] shadow-md">
+              <AvatarImage src={user?.photo_url || undefined} className="object-cover" />
+              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-2xl font-medium">
+                {getInitials(getName())}
+              </AvatarFallback>
+            </Avatar>
+            
+            <div className="flex-1 min-w-0 z-10">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">{getName()}</h2>
+              <p className="text-[15px] text-gray-500 dark:text-gray-400 truncate">{getEmail()}</p>
+              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800">
+                <Crown className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Free Plan</span>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-[#9CA3AF] dark:text-gray-500" />
-          </Card>
+            
+            <ChevronRight className="w-6 h-6 text-gray-300 dark:text-gray-600" />
+          </motion.div>
+        </div>
 
-          {/* My Children Section */}
-          <SectionTitle>My Children</SectionTitle>
-          <div className="mb-6">
-            <ChildSelector />
+        <div className="px-4 max-w-3xl mx-auto">
+          {/* Children Horizontal Scroll - "Family Sharing" Vibe */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between px-1 mb-3">
+              <h3 className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">My Family</h3>
+              <button onClick={() => navigate('/profile')} className="text-blue-500 text-[15px] font-medium">Edit</button>
+            </div>
+            
+            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
+              {/* Add Child Button */}
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate('/profile')}
+                className="flex flex-col items-center gap-2 min-w-[80px]"
+              >
+                <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-[#2C2C2E] flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
+                  <Plus className="w-8 h-8" />
+                </div>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400">Add Child</span>
+              </motion.button>
+
+              {/* Children List */}
+              {childProfiles.map((child) => (
+                <motion.button
+                  key={child.id}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    triggerHaptic('light');
+                    setActiveChild(child.id);
+                  }}
+                  className="flex flex-col items-center gap-2 min-w-[80px]"
+                >
+                  <div className={cn(
+                    "w-16 h-16 rounded-full p-0.5 transition-all",
+                    activeChild?.id === child.id 
+                      ? "bg-gradient-to-b from-blue-500 to-purple-500 shadow-lg shadow-purple-500/20" 
+                      : "bg-transparent"
+                  )}>
+                    <Avatar className="w-full h-full border-2 border-white dark:border-black">
+                      <AvatarImage src={child.photo_url || undefined} />
+                      <AvatarFallback className="bg-gray-100 dark:bg-[#2C2C2E] text-gray-600 dark:text-gray-300 text-lg">
+                        {getInitials(child.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <span className={cn(
+                    "text-xs font-medium truncate w-full text-center",
+                    activeChild?.id === child.id ? "text-blue-600 dark:text-blue-400 font-bold" : "text-gray-900 dark:text-white"
+                  )}>
+                    {child.name}
+                  </span>
+                </motion.button>
+              ))}
+            </div>
           </div>
 
-          {/* Premium Section - More Vibrant */}
-          <SectionTitle>Premium</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-yellow-500/50 rounded-2xl overflow-hidden relative shadow-[0_2px_8px_rgba(234,179,8,0.12)] dark:shadow-[0_0_15px_rgba(234,179,8,0.15)] group hover:shadow-[0_4px_16px_rgba(234,179,8,0.2)] dark:hover:shadow-[0_0_25px_rgba(234,179,8,0.25)] transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-transparent to-transparent pointer-events-none" />
-            <MenuItem
-              icon={() => <Crown className="w-5 h-5 text-yellow-500 dark:text-yellow-400 fill-yellow-500/20 dark:fill-yellow-400/20" />}
-              title="Try Premium for Free"
-              subtitle="Unlock NEP Premium for 7 days"
-              showChevron={true}
-            />
-          </Card>
+          {/* Premium Banner */}
+          <motion.div 
+            whileTap={{ scale: 0.98 }}
+            className="mb-8 relative overflow-hidden rounded-2xl bg-black text-white p-6 shadow-xl cursor-pointer group"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-400/20 to-purple-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+            <div className="relative z-10 flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold mb-1 bg-gradient-to-r from-yellow-200 to-amber-500 bg-clip-text text-transparent">NEP Premium</h3>
+                <p className="text-white/70 text-sm">Unlock unlimited scripts & insights</p>
+              </div>
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
+                <Crown className="w-5 h-5 text-yellow-400" />
+              </div>
+            </div>
+          </motion.div>
 
-          {/* Account Section */}
-          <SectionTitle>Account</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
-            {isAdmin && (
-              <MenuItem
-                icon={Shield}
-                title="Admin Panel"
-                onClick={() => navigate('/admin')}
+          {/* Settings Groups */}
+          <SettingsGroup title="App Settings">
+            <SettingsRow 
+              icon={Moon} 
+              iconColor="bg-indigo-500" 
+              label="Dark Mode" 
+              hasSwitch 
+              switchValue={theme === 'dark'}
+              onSwitchChange={toggleTheme}
+            />
+            <SettingsRow 
+              icon={Bell} 
+              iconColor="bg-red-500" 
+              label="Notifications" 
+              hasSwitch 
+              switchValue={notificationsEnabled}
+              onSwitchChange={setNotificationsEnabled}
+            />
+            <SettingsRow 
+              icon={Globe} 
+              iconColor="bg-blue-500" 
+              label="Language" 
+              value="English"
+              onClick={() => {}} 
+            />
+          </SettingsGroup>
+
+          <SettingsGroup title="Content">
+            <SettingsRow 
+              icon={Target} 
+              iconColor="bg-green-500" 
+              label="My Goals" 
+              onClick={() => navigate('/tracker')} 
+            />
+            <SettingsRow 
+              icon={Zap} 
+              iconColor="bg-amber-500" 
+              label="Achievements" 
+              onClick={() => navigate('/achievements')} 
+            />
+            <SettingsRow 
+              icon={Users} 
+              iconColor="bg-purple-500" 
+              label="Community Profile" 
+              onClick={() => navigate('/community')} 
+            />
+          </SettingsGroup>
+
+          <SettingsGroup title="Support">
+            <SettingsRow 
+              icon={Megaphone} 
+              iconColor="bg-orange-500" 
+              label="Request Script" 
+              onClick={() => navigate('/script-requests')} 
+            />
+            <SettingsRow 
+              icon={HelpCircle} 
+              iconColor="bg-blue-400" 
+              label="Help Center" 
+              onClick={() => window.location.href = 'mailto:support@nepsystem.pro'} 
+            />
+            <SettingsRow 
+              icon={Shield} 
+              iconColor="bg-gray-500" 
+              label="Privacy Policy" 
+              onClick={() => navigate('/privacy')} 
+            />
+          </SettingsGroup>
+
+          {isAdmin && (
+            <SettingsGroup title="Admin">
+              <SettingsRow 
+                icon={Lock} 
+                iconColor="bg-gray-800" 
+                label="Admin Dashboard" 
+                onClick={() => navigate('/admin')} 
               />
-            )}
-            <MenuItem
-              icon={CreditCard}
-              title="Personal Details"
-              onClick={() => navigate('/profile/edit')}
-            />
-            <MenuItem
-              icon={Settings}
-              title="Preferences"
-              onClick={toggleTheme}
-              value={<span className="text-xs text-[#9CA3AF] dark:text-gray-500">{theme === 'dark' ? 'Dark' : 'Light'}</span>}
-            />
-            <MenuItem
-              icon={Globe}
-              title="Language"
-              value={<span className="text-xs text-[#9CA3AF] dark:text-gray-500">English</span>}
-            />
-          </Card>
+            </SettingsGroup>
+          )}
 
-          {/* Goals & Tracking */}
-          <SectionTitle>Goals & Tracking</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
-            <MenuItem
-              icon={Award}
-              title="My Achievements"
-              subtitle="View your badges and progress"
-              onClick={() => navigate('/achievements')}
-            />
-            <MenuItem
-              icon={Target}
-              title="Edit Your Goals"
-              onClick={() => navigate('/tracker')}
-            />
-            <MenuItem
-              icon={Flag}
-              title="Goals & Progress"
-              onClick={() => navigate('/tracker')}
-            />
-          </Card>
-
-          {/* Support & Legal */}
-          <SectionTitle>Support & Legal</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
-            <MenuItem
-              icon={Megaphone}
-              title="Request a Script"
-              onClick={() => navigate('/script-requests')}
-            />
-            <MenuItem
-              icon={Mail}
-              title="Support Email"
-              onClick={() => window.location.href = 'mailto:support@nepsystem.pro'}
-            />
-            <MenuItem
-              icon={RefreshCw}
-              title="Sync Data"
-              value={<span className="text-xs text-[#9CA3AF] dark:text-gray-500">Last sync: {lastSync}</span>}
-              showChevron={false}
-            />
-            <MenuItem
-              icon={FileText}
-              title="Terms and Conditions"
-              onClick={() => navigate('/terms')}
-            />
-            <MenuItem
-              icon={Shield}
-              title="Privacy Policy"
-              onClick={() => navigate('/privacy')}
-            />
-          </Card>
-
-          {/* Follow Us */}
-          <SectionTitle>Follow Us</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
-            <MenuItem
-              icon={Instagram}
-              title="Instagram"
-              showChevron={false}
-            />
-            <MenuItem
-              icon={MessageCircle}
-              title="TikTok"
-              showChevron={false}
-            />
-            <MenuItem
-              icon={Twitter}
-              title="X"
-              showChevron={false}
-            />
-          </Card>
-
-          {/* Account Actions */}
-          <SectionTitle>Account Actions</SectionTitle>
-          <Card className="mb-6 bg-white dark:bg-[#1C1C1E] border border-[#E5E7EB] dark:border-none rounded-2xl overflow-hidden divide-y divide-[#E5E7EB] dark:divide-[#2C2C2E] shadow-[0_1px_3px_rgba(0,0,0,0.05)] dark:shadow-sm">
-            <MenuItem
-              icon={LogOut}
-              title="Logout"
+          <div className="mt-8 mb-12">
+            <button 
               onClick={handleLogout}
-            />
-          </Card>
+              className="w-full bg-white dark:bg-[#1C1C1E] text-red-500 font-medium py-4 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm active:bg-gray-50 dark:active:bg-[#2C2C2E] transition-colors"
+            >
+              Log Out
+            </button>
+            <p className="text-center text-gray-400 text-xs mt-4">
+              Version 2.4.0 • NEP System
+            </p>
+          </div>
         </div>
       </div>
     </MainLayout>
