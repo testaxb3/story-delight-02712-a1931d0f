@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player/youtube';
 import { useVideoProgressOptimized } from '@/hooks/useVideoProgressOptimized';
 import { Loader2, Play } from 'lucide-react';
 
-interface OptimizedYouTubePlayerProps {
+export interface OptimizedYouTubePlayerProps {
   videoUrl: string;
   videoId: string;
   thumbnail?: string;
@@ -101,8 +101,14 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   const playerConfig = {
     youtube: {
       playerVars: {
-        rel: 0, modestbranding: 1, controls: 0, disablekb: 1, fs: 0,
-        playsinline: 1, autoplay: 1, iv_load_policy: 3, showinfo: 0
+        rel: 0,
+        modestbranding: 1,
+        controls: 0,
+        disablekb: 1,
+        fs: 0,
+        playsinline: 1,
+        autoplay: 1,
+        iv_load_policy: 3,
       }
     }
   };
@@ -122,7 +128,6 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
             height="100%"
             playing={isPlaying}
             controls={false}
-            config={playerConfig}
             onReady={handleReady}
             onDuration={setDuration}
             onProgress={handleProgress}

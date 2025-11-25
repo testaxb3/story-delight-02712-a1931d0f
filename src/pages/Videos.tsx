@@ -450,11 +450,6 @@ export default function Videos() {
                     }}
                     onPlaybackRateChange={setPlaybackRate}
                     playbackRate={playbackRate}
-                    attribution={{
-                      licenseType: playingVideo.license_type,
-                      creatorName: playingVideo.creator_name,
-                      originalUrl: playingVideo.original_url,
-                    }}
                   />
                 )}
               </div>

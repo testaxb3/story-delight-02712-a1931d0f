@@ -164,8 +164,8 @@ export function CreatePostModal({
         <div className="flex-1 overflow-y-auto p-4">
           <div className="flex gap-3">
             <div className="w-10 h-10 rounded-full bg-secondary shrink-0 overflow-hidden">
-               {user?.user_metadata?.avatar_url || user?.photo_url ? (
-                 <img src={user?.user_metadata?.avatar_url || user?.photo_url} alt="Avatar" className="w-full h-full object-cover" />
+               {(user?.user_metadata as any)?.avatar_url ? (
+                  <img src={(user.user_metadata as any).avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                ) : (
                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center text-xs font-bold text-muted-foreground">
                     {user?.email?.[0]?.toUpperCase()}

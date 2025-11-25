@@ -169,8 +169,8 @@ export default function TrackerCalAI() {
           <div className="flex items-center justify-between mb-2">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Summary</h1>
             <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center overflow-hidden">
-               {user?.user_metadata?.avatar_url ? (
-                 <img src={user.user_metadata.avatar_url} className="w-full h-full object-cover" />
+               {(user?.user_metadata as any)?.avatar_url ? (
+                 <img src={(user.user_metadata as any).avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                ) : (
                  <span className="text-gray-500 font-semibold">{user?.email?.[0].toUpperCase()}</span>
                )}
@@ -302,7 +302,7 @@ export default function TrackerCalAI() {
                     key={level}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => {
-                      triggerHaptic('selection');
+                      triggerHaptic('light');
                       setStressLevel(level);
                     }}
                     className={cn(

@@ -6,11 +6,13 @@ import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { useScriptsByProfile } from '@/hooks/useScriptsByProfile';
 import { DashboardSkeletonPremium } from '@/components/Dashboard/DashboardSkeletonPremium';
-import { useEffect, useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useEffect } from 'react';
+import { useDashboardData } from '@/hooks/useDashboardData';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
+import { StickyHeader } from '@/components/Navigation/StickyHeader';
+import { typography } from '@/styles/tokens';
 import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
@@ -26,11 +28,12 @@ export default function DashboardCalAI() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { activeChild, childProfiles, setActiveChild } = useChildProfiles();
-  const { data: dashboardStats, isLoading, error } = useDashboardStats();
+  const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats();
   const { data: scriptsForProfile } = useScriptsByProfile(activeChild?.brain_profile);
-  const [recentScripts, setRecentScripts] = useState<any[]>([]);
-  const [ebooks, setEbooks] = useState<any[]>([]);
+  const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
   const { triggerHaptic } = useHaptic();
+  
+  const isLoading = statsLoading || dataLoading;
 
   const currentStreak = Math.max(dashboardStats?.totalTrackerEntries ?? 0, 1);
   
@@ -40,54 +43,6 @@ export default function DashboardCalAI() {
     return CATEGORY_EMOJIS[categoryKey] || '🧠';
   };
 
-  // Fetch data
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!user?.id) return;
-
-      // Recent scripts for profile
-      const { data: scripts } = await supabase
-        .from('scripts')
-        .select('*')
-        .eq('profile', activeChild?.brain_profile || 'INTENSE')
-        .order('created_at', { ascending: false })
-        .limit(3);
-      
-      if (scripts) setRecentScripts(scripts);
-
-      // Featured Ebooks (Cover Flow) from 'ebooks' table
-      const { data: ebookData } = await supabase
-        .from('ebooks')
-        .select('id, title, slug, thumbnail_url')
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (ebookData) {
-        // Fetch progress for these ebooks
-        const { data: progressData } = await supabase
-          .from('user_ebook_progress')
-          .select('ebook_id, current_chapter, completed_chapters')
-          .eq('user_id', user.id)
-          .in('ebook_id', ebookData.map(e => e.id));
-
-        // Merge progress info
-        const ebooksWithProgress = ebookData.map(ebook => {
-          const progress = progressData?.find(p => p.ebook_id === ebook.id);
-          const isStarted = progress && (progress.current_chapter > 0 || (progress.completed_chapters && progress.completed_chapters.length > 0));
-          return {
-            ...ebook,
-            isStarted: !!isStarted,
-            thumbnail: ebook.thumbnail_url // Normalize field name for UI
-          };
-        });
-        
-        setEbooks(ebooksWithProgress);
-      }
-    };
-
-    if (activeChild) fetchData();
-  }, [activeChild, user?.id]);
 
   // Date Formatting and Greeting
   const today = new Date();
@@ -135,25 +90,21 @@ export default function DashboardCalAI() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="min-h-screen bg-background pb-32 relative overflow-hidden"
+        className="min-h-screen bg-background pb-[calc(env(safe-area-inset-bottom)+5rem)] relative overflow-hidden"
       >
         {/* Ambient Background */}
         <div className="fixed top-[-20%] right-[-20%] w-[80%] h-[80%] bg-primary/5 rounded-full blur-[150px] pointer-events-none z-0" />
         <div className="fixed bottom-[-20%] left-[-20%] w-[80%] h-[80%] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
-        {/* Header Spacer for Status Bar */}
-        <div className="w-full h-[env(safe-area-inset-top)] bg-background/80 backdrop-blur-md fixed top-0 left-0 right-0 z-50" />
 
-        {/* Main Content */}
-        <main className="px-5 pt-[calc(env(safe-area-inset-top)+4px)] relative z-10 space-y-8">
-          
-          {/* Header Section */}
-          <header className="flex items-start justify-between">
+        {/* Sticky Header */}
+        <StickyHeader>
+          <div className="flex items-start justify-between">
             <div className="space-y-2">
               <p className="text-xs font-bold text-muted-foreground tracking-widest">{dateString}</p>
               
               <div className="flex flex-col gap-2">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground leading-none">
+                <h1 className={cn(typography.heading, "leading-none")}>
                   {greeting},
                 </h1>
                 
@@ -213,11 +164,18 @@ export default function DashboardCalAI() {
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/achievements')}
               className="flex flex-col items-center justify-center bg-card border border-border/50 rounded-2xl w-14 h-14 shadow-sm"
+              aria-label="View achievements and current streak"
+              role="button"
+              tabIndex={0}
             >
-              <Flame className="w-5 h-5 text-orange-500 fill-orange-500 mb-0.5" />
-              <span className="text-xs font-bold">{currentStreak}</span>
+              <Flame className="w-5 h-5 text-orange-500 fill-orange-500 mb-0.5" aria-hidden="true" />
+              <span className="text-xs font-bold" aria-live="polite">{currentStreak}</span>
             </motion.button>
-          </header>
+          </div>
+        </StickyHeader>
+
+        {/* Main Content */}
+        <main className="px-5 relative z-10 space-y-8">
 
           {/* Hero Section: Ebook Cover Flow (Apple Books Style) */}
           <section className="relative">

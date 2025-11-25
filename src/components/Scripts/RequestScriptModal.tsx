@@ -158,7 +158,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                 key={loc.id}
                 type="button"
                 onClick={() => {
-                  triggerHaptic('selection');
+                  triggerHaptic('light');
                   const current = formValues.location_type || [];
                   const next = isSelected ? current.filter(i => i !== loc.id) : [...current, loc.id];
                   setValue('location_type', next, { shouldValidate: true });
@@ -189,7 +189,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                 key={emotion}
                 type="button"
                 onClick={() => {
-                  triggerHaptic('selection');
+                  triggerHaptic('light');
                   setValue('parent_emotional_state', isSelected ? '' : emotion, { shouldValidate: true });
                 }}
                 className={cn(

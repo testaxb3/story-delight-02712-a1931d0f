@@ -27,6 +27,7 @@ import { ErrorBoundary } from '@/components/common/ErrorBoundary';
 import { RequestScriptModal } from '@/components/Scripts/RequestScriptModal';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
+import { StickyHeader } from '@/components/Navigation/StickyHeader';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
 
@@ -180,9 +181,8 @@ function ScriptsContent() {
         <div className="fixed bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
         {/* Sticky Header */}
-        <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
-          <div className="px-5 pt-[calc(env(safe-area-inset-top)+1rem)] space-y-4 pb-4">
-            
+        <StickyHeader>
+          <div className="space-y-4">
             {/* Apple Style Header Title */}
             <div className="flex justify-between items-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">Library</h1>
@@ -191,6 +191,7 @@ function ScriptsContent() {
                 size="icon" 
                 className="rounded-full hover:bg-secondary/50"
                 onClick={() => setRequestScriptModalOpen(true)}
+                aria-label="Request a new script"
               >
                 <MessageCircleHeart className="w-6 h-6 text-primary" />
               </Button>
@@ -205,11 +206,13 @@ function ScriptsContent() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={SEARCH_PLACEHOLDERS[placeholderIndex]}
                 className="pl-12 h-14 text-[17px] bg-secondary/50 border-transparent focus:bg-background focus:border-primary/30 focus:ring-4 focus:ring-primary/10 rounded-2xl transition-all shadow-sm placeholder:text-muted-foreground/50"
+                aria-label="Search scripts"
               />
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30 transition-colors"
+                  aria-label="Clear search"
                 >
                   <X className="w-3 h-3 text-muted-foreground" />
                 </button>
@@ -217,7 +220,11 @@ function ScriptsContent() {
             </div>
 
             {/* Horizontal Categories (Pills) */}
-            <div className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide snap-x">
+            <div 
+              className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide snap-x"
+              role="tablist"
+              aria-label="Script categories"
+            >
               {categories.map((cat) => (
                 <motion.button
                   key={cat.name}
@@ -232,6 +239,8 @@ function ScriptsContent() {
                       ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/20"
                       : "bg-background border-border/60 text-muted-foreground hover:bg-secondary/50"
                   )}
+                  role="tab"
+                  aria-selected={selectedCategory === cat.value}
                 >
                   <span>{cat.emoji}</span>
                   {cat.name}
@@ -239,7 +248,7 @@ function ScriptsContent() {
               ))}
             </div>
           </div>
-        </div>
+        </StickyHeader>
 
         {/* Scrollable Content */}
         <div className="px-5 pt-4 space-y-6 relative z-10">
