@@ -4,15 +4,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { loginSchema } from '@/lib/validations';
 import { useRateLimit } from '@/hooks/useRateLimit';
-import { AuthCard } from '@/components/auth/AuthCard';
+import { AuthWelcome } from '@/components/auth/AuthWelcome';
+import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthBackground } from '@/components/auth/AuthBackground';
 import { supabase } from '@/integrations/supabase/client';
+import { AnimatePresence } from 'framer-motion';
 
 const Auth = memo(function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
 
@@ -37,6 +40,22 @@ const Auth = memo(function Auth() {
   const handleToggleMode = useCallback(() => {
     setIsSignUp(prev => !prev);
     // Clear form on toggle
+    setEmail('');
+    setPassword('');
+  }, []);
+
+  const handleGetStarted = useCallback(() => {
+    setIsSignUp(true);
+    setShowForm(true);
+  }, []);
+
+  const handleSignInClick = useCallback(() => {
+    setIsSignUp(false);
+    setShowForm(true);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    setShowForm(false);
     setEmail('');
     setPassword('');
   }, []);
@@ -122,22 +141,32 @@ const Auth = memo(function Auth() {
 
   return (
     <div className="min-h-screen relative flex flex-col font-relative overflow-hidden">
-      {/* Animated Background */}
+      {/* Dark Background */}
       <AuthBackground />
 
-      {/* Content */}
-      <div className="relative flex-1 flex items-center justify-center px-4 md:px-6 py-8 pb-[calc(env(safe-area-inset-bottom)+2rem)]">
-        <AuthCard
-          isSignUp={isSignUp}
-          email={email}
-          password={password}
-          loading={loading}
-          onEmailChange={handleEmailChange}
-          onPasswordChange={handlePasswordChange}
-          onSubmit={handleSubmit}
-          onToggleMode={handleToggleMode}
-        />
-      </div>
+      {/* Two-step flow with AnimatePresence */}
+      <AnimatePresence mode="wait">
+        {!showForm ? (
+          <AuthWelcome
+            key="welcome"
+            onGetStarted={handleGetStarted}
+            onSignIn={handleSignInClick}
+          />
+        ) : (
+          <AuthForm
+            key="form"
+            isSignUp={isSignUp}
+            email={email}
+            password={password}
+            loading={loading}
+            onEmailChange={handleEmailChange}
+            onPasswordChange={handlePasswordChange}
+            onSubmit={handleSubmit}
+            onBack={handleBack}
+            onToggleMode={handleToggleMode}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 });
