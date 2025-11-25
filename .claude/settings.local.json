@@ -57,7 +57,15 @@
       "Bash(netstat:*)",
       "Bash(tasklist:*)",
       "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\assets\\logo-nep-ai.svg\")",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Index.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Favorites.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Install.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Leaderboard.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Notifications.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\PWAOnboarding.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Videos.tsx\")",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\pages\\Community\\JoinTutorial.tsx\")"
     ],
     "deny": [],
     "ask": []

@@ -108,7 +108,10 @@ export default function Admin() {
 
   return (
     <MainLayout>
-      <div className="space-y-8">
+      {/* Header Spacer for status bar */}
+      <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
+      <div className="space-y-8 px-5 pb-8">
         {/* Hero Header */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-purple-600 via-purple-500 to-pink-500 dark:from-purple-900/90 dark:via-purple-800/80 dark:to-pink-900/90 p-8 text-white shadow-xl dark:shadow-2xl">
           <div className="relative z-10">

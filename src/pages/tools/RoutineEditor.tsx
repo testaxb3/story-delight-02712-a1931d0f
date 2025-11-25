@@ -117,7 +117,7 @@ export default function RoutineEditor() {
   if (showTemplates && templates) {
     return (
       <div className="min-h-screen bg-background">
-        <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(env(safe-area-inset-top)+8px)]">
           <div className="px-4 h-14 flex items-center justify-between">
             <button
               onClick={() => setShowTemplates(false)}
@@ -130,7 +130,7 @@ export default function RoutineEditor() {
           </div>
         </div>
 
-        <div className="pt-20 pb-24 px-4 space-y-3">
+        <div className="pt-[calc(env(safe-area-inset-top)+88px)] pb-24 px-4 space-y-3">
           {templates.map((template) => (
             <motion.button
               key={template.id}
@@ -164,7 +164,7 @@ export default function RoutineEditor() {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(env(safe-area-inset-top)+8px)]">
         <div className="px-4 h-14 flex items-center justify-between">
           <button
             onClick={() => navigate('/tools/routine-builder')}
@@ -182,7 +182,7 @@ export default function RoutineEditor() {
         </div>
       </div>
 
-      <div className="pt-20 px-4 space-y-6">
+      <div className="pt-[calc(env(safe-area-inset-top)+88px)] px-4 space-y-6">
         {isNew && (
           <div className="bg-accent/10 rounded-xl p-4">
             <h3 className="font-medium">How it works:</h3>

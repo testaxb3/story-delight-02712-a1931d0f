@@ -83,7 +83,7 @@ export default function RoutinePlayer() {
   if (showMoodBefore) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
+        <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(env(safe-area-inset-top)+8px)]">
           <div className="px-4 h-14 flex items-center">
             <button
               onClick={() => navigate('/tools/routine-builder')}
@@ -94,7 +94,7 @@ export default function RoutinePlayer() {
           </div>
         </div>
 
-        <div className="flex-1 flex items-center justify-center px-4 pt-20">
+        <div className="flex-1 flex items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+88px)]">
           <div className="w-full max-w-sm space-y-6">
             <div className="text-center space-y-2">
               <div className="text-6xl">{routine.icon}</div>
@@ -192,7 +192,7 @@ export default function RoutinePlayer() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(env(safe-area-inset-top)+8px)]">
         <div className="px-4 h-14 flex items-center justify-between">
           <button
             onClick={() => navigate('/tools/routine-builder')}
@@ -226,7 +226,7 @@ export default function RoutinePlayer() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-24 pb-40 space-y-8">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 pt-[calc(env(safe-area-inset-top)+96px)] pb-40 space-y-8">
         {/* Overall progress ring (small, top) */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}

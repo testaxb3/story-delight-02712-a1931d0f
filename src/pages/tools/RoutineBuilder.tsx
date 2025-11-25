@@ -27,7 +27,7 @@ export default function RoutineBuilder() {
   return (
     <div className="min-h-screen bg-background">
       {/* Fixed Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border">
+      <div className="fixed top-0 left-0 right-0 z-10 bg-background/80 backdrop-blur-xl border-b border-border pt-[calc(env(safe-area-inset-top)+8px)]">
         <div className="px-4 h-14 flex items-center justify-between">
           <button
             onClick={() => navigate('/bonuses')}
@@ -51,7 +51,7 @@ export default function RoutineBuilder() {
       </div>
 
       {/* Content */}
-      <div className="pt-20 pb-24 px-4 space-y-4">
+      <div className="pt-[calc(env(safe-area-inset-top)+88px)] pb-24 px-4 space-y-4">
         {/* Stats Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

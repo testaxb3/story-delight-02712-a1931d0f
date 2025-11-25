@@ -43,7 +43,6 @@ const Progress = lazy(() => import("./pages/ProgressCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
-const Library = lazy(() => import("./pages/Library"));
 const Bonuses = lazy(() => import("./pages/Bonuses"));
 const EbookReader = lazy(() => import("./pages/EbookReader"));
 const EbookReaderV2 = lazy(() => import("./pages/EbookReaderV2"));
@@ -257,14 +256,8 @@ function AppContent() {
         />
         {/* Redirect old videos route to bonuses with video filter */}
         <Route path="/videos" element={<Navigate to="/bonuses?category=video" replace />} />
-        <Route
-          path="/library"
-          element={
-            <ProtectedRoute>
-              <Library />
-            </ProtectedRoute>
-          }
-        />
+        {/* Redirect old library route to bonuses */}
+        <Route path="/library" element={<Navigate to="/bonuses" replace />} />
         <Route
           path="/bonuses"
           element={

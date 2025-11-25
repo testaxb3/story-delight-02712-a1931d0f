@@ -35,7 +35,7 @@ html, body {
   padding: 0 !important;
   height: 100%;
   width: 100%;
-  background: #030303 !important;  /* Dark background for status bar continuity */
+  background: #121212 !important;  /* Premium dark gray for status bar continuity */
   overflow-x: hidden;
 }
 
@@ -161,45 +161,45 @@ header, main {
   }
 
   .dark {
-    /* Dark Mode - Cal AI Purple/Blue Theme from screenshot */
-    --background: 250 25% 12%;           /* #1E1E2E - Deep purple-blue background */
-    --foreground: 0 0% 98%;
+    /* Premium Dark Mode - Cal AI Inspired (from screenshot analysis) */
+    --background: 0 0% 7%;               /* #121212 - Rich dark gray (not pure black) */
+    --foreground: 0 0% 98%;              /* #FAFAFA - Soft white text */
 
-    --card: 250 20% 16%;                 /* #2A2A3E - Slightly lighter purple cards */
+    --card: 0 0% 11%;                    /* #1C1C1E - iOS-style elevated surface */
     --card-foreground: 0 0% 98%;
-    --popover: 250 20% 16%;
+    --popover: 0 0% 13%;                 /* #212121 - Slightly lighter for popovers */
     --popover-foreground: 0 0% 98%;
 
     --primary: 0 0% 98%;                 /* White for primary in dark mode */
     --primary-glow: 0 0% 100%;
-    --primary-foreground: 250 25% 12%;
+    --primary-foreground: 0 0% 7%;
 
-    --secondary: 250 20% 18%;
+    --secondary: 0 0% 15%;               /* #262626 - Subtle secondary surfaces */
     --secondary-foreground: 0 0% 98%;
 
-    --muted: 250 15% 14%;
-    --muted-foreground: 0 0% 55%;        /* Gray for subtitle text */
+    --muted: 0 0% 13%;                   /* #212121 - Muted backgrounds */
+    --muted-foreground: 0 0% 60%;        /* #999999 - Medium gray text */
 
-    --accent: 14 100% 50%;               /* Orange for fire icon only */
+    --accent: 14 100% 50%;               /* #FF6B00 - Orange accent (fire, highlights) */
     --accent-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;
+    --success: 142 71% 45%;              /* Green */
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 92% 50%;               /* Amber */
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 60%;            /* Red */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 15% 20%;               /* Subtle purple-tinted border */
-    --input: 250 20% 14%;
+    --border: 0 0% 20%;                  /* #333333 - Subtle borders (more visible) */
+    --input: 0 0% 15%;
     --ring: 0 0% 98%;
 
-    --surface-base: 250 25% 12%;
-    --surface-raised: 250 20% 16%;
-    --surface-overlay: 250 18% 15%;
-    --surface-glass: 250 20% 16%;
+    --surface-base: 0 0% 7%;
+    --surface-raised: 0 0% 11%;
+    --surface-overlay: 0 0% 13%;
+    --surface-glass: 0 0% 11%;
 
     --text-high-contrast: 0 0% 98%;
     --text-medium-contrast: 0 0% 65%;
@@ -217,15 +217,17 @@ header, main {
     --gradient-hero: hsl(0 0% 98%);
     --gradient-mesh: none;
 
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-    --shadow-md: 0 2px 4px -1px rgb(0 0 0 / 0.6);
-    --shadow-lg: 0 4px 6px -1px rgb(0 0 0 / 0.6);
-    --shadow-xl: 0 8px 10px -2px rgb(0 0 0 / 0.7);
-    --shadow-colored: 0 2px 4px -1px rgb(0 0 0 / 0.6);
+    /* More prominent shadows for dark mode depth */
+    --shadow-sm: 0 2px 4px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.4);
+    --shadow-lg: 0 8px 16px -4px rgb(0 0 0 / 0.5);
+    --shadow-xl: 0 16px 24px -8px rgb(0 0 0 / 0.6);
+    --shadow-colored: 0 4px 8px -2px rgb(0 0 0 / 0.4);
 
-    --glass-bg: hsl(250 20% 15% / 0.8);
-    --glass-border: hsl(250 15% 22% / 0.5);
-    --glass-blur: 12px;
+    /* Glassmorphism for dark mode */
+    --glass-bg: hsl(0 0% 11% / 0.85);
+    --glass-border: hsl(0 0% 25% / 0.2);
+    --glass-blur: 16px;
   }
 }
 
