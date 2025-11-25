@@ -40,9 +40,9 @@ export const AuthCard = memo(function AuthCard({
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="mb-8 w-20 h-20 rounded-[24px] bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center shadow-inner border border-white/10"
+          className="mb-8 w-20 h-20 rounded-[24px] bg-gradient-to-br from-accent/10 to-accent/5 flex items-center justify-center shadow-inner border border-border/20"
         >
-          <Sparkles className="w-10 h-10 text-primary" />
+          <Sparkles className="w-10 h-10 text-accent" />
         </motion.div>
 
         {/* Typography - Editorial Style */}
@@ -66,7 +66,7 @@ export const AuthCard = memo(function AuthCard({
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="mt-3 inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-600/90 dark:text-amber-400/90 text-xs font-medium border border-amber-500/20"
+            className="mt-3 inline-block px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-medium border border-amber-500/20"
           >
             Please use the email from your purchase
           </motion.div>
@@ -82,7 +82,7 @@ export const AuthCard = memo(function AuthCard({
         >
           <div className="space-y-4">
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-accent transition-colors">
                 <Mail className="w-5 h-5" />
               </div>
               <Input
@@ -91,14 +91,14 @@ export const AuthCard = memo(function AuthCard({
                 placeholder="Email address"
                 value={email}
                 onChange={(e) => onEmailChange(e.target.value)}
-                className="h-14 pl-12 bg-secondary/30 border-transparent focus:bg-background focus:border-border/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
+                className="h-14 pl-12 bg-secondary/80 border-border/20 focus:bg-card focus:border-accent/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
                 required
                 disabled={loading}
               />
             </div>
 
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 group-focus-within:text-accent transition-colors">
                 <Lock className="w-5 h-5" />
               </div>
               <Input
@@ -107,7 +107,7 @@ export const AuthCard = memo(function AuthCard({
                 placeholder="Password"
                 value={password}
                 onChange={(e) => onPasswordChange(e.target.value)}
-                className="h-14 pl-12 bg-secondary/30 border-transparent focus:bg-background focus:border-border/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
+                className="h-14 pl-12 bg-secondary/80 border-border/20 focus:bg-card focus:border-accent/50 rounded-2xl text-[16px] shadow-sm transition-all duration-300 placeholder:text-muted-foreground/50"
                 required
                 disabled={loading}
               />
@@ -118,7 +118,7 @@ export const AuthCard = memo(function AuthCard({
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-14 mt-6 rounded-2xl text-[16px] font-semibold bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98] transition-all shadow-lg shadow-primary/20"
+            className="w-full h-14 mt-6 rounded-2xl text-[16px] font-semibold bg-gradient-to-br from-accent to-accent/90 text-white hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-accent/20"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -143,7 +143,7 @@ export const AuthCard = memo(function AuthCard({
             className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium"
           >
             {isSignUp ? "Already have an account? " : "Don't have an account? "}
-            <span className="text-primary underline decoration-border/50 underline-offset-4">
+            <span className="text-accent underline decoration-border/50 underline-offset-4">
               {isSignUp ? 'Sign in' : 'Sign up'}
             </span>
           </button>
