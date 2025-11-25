@@ -180,7 +180,7 @@ export default function AddGroupLogo() {
                         key={item.emoji}
                         whileTap={{ scale: 0.8 }}
                         onClick={() => {
-                          triggerHaptic('selection');
+                          triggerHaptic('light');
                           setSelectedEmoji(item);
                         }}
                         className={cn(

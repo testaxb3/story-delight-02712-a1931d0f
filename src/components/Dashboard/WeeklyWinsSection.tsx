@@ -7,7 +7,24 @@ interface WeeklyWinsSectionProps {
 }
 
 export function WeeklyWinsSection({ wins }: WeeklyWinsSectionProps) {
-  if (!wins || wins.length === 0) return null;
+  if (!wins || wins.length === 0) {
+    return (
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className="px-6 mb-6"
+      >
+        <div className="bg-card border border-dashed border-border rounded-3xl p-8 text-center">
+          <div className="text-4xl mb-3">🏆</div>
+          <h3 className="text-lg font-bold mb-2">No Wins Yet This Week</h3>
+          <p className="text-sm text-muted-foreground mb-4">
+            Complete tracker entries to unlock weekly achievements
+          </p>
+        </div>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div 

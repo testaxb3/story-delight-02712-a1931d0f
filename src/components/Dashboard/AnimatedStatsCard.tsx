@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface AnimatedStatsCardProps {
   value: number;
@@ -10,6 +10,10 @@ interface AnimatedStatsCardProps {
   onClick?: () => void;
 }
 
+/**
+ * Optimized AnimatedStatsCard using requestAnimationFrame
+ * Provides smooth, 60fps animations with Apple-like easing
+ */
 export function AnimatedStatsCard({ 
   value, 
   label, 
@@ -19,32 +23,48 @@ export function AnimatedStatsCard({
   onClick 
 }: AnimatedStatsCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
+  const animationFrameRef = useRef<number>();
 
   useEffect(() => {
-    const duration = 1000;
-    const steps = 30;
-    const increment = value / steps;
-    let current = 0;
+    // Easing function (easeOutQuart - Apple-like)
+    const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
 
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= value) {
-        setDisplayValue(value);
-        clearInterval(timer);
-      } else {
-        setDisplayValue(Math.floor(current));
+    let startTime: number;
+    const duration = 1000; // 1 second animation
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+
+      // Apply easing
+      const eased = easeOutQuart(progress);
+      setDisplayValue(Math.floor(eased * value));
+
+      if (progress < 1) {
+        animationFrameRef.current = requestAnimationFrame(animate);
       }
-    }, duration / steps);
+    };
 
-    return () => clearInterval(timer);
-  }, [value]);
+    // Start animation after delay
+    const timeoutId = setTimeout(() => {
+      animationFrameRef.current = requestAnimationFrame(animate);
+    }, delay);
+
+    return () => {
+      clearTimeout(timeoutId);
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [value, delay]);
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ 
-        delay: delay,
+        delay: delay / 1000,
         duration: 0.4,
         type: "spring",
         stiffness: 100
@@ -64,7 +84,7 @@ export function AnimatedStatsCard({
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex-1">
           <motion.div
-            className="text-3xl font-bold text-[#1A1A1A] dark:text-white mb-1"
+            className="text-3xl font-bold text-[#1A1A1A] dark:text-white mb-1 tabular-nums"
             key={displayValue}
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}

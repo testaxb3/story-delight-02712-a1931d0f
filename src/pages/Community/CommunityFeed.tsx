@@ -241,7 +241,7 @@ export default function CommunityFeed() {
         open={showReactionsSheet}
         onOpenChange={setShowReactionsSheet}
         postId={selectedPostId || ''}
-        userAvatar={user?.user_metadata?.avatar_url || user?.photo_url || undefined}
+        userAvatar={(user?.user_metadata as any)?.avatar_url || undefined}
         userName={user?.email || 'User'}
         currentUserId={user?.profileId || null}
         isAdmin={isUserAdmin}

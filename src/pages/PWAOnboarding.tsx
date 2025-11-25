@@ -203,7 +203,6 @@ export default function PWAOnboarding() {
                   <OptimizedYouTubePlayer
                     videoUrl={currentVideo.url}
                     videoId={currentVideo.id}
-                    showFullscreenHint={false}
                   />
                 </div>
 

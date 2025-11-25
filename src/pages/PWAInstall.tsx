@@ -96,7 +96,6 @@ const PWAInstall = () => {
           <OptimizedYouTubePlayer
             videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
             videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
-            showFullscreenHint={false}
           />
         </motion.div>
 
