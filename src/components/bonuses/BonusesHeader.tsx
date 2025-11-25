@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { memo } from "react";
-import logo from "@/assets/logo-nep-ai.svg";
+import { Logo } from "@/components/common/Logo";
 
 interface BonusesHeaderProps {
   userName?: string;
@@ -65,7 +65,7 @@ export const BonusesHeader = memo(function BonusesHeader({
   return (
     <div className="mb-6 space-y-4">
       {/* Logo */}
-      <img src={logo} alt="NEP" className="h-16 w-auto" />
+      <Logo className="h-16 w-auto" alt="Brainy+" />
 
       {/* Stats Grid - CalAI Style */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">

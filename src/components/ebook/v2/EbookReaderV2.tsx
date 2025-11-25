@@ -50,16 +50,19 @@ export const EbookReaderV2 = ({
   }
 
   const safeInitialChapter = Math.min(Math.max(initialChapter, 0), chapters.length - 1);
-  
+
   const [currentChapterIndex, setCurrentChapterIndex] = useState(safeInitialChapter);
+  const previousChapterIndex = useRef(safeInitialChapter);
   const [fontSize, setFontSize] = useState(1);
   const [completedChapters, setCompletedChapters] = useState<Set<number>>(
     externalCompleted || new Set()
   );
   const [showHeader, setShowHeader] = useState(true);
   const lastScrollY = useRef(0);
+  const currentScrollY = useRef(0); // Track current scroll position
   const scrollTimeout = useRef<NodeJS.Timeout>();
   const isInitialMount = useRef(true);
+  const hasRestoredScroll = useRef(false);
   
   const { toggleBookmark, isBookmarked } = useBookmarks();
   const { highlights, getChapterHighlights } = useHighlights();
@@ -100,42 +103,110 @@ export const EbookReaderV2 = ({
 
   // Restore scroll position ONLY on initial mount
   useEffect(() => {
-    if (isInitialMount.current) {
+    if (isInitialMount.current && !hasRestoredScroll.current) {
       if (initialScrollPosition > 0) {
-        setTimeout(() => {
-          window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
-        }, 100);
+        console.log('🎯 [INIT] Preparing to restore scroll to:', initialScrollPosition);
+        hasRestoredScroll.current = true;
+
+        // Use requestAnimationFrame for more reliable scroll restoration
+        const restoreScroll = () => {
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const before = window.scrollY;
+              window.scrollTo({ top: initialScrollPosition, behavior: 'auto' });
+              document.documentElement.scrollTop = initialScrollPosition;
+              document.body.scrollTop = initialScrollPosition;
+              currentScrollY.current = initialScrollPosition;
+              const after = window.scrollY;
+              console.log('✅ [RESTORE] Scroll set:', { target: initialScrollPosition, before, after });
+            });
+          });
+        };
+
+        // Try multiple times to ensure it sticks - with longer delays
+        setTimeout(restoreScroll, 150);
+        setTimeout(restoreScroll, 600);
+        setTimeout(restoreScroll, 1200);
+        setTimeout(restoreScroll, 2000); // Extra attempt
+      } else {
+        console.log('📜 [INIT] No scroll position to restore (starting at top)');
+        hasRestoredScroll.current = true;
       }
-      // Mark that initial mount is complete
-      isInitialMount.current = false;
+      // Mark that initial mount is complete AFTER restoration attempts
+      setTimeout(() => {
+        isInitialMount.current = false;
+        console.log('🏁 [INIT] Initial mount complete, scroll restoration done');
+      }, 2500);
     }
   }, [initialScrollPosition]);
 
-  // ✅ CRITICAL: Force scroll to top when chapter changes
+  // ✅ CRITICAL: Force scroll to top ONLY when user manually changes chapter
   useEffect(() => {
-    if (!isInitialMount.current) {
-      console.log('📍 Scrolling to top for chapter:', currentChapterIndex);
-      // Scroll with offset to account for fixed header
-      window.scrollTo({ top: 200, behavior: 'instant' });
-      document.documentElement.scrollTop = 200;
-      document.body.scrollTop = 200;
+    // Skip this entirely during initial mount
+    if (isInitialMount.current) {
+      console.log('⏭️ [CHAPTER] Skipping scroll-to-top: still in initial mount');
+      return;
+    }
+
+    // Only scroll to top if chapter actually changed (not on initial mount)
+    if (currentChapterIndex !== previousChapterIndex.current) {
+      console.log('📍 [CHAPTER] Chapter changed from', previousChapterIndex.current, 'to', currentChapterIndex, '- scrolling to top');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      previousChapterIndex.current = currentChapterIndex;
+    } else {
+      console.log('📍 [CHAPTER] Same chapter, keeping scroll position');
     }
   }, [currentChapterIndex]);
 
+  // Poll scroll position every 500ms (fallback if scroll events don't work)
+  useEffect(() => {
+    const pollInterval = setInterval(() => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
+      if (scrollY !== currentScrollY.current) {
+        console.log('📜 [POLL] Scroll detected! scrollY:', Math.floor(scrollY), '(was:', Math.floor(currentScrollY.current), ')');
+        currentScrollY.current = scrollY;
+      }
+    }, 500);
+
+    return () => clearInterval(pollInterval);
+  }, []);
+
+  // Debug: Log ALL scroll events to track unexpected scroll changes
+  useEffect(() => {
+    const debugScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      console.log('🔍 [DEBUG] Scroll event fired! scrollY:', Math.floor(scrollY));
+    };
+
+    window.addEventListener('scroll', debugScroll, { passive: true });
+    return () => window.removeEventListener('scroll', debugScroll);
+  }, []);
+
   // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
+    console.log('🔧 Setting up scroll listener on window');
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollPosition = currentScrollY + window.innerHeight;
+      const scrollY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      const scrollPosition = scrollY + window.innerHeight;
       const documentHeight = document.documentElement.scrollHeight;
 
+      // Update ref with current scroll position
+      currentScrollY.current = scrollY;
+
+      // Debug: log every scroll event
+      console.log('📜 Window scroll event! scrollY:', Math.floor(scrollY), 'documentHeight:', documentHeight);
+
       // Smart header: show when scrolling up, hide when scrolling down
-      if (currentScrollY < lastScrollY.current || currentScrollY < 100) {
+      if (scrollY < lastScrollY.current || scrollY < 100) {
         setShowHeader(true);
-      } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      } else if (scrollY > lastScrollY.current && scrollY > 100) {
         setShowHeader(false);
       }
-      lastScrollY.current = currentScrollY;
+      lastScrollY.current = scrollY;
 
       // Mark chapter as completed when reaching the end
       if (scrollPosition >= documentHeight - 100) {
@@ -153,7 +224,8 @@ export const EbookReaderV2 = ({
         clearTimeout(scrollTimeout.current);
       }
       scrollTimeout.current = setTimeout(() => {
-        onScrollPositionChange?.(currentScrollY);
+        console.log('💾 Saving scroll position:', Math.floor(scrollY));
+        onScrollPositionChange?.(Math.floor(scrollY));
       }, 2000);
     };
 
@@ -171,11 +243,11 @@ export const EbookReaderV2 = ({
       const nextIndex = currentChapterIndex + 1;
       setCurrentChapterIndex(nextIndex);
       onChapterChange?.(nextIndex);
-      // Scroll with offset to account for fixed header
+      // Scroll to top - header is now compact
       requestAnimationFrame(() => {
-        window.scrollTo({ top: 200, behavior: 'instant' });
-        document.documentElement.scrollTop = 200;
-        document.body.scrollTop = 200;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       });
     }
   }, [currentChapterIndex, chapters.length, onChapterChange]);
@@ -185,11 +257,11 @@ export const EbookReaderV2 = ({
       const prevIndex = currentChapterIndex - 1;
       setCurrentChapterIndex(prevIndex);
       onChapterChange?.(prevIndex);
-      // Scroll with offset to account for fixed header
+      // Scroll to top - header is now compact
       requestAnimationFrame(() => {
-        window.scrollTo({ top: 200, behavior: 'instant' });
-        document.documentElement.scrollTop = 200;
-        document.body.scrollTop = 200;
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
       });
     }
   }, [currentChapterIndex, onChapterChange]);
@@ -197,17 +269,29 @@ export const EbookReaderV2 = ({
   const handleChapterSelect = useCallback((index: number) => {
     setCurrentChapterIndex(index);
     onChapterChange?.(index);
-    // Scroll with offset to account for fixed header
+    // Scroll to top - header is now compact
     requestAnimationFrame(() => {
-      window.scrollTo({ top: 200, behavior: 'instant' });
-      document.documentElement.scrollTop = 200;
-      document.body.scrollTop = 200;
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     });
   }, [onChapterChange]);
 
   const handleToggleBookmark = useCallback(() => {
     toggleBookmark(currentChapterIndex);
   }, [currentChapterIndex, toggleBookmark]);
+
+  const handleClose = useCallback(() => {
+    // Use ref value which is always current
+    const scrollPosition = currentScrollY.current;
+    console.log('🚪 Closing ebook - saving final scroll position:', scrollPosition);
+    onScrollPositionChange?.(Math.floor(scrollPosition));
+
+    // Small delay to ensure save completes
+    setTimeout(() => {
+      onClose?.();
+    }, 200);
+  }, [onScrollPositionChange, onClose]);
 
   const chapterHighlights = getChapterHighlights(currentChapterIndex);
 
@@ -217,36 +301,34 @@ export const EbookReaderV2 = ({
       style={{ fontSize: `${fontSize}rem` }}
     >
       {/* Smart Header - Slides in/out */}
-      <header 
+      <header
         className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-glass border-b border-border transition-transform duration-300 ${
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        <div className="container mx-auto px-4 py-2 max-w-5xl" style={{ paddingTop: 'calc(0.5rem + env(safe-area-inset-top))' }}>
-          <ProgressBar 
-            current={currentChapterIndex + 1}
-            total={chapters.length}
-            percentage={progress}
-          />
-        </div>
-        
-        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl">
-          <div className="flex items-center gap-2 min-w-0 flex-shrink">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-2 max-w-5xl" style={{ paddingTop: 'calc(0.75rem + env(safe-area-inset-top))' }}>
+          <div className="flex items-center gap-3 min-w-0 flex-shrink">
             <Button
               variant="ghost"
               size="icon"
-              onClick={onClose}
+              onClick={handleClose}
               className="hover:bg-accent/50 flex-shrink-0"
               aria-label="Close ebook"
             >
               <X className="h-5 w-5" />
             </Button>
-            
-            <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground font-sans min-w-0">
-              <Home className="h-4 w-4 flex-shrink-0" />
-              <span className="flex-shrink-0">Chapter {currentChapterIndex + 1}</span>
-              <span className="flex-shrink-0">•</span>
-              <span className="truncate max-w-[150px]">{currentChapter.title}</span>
+
+            {/* Chapter Info with Title */}
+            <div className="flex flex-col gap-1 min-w-0">
+              <div className="flex items-center gap-2 text-xs text-muted-foreground font-sans">
+                <Home className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="flex-shrink-0">Chapter {currentChapterIndex + 1} of {chapters.length}</span>
+                <span className="hidden sm:inline">•</span>
+                <span className="hidden sm:inline text-primary font-semibold">{progress}% complete</span>
+              </div>
+              <h2 className="text-sm md:text-base font-bold text-foreground font-sans truncate max-w-[200px] md:max-w-[400px]">
+                {currentChapter.title}
+              </h2>
             </div>
           </div>
 
@@ -283,7 +365,19 @@ export const EbookReaderV2 = ({
       </header>
 
       {/* Main Content - Premium Typography */}
-      <main className="container mx-auto px-4 pt-44 pb-24 max-w-3xl">
+      <main className="container mx-auto px-4 pt-28 pb-24 max-w-3xl">
+        {/* Spacer to push content down */}
+        <div className="h-12"></div>
+
+        {/* Progress Bar */}
+        <div className="mb-8">
+          <ProgressBar
+            current={currentChapterIndex + 1}
+            total={chapters.length}
+            percentage={progress}
+          />
+        </div>
+
         <ChapterCoverV2
           chapterNumber={currentChapterIndex + 1}
           title={currentChapter?.title || 'Untitled Chapter'}

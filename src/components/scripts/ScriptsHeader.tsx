@@ -1,7 +1,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BarChart3 } from 'lucide-react';
-import logo from '@/assets/logo-nep-ai.svg';
+import { Logo } from '@/components/common/Logo';
 import { motion } from 'framer-motion';
 
 interface ScriptsHeaderProps {
@@ -59,7 +59,7 @@ export function ScriptsHeader({
     >
       {/* Logo */}
       <div className="flex items-center justify-between">
-        <img src={logo} alt="NEP AI" className="h-10 w-auto" />
+        <Logo className="h-10 w-auto" alt="Brainy+" />
         {onShowStats && (
           <Button
             variant="ghost"

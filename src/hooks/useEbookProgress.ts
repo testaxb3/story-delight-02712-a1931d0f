@@ -70,7 +70,8 @@ export function useEbookProgress(ebookId: string | undefined) {
     },
     onSuccess: (_, chapterIndex) => {
       console.log('✅ Chapter progress saved:', chapterIndex);
-      queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
+      // Don't invalidate immediately - it causes remounting
+      // queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
     },
     onError: (error, chapterIndex) => {
       console.error('❌ Failed to save chapter progress:', { chapterIndex, error });
@@ -92,7 +93,8 @@ export function useEbookProgress(ebookId: string | undefined) {
     },
     onSuccess: (_, chapterIndex) => {
       console.log('✅ Chapter marked complete:', chapterIndex);
-      queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
+      // Don't invalidate immediately - it causes remounting
+      // queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
       toast.success('Chapter marked as complete! 🎉');
     },
     onError: (error, chapterIndex) => {
@@ -120,7 +122,7 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
+      // Don't invalidate scroll position updates - too frequent and causes remounting
     },
     onError: (error) => {
       console.error('❌ Failed to save scroll position:', error);

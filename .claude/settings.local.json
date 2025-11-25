@@ -55,7 +55,9 @@
       "Bash(findstr:*)",
       "WebFetch(domain:web.dev)",
       "Bash(netstat:*)",
-      "Bash(tasklist:*)"
+      "Bash(tasklist:*)",
+      "Bash(del \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\src\\assets\\logo-nep-ai.svg\")",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

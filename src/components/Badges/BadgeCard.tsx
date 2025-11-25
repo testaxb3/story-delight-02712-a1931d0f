@@ -2,6 +2,17 @@ import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Lock } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+// React Icons - Font Awesome 6 (SOLID)
+import {
+  FaFire, FaBolt, FaDumbbell, FaTrophy, FaLock, FaGem, FaCrown,
+  FaBook, FaBookOpen, FaGraduationCap, FaBullseye, FaStar,
+  FaVideo, FaEye, FaTv,
+  FaCircleCheck, FaSeedling, FaLeaf, FaTree,
+  FaHandshake, FaComments, FaUsers, FaRocket,
+  FaMedal, FaHeart, FaSun, FaMoon, FaAward
+} from 'react-icons/fa6';
+import { IoSparkles } from 'react-icons/io5';
+import { GiButterfly } from 'react-icons/gi';
 
 interface BadgeCardProps {
   badge: {
@@ -55,10 +66,115 @@ const getGradientColors = (category: string): string => {
   return gradients[category] || '#6b7280, #4b5563';
 };
 
+// Map icon names to React Icons (Font Awesome 6)
+const getIconComponent = (iconName: string) => {
+  const iconMap: Record<string, any> = {
+    // Streak badges
+    '🔥': FaFire,
+    'flame': FaFire,
+    'fire': FaFire,
+    '⚡': FaBolt,
+    'zap': FaBolt,
+    'lightning': FaBolt,
+    '💪': FaDumbbell,
+    'muscle': FaDumbbell,
+    '🏆': FaTrophy,
+    'trophy': FaTrophy,
+    '🔒': FaLock,
+    'lock': FaLock,
+    'locked': FaLock,
+    '💎': FaGem,
+    'diamond': FaGem,
+    'gem': FaGem,
+    '👑': FaCrown,
+    'crown': FaCrown,
+
+    // Script badges
+    '📝': FaBook,
+    '📖': FaBookOpen,
+    '📚': FaBookOpen,
+    'book': FaBookOpen,
+    'script': FaBook,
+    '🎯': FaBullseye,
+    'target': FaBullseye,
+    '🌟': FaStar,
+    '⭐': FaStar,
+    'star': FaStar,
+    '👨‍🏫': FaAward,
+    'teacher': FaAward,
+
+    // Video badges
+    '🎬': FaVideo,
+    'video': FaVideo,
+    'play': FaVideo,
+    '👀': FaEye,
+    'eyes': FaEye,
+    '📺': FaTv,
+    'tv': FaTv,
+    '🎓': FaGraduationCap,
+    'graduation': FaGraduationCap,
+    'graduate': FaGraduationCap,
+
+    // Tracker badges
+    '✅': FaCircleCheck,
+    'check': FaCircleCheck,
+    'tracker': FaCircleCheck,
+    '🌱': FaSeedling,
+    'seedling': FaSeedling,
+    '🌿': FaLeaf,
+    'herb': FaLeaf,
+    '🌳': FaTree,
+    'tree': FaTree,
+    '🦋': GiButterfly,
+    'butterfly': GiButterfly,
+
+    // Community badges
+    '👋': FaHandshake,
+    'wave': FaHandshake,
+    '💬': FaComments,
+    'speech': FaComments,
+    '👥': FaUsers,
+    'users': FaUsers,
+    'community': FaUsers,
+    '🚀': FaRocket,
+    'rocket': FaRocket,
+
+    // Special badges
+    '🎖️': FaMedal,
+    'medal': FaMedal,
+    '💯': FaStar, // Changed from FaHundredPoints (doesn't exist)
+    'hundred': FaStar,
+    'perfect': FaStar,
+    '🦉': FaMoon,
+    'owl': FaMoon,
+    '🌅': FaSun,
+    'sunrise': FaSun,
+    '❤️': FaHeart,
+    'heart': FaHeart,
+
+    // Generic
+    '✨': IoSparkles,
+    'sparkles': IoSparkles,
+    'magic': IoSparkles,
+  };
+
+  // Try exact match first, then lowercase
+  const exactMatch = iconMap[iconName];
+  if (exactMatch) return exactMatch;
+
+  const lowerMatch = iconMap[iconName.toLowerCase()];
+  if (lowerMatch) return lowerMatch;
+
+  // Fallback to Star
+  return FaStar;
+};
+
 export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: BadgeCardProps) => {
   const isRecentlyUnlocked = (unlockedDate: string) => {
     return new Date().getTime() - new Date(unlockedDate).getTime() < 7 * 24 * 60 * 60 * 1000;
   };
+
+  const IconComponent = getIconComponent(badge.icon);
 
   return (
     <TooltipProvider>
@@ -71,11 +187,22 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
             className="relative flex flex-col items-center gap-2.5"
           >
             {/* Hexagonal Badge Container */}
-            <div className="relative">
+            <div className="relative group">
+              {/* Glow effect for unlocked badges */}
+              {badge.unlocked && (
+                <div
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"
+                  style={{
+                    clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                    background: `linear-gradient(135deg, ${getGradientColors(badge.category)})`,
+                  }}
+                />
+              )}
+
               {/* Hexagon shape using clip-path */}
               <div
                 className={`
-                  w-[70px] h-[70px] flex items-center justify-center
+                  relative w-[70px] h-[70px] flex items-center justify-center
                   transition-all duration-300
                   ${badge.unlocked
                     ? 'opacity-100'
@@ -89,10 +216,30 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
                     : '#e5e7eb',
                 }}
               >
-                <div className="flex items-center justify-center">
-                  <div className={`text-3xl ${badge.unlocked ? 'drop-shadow-md' : ''}`}>
-                    {badge.icon}
-                  </div>
+                {/* Shine effect animation for unlocked badges */}
+                {badge.unlocked && (
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+                    style={{
+                      clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
+                    }}
+                    animate={{
+                      x: ['-100%', '200%'],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Infinity,
+                      repeatDelay: 5,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                )}
+
+                <div className="flex items-center justify-center relative z-10">
+                  <IconComponent
+                    className={`w-8 h-8 ${badge.unlocked ? 'text-white drop-shadow-lg' : 'text-gray-500'}`}
+                    strokeWidth={2.5}
+                  />
                 </div>
               </div>
 
@@ -123,14 +270,23 @@ export const BadgeCard = memo(({ badge, size = 'md', showProgress = true }: Badg
           </motion.div>
         </TooltipTrigger>
 
-        <TooltipContent 
-          side="top" 
+        <TooltipContent
+          side="top"
           className="max-w-xs"
           sideOffset={8}
         >
           <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">{badge.icon}</span>
+            <div className="flex items-center gap-3">
+              <div
+                className="w-10 h-10 rounded-lg flex items-center justify-center"
+                style={{
+                  background: badge.unlocked
+                    ? `linear-gradient(135deg, ${getGradientColors(badge.category)})`
+                    : '#e5e7eb',
+                }}
+              >
+                <IconComponent className={`w-5 h-5 ${badge.unlocked ? 'text-white' : 'text-gray-500'}`} />
+              </div>
               <div>
                 <p className="font-semibold">{badge.name}</p>
                 <p className="text-xs text-muted-foreground capitalize">{badge.category}</p>

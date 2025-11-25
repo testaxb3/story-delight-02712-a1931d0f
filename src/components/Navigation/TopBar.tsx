@@ -20,6 +20,7 @@ export function TopBar() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { activeChild, childProfiles, setActiveChild, onboardingRequired } = useChildProfiles();
+  // Updated with Brainy+ logo
 
   const profileInitials = useMemo(() => {
     if (user?.user_metadata?.full_name) {
@@ -54,9 +55,11 @@ export function TopBar() {
           className="flex items-center gap-2 group hover:scale-105 transition-transform"
           aria-label="Go to home"
         >
-          <span className="font-bold text-lg group-hover:text-white/90 transition-colors">
-            NEP System
-          </span>
+          <img
+            src="/brainy-logo.svg"
+            alt="Brainy+"
+            className="h-10 w-auto group-hover:opacity-90 transition-opacity"
+          />
         </button>
 
         {/* Child selector */}

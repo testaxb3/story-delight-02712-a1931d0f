@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEbookContent } from "@/hooks/useEbookContent";
 import { useEbookProgress } from "@/hooks/useEbookProgress";
 import { Badge } from "@/components/ui/badge";
+import { useQueryClient } from "@tanstack/react-query";
 
 const EbookReaderV2Page = () => {
   const navigate = useNavigate();
@@ -13,23 +14,38 @@ const EbookReaderV2Page = () => {
   const { ebook, chapters, isLoading, error } = useEbookContent(ebookId);
   
   // Load user progress
-  const { 
-    progress, 
-    updateCurrentChapter, 
+  const queryClient = useQueryClient();
+
+  const {
+    progress,
+    updateCurrentChapter,
     updateScrollPosition,
     markChapterComplete,
     saveHighlight
   } = useEbookProgress(ebook?.id);
 
   console.log('📊 Progress loaded:', {
-    ebookId: ebook?.id,
+    urlParam: ebookId,
+    ebookIdFromDB: ebook?.id,
+    ebookSlug: ebook?.slug,
     hasProgress: !!progress,
     currentChapter: progress?.current_chapter,
+    scrollPosition: progress?.scroll_position,
     completedChapters: progress?.completed_chapters,
     highlights: progress?.highlights
   });
 
+  console.log('🔍 DEBUG - Save callbacks:', {
+    hasEbookId: !!ebook?.id,
+    ebookId: ebook?.id,
+    hasUpdateCurrentChapter: !!updateCurrentChapter,
+    hasMarkChapterComplete: !!markChapterComplete,
+    hasUpdateScrollPosition: !!updateScrollPosition
+  });
+
   const handleClose = () => {
+    // Invalidate queries to refresh progress on next open
+    queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebook?.id] });
     navigate('/bonuses');
   };
 
@@ -96,6 +112,13 @@ const EbookReaderV2Page = () => {
   );
   const initialScrollPosition = progress?.scroll_position ?? 0;
   const completedChapters = new Set(progress?.completed_chapters || []);
+
+  console.log('📍 Initial values:', {
+    initialChapter,
+    initialScrollPosition,
+    rawScrollPosition: progress?.scroll_position,
+    hasProgress: !!progress
+  });
 
   return (
     <div className="relative">

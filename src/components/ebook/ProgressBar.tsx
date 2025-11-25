@@ -16,7 +16,7 @@ export const ProgressBar = ({ current, total, percentage }: ProgressBarProps) =>
         </div>
         <span className="text-3xl font-display font-bold gradient-text">{percentage}%</span>
       </div>
-      
+
       <div className="relative">
         <div className="h-3 bg-gradient-to-r from-muted via-muted to-muted rounded-full overflow-hidden shadow-inner">
           <div
@@ -27,7 +27,7 @@ export const ProgressBar = ({ current, total, percentage }: ProgressBarProps) =>
           </div>
         </div>
       </div>
-      
+
       <div className="flex items-center justify-between text-sm font-body">
         <span className="text-muted-foreground font-semibold">
           Chapter {current} of {total}

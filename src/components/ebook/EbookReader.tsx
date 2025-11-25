@@ -185,11 +185,16 @@ export const EbookReader = ({
                 <X className="w-5 h-5" />
               </Button>
               
-              {/* Breadcrumbs */}
-              <div className="flex items-center gap-2 text-sm text-muted-foreground font-body">
-                <Home className="w-4 h-4" />
-                <span>/</span>
-                <span className="font-semibold text-foreground">Chapter {currentChapterIndex + 1}</span>
+              {/* Chapter Info */}
+              <div className="flex flex-col gap-0.5">
+                <div className="flex items-center gap-2 text-xs text-muted-foreground font-body">
+                  <Home className="w-3.5 h-3.5" />
+                  <span>/</span>
+                  <span>Chapter {currentChapterIndex + 1} of {chapters.length}</span>
+                </div>
+                <span className="font-semibold text-sm text-foreground font-body line-clamp-1">
+                  {currentChapter.title}
+                </span>
               </div>
             </div>
             
@@ -214,21 +219,21 @@ export const EbookReader = ({
         
         {/* Content with top padding to account for fixed header */}
         <div className="max-w-3xl mx-auto px-6 pt-24 pb-8">
+          {/* Chapter Cover - Now BEFORE Progress Bar */}
+          <div className="mb-8">
+            <ChapterCover
+              chapterNumber={currentChapterIndex + 1}
+              title={currentChapter.title}
+              subtitle={currentChapter.subtitle}
+            />
+          </div>
+
           {/* Progress */}
           <ProgressBar
             current={currentChapterIndex + 1}
             total={chapters.length}
             percentage={progress}
           />
-        
-        {/* Chapter Cover */}
-        <div className="mt-12">
-          <ChapterCover
-            chapterNumber={currentChapterIndex + 1}
-            title={currentChapter.title}
-            subtitle={currentChapter.subtitle}
-          />
-        </div>
         
         {/* Chapter Content */}
         <div className="mt-8 animate-fade-in">
