@@ -18,6 +18,7 @@ const EbookReaderV2Page = () => {
 
   const {
     progress,
+    isLoading: isProgressLoading,
     updateCurrentChapter,
     updateScrollPosition,
     markChapterComplete,
@@ -49,7 +50,8 @@ const EbookReaderV2Page = () => {
     navigate('/bonuses');
   };
 
-  if (isLoading) {
+  // Wait for BOTH ebook AND progress to load before rendering
+  if (isLoading || (ebook?.id && isProgressLoading)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">

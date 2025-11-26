@@ -58,7 +58,7 @@ export default function RefundRequest() {
 
   const stepVariants = {
     hidden: { opacity: 0, x: 20, scale: 0.98 },
-    visible: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] } },
+    visible: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.4 } },
     exit: { opacity: 0, x: -20, scale: 0.98, transition: { duration: 0.3 } }
   };
 
