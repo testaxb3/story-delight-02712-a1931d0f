@@ -1,11 +1,10 @@
 import { motion } from 'framer-motion';
-import { useState, useRef } from 'react';
-import { Slider } from '@/components/ui/slider';
+import { useState } from 'react';
+import { HapticSlider } from '@/components/ui/haptic-slider';
 import { LottieIcon } from '@/components/LottieIcon';
 import slothAnimation from '@/assets/lottie/calai/sloth.json';
 import rabbitAnimation from '@/assets/lottie/calai/rabbit.json';
 import pantherAnimation from '@/assets/lottie/calai/panther.json';
-import { useHaptic } from '@/hooks/useHaptic';
 
 export interface QuizSpeedSliderProps {
   value: 'slow' | 'balanced' | 'intensive';
@@ -41,18 +40,9 @@ const speedOptions = {
 
 export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
   const [sliderValue, setSliderValue] = useState([speedOptions[value].position]);
-  const { triggerHaptic } = useHaptic();
-  const lastValueRef = useRef(sliderValue[0]);
 
   const handleSliderChange = (newValue: number[]) => {
     const position = newValue[0];
-
-    // Só vibra se o valor realmente mudou
-    if (newValue[0] !== lastValueRef.current) {
-      triggerHaptic('light');
-      lastValueRef.current = newValue[0];
-    }
-
     setSliderValue(newValue);
     
     // Map position to speed value
@@ -110,7 +100,7 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
 
       {/* Slider */}
       <div className="max-w-md mx-auto px-4 md:px-8">
-        <Slider
+        <HapticSlider
           value={sliderValue}
           onValueChange={handleSliderChange}
           min={-1}
