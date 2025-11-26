@@ -170,14 +170,15 @@ function BonusesContent() {
                       onClick={() => handleBonusAction(item)}
                       className={cn(
                         "snap-center shrink-0 group cursor-pointer relative",
+                        item.category === 'ebook' ? "w-[130px]" :
                         shelf.type === 'video' ? "w-[280px]" : 
-                        shelf.type === 'book' ? "w-[220px]" : "w-[180px]"
+                        "w-[180px]"
                       )}
                     >
                       <div className={cn(
                         "overflow-hidden rounded-2xl shadow-sm border border-white/5 bg-card transition-all duration-500 group-hover:shadow-xl group-hover:-translate-y-1",
-                        shelf.type === 'video' ? "aspect-video" : 
-                        shelf.type === 'book' ? "aspect-video" : "aspect-square"
+                        item.category === 'ebook' ? "aspect-[3/4]" :
+                        shelf.type === 'video' ? "aspect-video" : "aspect-square"
                       )}>
                         {item.thumbnail ? (
                           <img 
@@ -214,7 +215,10 @@ function BonusesContent() {
                       </div>
 
                       <div className="mt-3 px-1">
-                        <h3 className="font-semibold text-foreground text-[15px] leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                        <h3 className={cn(
+                          "font-semibold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors",
+                          item.category === 'ebook' ? "text-sm" : "text-[15px]"
+                        )}>
                           {item.title}
                         </h3>
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-1">

@@ -88,7 +88,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-      className="card-glass p-8 rounded-3xl relative overflow-hidden"
+      className="card-glass p-6 rounded-3xl relative overflow-hidden"
     >
       {/* Animated Gradient Mesh Background */}
       <motion.div
@@ -109,16 +109,16 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-3"
         >
           <Sparkles className="w-4 h-4 text-primary" />
           <span className="text-sm font-semibold text-primary">Your Next Win</span>
         </motion.div>
 
         {/* Main Content */}
-        <div className="flex items-start gap-6 mb-6">
+        <div className="flex items-start gap-4 mb-4">
           <motion.div
-            className="text-6xl shine"
+            className="text-5xl shine"
             animate={{
               scale: [1, 1.1, 1],
             }}
@@ -136,7 +136,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <GradientText as="h2" className="text-3xl mb-2">
+              <GradientText as="h2" className="text-2xl mb-1 font-bold">
                 {rec.title}
               </GradientText>
             </motion.div>
@@ -144,7 +144,7 @@ export const HeroRecommendation = ({ brainProfile, childName }: HeroRecommendati
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-muted-foreground text-lg mb-3"
+              className="text-muted-foreground text-base mb-2 leading-tight"
             >
               {rec.description}
             </motion.p>

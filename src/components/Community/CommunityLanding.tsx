@@ -95,7 +95,7 @@ const CommunityPoster = memo(function CommunityPoster({
             variant="outline" 
             className="bg-white/10 border-white/20 text-white backdrop-blur-md font-bold tracking-widest text-[10px] uppercase"
           >
-            {community.profile} TRIBE
+            {community.profile} COMMUNITY
           </Badge>
           
           <h3 className="text-3xl font-black text-white leading-none tracking-tight drop-shadow-lg">
@@ -221,22 +221,14 @@ export const CommunityLanding = memo(function CommunityLanding({
       <div className="px-5 mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Tribes</h1>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground mb-1">Communities</h1>
             <p className="text-muted-foreground">Find your people. Join the movement.</p>
           </div>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-full w-10 h-10 border-2"
-            onClick={onJoinCommunity}
-          >
-            <Search className="w-5 h-5" />
-          </Button>
         </div>
       </div>
 
       {/* Horizontal Scroll Snap Container */}
-      <div className="px-5 mb-10">
+      <div className="px-5 mb-8">
         <div className="flex gap-4 overflow-x-auto pb-8 -mx-5 px-5 scrollbar-hide snap-x snap-mandatory">
           {loading ? (
             [...Array(3)].map((_, i) => (
@@ -256,22 +248,44 @@ export const CommunityLanding = memo(function CommunityLanding({
         </div>
       </div>
 
-      {/* Create CTA */}
-      <div className="px-5">
+      {/* Action Grid - Apple Style Bento */}
+      <div className="px-5 grid grid-cols-2 gap-4">
+        {/* Create Action */}
         <motion.button
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           onClick={onCreateCommunity}
-          className="w-full bg-secondary/50 border-2 border-dashed border-border hover:border-primary/50 hover:bg-secondary transition-all rounded-[24px] p-6 flex flex-col items-center text-center gap-3 group"
+          className="group relative overflow-hidden bg-gradient-to-br from-secondary/80 to-secondary/30 border border-white/10 hover:border-primary/30 transition-all rounded-[28px] p-5 text-left h-48 flex flex-col justify-between backdrop-blur-md"
         >
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Plus className="w-6 h-6 text-primary" />
+          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <Plus className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground">Create Your Own Tribe</h3>
-            <p className="text-sm text-muted-foreground">Start a private community for your circle</p>
+            <h3 className="font-bold text-lg text-foreground leading-tight mb-1">Create<br/>Community</h3>
+            <p className="text-xs text-muted-foreground font-medium">Start your circle</p>
           </div>
+          {/* Hover Glow */}
+          <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        </motion.button>
+
+        {/* Explore Action */}
+        <motion.button
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          onClick={onJoinCommunity}
+          className="group relative overflow-hidden bg-gradient-to-br from-secondary/80 to-secondary/30 border border-white/10 hover:border-blue-500/30 transition-all rounded-[28px] p-5 text-left h-48 flex flex-col justify-between backdrop-blur-md"
+        >
+          <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+            <Search className="w-5 h-5 text-blue-500" />
+          </div>
+          <div>
+            <h3 className="font-bold text-lg text-foreground leading-tight mb-1">Explore<br/>Communities</h3>
+            <p className="text-xs text-muted-foreground font-medium">Join user groups</p>
+          </div>
+          {/* Hover Glow */}
+          <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
         </motion.button>
       </div>
     </div>

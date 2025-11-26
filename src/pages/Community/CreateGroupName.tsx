@@ -19,8 +19,11 @@ export default function CreateGroupName() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Clean Header */}
-      <header className="px-6 pt-[calc(env(safe-area-inset-top)+20px)] flex items-center justify-between relative z-10">
+      {/* Safe Area Spacer */}
+      <div className="w-full h-[env(safe-area-inset-top)] bg-background" />
+
+      {/* Header */}
+      <header className="px-6 py-4 flex items-center justify-between relative z-10">
         <button
           onClick={() => navigate(-1)}
           className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors"
@@ -51,8 +54,8 @@ export default function CreateGroupName() {
             >
               <Sparkles className="w-8 h-8 text-white" />
             </motion.div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Name your Tribe</h1>
-            <p className="text-muted-foreground">Give your community a unique identity.</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Name your Community</h1>
+            <p className="text-muted-foreground">Give your circle a unique identity.</p>
           </div>
 
           <div className="relative group">
@@ -63,13 +66,13 @@ export default function CreateGroupName() {
               placeholder="E.g., Calm Parenting"
               maxLength={30}
               autoFocus
-              className="w-full text-center text-3xl font-bold bg-transparent border-b-2 border-border focus:border-primary py-4 placeholder:text-muted-foreground/30 focus:outline-none transition-colors"
+              className="w-full text-center text-4xl font-black bg-transparent border-none py-4 placeholder:text-muted-foreground/20 focus:outline-none transition-colors caret-primary"
             />
             {groupName.length > 0 && (
               <motion.span 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute right-0 bottom-4 text-xs text-muted-foreground font-mono"
+                className="block text-center mt-2 text-xs text-muted-foreground font-mono"
               >
                 {groupName.length}/30
               </motion.span>
@@ -100,7 +103,7 @@ export default function CreateGroupName() {
                     triggerHaptic('light');
                     setGroupName(suggestion);
                   }}
-                  className="px-4 py-2 bg-secondary/50 border border-border hover:border-primary/30 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95"
+                  className="px-4 py-2 bg-secondary/30 backdrop-blur-sm border border-white/10 hover:border-primary/30 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95"
                 >
                   {suggestion}
                 </motion.button>
@@ -119,9 +122,16 @@ export default function CreateGroupName() {
         <Button
           onClick={handleContinue}
           disabled={!groupName.trim()}
-          className="w-full h-14 rounded-full text-lg font-semibold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all disabled:opacity-50 disabled:shadow-none"
+          className="w-full h-14 rounded-full text-lg font-semibold shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90 transition-all disabled:opacity-50 disabled:shadow-none group"
         >
-          Continue <ArrowRight className="ml-2 w-5 h-5" />
+          Continue 
+          <motion.div
+            className="ml-2"
+            animate={{ x: groupName.trim() ? [0, 4, 0] : 0 }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          >
+            <ArrowRight className="w-5 h-5" />
+          </motion.div>
         </Button>
       </motion.div>
     </div>

@@ -32,12 +32,21 @@ export const ContinueLearning = memo(function ContinueLearning({ inProgressBonus
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="min-w-[280px] md:min-w-[320px] snap-center first:pl-1"
+            className={cn(
+              "snap-center first:pl-1",
+              bonus.category === 'ebook' ? "min-w-[130px] w-[130px]" : "min-w-[280px] md:min-w-[320px]"
+            )}
             onClick={() => onContinue(bonus)}
           >
-            <div className="group relative bg-card rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg border border-border/50">
+            <div className={cn(
+              "group relative cursor-pointer transition-all duration-300 h-full flex flex-col",
+              bonus.category !== 'ebook' && "bg-card rounded-2xl overflow-hidden hover:shadow-lg border border-border/50"
+            )}>
               {/* Thumbnail Area */}
-              <div className="relative aspect-video overflow-hidden">
+              <div className={cn(
+                "relative overflow-hidden w-full",
+                bonus.category === 'ebook' ? "aspect-[3/4] rounded-2xl shadow-md border border-white/5" : "aspect-video"
+              )}>
                 {bonus.thumbnail ? (
                   <img
                     src={bonus.thumbnail}
@@ -67,24 +76,34 @@ export const ContinueLearning = memo(function ContinueLearning({ inProgressBonus
               </div>
 
               {/* Content Area */}
-              <div className="p-4">
-                <div className="flex items-start justify-between gap-2 mb-1">
-                  <span className="text-xs font-medium text-primary uppercase tracking-wider">
-                    {bonus.category || "Bonus"}
-                  </span>
-                  <div className="flex items-center text-xs text-muted-foreground">
-                    <Clock className="w-3 h-3 mr-1" />
-                    {Math.round((bonus.progress || 0) / 100 * (parseInt(bonus.duration || "30") || 30))}m left
+              <div className={cn(
+                "flex flex-col justify-between flex-1",
+                bonus.category === 'ebook' ? "mt-3 px-1" : "p-4"
+              )}>
+                <div>
+                  <div className="flex items-start justify-between gap-2 mb-1">
+                    <span className="text-xs font-medium text-primary uppercase tracking-wider">
+                      {bonus.category || "Bonus"}
+                    </span>
+                    <div className="flex items-center text-xs text-muted-foreground">
+                      <Clock className="w-3 h-3 mr-1" />
+                      {Math.round((bonus.progress || 0) / 100 * (parseInt(bonus.duration || "30") || 30))}m left
+                    </div>
                   </div>
-                </div>
-                
-                <h3 className="font-semibold text-base leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                  {bonus.title}
-                </h3>
+                  
+                  <h3 className={cn(
+                    "font-semibold leading-tight mb-2 line-clamp-2 group-hover:text-primary transition-colors",
+                    bonus.category === 'ebook' ? "text-sm" : "text-base"
+                  )}>
+                    {bonus.title}
+                  </h3>
 
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                  {bonus.description}
-                </p>
+                  {bonus.category !== 'ebook' && (
+                    <p className="text-sm text-muted-foreground line-clamp-1">
+                      {bonus.description}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>

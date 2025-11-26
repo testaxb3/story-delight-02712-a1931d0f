@@ -95,11 +95,11 @@ export default function AddGroupLogo() {
 
       if (memberError) throw memberError;
 
-      toast.success('Tribe created successfully!');
+      toast.success('Community created successfully!');
       navigate('/community/feed', { state: { communityId: community.id } });
     } catch (error: any) {
       console.error('Error creating community:', error);
-      toast.error('Failed to create tribe: ' + error.message);
+      toast.error('Failed to create community: ' + error.message);
     } finally {
       setCreating(false);
     }
@@ -107,6 +107,9 @@ export default function AddGroupLogo() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-hidden">
+      {/* Safe Area Spacer */}
+      <div className="w-full h-[env(safe-area-inset-top)] bg-background relative z-20" />
+
       {/* Animated Background that changes with selection */}
       <motion.div 
         animate={{ opacity: 1 }}
@@ -114,7 +117,7 @@ export default function AddGroupLogo() {
       />
 
       {/* Header */}
-      <header className="px-6 pt-[calc(env(safe-area-inset-top)+20px)] flex items-center justify-between relative z-10">
+      <header className="px-6 py-4 flex items-center justify-between relative z-10">
         <button
           onClick={() => navigate(-1)}
           className="w-10 h-10 rounded-full bg-secondary/50 flex items-center justify-center hover:bg-secondary transition-colors"
@@ -220,7 +223,7 @@ export default function AddGroupLogo() {
           disabled={creating}
           className="w-full h-14 rounded-full text-lg font-semibold shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
         >
-          {creating ? 'Creating Tribe...' : 'Create Tribe'}
+          {creating ? 'Creating Community...' : 'Create Community'}
         </Button>
       </motion.div>
     </div>

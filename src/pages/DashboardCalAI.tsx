@@ -12,6 +12,9 @@ import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react';
 
+import { useCategoryStats } from '@/hooks/useCategoryStats';
+import { useProfileStats } from '@/hooks/useProfileStats';
+
 // ============================================================================
 // PERFORMANCE-OPTIMIZED DESIGN SYSTEM
 // CSS animations for background, Framer only for interactions
@@ -201,14 +204,10 @@ const HorizontalDatePicker = memo(function HorizontalDatePicker({
 const HeroMetricsCard = memo(function HeroMetricsCard({
   scriptsRead,
   totalScripts,
-  streak,
-  childName,
   onPress,
 }: {
   scriptsRead: number;
   totalScripts: number;
-  streak: number;
-  childName: string;
   onPress: () => void;
 }) {
   const cardRef = useRef<HTMLButtonElement>(null);
@@ -272,7 +271,7 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
         transformPerspective: 1000,
         transformStyle: "preserve-3d",
       }}
-      className="relative w-full p-6 rounded-[28px] overflow-hidden text-left"
+      className="relative w-full p-5 rounded-[28px] overflow-hidden text-left"
     >
       {/* Mesh gradient background - Theme aware with better contrast */}
       <div className="absolute inset-0 bg-gradient-to-br from-card via-card/95 to-card/90 dark:from-[#1a1a2e] dark:via-[#16213e] dark:to-[#0f0f23]" />
@@ -320,33 +319,6 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
 
             {/* Label */}
             <p className="text-sm text-muted-foreground font-medium">Scripts mastered</p>
-          </motion.div>
-
-          {/* Streak badge - separated and prominent */}
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, ...SPRING.bouncy }}
-            className="relative mt-3"
-          >
-            <div className="absolute inset-0 bg-orange-500/40 blur-lg rounded-full" />
-            <div className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/30 to-amber-500/30 border border-orange-500/40">
-              <Flame className="w-4 h-4 text-orange-400 fill-orange-400" />
-              <span className="text-sm font-bold text-orange-400 dark:text-orange-300">{streak} day streak</span>
-            </div>
-          </motion.div>
-
-          {/* Child name tag */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
-            className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-border"
-          >
-            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white dark:text-white">
-              {childName.charAt(0)}
-            </div>
-            <span className="text-xs font-medium text-foreground/70">{childName}'s journey</span>
           </motion.div>
         </div>
 
@@ -494,73 +466,81 @@ const CategoryRings = memo(function CategoryRings({
           <Sparkles className="w-4 h-4 text-muted-foreground/50" />
         </div>
 
-        <div className="flex items-center justify-around">
-          {/* Concentric rings */}
-          <div className="relative w-32 h-32">
-            {categories.map((cat, index) => {
-              const size = 120 - index * 28;
-              const radius = (size - 12) / 2;
-              const circumference = 2 * Math.PI * radius;
-              const offset = circumference - (cat.progress / 100) * circumference;
+        {categories.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-4 text-center">
+            <div className="text-4xl mb-2 opacity-30">📊</div>
+            <p className="text-sm text-muted-foreground font-medium">No data yet</p>
+            <p className="text-xs text-muted-foreground/60">Start using scripts to see your stats</p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-around">
+            {/* Concentric rings */}
+            <div className="relative w-32 h-32">
+              {categories.map((cat, index) => {
+                const size = 120 - index * 28;
+                const radius = (size - 12) / 2;
+                const circumference = 2 * Math.PI * radius;
+                const offset = circumference - (cat.progress / 100) * circumference;
 
-              return (
-                <svg
+                return (
+                  <svg
+                    key={cat.name}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
+                    width={size}
+                    height={size}
+                  >
+                    {/* Track */}
+                    <circle
+                      cx={size / 2}
+                      cy={size / 2}
+                      r={radius}
+                      className="stroke-foreground/[0.08]"
+                      strokeWidth="10"
+                      fill="none"
+                    />
+                    {/* Progress */}
+                    <motion.circle
+                      cx={size / 2}
+                      cy={size / 2}
+                      r={radius}
+                      stroke={cat.color}
+                      strokeWidth="10"
+                      fill="none"
+                      strokeLinecap="round"
+                      initial={{ strokeDashoffset: circumference }}
+                      animate={{ strokeDashoffset: offset }}
+                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.15 }}
+                      style={{ strokeDasharray: circumference }}
+                    />
+                  </svg>
+                );
+              })}
+            </div>
+
+            {/* Legend */}
+            <div className="flex flex-col gap-3">
+              {categories.map((cat, index) => (
+                <motion.div
                   key={cat.name}
-                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
-                  width={size}
-                  height={size}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + index * 0.1 }}
+                  className="flex items-center gap-2"
                 >
-                  {/* Track */}
-                  <circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={radius}
-                    className="stroke-foreground/[0.08]"
-                    strokeWidth="10"
-                    fill="none"
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: cat.color }}
                   />
-                  {/* Progress */}
-                  <motion.circle
-                    cx={size / 2}
-                    cy={size / 2}
-                    r={radius}
-                    stroke={cat.color}
-                    strokeWidth="10"
-                    fill="none"
-                    strokeLinecap="round"
-                    initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset: offset }}
-                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.15 }}
-                    style={{ strokeDasharray: circumference }}
-                  />
-                </svg>
-              );
-            })}
+                  <span className="text-lg">{cat.emoji}</span>
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
+                    <span className="text-[10px] text-muted-foreground">{cat.progress}%</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
           </div>
-
-          {/* Legend */}
-          <div className="flex flex-col gap-3">
-            {categories.map((cat, index) => (
-              <motion.div
-                key={cat.name}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + index * 0.1 }}
-                className="flex items-center gap-2"
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: cat.color }}
-                />
-                <span className="text-lg">{cat.emoji}</span>
-                <div className="flex flex-col">
-                  <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
-                  <span className="text-[10px] text-muted-foreground">{cat.progress}%</span>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </motion.button>
   );
@@ -798,23 +778,21 @@ export default function DashboardCalAI() {
   const { activeChild } = useChildProfiles();
   const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats();
   const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
+  const { data: categoryStats, isLoading: categoriesLoading } = useCategoryStats();
+  const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
   const { triggerHaptic } = useHaptic();
 
-  const isLoading = statsLoading || dataLoading;
+  const isLoading = statsLoading || dataLoading || categoriesLoading || profileStatsLoading;
   const currentStreak = dashboardStats?.currentStreak ?? 0;
-  const scriptsRead = dashboardStats?.uniqueScriptsUsed ?? 0;
-  const totalScripts = dashboardStats?.totalScripts ?? 0;
+  
+  // Use profile-specific stats if available, otherwise fallback (or 0)
+  const scriptsRead = profileStats?.scriptsMastered ?? 0;
+  const totalScripts = profileStats?.totalScripts ?? 0;
 
   const activeDays = useMemo(() => {
     const today = new Date().getDate();
     return [today - 2, today - 1, today];
   }, []);
-
-  const categories = useMemo(() => [
-    { name: 'Tantrums', progress: 75, color: '#f43f5e', emoji: '😤' },
-    { name: 'Sleep', progress: 50, color: '#3b82f6', emoji: '😴' },
-    { name: 'Focus', progress: 30, color: '#f59e0b', emoji: '🎯' },
-  ], []);
 
   const handleNavigate = useCallback((path: string) => {
     triggerHaptic('light');
@@ -928,18 +906,16 @@ export default function DashboardCalAI() {
           </motion.header>
 
           {/* Horizontal Date Picker */}
-          <section className="mb-5">
+          <section className="mb-3">
             <HorizontalDatePicker activeDays={activeDays} />
           </section>
 
           {/* Main Content */}
-          <main className="px-5 space-y-5">
+          <main className="px-5 space-y-4">
             {/* Hero Metrics */}
             <HeroMetricsCard
               scriptsRead={scriptsRead}
               totalScripts={totalScripts}
-              streak={currentStreak}
-              childName={activeChild?.name || 'Child'}
               onPress={() => handleNavigate('/scripts')}
             />
 
@@ -964,7 +940,7 @@ export default function DashboardCalAI() {
 
             {/* Category Rings */}
             <CategoryRings
-              categories={categories}
+              categories={categoryStats || []}
               onPress={() => handleNavigate('/scripts')}
             />
 
