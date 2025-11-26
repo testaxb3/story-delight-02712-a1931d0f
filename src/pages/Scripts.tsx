@@ -180,8 +180,7 @@ function ScriptsContent() {
         <div className="fixed top-[-20%] left-[-20%] w-[80%] h-[80%] bg-primary/5 rounded-full blur-[150px] pointer-events-none z-0" />
         <div className="fixed bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-blue-500/5 rounded-full blur-[150px] pointer-events-none z-0" />
 
-        {/* Header Spacer for status bar */}
-        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
 
         {/* Sticky Header */}
         <StickyHeader>
