@@ -273,6 +273,33 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
     }
   };
 
+  const handleToggleHero = async (bonus: BonusData) => {
+    try {
+      const tags = bonus.tags || [];
+      const isHero = tags.includes('hero');
+      let newTags;
+
+      if (isHero) {
+        newTags = tags.filter(t => t !== 'hero');
+      } else {
+        // Optional: Remove hero from others to ensure single hero? 
+        // For now, just add it. The frontend picks the first one.
+        newTags = [...tags, 'hero'];
+      }
+
+      await updateMutation.mutateAsync({
+        id: bonus.id,
+        updates: { tags: newTags }
+      });
+      
+      toast.success(isHero ? 'Removed from Hero' : 'Set as Hero');
+      onContentChanged?.();
+    } catch (error) {
+      console.error('Error toggling hero status:', error);
+      toast.error('Failed to update hero status');
+    }
+  };
+
   const handlePreview = (bonus: BonusData) => {
     setPreviewBonus(bonus);
     setShowPreviewModal(true);
@@ -526,6 +553,7 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
               onToggleLock={handleToggleLock}
               onDuplicate={handleDuplicate}
               onPreview={handlePreview}
+              onToggleHero={handleToggleHero}
             />
           </Card>
         </TabsContent>

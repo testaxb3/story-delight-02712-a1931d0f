@@ -48,6 +48,7 @@ interface BonusesTableProps {
   onToggleLock: (id: string) => void;
   onDuplicate: (id: string) => void;
   onPreview: (bonus: BonusData) => void;
+  onToggleHero: (bonus: BonusData) => void;
 }
 
 const categoryIcons = {
@@ -76,7 +77,8 @@ export function BonusesTable({
   onDelete,
   onToggleLock,
   onDuplicate,
-  onPreview
+  onPreview,
+  onToggleHero
 }: BonusesTableProps) {
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -231,6 +233,20 @@ export function BonusesTable({
 
                     <TableCell>
                       <div className="flex items-center justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onToggleHero(bonus)}
+                          title={bonus.tags?.includes('hero') ? "Remove Hero Status" : "Set as Hero"}
+                        >
+                          <Star 
+                            className={cn(
+                              "w-4 h-4 transition-colors", 
+                              bonus.tags?.includes('hero') ? "fill-amber-400 text-amber-400" : "text-muted-foreground"
+                            )} 
+                          />
+                        </Button>
+
                         <Button
                           variant="ghost"
                           size="icon"
