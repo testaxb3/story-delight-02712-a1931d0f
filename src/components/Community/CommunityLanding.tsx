@@ -21,6 +21,7 @@ interface DefaultCommunity {
   description: string | null;
   invite_code: string;
   memberCount: number;
+  memberPhotos: string[];
   gradient: string;
   profile: string;
   image?: string;
@@ -104,9 +105,23 @@ const CommunityPoster = memo(function CommunityPoster({
           
           <div className="flex items-center gap-3 text-white/80">
             <div className="flex -space-x-2">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/10" />
+              {community.memberPhotos.slice(0, 3).map((photo, i) => (
+                <div 
+                  key={i} 
+                  className="w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/10 overflow-hidden"
+                >
+                  {photo ? (
+                    <img src={photo} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-white/30" />
+                  )}
+                </div>
               ))}
+              {community.memberCount > 3 && (
+                <div className="w-6 h-6 rounded-full bg-white/30 backdrop-blur-sm border border-white/10 flex items-center justify-center text-[8px] text-white font-bold">
+                  +{community.memberCount - 3}
+                </div>
+              )}
             </div>
             <span className="text-xs font-medium">{community.memberCount} members</span>
           </div>
@@ -137,16 +152,48 @@ export const CommunityLanding = memo(function CommunityLanding({
 
       const communitiesWithCounts = await Promise.all(
         (communitiesData || []).map(async (community) => {
-          const { count } = await supabase
+          // Count real members
+          const { count: realMemberCount } = await supabase
             .from('community_members')
             .select('*', { count: 'exact', head: true })
             .eq('community_id', community.id);
+
+          // Fetch unique seed post authors
+          const { data: seedPosts } = await supabase
+            .from('community_posts')
+            .select('author_name, author_photo_url')
+            .eq('community_id', community.id)
+            .eq('is_seed_post', true)
+            .not('author_name', 'is', null);
+
+          // Count unique seed authors
+          const uniqueSeedAuthors = new Set(seedPosts?.map(p => p.author_name) || []);
+          const totalMemberCount = (realMemberCount || 0) + uniqueSeedAuthors.size;
+
+          // Collect member photos (real members first)
+          const { data: realMemberPhotos } = await supabase
+            .from('community_members')
+            .select('profiles:user_id(photo_url)')
+            .eq('community_id', community.id)
+            .limit(3);
+
+          // Extract unique seed photos
+          const seedPhotos = [...new Set(
+            seedPosts?.map(p => p.author_photo_url).filter(Boolean) || []
+          )].slice(0, 5);
+
+          // Combine photos (real first, then seed)
+          const allPhotos = [
+            ...(realMemberPhotos?.map((m: any) => m.profiles?.photo_url).filter(Boolean) || []),
+            ...seedPhotos
+          ].slice(0, 5);
 
           const profile = community.invite_code.replace('2024', '');
 
           return {
             ...community,
-            memberCount: count || 0,
+            memberCount: totalMemberCount,
+            memberPhotos: allPhotos,
             gradient: PROFILE_CONFIG[profile]?.gradient || 'from-gray-500 to-gray-600',
             profile: profile,
           };
