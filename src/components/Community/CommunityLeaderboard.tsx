@@ -21,20 +21,44 @@ export function CommunityLeaderboard({ communityId }: { communityId: string }) {
     if (!communityId) return;
 
     const fetchLeaders = async () => {
-      // For now, just fetch members. In a real leaderboard, we'd join with stats.
-      // Prioritize leaders/admins first.
-      const { data, error } = await supabase
+      // Fetch real members
+      const { data: realMembers } = await supabase
         .from('community_members')
         .select('id, user_id, role, profiles:user_id(name, photo_url)')
-        .eq('community_id', communityId)
-        .order('role', { ascending: true }) // 'leader' < 'member' alphabetically? No, 'leader' > 'member'. Need custom sort or just fetch.
-        .limit(10);
+        .eq('community_id', communityId);
 
-      if (!error && data) {
-        // Sort manually: leader first
-        const sorted = (data as any[]).sort((a, b) => (a.role === 'leader' ? -1 : 1));
-        setLeaders(sorted);
-      }
+      // Fetch unique seed post authors
+      const { data: seedPosts } = await supabase
+        .from('community_posts')
+        .select('author_name, author_photo_url')
+        .eq('community_id', communityId)
+        .eq('is_seed_post', true)
+        .not('author_name', 'is', null);
+
+      // Create map of unique seed authors
+      const seedAuthorsMap = new Map();
+      seedPosts?.forEach(post => {
+        if (post.author_name && !seedAuthorsMap.has(post.author_name)) {
+          seedAuthorsMap.set(post.author_name, {
+            id: `seed-${post.author_name.replace(/\s/g, '-').toLowerCase()}`,
+            user_id: null,
+            role: 'member',
+            profiles: {
+              name: post.author_name,
+              photo_url: post.author_photo_url
+            }
+          });
+        }
+      });
+
+      // Combine and sort (leaders first)
+      const allLeaders = [
+        ...(realMembers || []),
+        ...Array.from(seedAuthorsMap.values())
+      ].sort((a, b) => (a.role === 'leader' ? -1 : 1))
+       .slice(0, 10);
+
+      setLeaders(allLeaders as any[]);
     };
 
     fetchLeaders();

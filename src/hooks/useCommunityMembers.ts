@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 export interface Member {
   id: string;
-  user_id: string;
+  user_id: string | null;
   role: string;
   joined_at: string;
   name: string;
@@ -12,6 +12,7 @@ export interface Member {
   photo_url: string | null;
   brain_profile: string | null;
   score?: number;
+  is_seed?: boolean;
 }
 
 export function useCommunityMembers(communityId: string | null, userId: string | null) {
@@ -67,7 +68,36 @@ export function useCommunityMembers(communityId: string | null, userId: string |
         score: scoreMap.get(member.user_id) || 0,
       })) || [];
 
-      setMembers(membersData);
+      // Fetch unique seed post authors
+      const { data: seedPosts } = await supabase
+        .from('community_posts')
+        .select('author_name, author_photo_url, author_brain_type')
+        .eq('community_id', communityId)
+        .eq('is_seed_post', true)
+        .not('author_name', 'is', null);
+
+      // Create unique seed authors
+      const uniqueSeedAuthors = new Map<string, Member>();
+      seedPosts?.forEach(post => {
+        if (post.author_name && !uniqueSeedAuthors.has(post.author_name)) {
+          uniqueSeedAuthors.set(post.author_name, {
+            id: `seed-${post.author_name.replace(/\s/g, '-').toLowerCase()}`,
+            user_id: null,
+            role: 'member',
+            joined_at: new Date().toISOString(),
+            name: post.author_name,
+            username: null,
+            photo_url: post.author_photo_url,
+            brain_profile: post.author_brain_type || 'INTENSE',
+            score: Math.floor(Math.random() * 15) + 5,
+            is_seed: true
+          });
+        }
+      });
+
+      // Combine real members + virtual seed authors
+      const allMembers = [...membersData, ...Array.from(uniqueSeedAuthors.values())];
+      setMembers(allMembers);
     } catch (error) {
       console.error('Error loading members:', error);
       toast.error('Failed to load members');
