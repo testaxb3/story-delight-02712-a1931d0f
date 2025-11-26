@@ -14,6 +14,8 @@ type PostComment = Database['public']['Tables']['post_comments']['Row'] & {
     photo_url: string | null;
   } | null;
   parent_comment_id?: string | null;
+  author_name?: string | null;
+  author_photo_url?: string | null;
 };
 
 interface CommentThreadProps {
