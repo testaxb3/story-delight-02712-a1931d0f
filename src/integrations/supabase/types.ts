@@ -1236,34 +1236,43 @@ export type Database = {
       }
       post_comments: {
         Row: {
+          author_name: string | null
+          author_photo_url: string | null
           content: string
           created_at: string
           id: string
+          is_seed: boolean | null
           parent_comment_id: string | null
           post_id: string
           replies_count: number
           updated_at: string | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
+          author_name?: string | null
+          author_photo_url?: string | null
           content: string
           created_at?: string
           id?: string
+          is_seed?: boolean | null
           parent_comment_id?: string | null
           post_id: string
           replies_count?: number
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
+          author_name?: string | null
+          author_photo_url?: string | null
           content?: string
           created_at?: string
           id?: string
+          is_seed?: boolean | null
           parent_comment_id?: string | null
           post_id?: string
           replies_count?: number
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
