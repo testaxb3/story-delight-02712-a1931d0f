@@ -1,13 +1,16 @@
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download } from 'lucide-react';
+import { BookOpen, Brain, Users, FileCheck, GraduationCap, AlertTriangle, Download, Zap, Shield, ArrowLeft } from 'lucide-react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 export default function Methodology() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   
   const handleDownloadHTML = () => {
     const htmlContent = `<!DOCTYPE html>
@@ -163,388 +166,252 @@ export default function Methodology() {
     URL.revokeObjectURL(url);
   };
   
-  return (
-    <>
-      <style>{`
-        @media print {
-          /* Esconde navegação, rodapé e botões */
-          nav, footer, .no-print {
-            display: none !important;
-          }
-          
-          /* Otimiza para impressão */
-          body {
-            background: white !important;
-          }
-          
-          /* Evita quebras de página dentro de cards */
-          .print-card {
-            page-break-inside: avoid;
-            break-inside: avoid;
-          }
-          
-          /* Ajusta margens */
-          .container {
-            max-width: 100% !important;
-            padding: 20px !important;
-          }
-          
-          /* Remove sombras e bordas decorativas */
-          * {
-            box-shadow: none !important;
-          }
-        }
-      `}</style>
-      <MainLayout>
-      <div id="methodology-content" className="container max-w-5xl mx-auto px-4 py-8 space-y-8">
+  const fadeInUp = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.5 }
+  };
 
-        {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-4">
-            <GraduationCap className="w-6 h-6 sm:w-8 sm:h-8 text-purple-600" />
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-              {t.methodology.title}
-            </h1>
-          </div>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto">
-            {t.methodology.subtitle}
-          </p>
-          <Button onClick={handleDownloadHTML} className="gap-2 no-print text-sm sm:text-base">
-            <Download className="w-4 h-4" />
-            <span className="hidden sm:inline">Baixar como HTML</span>
-            <span className="sm:hidden">Download</span>
-          </Button>
+  return (
+    <MainLayout>
+      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32 font-relative">
+        {/* Ambient Background */}
+        <div className="fixed inset-0 pointer-events-none">
+          <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] bg-purple-500/5 rounded-full blur-[120px]" />
+          <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]" />
         </div>
 
-        <Separator className="my-8" />
+        {/* Header Spacer */}
+        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
-        {/* Critical Distinction */}
-        <Card className="print-card border-2 border-purple-300 dark:border-purple-700 bg-purple-50/50 dark:bg-purple-950/20">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6 text-purple-600" />
-              <CardTitle>{t.methodology.notGenericAI.title}</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm text-purple-900 dark:text-purple-100">
-                  {t.methodology.notGenericAI.generic.title}
-                </h4>
-                <ul className="text-sm space-y-1 text-purple-800 dark:text-purple-200">
-                  {t.methodology.notGenericAI.generic.items.map((item, i) => (
-                    <li key={i}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm text-green-900 dark:text-green-100">
-                  {t.methodology.notGenericAI.ours.title}
-                </h4>
-                <ul className="text-sm space-y-1 text-green-800 dark:text-green-200">
-                  {t.methodology.notGenericAI.ours.items.map((item, i) => (
-                    <li key={i}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Navigation */}
+        <div className="px-4 mb-6 sticky top-0 z-50">
+          <div className="flex items-center justify-between bg-white/80 dark:bg-[#1C1C1E]/80 backdrop-blur-xl p-4 rounded-full shadow-sm border border-gray-200 dark:border-gray-800">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => navigate('/profile')}
+              className="rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <span className="font-bold text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Scientific Basis
+            </span>
+            <div className="w-10" /> {/* Spacer */}
+          </div>
+        </div>
 
-        {/* Neurological Foundation */}
-        <Card className="print-card">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Brain className="w-6 h-6 text-blue-600" />
-              <CardTitle>{t.methodology.neurologicalReality.title}</CardTitle>
+        <div className="container max-w-4xl mx-auto px-4 relative z-10">
+          
+          {/* Hero Section */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center mb-12"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-xs font-bold uppercase tracking-wider mb-4 border border-purple-200 dark:border-purple-800">
+              <GraduationCap className="w-4 h-4" />
+              NEP Methodology
             </div>
-            <CardDescription>
-              {t.methodology.neurologicalReality.subtitle}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="bg-blue-50 dark:bg-blue-950/30 p-5 rounded-lg border border-blue-200 dark:border-blue-800 space-y-3">
-              <h3 className="font-bold text-blue-900 dark:text-blue-100">
-                {t.methodology.neurologicalReality.prefrontalCortex.title}
-              </h3>
-              <div className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-                {t.methodology.neurologicalReality.prefrontalCortex.content.map((text, i) => (
-                  <p key={i}>{text}</p>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-gray-900 dark:text-white mb-4 leading-tight">
+              The Science of <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">Obedience Language</span>
+            </h1>
+            <p className="text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+              {t.methodology.subtitle}
+            </p>
+          </motion.div>
+
+          {/* The "Why it Works" Grid */}
+          <div className="grid md:grid-cols-2 gap-6 mb-12">
+            <motion.div {...fadeInUp} transition={{ delay: 0.1 }}>
+              <Card className="h-full border-none shadow-lg bg-white dark:bg-[#1C1C1E] rounded-[24px] overflow-hidden">
+                <CardHeader className="bg-red-50 dark:bg-red-900/10 border-b border-red-100 dark:border-red-900/20 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-xl">
+                      <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    </div>
+                    <CardTitle className="text-lg text-red-700 dark:text-red-300">{t.methodology.notGenericAI.generic.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <ul className="space-y-3">
+                    {t.methodology.notGenericAI.generic.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-400 flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div {...fadeInUp} transition={{ delay: 0.2 }}>
+              <Card className="h-full border-none shadow-lg bg-white dark:bg-[#1C1C1E] rounded-[24px] overflow-hidden ring-2 ring-green-500/20">
+                <CardHeader className="bg-green-50 dark:bg-green-900/10 border-b border-green-100 dark:border-green-900/20 pb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
+                      <Shield className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    </div>
+                    <CardTitle className="text-lg text-green-700 dark:text-green-300">{t.methodology.notGenericAI.ours.title}</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-6">
+                  <ul className="space-y-3">
+                    {t.methodology.notGenericAI.ours.items.map((item, i) => (
+                      <li key={i} className="flex items-start gap-3 text-sm text-gray-600 dark:text-gray-300">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-green-500 flex-shrink-0" />
+                        <strong>{item}</strong>
+                      </li>
+                    ))}
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* Neurological Deep Dive */}
+          <motion.div {...fadeInUp} transition={{ delay: 0.3 }} className="mb-12">
+            <div className="bg-white dark:bg-[#1C1C1E] rounded-[32px] p-8 shadow-xl border border-gray-100 dark:border-gray-800 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+              
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-2xl">
+                  <Brain className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t.methodology.neurologicalReality.title}</h2>
+                  <p className="text-sm text-gray-500">{t.methodology.neurologicalReality.subtitle}</p>
+                </div>
+              </div>
+
+              <div className="space-y-8 relative z-10">
+                {[
+                  { 
+                    title: t.methodology.neurologicalReality.prefrontalCortex.title,
+                    content: t.methodology.neurologicalReality.prefrontalCortex.content,
+                    color: "bg-indigo-50 dark:bg-indigo-900/10",
+                    line: "bg-indigo-500"
+                  },
+                  {
+                    title: t.methodology.neurologicalReality.amygdalaHijack.title,
+                    content: t.methodology.neurologicalReality.amygdalaHijack.content,
+                    color: "bg-orange-50 dark:bg-orange-900/10",
+                    line: "bg-orange-500"
+                  },
+                  {
+                    title: t.methodology.neurologicalReality.coRegulation.title,
+                    content: t.methodology.neurologicalReality.coRegulation.content,
+                    color: "bg-teal-50 dark:bg-teal-900/10",
+                    line: "bg-teal-500"
+                  }
+                ].map((section, i) => (
+                  <div key={i} className="pl-6 border-l-4 border-gray-200 dark:border-gray-800 hover:border-blue-500 transition-colors duration-300">
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{section.title}</h3>
+                    <div className="space-y-2 text-gray-600 dark:text-gray-300 leading-relaxed">
+                      {section.content.map((p, j) => <p key={j}>{p}</p>)}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
+          </motion.div>
 
-            <div className="bg-amber-50 dark:bg-amber-950/30 p-5 rounded-lg border border-amber-200 dark:border-amber-800 space-y-3">
-              <h3 className="font-bold text-amber-900 dark:text-amber-100">
-                {t.methodology.neurologicalReality.amygdalaHijack.title}
-              </h3>
-              <div className="space-y-2 text-sm text-amber-800 dark:text-amber-200">
-                {t.methodology.neurologicalReality.amygdalaHijack.content.map((text, i) => (
-                  <p key={i}>{text}</p>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-green-50 dark:bg-green-950/30 p-5 rounded-lg border border-green-200 dark:border-green-800 space-y-3">
-              <h3 className="font-bold text-green-900 dark:text-green-100">
-                {t.methodology.neurologicalReality.coRegulation.title}
-              </h3>
-              <div className="space-y-2 text-sm text-green-800 dark:text-green-200">
-                {t.methodology.neurologicalReality.coRegulation.content.map((text, i) => (
-                  <p key={i}>{text}</p>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Three Neurological Profiles */}
-        <Card className="print-card">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <Users className="w-6 h-6 text-purple-600" />
-              <CardTitle>{t.methodology.profiles.title}</CardTitle>
-            </div>
-            <CardDescription>
-              {t.methodology.profiles.subtitle}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
+          {/* Brain Profiles */}
+          <div className="space-y-6 mb-12">
+            <h2 className="text-2xl font-bold text-center mb-8 flex items-center justify-center gap-3">
+              <Users className="w-6 h-6" />
+              {t.methodology.profiles.title}
+            </h2>
             
-            {/* DEFIANT Profile */}
-            <div className="border-l-4 border-red-500 pl-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Badge variant="destructive" className="text-xs">
+            <div className="grid md:grid-cols-3 gap-4">
+              {/* DEFIANT */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="bg-white dark:bg-[#1C1C1E] p-6 rounded-[24px] border-t-4 border-red-500 shadow-lg"
+              >
+                <Badge variant="outline" className="mb-4 border-red-200 text-red-600 bg-red-50">
                   {t.methodology.profiles.defiant.title}
                 </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.defiant.data}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {t.methodology.profiles.defiant.dataContent}
-                </p>
-                <p className="text-sm text-muted-foreground italic">
-                  {t.methodology.profiles.defiant.prevalence}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.defiant.approach}</h4>
-                <p className="text-sm font-medium">{t.methodology.profiles.defiant.approachTitle}</p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.defiant.approachPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.defiant.implications}</h4>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.defiant.implicationsPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* INTENSE Profile */}
-            <div className="border-l-4 border-orange-500 pl-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Badge className="text-xs bg-orange-500 hover:bg-orange-600">
-                  {t.methodology.profiles.intense.title}
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.intense.data}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {t.methodology.profiles.intense.dataContent}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.intense.approach}</h4>
-                <p className="text-sm font-medium">{t.methodology.profiles.intense.approachTitle}</p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.intense.approachPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.intense.implications}</h4>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.intense.implicationsPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            {/* DISTRACTED Profile */}
-            <div className="border-l-4 border-blue-500 pl-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-xs">
-                  {t.methodology.profiles.distracted.title}
-                </Badge>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.distracted.data}</h4>
-                <p className="text-sm text-muted-foreground">
-                  {t.methodology.profiles.distracted.dataContent}
-                </p>
-                <p className="text-sm text-muted-foreground italic">
-                  {t.methodology.profiles.distracted.prevalence}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.distracted.approach}</h4>
-                <p className="text-sm font-medium">{t.methodology.profiles.distracted.approachTitle}</p>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.distracted.approachPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="space-y-2">
-                <h4 className="font-semibold text-sm">{t.methodology.profiles.distracted.implications}</h4>
-                <ul className="text-sm text-muted-foreground space-y-1 ml-4">
-                  {t.methodology.profiles.distracted.implicationsPoints.map((point, i) => (
-                    <li key={i}>• {point}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-          </CardContent>
-        </Card>
-
-        {/* Script Creation Methodology */}
-        <Card className="print-card">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <FileCheck className="w-6 h-6 text-green-600" />
-              <CardTitle>{t.methodology.scriptCreation.title}</CardTitle>
-            </div>
-            <CardDescription>
-              {t.methodology.scriptCreation.subtitle}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <span className="text-sm font-bold text-purple-700 dark:text-purple-300">1</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.methodology.scriptCreation.step1.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t.methodology.scriptCreation.step1.content}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <span className="text-sm font-bold text-purple-700 dark:text-purple-300">2</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.methodology.scriptCreation.step2.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t.methodology.scriptCreation.step2.content}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <span className="text-sm font-bold text-purple-700 dark:text-purple-300">3</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.methodology.scriptCreation.step3.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t.methodology.scriptCreation.step3.content}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <span className="text-sm font-bold text-purple-700 dark:text-purple-300">4</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.methodology.scriptCreation.step4.title}</h4>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {t.methodology.scriptCreation.step4.content}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
-                  <span className="text-sm font-bold text-purple-700 dark:text-purple-300">5</span>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm">{t.methodology.scriptCreation.step5.title}</h4>
-                  <ul className="text-sm text-muted-foreground mt-1 space-y-1 ml-4">
-                    {t.methodology.scriptCreation.step5.points.map((point, i) => (
-                      <li key={i}>✓ {point}</li>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 italic">"{t.methodology.profiles.defiant.dataContent}"</p>
+                <div className="space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Approach</div>
+                  <ul className="text-sm space-y-2">
+                    {t.methodology.profiles.defiant.approachPoints.slice(0,3).map((pt, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Zap className="w-3 h-3 text-red-500 mt-1" />
+                        <span>{pt}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>
-              </div>
-            </div>
+              </motion.div>
 
-          </CardContent>
-        </Card>
-
-        {/* Academic References */}
-        <Card className="print-card">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <BookOpen className="w-6 h-6 text-blue-600" />
-              <CardTitle>{t.methodology.references.title}</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {t.methodology.references.items.map((ref, i) => (
-                <div key={i} className="text-sm">
-                  <p className="font-medium">
-                    {ref.authors} ({ref.year}). <span className="italic">{ref.title}</span>.
-                  </p>
-                  <p className="text-muted-foreground ml-4">{ref.details}</p>
+              {/* INTENSE */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="bg-white dark:bg-[#1C1C1E] p-6 rounded-[24px] border-t-4 border-orange-500 shadow-lg"
+              >
+                <Badge variant="outline" className="mb-4 border-orange-200 text-orange-600 bg-orange-50">
+                  {t.methodology.profiles.intense.title}
+                </Badge>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 italic">"{t.methodology.profiles.intense.dataContent}"</p>
+                <div className="space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Approach</div>
+                  <ul className="text-sm space-y-2">
+                    {t.methodology.profiles.intense.approachPoints.slice(0,3).map((pt, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Zap className="w-3 h-3 text-orange-500 mt-1" />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </motion.div>
 
-        {/* Professional Disclaimer */}
-        <Card className="print-card border-2 border-amber-300 dark:border-amber-700 bg-amber-50/50 dark:bg-amber-950/20">
-          <CardHeader>
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6 text-amber-600" />
-              <CardTitle>{t.methodology.disclaimer.title}</CardTitle>
+              {/* DISTRACTED */}
+              <motion.div 
+                whileHover={{ y: -5 }}
+                className="bg-white dark:bg-[#1C1C1E] p-6 rounded-[24px] border-t-4 border-blue-500 shadow-lg"
+              >
+                <Badge variant="outline" className="mb-4 border-blue-200 text-blue-600 bg-blue-50">
+                  {t.methodology.profiles.distracted.title}
+                </Badge>
+                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 italic">"{t.methodology.profiles.distracted.dataContent}"</p>
+                <div className="space-y-3">
+                  <div className="text-xs font-bold uppercase tracking-wide text-gray-400">Approach</div>
+                  <ul className="text-sm space-y-2">
+                    {t.methodology.profiles.distracted.approachPoints.slice(0,3).map((pt, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <Zap className="w-3 h-3 text-blue-500 mt-1" />
+                        <span>{pt}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </motion.div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex flex-col items-center gap-4 mt-16 text-center">
+            <Button 
+              onClick={handleDownloadHTML} 
+              size="lg"
+              className="rounded-full px-8 h-12 font-bold bg-gray-900 dark:bg-white text-white dark:text-black hover:scale-105 transition-transform"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download Full PDF
+            </Button>
+            <p className="text-xs text-gray-400 max-w-md">
               {t.methodology.disclaimer.content}
             </p>
-          </CardContent>
-        </Card>
+          </div>
 
+        </div>
       </div>
     </MainLayout>
-    </>
   );
 }

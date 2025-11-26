@@ -6,7 +6,7 @@ import {
   Mail, Megaphone, RefreshCw, FileText, 
   Shield, Instagram, MessageCircle, Twitter,
   LogOut, ChevronRight, Moon, Sun, Star, 
-  Bell, HelpCircle, Lock, Zap, Smartphone
+  Bell, HelpCircle, Lock, Zap, Smartphone, Check, GraduationCap
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -168,7 +168,7 @@ export default function ProfileCalAI() {
                   className="flex flex-col items-center gap-2 min-w-[80px]"
                 >
                   <div className={cn(
-                    "w-16 h-16 rounded-full p-0.5 transition-all",
+                    "w-16 h-16 rounded-full p-0.5 transition-all relative",
                     activeChild?.id === child.id 
                       ? "bg-gradient-to-b from-blue-500 to-purple-500 shadow-lg shadow-purple-500/20" 
                       : "bg-transparent"
@@ -179,6 +179,11 @@ export default function ProfileCalAI() {
                         {getInitials(child.name)}
                       </AvatarFallback>
                     </Avatar>
+                    {activeChild?.id === child.id && (
+                        <div className="absolute bottom-0 right-0 w-5 h-5 bg-blue-500 rounded-full border-2 border-white dark:border-black flex items-center justify-center">
+                            <Check className="w-3 h-3 text-white" />
+                        </div>
+                    )}
                   </div>
                   <span className={cn(
                     "text-xs font-medium truncate w-full text-center max-w-[80px]",
@@ -257,6 +262,12 @@ export default function ProfileCalAI() {
           </SettingsGroup>
 
           <SettingsGroup title="Support">
+            <SettingsRow 
+              icon={GraduationCap} 
+              iconColor="bg-indigo-500" 
+              label="Scientific Methodology" 
+              onClick={() => navigate('/methodology')} 
+            />
             <SettingsRow 
               icon={Megaphone} 
               iconColor="bg-orange-500" 
