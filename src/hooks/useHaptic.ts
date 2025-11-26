@@ -33,7 +33,6 @@ export function useHaptic() {
 
   // Create hidden input[switch] for iOS haptic feedback
   useEffect(() => {
-    if (!isIOS) return;
 
     // Create and append input element
     const input = document.createElement("input");
