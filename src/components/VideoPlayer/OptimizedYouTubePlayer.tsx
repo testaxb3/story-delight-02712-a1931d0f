@@ -111,7 +111,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
         iv_load_policy: 3,
       }
     }
-  };
+  } as any;
 
   return (
     <div
