@@ -1,6 +1,6 @@
-import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
-import { memo, useState, useCallback, useMemo } from 'react';
+import { memo, useState, useMemo } from 'react';
 
 interface AuthFormProps {
   isSignUp: boolean;

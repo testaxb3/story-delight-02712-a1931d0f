@@ -1,5 +1,5 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { memo, useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { memo, useState } from 'react';
 
 interface AuthWelcomeProps {
   onGetStarted: () => void;

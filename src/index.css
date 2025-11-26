@@ -748,4 +748,63 @@ header, main {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* ============================================
+     AURORA ANIMATIONS - GPU Accelerated
+     For premium backgrounds
+     ============================================ */
+
+  @keyframes aurora-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(20px, -30px) scale(1.05); }
+  }
+
+  @keyframes aurora-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-25px, 20px) scale(1.08); }
+  }
+
+  @keyframes aurora-3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(15px, 25px) scale(0.95); }
+  }
+
+  .animate-aurora-1 {
+    animation: aurora-1 25s ease-in-out infinite;
+  }
+
+  .animate-aurora-2 {
+    animation: aurora-2 30s ease-in-out infinite;
+    animation-delay: 5s;
+  }
+
+  .animate-aurora-3 {
+    animation: aurora-3 28s ease-in-out infinite;
+    animation-delay: 10s;
+  }
+
+  /* ============================================
+     DASHBOARD AMBIENT ANIMATIONS - Light
+     ============================================ */
+
+  @keyframes ambient-float-1 {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.12; }
+    50% { transform: translate(50px, -30px) scale(1.1); opacity: 0.18; }
+  }
+
+  @keyframes ambient-float-2 {
+    0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.08; }
+    50% { transform: translate(-40px, 40px) scale(1.05); opacity: 0.12; }
+  }
+
+  .animate-ambient-1 {
+    animation: ambient-float-1 20s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  .animate-ambient-2 {
+    animation: ambient-float-2 25s ease-in-out infinite;
+    animation-delay: 3s;
+    will-change: transform, opacity;
+  }
 }

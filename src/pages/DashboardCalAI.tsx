@@ -1,402 +1,791 @@
 import { useNavigate } from 'react-router-dom';
-import { Flame, Sparkles, ChevronRight, Book, Play, Target, TrendingUp, Zap } from 'lucide-react';
+import { Flame, ChevronRight, Book, Play, Plus, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-import { useScriptsByProfile } from '@/hooks/useScriptsByProfile';
 import { DashboardSkeletonPremium } from '@/components/Dashboard/DashboardSkeletonPremium';
 import { useDashboardData } from '@/hooks/useDashboardData';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react';
 
 // ============================================================================
-// DESIGN TOKENS - Centralized for consistency
+// PERFORMANCE-OPTIMIZED DESIGN SYSTEM
+// CSS animations for background, Framer only for interactions
 // ============================================================================
-const RADIUS = {
-  sm: 'rounded-xl',
-  md: 'rounded-2xl',
-  lg: 'rounded-3xl',
+
+// Spring configurations - Apple's signature feel
+const SPRING = {
+  gentle: { type: "spring", stiffness: 120, damping: 14 },
+  snappy: { type: "spring", stiffness: 400, damping: 30 },
+  bouncy: { type: "spring", stiffness: 300, damping: 20, mass: 0.8 },
 } as const;
 
+// Stagger animation for lists
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: SPRING.gentle,
+  },
+};
+
 // ============================================================================
-// BACKGROUND COMPONENT
+// AMBIENT BACKGROUND - CSS ONLY (GPU Accelerated) - Theme Aware
 // ============================================================================
-const DashboardBackground = memo(function DashboardBackground() {
+const AmbientBackground = memo(function AmbientBackground() {
   return (
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      {/* Base */}
-      <div className="absolute inset-0 bg-background" />
-      
-      {/* Gradient orbs */}
-      <motion.div
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1],
+      {/* Primary gradient orb - CSS animation */}
+      <div
+        className="absolute -top-[30%] -right-[20%] w-[70%] h-[70%] rounded-full animate-ambient-1 opacity-100 dark:opacity-100"
+        style={{
+          background: 'radial-gradient(circle, rgba(251,146,60,0.08) 0%, rgba(251,146,60,0.02) 50%, transparent 70%)',
+          filter: 'blur(40px)',
+          willChange: 'transform',
         }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-[20%] -right-[10%] w-[60%] h-[60%] bg-gradient-to-br from-orange-500/8 via-rose-500/5 to-transparent rounded-full blur-[100px]"
       />
-      <motion.div
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 30, 0],
-          scale: [1, 1.05, 1],
+
+      {/* Secondary accent orb - CSS animation */}
+      <div
+        className="absolute -bottom-[20%] -left-[25%] w-[60%] h-[60%] rounded-full animate-ambient-2 opacity-100 dark:opacity-100"
+        style={{
+          background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, rgba(99,102,241,0.02) 50%, transparent 70%)',
+          filter: 'blur(40px)',
+          willChange: 'transform',
         }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-gradient-to-tr from-blue-500/6 via-cyan-500/4 to-transparent rounded-full blur-[80px]"
       />
     </div>
   );
 });
 
 // ============================================================================
-// STREAK CELEBRATION COMPONENT
+// HORIZONTAL DATE PICKER - Dark Mode Calendar Strip
+// Scrollable horizontal calendar with dashed/solid borders
 // ============================================================================
-const StreakCard = memo(function StreakCard({ 
-  streak, 
-  onPress 
-}: { 
-  streak: number;
-  onPress: () => void;
-}) {
-  const streakTier = useMemo(() => {
-    if (streak >= 30) return { label: 'On Fire', color: 'from-orange-500 to-red-500', bg: 'bg-orange-500/10' };
-    if (streak >= 14) return { label: 'Committed', color: 'from-amber-500 to-orange-500', bg: 'bg-amber-500/10' };
-    if (streak >= 7) return { label: 'Building', color: 'from-yellow-500 to-amber-500', bg: 'bg-yellow-500/10' };
-    return { label: 'Starting', color: 'from-slate-400 to-slate-500', bg: 'bg-slate-500/10' };
-  }, [streak]);
-
-  return (
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={onPress}
-      className={cn(
-        "relative w-full p-4 overflow-hidden",
-        RADIUS.lg,
-        "bg-card border border-border/50",
-        "flex items-center gap-4"
-      )}
-    >
-      {/* Glow effect */}
-      <div className={cn(
-        "absolute -top-1/2 -right-1/4 w-32 h-32 rounded-full blur-2xl opacity-50",
-        streakTier.bg
-      )} />
-      
-      {/* Flame icon */}
-      <div className={cn(
-        "relative w-14 h-14 flex items-center justify-center",
-        RADIUS.md,
-        streakTier.bg
-      )}>
-        <Flame className={cn(
-          "w-7 h-7",
-          streak >= 7 ? "text-orange-500 fill-orange-500" : "text-muted-foreground"
-        )} />
-      </div>
-      
-      {/* Content */}
-      <div className="flex-1 text-left relative z-10">
-        <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-foreground">{streak}</span>
-          <span className="text-sm text-muted-foreground">day streak</span>
-        </div>
-        <p className="text-xs text-muted-foreground mt-0.5">{streakTier.label}</p>
-      </div>
-      
-      <ChevronRight className="w-5 h-5 text-muted-foreground" />
-    </motion.button>
-  );
-});
-
-// ============================================================================
-// HERO CARD - Primary CTA
-// ============================================================================
-const HeroCard = memo(function HeroCard({
-  childName,
-  profile,
-  scriptsCount,
-  onPress,
+const HorizontalDatePicker = memo(function HorizontalDatePicker({
+  activeDays = [],
+  onDayPress,
 }: {
-  childName: string;
-  profile: string;
-  scriptsCount: number;
-  onPress: () => void;
+  activeDays?: number[];
+  onDayPress?: (day: number) => void;
 }) {
-  const profileGradient = useMemo(() => {
-    switch (profile?.toUpperCase()) {
-      case 'INTENSE': return 'from-orange-500 via-rose-500 to-pink-600';
-      case 'DISTRACTED': return 'from-blue-500 via-cyan-500 to-teal-500';
-      case 'DEFIANT': return 'from-purple-500 via-violet-500 to-indigo-500';
-      default: return 'from-slate-500 via-slate-600 to-slate-700';
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const today = new Date();
+  const currentDay = today.getDate();
+
+  // Generate 14 days: 7 past + today + 6 future
+  const dates = useMemo(() => {
+    const result = [];
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+    for (let i = -7; i <= 6; i++) {
+      const date = new Date(today);
+      date.setDate(currentDay + i);
+
+      result.push({
+        dayName: dayNames[date.getDay()],
+        dayNumber: date.getDate(),
+        fullDate: date,
+        isToday: i === 0,
+        isPast: i < 0,
+        isFuture: i > 0,
+        isActive: activeDays.includes(date.getDate()),
+      });
     }
-  }, [profile]);
+    return result;
+  }, [currentDay, activeDays]);
+
+  // Auto-scroll to today on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      const todayIndex = 7; // Today is at index 7 (after 7 past days)
+      const itemWidth = 64; // Approximate width of each item
+      const scrollPosition = todayIndex * itemWidth - (scrollRef.current.offsetWidth / 2) + (itemWidth / 2);
+      scrollRef.current.scrollLeft = scrollPosition;
+    }
+  }, []);
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.98 }}
-      onClick={onPress}
-      className={cn(
-        "relative w-full p-6 overflow-hidden text-left",
-        RADIUS.lg,
-        "bg-gradient-to-br",
-        profileGradient,
-        "shadow-xl"
-      )}
+    <motion.div
+      variants={itemVariants}
+      className="relative -mx-5"
     >
-      {/* Decorative elements */}
-      <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-black/10 rounded-full blur-xl -ml-6 -mb-6" />
-      
-      {/* Content */}
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full">
-            <span className="text-xs font-semibold text-white/90 uppercase tracking-wider">
-              {profile} Profile
+      {/* Gradient fade on edges */}
+      <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+
+      <div
+        ref={scrollRef}
+        className="flex gap-1.5 overflow-x-auto px-5 scrollbar-hide scroll-smooth"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+        }}
+      >
+        {dates.map((day, index) => (
+          <motion.button
+            key={index}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.02, duration: 0.3 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onDayPress?.(day.dayNumber)}
+            className={cn(
+              "relative flex-shrink-0 flex flex-col items-center gap-1.5 py-2 px-3 transition-all duration-300",
+              day.isToday && "bg-primary/10 dark:bg-white/[0.06] rounded-2xl",
+              day.isFuture && "opacity-40"
+            )}
+          >
+            {/* Day name */}
+            <span className={cn(
+              "text-[10px] font-medium tracking-wide",
+              day.isToday ? "text-foreground" : "text-muted-foreground"
+            )}>
+              {day.dayName}
             </span>
-          </div>
-        </div>
-        
-        <h2 className="text-2xl font-bold text-white mb-1">
-          Scripts for {childName}
-        </h2>
-        <p className="text-white/70 text-sm mb-6">
-          {scriptsCount} personalized scripts ready
-        </p>
-        
-        <div className="flex items-center gap-2 text-white font-semibold">
-          <span>Explore Scripts</span>
-          <ChevronRight className="w-5 h-5" />
-        </div>
+
+            {/* Day number with circular border */}
+            <div className="relative flex items-center justify-center">
+              <div
+                className={cn(
+                  "w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300",
+                  day.isToday
+                    ? "border-foreground border-solid"
+                    : "border-foreground/30 dark:border-white/30 border-dashed"
+                )}
+              >
+                <span className={cn(
+                  "text-[15px] font-semibold",
+                  day.isToday ? "text-foreground" : "text-foreground/70"
+                )}>
+                  {day.dayNumber}
+                </span>
+              </div>
+
+              {/* Activity indicator */}
+              {day.isActive && !day.isToday && (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-orange-500"
+                />
+              )}
+            </div>
+          </motion.button>
+        ))}
       </div>
-    </motion.button>
+    </motion.div>
   );
 });
 
 // ============================================================================
-// QUICK ACTION BUTTON
+// HERO METRICS CARD - 3D Tilt Effect with Mesh Gradient
 // ============================================================================
-const QuickAction = memo(function QuickAction({
-  icon: Icon,
-  label,
-  sublabel,
-  color,
+const HeroMetricsCard = memo(function HeroMetricsCard({
+  scriptsRead,
+  totalScripts,
+  streak,
+  childName,
   onPress,
 }: {
-  icon: typeof Sparkles;
-  label: string;
-  sublabel: string;
-  color: string;
+  scriptsRead: number;
+  totalScripts: number;
+  streak: number;
+  childName: string;
   onPress: () => void;
 }) {
-  return (
-    <motion.button
-      whileTap={{ scale: 0.97 }}
-      onClick={onPress}
-      className={cn(
-        "relative p-4 text-left overflow-hidden",
-        RADIUS.lg,
-        "bg-card border border-border/50",
-        "flex flex-col justify-between h-32"
-      )}
-    >
-      {/* Glow */}
-      <div className={cn(
-        "absolute -top-4 -right-4 w-20 h-20 rounded-full blur-2xl opacity-30",
-        color
-      )} />
-      
-      <div className={cn(
-        "w-10 h-10 flex items-center justify-center",
-        RADIUS.md,
-        color.replace('bg-', 'bg-') + '/10'
-      )}>
-        <Icon className={cn("w-5 h-5", color.replace('bg-', 'text-'))} />
-      </div>
-      
-      <div className="relative z-10">
-        <span className="text-sm font-semibold text-foreground block">{label}</span>
-        <span className="text-xs text-muted-foreground">{sublabel}</span>
-      </div>
-    </motion.button>
-  );
-});
+  const cardRef = useRef<HTMLButtonElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
 
-// ============================================================================
-// LOG PROGRESS CTA
-// ============================================================================
-const LogProgressCard = memo(function LogProgressCard({
-  onPress,
-}: {
-  onPress: () => void;
-}) {
+  const rotateX = useTransform(y, [-100, 100], [8, -8]);
+  const rotateY = useTransform(x, [-100, 100], [-8, 8]);
+
+  const springRotateX = useSpring(rotateX, { stiffness: 300, damping: 30 });
+  const springRotateY = useSpring(rotateY, { stiffness: 300, damping: 30 });
+
+  const handleMouseMove = useCallback((event: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    x.set(event.clientX - centerX);
+    y.set(event.clientY - centerY);
+  }, [x, y]);
+
+  const handleMouseLeave = useCallback(() => {
+    x.set(0);
+    y.set(0);
+  }, [x, y]);
+
+  const progress = totalScripts > 0 ? (scriptsRead / totalScripts) * 100 : 0;
+  const circumference = 2 * Math.PI * 44;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  // Animated counter
+  const [displayCount, setDisplayCount] = useState(0);
+  useEffect(() => {
+    const duration = 1500;
+    const steps = 60;
+    const increment = scriptsRead / steps;
+    let current = 0;
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= scriptsRead) {
+        setDisplayCount(scriptsRead);
+        clearInterval(timer);
+      } else {
+        setDisplayCount(Math.floor(current));
+      }
+    }, duration / steps);
+    return () => clearInterval(timer);
+  }, [scriptsRead]);
+
   return (
     <motion.button
+      ref={cardRef}
+      variants={itemVariants}
       whileTap={{ scale: 0.98 }}
       onClick={onPress}
-      className={cn(
-        "relative w-full p-5 overflow-hidden",
-        RADIUS.lg,
-        "bg-gradient-to-r from-emerald-500 to-teal-500",
-        "flex items-center gap-4 shadow-lg shadow-emerald-500/20"
-      )}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: springRotateX,
+        rotateY: springRotateY,
+        transformPerspective: 1000,
+        transformStyle: "preserve-3d",
+      }}
+      className="relative w-full p-6 rounded-[28px] overflow-hidden text-left"
     >
-      {/* Decorative */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8" />
-      
-      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-        <Target className="w-6 h-6 text-white" />
+      {/* Mesh gradient background - Theme aware with better contrast */}
+      <div className="absolute inset-0 bg-gradient-to-br from-card via-card/95 to-card/90 dark:from-[#1a1a2e] dark:via-[#16213e] dark:to-[#0f0f23]" />
+
+      {/* Animated mesh overlay */}
+      <div
+        className="absolute inset-0 opacity-20 dark:opacity-60"
+        style={{
+          backgroundImage: `
+            radial-gradient(at 40% 20%, rgba(251,146,60,0.15) 0px, transparent 50%),
+            radial-gradient(at 80% 0%, rgba(99,102,241,0.12) 0px, transparent 50%),
+            radial-gradient(at 0% 50%, rgba(251,146,60,0.1) 0px, transparent 50%),
+            radial-gradient(at 80% 100%, rgba(99,102,241,0.1) 0px, transparent 50%)
+          `,
+        }}
+      />
+
+      {/* Shine effect on hover */}
+      <motion.div
+        className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500"
+        style={{
+          background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.1) 45%, transparent 50%)',
+        }}
+      />
+
+      {/* Glass border - stronger in light mode */}
+      <div className="absolute inset-0 rounded-[28px] border-2 border-border/30 dark:border-border" />
+
+      {/* Content */}
+      <div className="relative z-10 flex items-center justify-between">
+        {/* Left - Stats */}
+        <div className="flex-1">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, ...SPRING.gentle }}
+          >
+            {/* Number and total */}
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-6xl font-bold text-foreground tracking-tight">
+                {displayCount}
+              </span>
+              <span className="text-xl text-muted-foreground font-medium">/ {totalScripts}</span>
+            </div>
+
+            {/* Label */}
+            <p className="text-sm text-muted-foreground font-medium">Scripts mastered</p>
+          </motion.div>
+
+          {/* Streak badge - separated and prominent */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, ...SPRING.bouncy }}
+            className="relative mt-3"
+          >
+            <div className="absolute inset-0 bg-orange-500/40 blur-lg rounded-full" />
+            <div className="relative inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-orange-500/30 to-amber-500/30 border border-orange-500/40">
+              <Flame className="w-4 h-4 text-orange-400 fill-orange-400" />
+              <span className="text-sm font-bold text-orange-400 dark:text-orange-300">{streak} day streak</span>
+            </div>
+          </motion.div>
+
+          {/* Child name tag */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/80 border border-border"
+          >
+            <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center text-[10px] font-bold text-white dark:text-white">
+              {childName.charAt(0)}
+            </div>
+            <span className="text-xs font-medium text-foreground/70">{childName}'s journey</span>
+          </motion.div>
+        </div>
+
+        {/* Right - Circular Progress */}
+        <div className="relative w-28 h-28">
+          {/* Glow behind ring */}
+          <div className="absolute inset-2 rounded-full bg-foreground/5 blur-xl" />
+
+          <svg className="w-28 h-28 -rotate-90" viewBox="0 0 100 100">
+            {/* Track */}
+            <circle
+              cx="50"
+              cy="50"
+              r="44"
+              className="stroke-foreground/[0.08]"
+              strokeWidth="8"
+              fill="none"
+            />
+            {/* Progress with gradient */}
+            <motion.circle
+              cx="50"
+              cy="50"
+              r="44"
+              stroke="url(#progressGradient)"
+              strokeWidth="8"
+              fill="none"
+              strokeLinecap="round"
+              initial={{ strokeDashoffset: circumference }}
+              animate={{ strokeDashoffset }}
+              transition={{ duration: 1.5, ease: "easeOut", delay: 0.3 }}
+              style={{ strokeDasharray: circumference }}
+            />
+            <defs>
+              <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#fb923c" />
+                <stop offset="50%" stopColor="#f97316" />
+                <stop offset="100%" stopColor="#ea580c" />
+              </linearGradient>
+            </defs>
+          </svg>
+
+          {/* Center content */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <Flame className="w-6 h-6 text-orange-400" />
+            <span className="text-lg font-bold text-foreground">{Math.round(progress)}%</span>
+          </div>
+        </div>
       </div>
-      
-      <div className="flex-1 text-left relative z-10">
-        <span className="text-lg font-bold text-white block">Log Today's Progress</span>
-        <span className="text-sm text-white/80">Keep building momentum</span>
-      </div>
-      
-      <ChevronRight className="w-6 h-6 text-white/70" />
+
+      {/* Bottom CTA hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8 }}
+        className="flex items-center gap-1 mt-4 text-muted-foreground"
+      >
+        <span className="text-xs">Tap to explore scripts</span>
+        <ChevronRight className="w-3 h-3" />
+      </motion.div>
     </motion.button>
   );
 });
 
 // ============================================================================
-// EBOOK CARD
+// INSIGHT CARDS - Glass morphism with depth
 // ============================================================================
-const EbookCard = memo(function EbookCard({
-  ebook,
+const InsightCard = memo(function InsightCard({
+  icon,
+  label,
+  value,
+  trend,
+  color,
+  delay = 0,
   onPress,
 }: {
-  ebook: {
-    id: string;
-    title: string;
-    thumbnail?: string;
-    isStarted?: boolean;
-  };
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  trend?: string;
+  color: string;
+  delay?: number;
   onPress: () => void;
 }) {
   return (
     <motion.button
-      whileTap={{ scale: 0.97 }}
+      variants={itemVariants}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onPress}
-      className="min-w-[140px] w-[140px] flex flex-col"
+      className="relative flex-1 p-4 rounded-[22px] overflow-hidden text-left"
     >
-      {/* Cover */}
-      <div className={cn(
-        "relative aspect-[3/4] w-full overflow-hidden mb-3",
-        RADIUS.md,
-        "bg-card border border-border/50",
-        "shadow-lg"
-      )}>
-        {ebook.thumbnail ? (
-          <img 
-            src={ebook.thumbnail} 
-            alt={ebook.title}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
-            <Book className="w-8 h-8 text-white/50" />
-          </div>
-        )}
-        
-        {/* Continue badge */}
-        {ebook.isStarted && (
-          <div className="absolute bottom-2 left-2 right-2 bg-black/70 backdrop-blur-sm py-1.5 px-2 rounded-lg">
-            <div className="flex items-center justify-center gap-1 text-[10px] font-semibold text-white">
-              <Play className="w-2.5 h-2.5 fill-white" /> Continue
-            </div>
+      {/* Glass background */}
+      <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
+      <div className="absolute inset-0 rounded-[22px] border border-border" />
+
+      {/* Colored accent glow */}
+      <div
+        className={cn("absolute -top-10 -right-10 w-24 h-24 rounded-full blur-2xl opacity-30", color)}
+      />
+
+      <div className="relative z-10">
+        <div className={cn("w-10 h-10 rounded-2xl flex items-center justify-center mb-3", color.replace('bg-', 'bg-') + '/20')}>
+          {icon}
+        </div>
+
+        <p className="text-2xl font-bold text-foreground mb-0.5">{value}</p>
+        <p className="text-xs text-muted-foreground font-medium">{label}</p>
+
+        {trend && (
+          <div className="flex items-center gap-1 mt-2">
+            <div className="w-1 h-1 rounded-full bg-emerald-400" />
+            <span className="text-[10px] text-emerald-400 font-medium">{trend}</span>
           </div>
         )}
       </div>
-      
-      {/* Title */}
-      <h3 className="text-xs font-semibold text-foreground line-clamp-2 text-left leading-tight">
-        {ebook.title}
-      </h3>
     </motion.button>
   );
 });
 
 // ============================================================================
-// RECENT SCRIPT CARD
+// CATEGORY RINGS - Apple Watch inspired
 // ============================================================================
-const RecentScriptCard = memo(function RecentScriptCard({
-  script,
+const CategoryRings = memo(function CategoryRings({
+  categories,
   onPress,
 }: {
-  script: {
-    id: string;
-    title: string;
-    category: string;
-    duration_minutes?: number;
-  };
+  categories: { name: string; progress: number; color: string; emoji: string }[];
   onPress: () => void;
+}) {
+  return (
+    <motion.button
+      variants={itemVariants}
+      whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={onPress}
+      className="relative w-full p-5 rounded-[24px] overflow-hidden text-left"
+    >
+      {/* Glass background */}
+      <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
+      <div className="absolute inset-0 rounded-[24px] border border-border" />
+
+      <div className="relative z-10">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-sm font-semibold text-muted-foreground">Categories</h3>
+          <Sparkles className="w-4 h-4 text-muted-foreground/50" />
+        </div>
+
+        <div className="flex items-center justify-around">
+          {/* Concentric rings */}
+          <div className="relative w-32 h-32">
+            {categories.map((cat, index) => {
+              const size = 120 - index * 28;
+              const radius = (size - 12) / 2;
+              const circumference = 2 * Math.PI * radius;
+              const offset = circumference - (cat.progress / 100) * circumference;
+
+              return (
+                <svg
+                  key={cat.name}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
+                  width={size}
+                  height={size}
+                >
+                  {/* Track */}
+                  <circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    className="stroke-foreground/[0.08]"
+                    strokeWidth="10"
+                    fill="none"
+                  />
+                  {/* Progress */}
+                  <motion.circle
+                    cx={size / 2}
+                    cy={size / 2}
+                    r={radius}
+                    stroke={cat.color}
+                    strokeWidth="10"
+                    fill="none"
+                    strokeLinecap="round"
+                    initial={{ strokeDashoffset: circumference }}
+                    animate={{ strokeDashoffset: offset }}
+                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.15 }}
+                    style={{ strokeDasharray: circumference }}
+                  />
+                </svg>
+              );
+            })}
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-col gap-3">
+            {categories.map((cat, index) => (
+              <motion.div
+                key={cat.name}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                className="flex items-center gap-2"
+              >
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: cat.color }}
+                />
+                <span className="text-lg">{cat.emoji}</span>
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
+                  <span className="text-[10px] text-muted-foreground">{cat.progress}%</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.button>
+  );
+});
+
+// ============================================================================
+// RECENT ACTIVITY - Timeline style
+// ============================================================================
+const RecentActivity = memo(function RecentActivity({
+  scripts,
+  onScriptPress,
+  onSeeAll,
+}: {
+  scripts: any[];
+  onScriptPress: (id: string) => void;
+  onSeeAll: () => void;
 }) {
   const getCategoryEmoji = (category: string) => {
-    const categoryKey = category.toLowerCase().replace(/\s+/g, '_');
+    const categoryKey = category?.toLowerCase().replace(/\s+/g, '_') || '';
     return CATEGORY_EMOJIS[categoryKey] || '🧠';
   };
 
   return (
-    <motion.button
-      whileTap={{ scale: 0.97 }}
-      onClick={onPress}
-      className={cn(
-        "min-w-[200px] p-4 text-left",
-        RADIUS.lg,
-        "bg-card border border-border/50"
-      )}
-    >
-      <div className="flex items-center gap-2 mb-3">
-        <span className="text-xl">{getCategoryEmoji(script.category)}</span>
-        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          {script.category}
-        </span>
+    <motion.div variants={itemVariants}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-foreground">Recent Activity</h3>
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onSeeAll}
+          className="flex items-center gap-1 text-sm text-muted-foreground"
+        >
+          See all
+          <ChevronRight className="w-4 h-4" />
+        </motion.button>
       </div>
-      
-      <h4 className="font-semibold text-foreground text-sm line-clamp-2 leading-snug mb-2">
-        {script.title}
-      </h4>
-      
-      {script.duration_minutes && (
-        <span className="text-xs text-muted-foreground">
-          {script.duration_minutes} min read
-        </span>
-      )}
-    </motion.button>
+
+      <div className="space-y-3">
+        {scripts.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="relative p-6 rounded-[20px] overflow-hidden text-center"
+          >
+            <div className="absolute inset-0 bg-card/30" />
+            <div className="absolute inset-0 rounded-[20px] border border-dashed border-border" />
+            <div className="relative z-10">
+              <div className="text-4xl mb-3">📚</div>
+              <p className="text-sm text-muted-foreground">No scripts read yet today</p>
+              <p className="text-xs text-muted-foreground/60 mt-1">Tap + to start your journey</p>
+            </div>
+          </motion.div>
+        ) : (
+          scripts.slice(0, 3).map((script, index) => (
+            <motion.button
+              key={script.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ scale: 1.01, x: 4 }}
+              whileTap={{ scale: 0.99 }}
+              onClick={() => onScriptPress(script.id)}
+              className="relative w-full p-4 rounded-[18px] overflow-hidden text-left"
+            >
+              <div className="absolute inset-0 bg-card/50" />
+              <div className="absolute inset-0 rounded-[18px] border border-border" />
+
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-secondary/50 flex items-center justify-center text-2xl">
+                  {getCategoryEmoji(script.category)}
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-sm font-semibold text-foreground truncate">{script.title}</h4>
+                  <p className="text-xs text-muted-foreground capitalize">{script.category}</p>
+                </div>
+
+                <ChevronRight className="w-4 h-4 text-muted-foreground/30 flex-shrink-0" />
+              </div>
+            </motion.button>
+          ))
+        )}
+      </div>
+    </motion.div>
   );
 });
 
 // ============================================================================
-// SECTION HEADER
+// BONUS GUIDES CAROUSEL - 3D perspective
 // ============================================================================
-const SectionHeader = memo(function SectionHeader({
-  title,
-  action,
-  onAction,
+const BonusGuidesCarousel = memo(function BonusGuidesCarousel({
+  ebooks,
+  onEbookPress,
+  onSeeAll,
 }: {
-  title: string;
-  action?: string;
-  onAction?: () => void;
+  ebooks: any[];
+  onEbookPress: (slug: string) => void;
+  onSeeAll: () => void;
 }) {
+  if (ebooks.length === 0) return null;
+
   return (
-    <div className="flex items-center justify-between mb-4">
-      <h3 className="text-lg font-bold text-foreground">{title}</h3>
-      {action && onAction && (
-        <button 
-          onClick={onAction}
-          className="text-sm font-semibold text-primary"
+    <motion.div variants={itemVariants}>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-foreground">Bonus Guides</h3>
+        <motion.button
+          whileHover={{ x: 3 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onSeeAll}
+          className="flex items-center gap-1 text-sm text-muted-foreground"
         >
-          {action}
-        </button>
-      )}
-    </div>
+          See all
+          <ChevronRight className="w-4 h-4" />
+        </motion.button>
+      </div>
+
+      <div className="flex gap-4 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
+        {ebooks.slice(0, 5).map((ebook, index) => (
+          <motion.button
+            key={ebook.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.1, ...SPRING.gentle }}
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onEbookPress(ebook.slug)}
+            className="relative min-w-[130px] w-[130px] flex-shrink-0"
+            style={{ perspective: 1000 }}
+          >
+            {/* Book cover with 3D effect */}
+            <div
+              className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                transformStyle: 'preserve-3d',
+                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
+              }}
+            >
+              {ebook.thumbnail ? (
+                <img
+                  src={ebook.thumbnail}
+                  alt={ebook.title}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                  <Book className="w-8 h-8 text-white dark:text-white/50" />
+                </div>
+              )}
+
+              {/* Shine overlay */}
+              <div
+                className="absolute inset-0 opacity-30"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)',
+                }}
+              />
+
+              {/* Continue badge */}
+              {ebook.isStarted && (
+                <div className="absolute bottom-2 left-2 right-2 bg-black/80 backdrop-blur py-1.5 px-2 rounded-lg">
+                  <div className="flex items-center justify-center gap-1 text-[10px] font-semibold text-white dark:text-white">
+                    <Play className="w-2.5 h-2.5 fill-white dark:fill-white" /> Continue
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Title */}
+            <h4 className="mt-3 text-xs font-medium text-foreground/80 line-clamp-2 text-left">
+              {ebook.title}
+            </h4>
+          </motion.button>
+        ))}
+      </div>
+    </motion.div>
+  );
+});
+
+// ============================================================================
+// FLOATING ACTION BUTTON - Apple style with haptic
+// ============================================================================
+const FloatingActionButton = memo(function FloatingActionButton({
+  onPress,
+}: {
+  onPress: () => void;
+}) {
+  const { triggerHaptic } = useHaptic();
+
+  const handlePress = () => {
+    triggerHaptic('medium');
+    onPress();
+  };
+
+  return (
+    <motion.button
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.5, ...SPRING.bouncy }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      onClick={handlePress}
+      className="fixed z-50 w-[60px] h-[60px] rounded-full flex items-center justify-center"
+      style={{
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)',
+        right: '1.25rem',
+        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
+        boxShadow: '0 8px 32px rgba(249,115,22,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset',
+      }}
+    >
+      {/* Pulsing glow */}
+      <motion.div
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.5, 0.2, 0.5],
+        }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="absolute inset-0 rounded-full bg-orange-500 blur-xl"
+      />
+
+      <Plus className="relative z-10 w-7 h-7 text-white dark:text-white" strokeWidth={2.5} />
+    </motion.button>
   );
 });
 
@@ -406,29 +795,32 @@ const SectionHeader = memo(function SectionHeader({
 export default function DashboardCalAI() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { activeChild, childProfiles } = useChildProfiles();
+  const { activeChild } = useChildProfiles();
   const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats();
-  const { data: scriptsForProfile } = useScriptsByProfile(activeChild?.brain_profile);
   const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
   const { triggerHaptic } = useHaptic();
-  
-  const isLoading = statsLoading || dataLoading;
-  const currentStreak = Math.max(dashboardStats?.totalTrackerEntries ?? 0, 1);
 
-  // Greeting based on time
-  const greeting = useMemo(() => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good morning";
-    if (hour < 18) return "Good afternoon";
-    return "Good evening";
+  const isLoading = statsLoading || dataLoading;
+  const currentStreak = dashboardStats?.currentStreak ?? 0;
+  const scriptsRead = dashboardStats?.uniqueScriptsUsed ?? 0;
+  const totalScripts = dashboardStats?.totalScripts ?? 0;
+
+  const activeDays = useMemo(() => {
+    const today = new Date().getDate();
+    return [today - 2, today - 1, today];
   }, []);
 
-  const handleNavigate = (path: string) => {
+  const categories = useMemo(() => [
+    { name: 'Tantrums', progress: 75, color: '#f43f5e', emoji: '😤' },
+    { name: 'Sleep', progress: 50, color: '#3b82f6', emoji: '😴' },
+    { name: 'Focus', progress: 30, color: '#f59e0b', emoji: '🎯' },
+  ], []);
+
+  const handleNavigate = useCallback((path: string) => {
     triggerHaptic('light');
     navigate(path);
-  };
+  }, [triggerHaptic, navigate]);
 
-  // Loading state
   if (isLoading) {
     return (
       <MainLayout hideSideNav>
@@ -437,25 +829,27 @@ export default function DashboardCalAI() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <MainLayout hideSideNav>
         <div className="min-h-screen bg-background flex items-center justify-center px-6">
-          <div className="text-center">
-            <div className="text-5xl mb-4">⚠️</div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center"
+          >
+            <div className="text-6xl mb-4">⚠️</div>
             <h2 className="text-xl font-bold text-foreground mb-2">Unable to load</h2>
             <p className="text-muted-foreground mb-6">Please check your connection</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className={cn(
-                "px-6 py-3 bg-primary text-primary-foreground font-semibold",
-                RADIUS.md
-              )}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => window.location.reload()}
+              className="px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-2xl"
             >
               Try Again
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </div>
       </MainLayout>
     );
@@ -463,135 +857,135 @@ export default function DashboardCalAI() {
 
   return (
     <MainLayout hideSideNav>
-      <div className="min-h-screen relative pb-[calc(env(safe-area-inset-bottom)+5rem)]">
-        {/* Background */}
-        <DashboardBackground />
-        
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Ambient particles */}
+        <AmbientBackground />
+
         {/* Content */}
-        <div className="relative z-10">
-          {/* Header Spacer for status bar */}
-          <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative z-10 pb-[calc(env(safe-area-inset-bottom)+7rem)]"
+        >
+          {/* Safe area */}
+          <div className="h-[env(safe-area-inset-top)]" />
 
           {/* Header */}
-          <header className="px-5 pb-4">
+          <motion.header variants={itemVariants} className="px-5 py-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground mb-1">{greeting}</p>
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10 border-2 border-background shadow-lg">
-                    <AvatarImage src={activeChild?.photo_url || undefined} />
-                    <AvatarFallback className="text-sm font-bold bg-primary text-primary-foreground">
-                      {activeChild?.name?.substring(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <h1 className="text-xl font-bold text-foreground">{activeChild?.name}</h1>
-                    <p className="text-xs text-muted-foreground capitalize">
-                      {activeChild?.brain_profile?.toLowerCase()} profile
-                    </p>
-                  </div>
+              <div className="flex items-center gap-3">
+                {/* Parent (User) profile picture */}
+                {user?.photo_url ? (
+                  <motion.img
+                    whileHover={{ scale: 1.05 }}
+                    src={user.photo_url}
+                    alt={user.user_metadata?.full_name || 'User'}
+                    className="w-12 h-12 rounded-2xl object-cover shadow-lg"
+                  />
+                ) : (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/30"
+                  >
+                    <span className="text-xl font-bold text-white dark:text-white">
+                      {user?.user_metadata?.full_name?.charAt(0)?.toUpperCase() || user?.email?.charAt(0)?.toUpperCase() || '?'}
+                    </span>
+                  </motion.div>
+                )}
+                <div>
+                  {/* Parent name (larger) */}
+                  <h1 className="text-base font-bold text-foreground leading-tight">
+                    {user?.user_metadata?.full_name || 'Welcome'}
+                  </h1>
+                  {/* Child name (smaller, underneath) */}
+                  <p className="text-xs text-muted-foreground leading-tight mt-0.5">
+                    {activeChild?.name ? `${activeChild.name}'s progress` : 'Select a child profile'}
+                  </p>
                 </div>
               </div>
-              
-              {/* Profile switcher - only if multiple children */}
-              {childProfiles.length > 1 && (
-                <button
-                  onClick={() => handleNavigate('/profile')}
-                  className={cn(
-                    "px-3 py-1.5 text-xs font-medium",
-                    RADIUS.sm,
-                    "bg-secondary/50 text-muted-foreground",
-                    "border border-border/50"
-                  )}
-                >
-                  Switch
-                </button>
-              )}
+
+              {/* Streak badge */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => handleNavigate('/achievements')}
+                className="relative flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer"
+                style={{
+                  background: currentStreak > 0
+                    ? 'linear-gradient(135deg, rgba(251,146,60,0.2) 0%, rgba(251,146,60,0.05) 100%)'
+                    : 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(251,146,60,0.3)',
+                }}
+              >
+                <Flame className={cn(
+                  "w-4 h-4",
+                  currentStreak > 0 ? "text-orange-400 fill-orange-400" : "text-muted-foreground"
+                )} />
+                <span className="text-sm font-bold text-foreground">{currentStreak}</span>
+              </motion.div>
             </div>
-          </header>
+          </motion.header>
 
-          {/* Main content */}
-          <main className="px-5 space-y-6">
-            
-            {/* Streak */}
-            <StreakCard 
-              streak={currentStreak} 
-              onPress={() => handleNavigate('/achievements')} 
-            />
+          {/* Horizontal Date Picker */}
+          <section className="mb-5">
+            <HorizontalDatePicker activeDays={activeDays} />
+          </section>
 
-            {/* Hero - Primary CTA */}
-            <HeroCard
-              childName={activeChild?.name || 'Your Child'}
-              profile={activeChild?.brain_profile || ''}
-              scriptsCount={dashboardStats?.totalScripts || 0}
+          {/* Main Content */}
+          <main className="px-5 space-y-5">
+            {/* Hero Metrics */}
+            <HeroMetricsCard
+              scriptsRead={scriptsRead}
+              totalScripts={totalScripts}
+              streak={currentStreak}
+              childName={activeChild?.name || 'Child'}
               onPress={() => handleNavigate('/scripts')}
             />
 
-            {/* Log Progress */}
-            <LogProgressCard onPress={() => handleNavigate('/progress')} />
-
-            {/* Quick Actions */}
-            <div className="grid grid-cols-2 gap-3">
-              <QuickAction
-                icon={Sparkles}
-                label="All Scripts"
-                sublabel={`${dashboardStats?.totalScripts || 0} available`}
-                color="bg-purple-500"
-                onPress={() => handleNavigate('/scripts')}
+            {/* Insight Cards Row */}
+            <div className="flex gap-3">
+              <InsightCard
+                icon={<Book className="w-5 h-5 text-indigo-400" />}
+                label="This week"
+                value={dashboardStats?.scriptUsesWeek ?? 0}
+                trend="+12% from last week"
+                color="bg-indigo-500"
+                onPress={() => handleNavigate('/progress')}
               />
-              <QuickAction
-                icon={TrendingUp}
-                label="Progress"
-                sublabel="View insights"
-                color="bg-blue-500"
+              <InsightCard
+                icon={<Sparkles className="w-5 h-5 text-amber-400" />}
+                label="Total uses"
+                value={dashboardStats?.totalScriptUses ?? 0}
+                color="bg-amber-500"
                 onPress={() => handleNavigate('/progress')}
               />
             </div>
 
-            {/* Ebooks Section */}
-            {ebooks.length > 0 && (
-              <section>
-                <SectionHeader 
-                  title="Bonus Guides" 
-                  action="See All"
-                  onAction={() => handleNavigate('/bonuses?category=ebook')}
-                />
-                
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
-                  {ebooks.slice(0, 5).map((ebook) => (
-                    <EbookCard
-                      key={ebook.id}
-                      ebook={ebook}
-                      onPress={() => handleNavigate(`/ebook-v2/${ebook.slug}`)}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
+            {/* Category Rings */}
+            <CategoryRings
+              categories={categories}
+              onPress={() => handleNavigate('/scripts')}
+            />
 
-            {/* Recent Scripts */}
-            {recentScripts.length > 0 && (
-              <section>
-                <SectionHeader 
-                  title="Continue Reading" 
-                  action="See All"
-                  onAction={() => handleNavigate('/scripts')}
-                />
-                
-                <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
-                  {recentScripts.map((script) => (
-                    <RecentScriptCard
-                      key={script.id}
-                      script={script}
-                      onPress={() => handleNavigate('/scripts')}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
+            {/* Recent Activity */}
+            <RecentActivity
+              scripts={recentScripts}
+              onScriptPress={(id) => handleNavigate(`/scripts`)}
+              onSeeAll={() => handleNavigate('/scripts')}
+            />
 
+            {/* Bonus Guides */}
+            <BonusGuidesCarousel
+              ebooks={ebooks}
+              onEbookPress={(slug) => handleNavigate(`/ebook-v2/${slug}`)}
+              onSeeAll={() => handleNavigate('/bonuses?category=ebook')}
+            />
           </main>
-        </div>
+        </motion.div>
+
+        {/* FAB */}
+        <FloatingActionButton onPress={() => handleNavigate('/tracker')} />
       </div>
     </MainLayout>
   );
