@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { memo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { memo, useState, useEffect } from 'react';
 
 interface AuthWelcomeProps {
   onGetStarted: () => void;
@@ -68,6 +68,45 @@ const AnimatedText = memo(function AnimatedText({
     >
       {text}
     </motion.span>
+  );
+});
+
+// Rotating text animation
+const RotatingText = memo(function RotatingText() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  const phrases = [
+    "that works.",
+    "that transforms.",
+    "that connects.", 
+    "that heals.",
+    "that matters."
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % phrases.length);
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative h-[72px] overflow-hidden">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={phrases[currentIndex]}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="block text-white/60 text-5xl sm:text-6xl font-bold tracking-tight"
+          style={{ textShadow: '0 0 40px rgba(255,255,255,0.1)' }}
+        >
+          {phrases[currentIndex]}
+        </motion.span>
+      </AnimatePresence>
+    </div>
   );
 });
 
@@ -189,11 +228,7 @@ export const AuthWelcome = memo(function AuthWelcome({
             delay={0.2}
             className="text-white text-5xl sm:text-6xl font-bold tracking-tight"
           />
-          <AnimatedText 
-            text="that works." 
-            delay={0.35}
-            className="text-white/40 text-5xl sm:text-6xl font-bold tracking-tight"
-          />
+          <RotatingText />
         </div>
 
         {/* Subtitle */}

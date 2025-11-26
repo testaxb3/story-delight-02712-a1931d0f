@@ -1,7 +1,7 @@
 {
-  "name": "Brainy",
-  "short_name": "Brainy",
-  "description": "Neurological Emotional Personalization - Neuroscience-based parenting app",
+  "name": "NEP - Obedience Language",
+  "short_name": "NEP",
+  "description": "Obedience Language - Neuroscience-based parenting system",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
