@@ -72,7 +72,7 @@ export function PostReactionsSheet({
     setLoadingComments(true);
     const { data, error } = await supabase
       .from('post_comments')
-      .select('*, profiles:user_id(username, name, photo_url)')
+      .select('*, profiles:user_id(username, name, photo_url), author_name, author_photo_url')
       .eq('post_id', postId)
       .order('created_at', { ascending: false });
 
@@ -197,19 +197,23 @@ export function PostReactionsSheet({
               ) : (
                 comments.map((comment) => {
                   const canDelete = currentUserId === comment.user_id || isAdmin;
+                  // Fallback for seed comments
+                  const photoUrl = comment.profiles?.photo_url || comment.author_photo_url;
+                  const displayName = comment.profiles?.name || comment.author_name || 'User';
+                  
                   return (
                     <div key={comment.id} className="flex gap-3 group">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0 overflow-hidden">
-                        {comment.profiles?.photo_url ? (
-                          <img src={comment.profiles.photo_url} alt="" className="w-full h-full object-cover" />
+                        {photoUrl ? (
+                          <img src={photoUrl} alt="" className="w-full h-full object-cover" />
                         ) : (
-                          getInitials(comment.profiles?.name || 'User')
+                          getInitials(displayName)
                         )}
                       </div>
                       <div className="flex-1 space-y-1">
                         <div className="bg-muted/50 p-3 rounded-2xl rounded-tl-none relative">
                           <p className="text-xs font-bold text-foreground mb-0.5">
-                            {comment.profiles?.name || 'User'}
+                            {displayName}
                           </p>
                           <p className="text-sm text-foreground/90 pr-6">{comment.content}</p>
                           
