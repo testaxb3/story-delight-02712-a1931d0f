@@ -264,6 +264,12 @@ export default function ProfileCalAI() {
               onClick={() => navigate('/script-requests')} 
             />
             <SettingsRow 
+              icon={CreditCard} 
+              iconColor="bg-green-500" 
+              label="Request Refund" 
+              onClick={() => navigate('/refund')} 
+            />
+            <SettingsRow 
               icon={HelpCircle} 
               iconColor="bg-blue-400" 
               label="Help Center" 
