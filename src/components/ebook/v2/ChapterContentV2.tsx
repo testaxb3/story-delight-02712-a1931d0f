@@ -242,7 +242,25 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
             );
 
           case "table":
-            const tableData = block.content as TableData;
+            // Support both formats: content.{headers, rows} OR direct block.{headers, rows}
+            let tableData: TableData | null = null;
+            
+            if (block.content && typeof block.content === 'object' && 'headers' in (block.content as object)) {
+              tableData = block.content as TableData;
+            } else if ('headers' in block && 'rows' in block) {
+              // Legacy format with headers/rows directly on block
+              tableData = {
+                headers: (block as any).headers as string[],
+                rows: (block as any).rows as string[][]
+              };
+            }
+            
+            // Validate before rendering
+            if (!tableData || !Array.isArray(tableData.headers) || !Array.isArray(tableData.rows)) {
+              console.warn('Invalid table data:', block);
+              return null;
+            }
+            
             return (
               <TableBlock
                 key={index}
