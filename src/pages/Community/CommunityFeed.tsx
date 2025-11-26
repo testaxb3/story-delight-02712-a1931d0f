@@ -141,7 +141,10 @@ export default function CommunityFeed() {
         <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
         {/* Apple Style Header */}
-        <header className="px-5 pb-4 sticky top-[calc(env(safe-area-inset-top)+20px)] z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+        <header 
+          className="px-5 pb-4 pt-4 fixed left-0 right-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40"
+          style={{ top: 'env(safe-area-inset-top, 0px)' }}
+        >
           <div className="flex items-center justify-between">
             {/* Community Selector (Pill) */}
             <DropdownMenu>
@@ -204,6 +207,9 @@ export default function CommunityFeed() {
             </button>
           </div>
         </header>
+
+        {/* Spacer for fixed header */}
+        <div className="h-20" />
 
         <main className="px-4 space-y-6 relative z-10 mt-4">
           {/* Leaderboard (Stories Style) */}
@@ -271,7 +277,8 @@ export default function CommunityFeed() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setShowCreateModal(true)}
-        className="fixed right-6 bottom-24 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 flex items-center justify-center z-50 hover:shadow-xl transition-all"
+        className="fixed right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg shadow-primary/30 flex items-center justify-center z-50 hover:shadow-xl transition-all"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 7rem)' }}
       >
         <MessageSquare className="w-6 h-6" />
       </motion.button>
