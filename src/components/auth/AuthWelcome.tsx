@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { memo, useState, useEffect } from 'react';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface AuthWelcomeProps {
   onGetStarted: () => void;
@@ -74,6 +75,7 @@ const AnimatedText = memo(function AnimatedText({
 // Rotating text animation
 const RotatingText = memo(function RotatingText() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { triggerHaptic } = useHaptic();
   
   const phrases = [
     "that works.",
@@ -86,10 +88,11 @@ const RotatingText = memo(function RotatingText() {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % phrases.length);
+      triggerHaptic('light');
     }, 3000);
     
     return () => clearInterval(interval);
-  }, []);
+  }, [triggerHaptic]);
 
   return (
     <div className="relative h-[72px] overflow-hidden">
