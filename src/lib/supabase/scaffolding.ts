@@ -12,7 +12,7 @@ export async function ensureTrackerDays(userId: string) {
   try {
     const { data, error } = await supabase
       .from("tracker_days")
-      .select("day_number")
+      .select("day_number, date")
       .eq("user_id", userId)
       .order("day_number", { ascending: true });
 
@@ -30,11 +30,30 @@ export async function ensureTrackerDays(userId: string) {
       return;
     }
 
-    const payload = missingDays.map((dayNumber) => ({
-      user_id: userId,
-      day_number: dayNumber,
-      completed: false,
-    }));
+    // Determine start date: use earliest existing date or today for new users
+    let startDate: Date;
+    if (data && data.length > 0) {
+      const earliestDate = data
+        .map((d) => d.date)
+        .filter(Boolean)
+        .sort()[0];
+      startDate = earliestDate ? new Date(earliestDate) : new Date();
+    } else {
+      startDate = new Date();
+    }
+
+    const payload = missingDays.map((dayNumber) => {
+      // Calculate date for this day: startDate + (dayNumber - 1) days
+      const dayDate = new Date(startDate);
+      dayDate.setDate(startDate.getDate() + (dayNumber - 1));
+      
+      return {
+        user_id: userId,
+        day_number: dayNumber,
+        completed: false,
+        date: dayDate.toISOString().split('T')[0],
+      };
+    });
 
     const { error: insertError } = await supabase.from("tracker_days").insert(payload);
 
