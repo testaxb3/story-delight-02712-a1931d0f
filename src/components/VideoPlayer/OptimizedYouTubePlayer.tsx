@@ -25,7 +25,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   
   // Simplified State
   const [isReady, setIsReady] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(true); // Try autoplay
+  const [isPlaying, setIsPlaying] = useState(false); // Start paused, show play button
   const [duration, setDuration] = useState(0);
   const [hasStarted, setHasStarted] = useState(false); // Track if video actually started frames
   
@@ -114,12 +114,11 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
   };
 
   return (
-    <div 
-      className="relative w-full h-full bg-black overflow-hidden group cursor-pointer"
-      onClick={togglePlay}
+    <div
+      className="relative w-full h-full bg-black overflow-hidden group"
     >
       {/* 1. The Player (Hidden UI via Zoom) */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center">
         <div className="w-full h-full transform scale-[1.35]">
           <ReactPlayer
             ref={playerRef}
@@ -133,6 +132,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
             onProgress={handleProgress}
             onEnded={() => saveProgress(duration)}
             style={{ backgroundColor: '#000' }}
+            config={playerConfig}
           />
         </div>
       </div>
@@ -142,22 +142,25 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
         <div className="absolute inset-0 z-10 bg-black" />
       )}
 
-      {/* 3. Controls / Status Overlay */}
-      <div className="absolute inset-0 z-20 flex items-center justify-center">
+      {/* 3. Controls / Status Overlay - Clickable */}
+      <div
+        className="absolute inset-0 z-20 flex items-center justify-center cursor-pointer"
+        onClick={togglePlay}
+      >
         {!isReady ? (
           // Loading Spinner
-          <div className="bg-white/10 backdrop-blur-md rounded-full p-4 shadow-xl">
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          <div className="bg-black/30 dark:bg-white/10 backdrop-blur-md rounded-full p-4 shadow-xl pointer-events-none">
+            <Loader2 className="w-8 h-8 text-white dark:text-white animate-spin" />
           </div>
         ) : !isPlaying ? (
           // Play Button (Paused)
-          <div className="bg-white/20 backdrop-blur-md rounded-full p-5 shadow-2xl hover:bg-white/30 transition-all transform hover:scale-110">
-            <Play className="w-10 h-10 text-white fill-white ml-1" />
+          <div className="bg-black/40 dark:bg-white/20 backdrop-blur-md rounded-full p-5 shadow-2xl hover:bg-black/50 dark:hover:bg-white/30 transition-all transform hover:scale-110 active:scale-95">
+            <Play className="w-10 h-10 text-white dark:text-white fill-white dark:fill-white ml-1" />
           </div>
         ) : !hasStarted ? (
           // Buffering/Starting (Playing but no frames yet)
-          <div className="bg-white/10 backdrop-blur-md rounded-full p-4">
-            <Loader2 className="w-8 h-8 text-white animate-spin" />
+          <div className="bg-black/30 dark:bg-white/10 backdrop-blur-md rounded-full p-4 pointer-events-none">
+            <Loader2 className="w-8 h-8 text-white dark:text-white animate-spin" />
           </div>
         ) : null}
       </div>

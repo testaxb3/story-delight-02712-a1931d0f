@@ -103,7 +103,7 @@ export const QuizResultRings = ({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-3 md:gap-6 mb-6 md:mb-8">
+    <div className="grid grid-cols-2 gap-2.5 md:gap-4 lg:gap-6 mb-4 md:mb-6 lg:mb-8">
       {rings.map((ring, index) => {
         const percentage = (ring.value / ring.maxValue) * 100;
         const circumference = 2 * Math.PI * 45;
@@ -116,8 +116,8 @@ export const QuizResultRings = ({
             key={ring.label}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ 
-              duration: 0.5, 
+            transition={{
+              duration: 0.5,
               delay: index * 0.15,
               ease: [0.16, 1, 0.3, 1]
             }}
@@ -130,9 +130,9 @@ export const QuizResultRings = ({
               style={{ backgroundColor: ring.color }}
             />
 
-            <div className="relative bg-card/50 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-6 border border-border/30 hover:border-border/60 transition-all">
+            <div className="relative bg-card/50 dark:bg-card backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-2xl p-2.5 md:p-4 lg:p-6 border border-border/30 hover:border-border/60 transition-all">
               {/* SVG Ring */}
-              <div className="relative w-20 h-20 md:w-28 md:h-28 mx-auto mb-2 md:mb-4">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 mx-auto mb-1.5 md:mb-2 lg:mb-4">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                   {/* Background circle */}
                   <circle
@@ -162,19 +162,19 @@ export const QuizResultRings = ({
 
                 {/* Icon in center */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Icon className="w-7 h-7 md:w-10 md:h-10" style={{ color: ring.color }} />
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 lg:w-10 lg:h-10" style={{ color: ring.color }} />
                 </div>
               </div>
 
               {/* Value and Label */}
               <div className="text-center">
-                <motion.div 
-                  className="text-2xl md:text-3xl font-bold mb-0.5 md:mb-1"
+                <motion.div
+                  className="text-lg md:text-2xl lg:text-3xl font-bold mb-0.5 md:mb-1"
                   style={{ color: ring.color }}
                 >
                   {ring.label === 'Complete' ? `${animatedValue}%` : animatedValue}
                 </motion.div>
-                <div className="text-xs md:text-sm text-muted-foreground font-medium">
+                <div className="text-[10px] md:text-xs lg:text-sm text-muted-foreground font-medium">
                   {ring.label}
                 </div>
               </div>

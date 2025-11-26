@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,6 +24,7 @@ import { QuizPostSpeedMotivationalScreen } from '@/components/Quiz/QuizPostSpeed
 import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
 import { QuizThankYouScreen } from '@/components/Quiz/QuizThankYouScreen';
 import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
+import { QuizResultsSkeleton } from '@/components/Quiz/QuizResultsSkeleton';
 import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 import { QuizErrorBoundary } from '@/components/Quiz/ui/QuizErrorBoundary';
 import { quizQuestions } from '@/lib/quizQuestions';
@@ -31,7 +32,8 @@ import { quizQuestions } from '@/lib/quizQuestions';
 export default function Quiz() {
   const navigate = useNavigate();
   const { triggerHaptic } = useHaptic();
-  
+  const [showResultsSkeleton, setShowResultsSkeleton] = useState(false);
+
   // Custom hooks
   const quizState = useQuizState();
   const validation = useQuizValidation({
@@ -47,6 +49,17 @@ export default function Quiz() {
     quizStep: quizState.quizStep,
   });
   const submission = useQuizSubmission();
+
+  // Skeleton → Real Results Transition (MUST be before any early returns)
+  useEffect(() => {
+    if (quizState.showEnhancedResults && quizState.result) {
+      setShowResultsSkeleton(true);
+      const timer = setTimeout(() => {
+        setShowResultsSkeleton(false);
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [quizState.showEnhancedResults, quizState.result]);
 
   // Start quiz flow
   const startQuiz = useCallback(() => {
@@ -187,16 +200,41 @@ export default function Quiz() {
   if (quizState.showEnhancedResults && quizState.result) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
           <div className="h-1 bg-muted">
             <motion.div className="h-full bg-foreground" initial={{ width: 0 }} animate={{ width: '95%' }} transition={{ duration: 0.5 }} />
           </div>
         </div>
-        <div className="flex-1 px-6 pt-20 pb-24 overflow-y-auto">
-          <QuizEnhancedResults brainType={quizState.result.type} childName={quizState.childName} challengeLevel={quizState.challengeLevel} parentGoals={quizState.parentGoals} />
+        <div className="flex-1 px-4 md:px-5 lg:px-6 pb-24 md:pb-26 lg:pb-28 overflow-y-auto" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
+          <AnimatePresence mode="wait">
+            {showResultsSkeleton ? (
+              <motion.div
+                key="skeleton"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <QuizResultsSkeleton />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="results"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.4 }}
+              >
+                <QuizEnhancedResults
+                  brainType={quizState.result.type}
+                  childName={quizState.childName}
+                  challengeLevel={quizState.challengeLevel}
+                  parentGoals={quizState.parentGoals}
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-          <Button onClick={() => { triggerHaptic('light'); quizState.setShowEnhancedResults(false); quizState.setShowFinalCelebration(true); }} className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-xl">See My Dashboard</Button>
+        <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-4 md:px-5 lg:px-6 pt-2 md:pt-2.5 lg:pt-3 z-50" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
+          <Button onClick={() => { triggerHaptic('light'); quizState.setShowEnhancedResults(false); quizState.setShowFinalCelebration(true); }} className="w-full h-10 md:h-11 lg:h-12 bg-foreground text-background hover:bg-foreground/90 text-sm md:text-base font-bold rounded-xl shadow-lg">See My Dashboard</Button>
         </div>
       </div>
     );
@@ -224,24 +262,22 @@ export default function Quiz() {
       <div className="min-h-screen flex flex-col bg-background">
         {/* Progress Bar & Header */}
         {showProgressBar && (
-          <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-xl border-b border-border/50">
-            <div className="pt-12 sm:pt-4">
-              <div className="px-6 h-16 flex items-center gap-4">
-                {showBackButton && (
-                  <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-10 h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
-                    <ArrowLeft className="w-6 h-6" />
-                  </motion.button>
-                )}
-                <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
-                  <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
-                </div>
+          <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-xl border-b border-border/50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+            <div className="px-4 md:px-6 h-12 md:h-14 lg:h-16 flex items-center gap-2 md:gap-3 lg:gap-4">
+              {showBackButton && (
+                <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
+                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                </motion.button>
+              )}
+              <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
+                <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
               </div>
             </div>
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-6 pt-32 sm:pt-24 pb-24">
+        <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-20 md:pb-24" style={{ paddingTop: showProgressBar ? 'calc(env(safe-area-inset-top) + 3.5rem)' : 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
           <AnimatePresence mode="wait">
             {quizState.showCountdown ? (
               <motion.div key="countdown" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.5 }} className="text-center">
@@ -265,8 +301,8 @@ export default function Quiz() {
 
         {/* Fixed Bottom Button */}
         {!quizState.showCountdown && !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showPostSpeedMotivational && !quizState.showPreLoading && !quizState.showLoading && !quizState.showEnhancedResults && (
-          <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-6 pb-8 pt-4 z-50">
-            <Button onClick={quizState.quizStep === 'speed' ? () => quizState.setShowPostSpeedMotivational(true) : handleNext} disabled={!validation.canProceed} className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-base font-bold rounded-xl transition-all">
+          <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-4 md:px-6 pt-2.5 md:pt-3 lg:pt-4 z-50" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}>
+            <Button onClick={quizState.quizStep === 'speed' ? () => quizState.setShowPostSpeedMotivational(true) : handleNext} disabled={!validation.canProceed} className="w-full h-11 md:h-12 lg:h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-sm md:text-base font-bold rounded-xl transition-all shadow-lg">
               {progress.buttonText}
             </Button>
           </div>

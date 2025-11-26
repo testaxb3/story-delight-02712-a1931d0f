@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 export type HapticPattern = 'light' | 'medium' | 'heavy' | 'success' | 'warning' | 'error';
 
@@ -17,42 +17,6 @@ const detectiOS = (): boolean => {
   });
 };
 
-// === SINGLETON GLOBAL - Created ONCE when module loads ===
-let globalInput: HTMLInputElement | null = null;
-let globalLabel: HTMLLabelElement | null = null;
-let isInitialized = false;
-
-function initializeHapticElements() {
-  if (isInitialized || typeof document === 'undefined') return;
-  
-  // Create input element
-  const input = document.createElement("input");
-  input.type = "checkbox";
-  input.id = "haptic-switch-global";
-  input.setAttribute("switch", "");
-  input.style.cssText = "position:absolute;width:0;height:0;opacity:0;pointer-events:none";
-  document.body.appendChild(input);
-  globalInput = input;
-
-  // Create label element
-  const label = document.createElement("label");
-  label.htmlFor = "haptic-switch-global";
-  label.style.cssText = "position:absolute;width:0;height:0;opacity:0;pointer-events:none";
-  document.body.appendChild(label);
-  globalLabel = label;
-
-  isInitialized = true;
-}
-
-// Initialize immediately when module loads
-if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeHapticElements);
-  } else {
-    initializeHapticElements();
-  }
-}
-
 /**
  * Hook for haptic feedback (vibration) on mobile devices
  * Provides consistent vibration patterns across the app
@@ -60,55 +24,77 @@ if (typeof document !== 'undefined') {
  * - iOS: Uses input[switch] element for native haptic feedback (Safari 18.0+)
  * - Android/Others: Uses the native Vibration API
  *
- * This implementation uses a global singleton pattern to ensure only one set of haptic elements exists in the DOM.
+ * Based on the use-haptic library: https://github.com/posaune0423/use-haptic
  */
 export function useHaptic() {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const labelRef = useRef<HTMLLabelElement | null>(null);
   const isIOS = useMemo(() => detectiOS(), []);
 
-  // Ensure initialization
   useEffect(() => {
-    initializeHapticElements();
+    // Create and append input element
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.id = `haptic-switch-${Math.random().toString(36).substr(2, 9)}`;
+    input.setAttribute("switch", "");
+    input.style.display = "none";
+    document.body.appendChild(input);
+    inputRef.current = input;
+
+    // Create and append label element
+    const label = document.createElement("label");
+    label.htmlFor = input.id;
+    label.style.display = "none";
+    document.body.appendChild(label);
+    labelRef.current = label;
+
+    // Cleanup function
+    return () => {
+      if (input.parentNode) {
+        document.body.removeChild(input);
+      }
+      if (label.parentNode) {
+        document.body.removeChild(label);
+      }
+    };
   }, []);
 
   const triggerHaptic = useCallback((pattern: HapticPattern = 'light') => {
     // Map pattern types to vibration durations in milliseconds
-    // Intensidade aumentada para vibração mais forte
     const vibrationPatterns: Record<HapticPattern, number | number[]> = {
-      light: 25,  // Aumentado de 10 para 25
-      medium: 50, // Aumentado de 20 para 50
-      heavy: 75,  // Aumentado de 30 para 75
-      success: [25, 50, 25], // Aumentado de [10, 50, 10]
-      warning: [50, 50, 50], // Aumentado de [20, 50, 20]
-      error: [75, 50, 75, 50, 75], // Aumentado de [30, 50, 30, 50, 30]
+      light: 25,
+      medium: 50,
+      heavy: 75,
+      success: [25, 50, 25],
+      warning: [50, 50, 50],
+      error: [75, 50, 75, 50, 75],
     };
 
     const vibrationPattern = vibrationPatterns[pattern];
 
     try {
-      if (isIOS) {
-        // iOS: Use input[switch] for haptic feedback
-        // Trigger multiple times for pattern-based feedback
+      // Try navigator.vibrate first (works on Android)
+      if (!isIOS && navigator?.vibrate) {
+        navigator.vibrate(vibrationPattern);
+        return;
+      }
+
+      // iOS: Use input[switch] method
+      if (isIOS && labelRef.current) {
         if (Array.isArray(vibrationPattern)) {
-          // For pattern arrays, trigger haptic for each duration
           vibrationPattern.forEach((duration, index) => {
             if (duration > 0) {
               setTimeout(() => {
-                globalLabel?.click();
+                labelRef.current?.click();
               }, index * 100);
             }
           });
         } else {
-          // For single duration, trigger once
-          globalLabel?.click();
-        }
-      } else {
-        // Android/Others: Use Vibration API
-        if ('vibrate' in navigator) {
-          navigator.vibrate(vibrationPattern);
+          labelRef.current.click();
         }
       }
     } catch (error) {
-      console.warn('[Haptic] Vibration failed:', error);
+      // Silently fail
     }
   }, [isIOS]);
 

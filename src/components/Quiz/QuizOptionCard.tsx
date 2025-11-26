@@ -25,7 +25,7 @@ export const QuizOptionCard = memo(({ value, label, isSelected, onSelect, index 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08, duration: 0.3 }}
-      className={`relative w-full cursor-pointer rounded-2xl p-5 transition-all duration-200 min-h-[72px] flex items-center justify-between text-left group ${
+      className={`relative w-full cursor-pointer rounded-xl md:rounded-2xl p-3.5 md:p-4 lg:p-5 transition-all duration-200 min-h-[60px] md:min-h-[68px] lg:min-h-[72px] flex items-center justify-between text-left group ${
         isSelected
           ? 'bg-foreground text-background'
           : 'bg-card/50 backdrop-blur-sm border border-border/30 hover:border-border/60 text-foreground'
@@ -35,17 +35,17 @@ export const QuizOptionCard = memo(({ value, label, isSelected, onSelect, index 
     >
       {/* Glow effect on hover */}
       <motion.div
-        className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        className="absolute inset-0 rounded-xl md:rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
         style={{
-          background: isSelected 
+          background: isSelected
             ? 'transparent'
             : 'radial-gradient(circle at center, hsl(var(--primary) / 0.1) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />
 
-      <div className="flex items-center gap-4 flex-1 relative z-10">
-        <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
+      <div className="flex items-center gap-3 md:gap-3.5 lg:gap-4 flex-1 relative z-10">
+        <div className={`w-5 h-5 md:w-5.5 md:h-5.5 lg:w-6 lg:h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
           isSelected
             ? 'bg-background'
             : 'border-2 border-border group-hover:border-primary/50'
@@ -56,11 +56,11 @@ export const QuizOptionCard = memo(({ value, label, isSelected, onSelect, index 
               animate={{ scale: 1 }}
               transition={{ type: 'spring', stiffness: 300 }}
             >
-              <Circle className="w-3 h-3 fill-foreground text-foreground" />
+              <Circle className="w-2.5 h-2.5 md:w-3 md:h-3 fill-foreground text-foreground" />
             </motion.div>
           )}
         </div>
-        <span className="text-base font-medium leading-snug">{label}</span>
+        <span className="text-sm md:text-base font-medium leading-snug">{label}</span>
       </div>
     </motion.button>
   );

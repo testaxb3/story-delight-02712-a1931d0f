@@ -28,20 +28,20 @@ export const QuizProgressTimeline = ({ brainType }: QuizProgressTimelineProps) =
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 1.0 }}
-      className="space-y-4 md:space-y-6"
+      className="space-y-3 md:space-y-4 lg:space-y-6"
     >
       {/* Title */}
-      <div className="text-center space-y-2">
-        <h3 className="text-xl md:text-2xl font-bold text-foreground font-relative">
-          Long-term progress: NEP vs Traditional
+      <div className="text-center space-y-1 md:space-y-1.5 lg:space-y-2 px-2">
+        <h3 className="text-base md:text-lg lg:text-2xl font-bold text-foreground font-relative">
+          Long-term progress: Nep vs Traditional
         </h3>
-        <p className="text-sm md:text-base text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-xs md:text-sm lg:text-base text-muted-foreground max-w-2xl mx-auto">
           Challenge level over 6 months
         </p>
       </div>
 
       {/* Enhanced Chart with Gradient */}
-      <div className="w-full h-64 md:h-80 bg-gradient-to-br from-card/50 to-accent/10 rounded-2xl p-4 md:p-6 border-2 border-border/20 shadow-lg">
+      <div className="w-full h-56 md:h-64 lg:h-80 bg-gradient-to-br from-card/50 to-accent/10 rounded-lg md:rounded-xl lg:rounded-2xl p-3 md:p-4 lg:p-6 border border-border/20 md:border-2 shadow-lg">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={timelineData} margin={{ top: 10, right: 10, bottom: 10, left: 0 }}>
             {/* Remove grid for cleaner look */}
@@ -119,21 +119,21 @@ export const QuizProgressTimeline = ({ brainType }: QuizProgressTimelineProps) =
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4"
+        className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-3 lg:gap-4"
       >
-        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
-          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 2</div>
-          <div className="text-xs md:text-sm text-muted-foreground">First improvements visible</div>
+        <div className="bg-card/50 dark:bg-card rounded-lg md:rounded-xl p-2.5 md:p-3 lg:p-4 border border-border/30 text-center">
+          <div className="text-base md:text-lg lg:text-xl font-bold text-foreground mb-0.5 md:mb-1">Week 2</div>
+          <div className="text-[10px] md:text-xs lg:text-sm text-muted-foreground">First improvements visible</div>
         </div>
-        
-        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
-          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 8</div>
-          <div className="text-xs md:text-sm text-muted-foreground">Clear behavior changes</div>
+
+        <div className="bg-card/50 dark:bg-card rounded-lg md:rounded-xl p-2.5 md:p-3 lg:p-4 border border-border/30 text-center">
+          <div className="text-base md:text-lg lg:text-xl font-bold text-foreground mb-0.5 md:mb-1">Week 8</div>
+          <div className="text-[10px] md:text-xs lg:text-sm text-muted-foreground">Clear behavior changes</div>
         </div>
-        
-        <div className="bg-card/50 rounded-xl p-3 md:p-4 border border-border/30 text-center">
-          <div className="text-lg md:text-xl font-bold text-foreground mb-1">Week 24</div>
-          <div className="text-xs md:text-sm text-muted-foreground">Long-term stability achieved</div>
+
+        <div className="bg-card/50 dark:bg-card rounded-lg md:rounded-xl p-2.5 md:p-3 lg:p-4 border border-border/30 text-center">
+          <div className="text-base md:text-lg lg:text-xl font-bold text-foreground mb-0.5 md:mb-1">Week 24</div>
+          <div className="text-[10px] md:text-xs lg:text-sm text-muted-foreground">Long-term stability achieved</div>
         </div>
       </motion.div>
 
@@ -142,16 +142,16 @@ export const QuizProgressTimeline = ({ brainType }: QuizProgressTimelineProps) =
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.4 }}
-        className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-xl p-4 md:p-6 border border-border/30 text-center space-y-3"
+        className="bg-gradient-to-br from-primary/10 to-accent/10 rounded-lg md:rounded-xl p-3 md:p-4 lg:p-6 border border-border/30 text-center space-y-2 md:space-y-3"
       >
-        <div className="flex items-center justify-center gap-2">
-          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: nepColor }} />
-          <p className="text-sm md:text-base font-bold text-foreground">
+        <div className="flex items-center justify-center gap-1.5 md:gap-2">
+          <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full flex-shrink-0" style={{ backgroundColor: nepColor }} />
+          <p className="text-xs md:text-sm lg:text-base font-bold text-foreground">
             83% of parents maintain improvements even 6 months later
           </p>
         </div>
-        <p className="text-xs md:text-sm text-muted-foreground max-w-xl mx-auto">
-          Unlike traditional approaches that often regress, NEP System's neuroscience-based 
+        <p className="text-[10px] md:text-xs lg:text-sm text-muted-foreground max-w-xl mx-auto px-2">
+          Unlike traditional approaches that often regress, Nep System's neuroscience-based
           strategies create <strong>lasting behavioral changes</strong> through brain-type specific approaches
         </p>
       </motion.div>
