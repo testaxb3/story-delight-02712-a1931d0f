@@ -63,6 +63,17 @@ export const PostCard = React.memo(function PostCard({
     onComment(post.id);
   }, [onComment, post.id]);
 
+  // Fallback: prioritize seed post data over profiles data
+  const displayName = useMemo(() => 
+    post.author_name || post.profiles?.username || post.profiles?.name || 'User',
+    [post.author_name, post.profiles]
+  );
+
+  const displayPhoto = useMemo(() => 
+    post.author_photo_url || post.profiles?.photo_url,
+    [post.author_photo_url, post.profiles]
+  );
+
   const formattedDate = useMemo(() => 
     new Date(post.created_at).toLocaleDateString(undefined, { 
       month: 'short', 
@@ -88,15 +99,15 @@ export const PostCard = React.memo(function PostCard({
           onClick={handleProfileClick}
           className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center font-bold text-sm relative shadow-sm text-white shrink-0 cursor-pointer"
         >
-          {post.profiles?.photo_url ? (
+          {displayPhoto ? (
             <img
-              src={post.profiles.photo_url}
+              src={displayPhoto}
               alt=""
               className="w-full h-full rounded-full object-cover"
             />
           ) : (
             <span>
-              {getInitials(post.profiles?.username || post.profiles?.name || 'U')}
+              {getInitials(displayName)}
             </span>
           )}
         </motion.div>
@@ -107,7 +118,7 @@ export const PostCard = React.memo(function PostCard({
               onClick={handleProfileClick}
               className="font-bold text-base text-[#1A1A1A] dark:text-white leading-tight hover:underline cursor-pointer"
             >
-              {post.profiles?.username || post.profiles?.name || 'User'}
+              {displayName}
             </button>
           </div>
           <p className="text-xs text-[#9CA3AF] dark:text-white/40 font-medium mt-0.5">

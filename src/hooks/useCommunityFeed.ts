@@ -13,6 +13,9 @@ export interface Post {
   created_at: string;
   user_id: string;
   comment_count?: number;
+  author_name: string | null;
+  author_photo_url: string | null;
+  author_brain_type: string | null;
   profiles: {
     username: string | null;
     name: string;
@@ -40,7 +43,7 @@ export function useCommunityFeed(communityId: string | null) {
     try {
       const { data, error } = await supabase
         .from('community_posts')
-        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, profiles:user_id(username, name, photo_url, brain_profile), post_comments(count)')
+        .select('id, title, content, image_url, script_used, duration_minutes, result_type, created_at, user_id, author_name, author_photo_url, author_brain_type, profiles:user_id(username, name, photo_url, brain_profile), post_comments(count)')
         .eq('community_id', communityId)
         .order('created_at', { ascending: false });
 
