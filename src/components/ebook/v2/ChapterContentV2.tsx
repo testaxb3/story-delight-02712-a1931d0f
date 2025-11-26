@@ -1,6 +1,7 @@
 import { ChapterSection, TableData } from "@/data/ebookContent";
 import { CalloutBox } from "../CalloutBox";
 import { ScriptBox } from "../ScriptBox";
+import { EbookScriptBox } from "../EbookScriptBox";
 import { TableBlock } from "../TableBlock";
 import { useHighlights } from "@/hooks/useHighlights";
 import { HighlightToolbar } from "./HighlightToolbar";
@@ -234,6 +235,17 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
             );
 
           case "script":
+            // Check for complex structure (title + sections)
+            if ('title' in block && 'sections' in block) {
+              return (
+                <EbookScriptBox
+                  key={index}
+                  title={(block as any).title}
+                  sections={(block as any).sections}
+                />
+              );
+            }
+            // Fallback to simple ScriptBox for legacy format
             return (
               <ScriptBox
                 key={index}
