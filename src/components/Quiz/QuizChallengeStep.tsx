@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -37,10 +37,12 @@ export const QuizChallengeStep = memo(({
   onApproachToggle,
 }: QuizChallengeStepProps) => {
   const { triggerHaptic } = useHaptic();
+  const lastLevelRef = useRef(challengeLevel);
 
   const handleLevelChange = (value: number[]) => {
-    if (value[0] !== challengeLevel) {
+    if (value[0] !== lastLevelRef.current) {
       triggerHaptic('light');
+      lastLevelRef.current = value[0];
       onLevelChange(value[0]);
     }
   };

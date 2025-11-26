@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { LottieIcon } from '@/components/LottieIcon';
 import slothAnimation from '@/assets/lottie/calai/sloth.json';
@@ -42,13 +42,15 @@ const speedOptions = {
 export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
   const [sliderValue, setSliderValue] = useState([speedOptions[value].position]);
   const { triggerHaptic } = useHaptic();
+  const lastValueRef = useRef(sliderValue[0]);
 
   const handleSliderChange = (newValue: number[]) => {
     const position = newValue[0];
 
     // Só vibra se o valor realmente mudou
-    if (newValue[0] !== sliderValue[0]) {
+    if (newValue[0] !== lastValueRef.current) {
       triggerHaptic('light');
+      lastValueRef.current = newValue[0];
     }
 
     setSliderValue(newValue);

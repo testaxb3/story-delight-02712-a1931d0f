@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useHaptic } from '@/hooks/useHaptic';
 
 interface QuizGoalsStepProps {
   selectedGoals: string[];
@@ -26,9 +27,12 @@ const GoalButton = memo(({
   onToggle: (value: string) => void;
   index: number;
 }) => {
+  const { triggerHaptic } = useHaptic();
+  
   const handleClick = useCallback(() => {
+    triggerHaptic('light');
     onToggle(goal.value);
-  }, [onToggle, goal.value]);
+  }, [triggerHaptic, onToggle, goal.value]);
 
   return (
     <motion.button
