@@ -1,9 +1,10 @@
 import { memo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { QuizResultRings } from './QuizResultRings';
-import { Sparkles, TrendingUp, Users, Target, Zap } from 'lucide-react';
+import { Sparkles, TrendingUp, Users, Target, Zap, Brain, Activity } from 'lucide-react';
 import { QuizProgressTimeline } from './QuizProgressTimeline';
 import { useHaptic } from '@/hooks/useHaptic';
+import { cn } from '@/lib/utils';
 
 interface QuizEnhancedResultsProps {
   brainType: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -25,8 +26,9 @@ const brainTypeData = {
     sleepImprovement: 78,
     tantrumsReduction: 65,
     stressReduction: 90,
-    description: 'Children with INTENSE profiles have highly sensitive nervous systems that feel everything more deeply.',
-    gradient: 'from-orange-500/20 via-red-500/20 to-pink-500/20'
+    description: 'Highly sensitive nervous systems that feel everything more deeply.',
+    longDescription: 'Your child\'s brain is a Ferrari engine with bicycle brakes. They aren\'t ignoring you on purpose; their brain is just chasing the next dopamine hit.',
+    gradient: 'from-orange-500/40 via-red-500/30 to-pink-500/30'
   },
   DISTRACTED: {
     color: 'hsl(var(--distracted))',
@@ -40,8 +42,9 @@ const brainTypeData = {
     sleepImprovement: 68,
     tantrumsReduction: 55,
     stressReduction: 85,
-    description: 'Children with DISTRACTED profiles have brains that seek constant novelty and stimulation.',
-    gradient: 'from-blue-500/20 via-cyan-500/20 to-teal-500/20'
+    description: 'Brains that seek constant novelty and stimulation to stay engaged.',
+    longDescription: 'Your child\'s brain is a Ferrari engine with bicycle brakes. They aren\'t ignoring you on purpose; their brain is just chasing the next dopamine hit.',
+    gradient: 'from-blue-500/40 via-cyan-500/30 to-teal-500/30'
   },
   DEFIANT: {
     color: 'hsl(var(--defiant))',
@@ -55,80 +58,80 @@ const brainTypeData = {
     sleepImprovement: 71,
     tantrumsReduction: 58,
     stressReduction: 88,
-    description: 'Children with DEFIANT profiles have strong-willed brains that need to understand the "why" behind rules.',
-    gradient: 'from-purple-500/20 via-violet-500/20 to-indigo-500/20'
+    description: 'Strong-willed brains that need to understand the \'why\' behind rules.',
+    longDescription: 'Your child isn\'t just stubborn; they have a leadership brain. They need collaboration, not control. Once they buy in, they are unstoppable.',
+    gradient: 'from-purple-500/40 via-violet-500/30 to-indigo-500/30'
   }
 };
 
-const spring = { type: "spring" as const, stiffness: 300, damping: 30 };
-const softSpring = { type: "spring" as const, stiffness: 200, damping: 25 };
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  visible: {
+    opacity: 1, 
+    y: 0, 
+    scale: 1,
+    transition: { type: "spring", stiffness: 280, damping: 24 }
+  }
+};
 
 const StatCard = memo(({
   icon: Icon,
   label,
   value,
-  description,
+  subtext,
   color,
-  delay
+  className
 }: {
   icon: any;
   label: string;
   value: string;
-  description: string;
+  subtext?: string;
   color: string;
-  delay: number;
+  className?: string;
 }) => {
   const { triggerHaptic } = useHaptic();
 
-  const handlePress = useCallback(() => {
-    triggerHaptic('light');
-  }, [triggerHaptic]);
-
   return (
-    <motion.button
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ ...spring, delay }}
-      whileTap={{ scale: 0.97 }}
-      onClick={handlePress}
-      className="relative group text-left w-full overflow-hidden"
+    <motion.div
+      variants={itemVariants}
+      whileTap={{ scale: 0.98 }}
+      onClick={() => triggerHaptic('light')}
+      className={cn(
+        "relative overflow-hidden rounded-3xl bg-white/5 dark:bg-black/20 backdrop-blur-2xl border border-white/10 p-5 flex flex-col justify-between shadow-sm transition-all hover:bg-white/10 hover:shadow-md hover:border-white/20 group",
+        className
+      )}
     >
-      {/* Glassmorphic card */}
-      <div className="relative bg-card/60 dark:bg-card/40 backdrop-blur-xl rounded-2xl p-4 md:p-5 border border-border/40 shadow-lg dark:shadow-black/20 transition-all duration-300 group-hover:border-border/60 group-hover:shadow-xl">
-        {/* Gradient glow on hover */}
-        <div
-          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl blur-xl -z-10"
-          style={{ background: `radial-gradient(circle at 50% 0%, ${color}40, transparent 70%)` }}
-        />
-
-        {/* Content */}
-        <div className="flex items-start gap-3 md:gap-4 mb-2">
-          <div
-            className="w-11 h-11 md:w-12 md:h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-md transition-transform duration-300 group-hover:scale-110"
-            style={{ backgroundColor: `${color}15` }}
-          >
-            <Icon className="w-5 h-5 md:w-6 md:h-6" style={{ color }} />
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[11px] md:text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">
-              {label}
-            </p>
-            <motion.p
-              className="text-2xl md:text-3xl lg:text-4xl font-black tracking-tight"
-              style={{ color }}
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              transition={{ ...spring, delay: delay + 0.1 }}
-            >
-              {value}
-            </motion.p>
-          </div>
+      <div className="absolute top-0 right-0 p-3 opacity-50 group-hover:opacity-100 transition-opacity">
+        <div className="p-2 rounded-full bg-white/5">
+          <Icon className="w-4 h-4" style={{ color }} />
         </div>
-        <p className="text-[11px] md:text-xs text-muted-foreground/80 leading-relaxed">
-          {description}
-        </p>
       </div>
-    </motion.button>
+      
+      <div>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/80 mb-1">{label}</p>
+        <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>
+      </div>
+      
+      {subtext && (
+        <p className="text-xs text-muted-foreground/70 mt-2 leading-tight">{subtext}</p>
+      )}
+
+      {/* Dynamic background glow */}
+      <div 
+        className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700"
+        style={{ backgroundColor: color }} 
+      />
+    </motion.div>
   );
 });
 
@@ -141,191 +144,140 @@ export const QuizEnhancedResults = memo(({
   parentGoals
 }: QuizEnhancedResultsProps) => {
   const data = brainTypeData[brainType];
-  const { triggerHaptic } = useHaptic();
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      {/* HERO: Brain Profile Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={spring}
-        className="relative overflow-hidden"
-      >
-        {/* Animated gradient background */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${data.gradient} dark:opacity-50 opacity-70 blur-3xl`} />
+    <motion.div 
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="space-y-6 pb-12"
+    >
+      {/* HERO SECTION */}
+      <motion.div variants={itemVariants} className="relative">
+        {/* Ambient Background Light */}
+        <div className={`absolute inset-0 bg-gradient-to-br ${data.gradient} blur-[80px] opacity-40 rounded-full transform -translate-y-10 scale-110`} />
 
-        <div className="relative bg-card/80 dark:bg-card/60 backdrop-blur-2xl rounded-3xl p-6 md:p-8 border border-border/50 shadow-2xl dark:shadow-black/40">
-          {/* Brain type badge */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ ...spring, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 shadow-lg"
-            style={{ backgroundColor: `${data.color}20`, borderColor: `${data.color}40` }}
-          >
-            <Zap className="w-4 h-4" style={{ color: data.color }} />
-            <span className="text-sm md:text-base font-bold" style={{ color: data.color }}>
+        <div className="relative z-10 overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl p-8">
+          <div className="flex flex-col items-center text-center">
+            
+            {/* Badge */}
+            <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 dark:bg-black/20 border border-white/10 backdrop-blur-md shadow-sm">
+              <Zap className="w-3.5 h-3.5" style={{ color: data.color }} />
+              <span className="text-xs font-bold tracking-wide uppercase" style={{ color: data.color }}>
+                {brainType} Profile
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-4 leading-[0.95]">
+              <span className="block text-lg md:text-xl font-medium tracking-normal text-muted-foreground mb-2 opacity-80">The results are in for {childName}</span>
               {brainType}
-            </span>
-          </motion.div>
+            </h1>
 
-          {/* Title */}
-          <motion.h1
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...spring, delay: 0.2 }}
-            className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground mb-3 leading-tight tracking-tight"
-          >
-            {childName}'s<br />Brain Profile
-          </motion.h1>
-
-          {/* Description */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-2xl"
-          >
-            {data.description}
-          </motion.p>
+            <p className="text-base md:text-lg text-foreground/80 leading-relaxed max-w-xl mx-auto font-medium">
+              {data.description}
+            </p>
+            
+            <div className="mt-6 p-4 rounded-2xl bg-background/30 border border-white/10 backdrop-blur-md">
+              <p className="text-sm text-muted-foreground italic">
+                "{data.longDescription}"
+              </p>
+            </div>
+          </div>
         </div>
       </motion.div>
 
-      {/* Result Rings */}
-      <QuizResultRings
-        brainType={brainType}
-        scriptsCount={data.scriptsCount}
-        videosCount={data.videosCount}
-        ebooksCount={data.ebooksCount}
-      />
-
-      {/* Stats Section Title */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="text-center"
-      >
-        <h2 className="text-xl md:text-2xl font-black text-foreground">
-          What to Expect
-        </h2>
-        <p className="text-xs md:text-sm text-muted-foreground mt-1">
-          with Nep System
-        </p>
+      {/* RINGS SECTION - WRAPPED IN GLASS */}
+      <motion.div variants={itemVariants} className="rounded-3xl bg-card/30 backdrop-blur-xl border border-border/30 p-6 shadow-lg">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-6 text-center">Your Personalized Plan</h3>
+        <QuizResultRings
+          brainType={brainType}
+          scriptsCount={data.scriptsCount}
+          videosCount={data.videosCount}
+          ebooksCount={data.ebooksCount}
+        />
       </motion.div>
 
-      {/* Interactive Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+      {/* BENTO GRID STATS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <StatCard
+          icon={Brain}
+          label="Match"
+          value={`${data.percentile}%`}
+          subtext={`Parents with ${brainType} children`}
+          color={data.color}
+          className="md:col-span-2 bg-gradient-to-br from-card/50 to-transparent"
+        />
         <StatCard
           icon={TrendingUp}
-          label="First Improvement"
+          label="First Results"
           value={data.averageImprovement}
-          description="Average time until parents see noticeable positive changes"
+          subtext="Expected timeline"
           color={data.color}
-          delay={0.5}
         />
         <StatCard
-          icon={Target}
-          label="30-Day Improvement"
-          value={`${data.monthlySuccess}%`}
-          description="Expected improvement rate after one month"
-          color={data.color}
-          delay={0.6}
-        />
-        <StatCard
-          icon={Users}
-          label="Profile Distribution"
-          value={`${data.percentile}%`}
-          description={`You're among the ${data.percentile}% of parents with ${brainType} profile children`}
-          color={data.color}
-          delay={0.7}
-        />
-        <StatCard
-          icon={Sparkles}
-          label="Overall Success Rate"
+          icon={Activity}
+          label="Success Rate"
           value={`${data.successRate}%`}
-          description="Parent satisfaction rate with Nep System strategies"
+          subtext="Parent satisfaction"
           color={data.color}
-          delay={0.8}
         />
       </div>
 
-      {/* Outcome Progress Bars */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ ...softSpring, delay: 0.9 }}
-        className="relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-transparent rounded-3xl" />
-        <div className="relative bg-card/60 dark:bg-card/40 backdrop-blur-xl rounded-3xl p-5 md:p-6 border border-border/40 shadow-xl">
-          <h3 className="text-base md:text-lg font-bold text-center mb-5 text-foreground">
-            Typical Improvements
-          </h3>
+      {/* IMPACT METRICS */}
+      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+         {[ 
+            { label: 'Sleep Quality', value: data.sleepImprovement, icon: Sparkles },
+            { label: 'Calmer Home', value: data.tantrumsReduction, icon: Users },
+            { label: 'Parent Confidence', value: data.stressReduction, icon: Target }
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-card/40 border border-border/30 backdrop-blur-lg">
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-background/50 text-foreground">
+                <item.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="text-2xl font-black text-foreground">{item.value}%</div>
+                <div className="text-xs text-muted-foreground font-medium">{item.label}</div>
+              </div>
+              {/* Mini progress bar */}
+              <div className="ml-auto w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                <motion.div 
+                  initial={{ width: 0 }}
+                  animate={{ width: `${item.value}%` }}
+                  transition={{ delay: 0.5 + (i * 0.1), duration: 1 }}
+                  className="h-full rounded-full"
+                  style={{ backgroundColor: data.color }}
+                />
+              </div>
+            </div>
+          ))}
+      </motion.div>
 
-          <div className="space-y-4">
-            {[
-              { label: 'Sleep improvements in 2 weeks', value: data.sleepImprovement },
-              { label: 'Tantrum reduction in 1 month', value: data.tantrumsReduction },
-              { label: 'Parent stress reduction', value: data.stressReduction }
-            ].map((item, index) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ ...spring, delay: 1 + index * 0.1 }}
-                className="space-y-2"
-              >
-                <div className="flex items-center justify-between text-xs md:text-sm">
-                  <span className="text-muted-foreground font-medium">{item.label}</span>
-                  <motion.span
-                    className="font-black text-lg md:text-xl"
-                    style={{ color: data.color }}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ ...spring, delay: 1.2 + index * 0.1 }}
-                  >
-                    {item.value}%
-                  </motion.span>
-                </div>
-                <div className="relative h-2.5 md:h-3 bg-muted/50 rounded-full overflow-hidden shadow-inner">
-                  <motion.div
-                    className="absolute inset-y-0 left-0 rounded-full shadow-lg"
-                    style={{ backgroundColor: data.color }}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${item.value}%` }}
-                    transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 1.3 + index * 0.1 }}
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
+      {/* TIMELINE */}
+      <motion.div variants={itemVariants} className="pt-4">
+        <div className="rounded-[2.5rem] bg-white/60 dark:bg-black/40 backdrop-blur-3xl border border-white/20 p-1 shadow-xl">
+           <div className="rounded-[2.2rem] bg-background/50 p-6 border border-white/10">
+             <QuizProgressTimeline brainType={brainType} />
+           </div>
         </div>
       </motion.div>
 
-      {/* Long-Term Timeline */}
-      <QuizProgressTimeline brainType={brainType} />
-
-      {/* Challenge Level Alert */}
+      {/* DISCLAIMER / EMPATHY CARD */}
       {challengeLevel && challengeLevel >= 7 && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...spring, delay: 1.6 }}
-          onClick={() => triggerHaptic('medium')}
-          className="relative overflow-hidden cursor-pointer group"
+        <motion.div 
+          variants={itemVariants}
+          className="mt-8 p-6 rounded-2xl bg-red-500/5 border border-red-500/10 text-center"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-accent/10 rounded-2xl" />
-          <div className="relative bg-card/80 dark:bg-card/60 backdrop-blur-xl rounded-2xl p-4 md:p-5 border-2 border-primary/30 shadow-xl group-hover:border-primary/50 transition-all">
-            <p className="text-sm md:text-base text-foreground text-center leading-relaxed">
-              <strong className="font-black">We understand this is really hard right now.</strong>
-              {' '}With your challenge level ({challengeLevel}/10), you'll find immediate relief strategies in the "Emergency Scripts" section.
-            </p>
-          </div>
+          <p className="text-sm text-muted-foreground">
+            We noticed your challenge level is high <strong>({challengeLevel}/10)</strong>. 
+            The generated plan prioritizes <em>immediate relief scripts</em> to help you regain control today.
+          </p>
         </motion.div>
       )}
-    </div>
+
+      {/* Spacer for floating button */}
+      <div className="h-24" />
+    </motion.div>
   );
 });
 

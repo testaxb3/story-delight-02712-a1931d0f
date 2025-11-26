@@ -233,8 +233,19 @@ export default function Quiz() {
             )}
           </AnimatePresence>
         </div>
-        <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-4 md:px-5 lg:px-6 pt-2 md:pt-2.5 lg:pt-3 z-50" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
-          <Button onClick={() => { triggerHaptic('light'); quizState.setShowEnhancedResults(false); quizState.setShowFinalCelebration(true); }} className="w-full h-10 md:h-11 lg:h-12 bg-foreground text-background hover:bg-foreground/90 text-sm md:text-base font-bold rounded-xl shadow-lg">See My Dashboard</Button>
+        <div className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-md z-50">
+          <div className="bg-background/80 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full p-1.5 ring-1 ring-black/5 dark:ring-white/10">
+            <Button 
+              onClick={() => { 
+                triggerHaptic('light'); 
+                quizState.setShowEnhancedResults(false); 
+                quizState.setShowFinalCelebration(true); 
+              }} 
+              className="w-full h-12 md:h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-full shadow-lg transition-all active:scale-95"
+            >
+              See My Dashboard
+            </Button>
+          </div>
         </div>
       </div>
     );

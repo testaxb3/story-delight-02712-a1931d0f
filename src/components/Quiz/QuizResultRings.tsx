@@ -103,7 +103,7 @@ export const QuizResultRings = ({
   };
 
   return (
-    <div className="grid grid-cols-2 gap-2.5 md:gap-4 lg:gap-6 mb-4 md:mb-6 lg:mb-8">
+    <div className="grid grid-cols-2 gap-4">
       {rings.map((ring, index) => {
         const percentage = (ring.value / ring.maxValue) * 100;
         const circumference = 2 * Math.PI * 45;
@@ -114,69 +114,61 @@ export const QuizResultRings = ({
         return (
           <motion.div
             key={ring.label}
-            initial={{ opacity: 0, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{
-              duration: 0.5,
-              delay: index * 0.15,
-              ease: [0.16, 1, 0.3, 1]
+              duration: 0.4,
+              delay: index * 0.1,
+              type: "spring",
+              stiffness: 200
             }}
-            whileHover={{ scale: 1.05 }}
-            className="relative group"
+            className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
           >
-            {/* Glow Effect on Hover */}
-            <motion.div
-              className="absolute inset-0 rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-300"
-              style={{ backgroundColor: ring.color }}
-            />
+            {/* SVG Ring */}
+            <div className="relative w-20 h-20 mb-3">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                {/* Background circle */}
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  className="text-muted/20"
+                />
+                {/* Progress circle */}
+                <motion.circle
+                  cx="50"
+                  cy="50"
+                  r="45"
+                  fill="none"
+                  stroke={ring.color}
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                  strokeDasharray={circumference}
+                  initial={{ strokeDashoffset: circumference }}
+                  animate={{ strokeDashoffset }}
+                  transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.15 }}
+                />
+              </svg>
 
-            <div className="relative bg-card/50 dark:bg-card backdrop-blur-sm rounded-lg md:rounded-xl lg:rounded-2xl p-2.5 md:p-4 lg:p-6 border border-border/30 hover:border-border/60 transition-all">
-              {/* SVG Ring */}
-              <div className="relative w-16 h-16 md:w-20 md:h-20 lg:w-28 lg:h-28 mx-auto mb-1.5 md:mb-2 lg:mb-4">
-                <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                  {/* Background circle */}
-                  <circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke="hsl(var(--muted))"
-                    strokeWidth="8"
-                    opacity="0.2"
-                  />
-                  {/* Progress circle */}
-                  <motion.circle
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    stroke={ring.color}
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={circumference}
-                    initial={{ strokeDashoffset: circumference }}
-                    animate={{ strokeDashoffset }}
-                    transition={{ duration: 1.5, ease: "easeOut", delay: index * 0.15 }}
-                  />
-                </svg>
-
-                {/* Icon in center */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <Icon className="w-5 h-5 md:w-6 md:h-6 lg:w-10 lg:h-10" style={{ color: ring.color }} />
-                </div>
+              {/* Icon in center */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Icon className="w-6 h-6 opacity-80" style={{ color: ring.color }} />
               </div>
+            </div>
 
-              {/* Value and Label */}
-              <div className="text-center">
-                <motion.div
-                  className="text-lg md:text-2xl lg:text-3xl font-bold mb-0.5 md:mb-1"
-                  style={{ color: ring.color }}
-                >
-                  {ring.label === 'Complete' ? `${animatedValue}%` : animatedValue}
-                </motion.div>
-                <div className="text-[10px] md:text-xs lg:text-sm text-muted-foreground font-medium">
-                  {ring.label}
-                </div>
+            {/* Value and Label */}
+            <div className="text-center">
+              <motion.div
+                className="text-2xl font-black leading-none mb-1"
+                style={{ color: ring.color }}
+              >
+                {ring.label === 'Complete' ? `${animatedValue}%` : animatedValue}
+              </motion.div>
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">
+                {ring.label}
               </div>
             </div>
           </motion.div>
