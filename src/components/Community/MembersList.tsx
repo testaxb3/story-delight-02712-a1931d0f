@@ -56,7 +56,7 @@ export const MembersList = React.memo(function MembersList({ members }: MembersL
                 </motion.div>
               )}
               <button
-                onClick={() => navigate(`/user/${member.user_id}`)}
+                onClick={() => member.user_id && navigate(`/user/${member.user_id}`)}
                 className={cn(
                   "w-16 h-16 rounded-full flex items-center justify-center font-bold text-sm shadow-md ring-2 ring-white dark:ring-background transition-transform hover:scale-105 overflow-hidden cursor-pointer",
                   member.role === 'leader'
