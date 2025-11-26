@@ -11,46 +11,24 @@ export const HapticSlider = React.forwardRef<
 >(({ onValueChange, min = 0, max = 100, step = 1, ...props }, ref) => {
   const { triggerHaptic } = useHaptic();
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const lastStepRef = React.useRef<number | null>(null);
   const isDraggingRef = React.useRef(false);
 
-  const handlePointerDown = (e: React.PointerEvent) => {
+  const handlePointerDown = () => {
     isDraggingRef.current = true;
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
-      const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-      const value = min + percent * (max - min);
-      lastStepRef.current = Math.round(value / step);
-      triggerHaptic('light');
-    }
-  };
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDraggingRef.current) return;
-    
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-
-    const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const value = min + percent * (max - min);
-    const currentStep = Math.round(value / step);
-
-    if (lastStepRef.current !== null && currentStep !== lastStepRef.current) {
-      triggerHaptic('light');
-      lastStepRef.current = currentStep;
-    }
+    triggerHaptic('light');
   };
 
   const handlePointerUp = () => {
+    if (isDraggingRef.current) {
+      triggerHaptic('light');
+    }
     isDraggingRef.current = false;
-    lastStepRef.current = null;
   };
 
   return (
     <div 
       ref={containerRef}
       onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
       onPointerLeave={handlePointerUp}
