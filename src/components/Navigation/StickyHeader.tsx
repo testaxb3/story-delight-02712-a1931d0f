@@ -41,7 +41,6 @@ export function StickyHeader({
       className={cn(
         isStatic ? 'relative' : 'sticky top-0',
         'z-50 w-full transition-all duration-200',
-        'pt-[env(safe-area-inset-top)]',
         !isStatic && isScrolled && !transparent
           ? 'bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
           : 'bg-transparent'
@@ -64,7 +63,7 @@ export function StickyHeader({
       )}
 
       {/* Header Content */}
-      <div className="px-5 py-4">
+      <div className="px-5 py-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         {children ? (
           children
         ) : (

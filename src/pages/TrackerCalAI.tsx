@@ -1,20 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { CheckCircle2, Flame, Target, Trophy, Calendar } from 'lucide-react';
+import { CheckCircle2, Flame, Target, Trophy, Calendar, ChevronLeft, ChevronRight, X, Zap, Plus, Lock, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
+import confetti from 'canvas-confetti';
 
+// --- TYPES ---
 interface TrackerDay {
   id: string;
   day_number: number;
@@ -25,6 +24,65 @@ interface TrackerDay {
 
 const TOTAL_DAYS = 30;
 
+// --- UTILITY COMPONENTS ---
+
+const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, type: "spring", stiffness: 300, damping: 30 }}
+    className="bg-white/5 dark:bg-[#1C1C1E] backdrop-blur-xl border border-white/10 p-4 rounded-[20px] flex flex-col justify-between h-32 relative overflow-hidden group"
+  >
+    <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:scale-110", color)}>
+      <Icon className="w-5 h-5 text-white" />
+    </div>
+    <div>
+      <div className="text-3xl font-black tracking-tight text-foreground font-relative mb-1">{value}</div>
+      <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{title}</div>
+    </div>
+    {/* Ambient Glow */}
+    <div className={cn("absolute -bottom-4 -right-4 w-20 h-20 rounded-full blur-2xl opacity-20", color)} />
+  </motion.div>
+);
+
+const DayCell = ({ day, dayNumber, isToday, onClick }: { day?: TrackerDay; dayNumber: number; isToday: boolean; onClick: () => void }) => {
+  const isCompleted = day?.completed;
+  
+  return (
+    <motion.button
+      whileTap={!isCompleted ? { scale: 0.9 } : undefined}
+      onClick={!isCompleted ? onClick : undefined}
+      className="relative group"
+      disabled={isCompleted}
+    >
+      <div className={cn(
+        "aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 border",
+        isCompleted 
+          ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30" 
+          : isToday
+            ? "bg-primary/10 border-primary text-primary ring-2 ring-primary/20"
+            : "bg-card/50 border-transparent text-muted-foreground hover:bg-card"
+      )}>
+        <span className="text-[10px] font-bold uppercase opacity-60">{isCompleted ? "Done" : "Day"}</span>
+        <span className={cn("text-xl font-black font-relative", isCompleted ? "text-white" : "text-foreground")}>
+          {dayNumber}
+        </span>
+        {isCompleted && (
+          <motion.div 
+            initial={{ scale: 0, rotate: -180 }} 
+            animate={{ scale: 1, rotate: 0 }} 
+            className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-2xl backdrop-blur-[1px]"
+          >
+            <Check className="w-6 h-6 text-white stroke-[4]" />
+          </motion.div>
+        )}
+      </div>
+    </motion.button>
+  );
+};
+
+// --- MAIN COMPONENT ---
+
 export default function TrackerCalAI() {
   const { user } = useAuth();
   const { activeChild } = useChildProfiles();
@@ -33,7 +91,15 @@ export default function TrackerCalAI() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [stressLevel, setStressLevel] = useState<number>(3);
   const [saving, setSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false); // New state for success view
   const { triggerHaptic } = useHaptic();
+  const scrollRef = useRef(null);
+  const { scrollY } = useScroll({ container: scrollRef });
+  
+  // Header animations
+  const headerOpacity = useTransform(scrollY, [0, 50], [1, 0]);
+  const stickyHeaderOpacity = useTransform(scrollY, [40, 60], [0, 1]);
+  const headerY = useTransform(scrollY, [0, 50], [0, -20]);
 
   useEffect(() => {
     if (user && activeChild) {
@@ -52,41 +118,67 @@ export default function TrackerCalAI() {
       .order('day_number');
 
     if (!error && data) {
+      console.log('Tracker data loaded:', data.length, 'days');
       setTrackerDays(data);
     }
     setLoading(false);
   };
 
-  const completedDays = trackerDays.filter(d => d.completed).length;
-  const progressPercent = (completedDays / TOTAL_DAYS) * 100;
-  const currentStreak = calculateStreak(trackerDays);
-
-  function calculateStreak(days: TrackerDay[]): number {
-    const sorted = [...days].sort((a, b) => b.day_number - a.day_number);
+  // Stats Calculation
+  const stats = useMemo(() => {
+    const completed = trackerDays.filter(d => d.completed).length;
+    const progress = (completed / TOTAL_DAYS) * 100;
+    
+    const sorted = [...trackerDays].sort((a, b) => b.day_number - a.day_number);
     let streak = 0;
     for (const day of sorted) {
       if (day.completed) streak++;
       else break;
     }
-    return streak;
-  }
+
+    return { completed, progress, streak };
+  }, [trackerDays]);
+
+  // Improved Logic: Priority is Today's Date > First Incomplete Day
+  const nextActionableDay = useMemo(() => {
+    if (trackerDays.length === 0) return null;
+
+    // 1. Try to find today's date match
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayMatch = trackerDays.find(d => d.date === todayStr);
+    
+    if (todayMatch && !todayMatch.completed) {
+      return todayMatch;
+    }
+    
+    // 2. If today is done or not found, find the first incomplete day
+    const firstIncomplete = trackerDays.find(d => !d.completed);
+    
+    // 3. If all days are done, return null
+    return firstIncomplete || null;
+  }, [trackerDays]);
 
   const handleDayClick = (dayNumber: number) => {
-    triggerHaptic('light');
     const day = trackerDays.find(d => d.day_number === dayNumber);
-    if (day?.completed) return;
+    if (day?.completed) {
+      triggerHaptic('error');
+      toast.info("This day is already completed!");
+      return; 
+    }
     
+    triggerHaptic('light');
     setSelectedDay(dayNumber);
     setStressLevel(3);
+    setShowSuccess(false); // Reset success state
   };
 
   const handleSave = async () => {
     if (!selectedDay || !user?.id || !activeChild?.id) return;
 
     setSaving(true);
-    triggerHaptic('medium');
+    triggerHaptic('success');
     
-    // Simulate update locally first for instant feedback
+    // 1. OPTIMISTIC UPDATE: Update local state immediately
     const updatedDays = trackerDays.map(d => 
       d.day_number === selectedDay 
         ? { ...d, completed: true, stress_level: stressLevel }
@@ -94,8 +186,38 @@ export default function TrackerCalAI() {
     );
     setTrackerDays(updatedDays);
 
-    const day = trackerDays.find(d => d.day_number === selectedDay);
+    // 2. SHOW SUCCESS UI
+    setShowSuccess(true);
+    
+    // 3. TRIGGER CONFETTI
+    const end = Date.now() + 1000;
+    const colors = ['#bb0000', '#ffffff'];
 
+    (function frame() {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: colors,
+        zIndex: 9999
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: colors,
+        zIndex: 9999
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    })();
+
+    // 4. DB UPDATE (Background)
+    const day = trackerDays.find(d => d.day_number === selectedDay);
     if (day) {
       const { error } = await supabase
         .from('tracker_days')
@@ -106,232 +228,332 @@ export default function TrackerCalAI() {
         })
         .eq('id', day.id);
 
-      if (!error) {
-        setSelectedDay(null);
-        toast.success('Day completed!');
-      } else {
-        // Revert on error
-        fetchTracker();
-        toast.error('Failed to save progress');
+      if (error) {
+        // Revert if failed (optional, but good practice)
+        fetchTracker(); 
+        toast.error('Connection error. Please check your internet.');
       }
     }
-    setSaving(false);
-  };
 
-  // Circular Progress Component
-  const CircularProgress = ({ value, size = 120, strokeWidth = 10, children }: any) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const offset = circumference - (value / 100) * circumference;
-
-    return (
-      <div className="relative flex items-center justify-center">
-        <svg width={size} height={size} className="transform -rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            fill="transparent"
-            className="text-gray-200 dark:text-gray-800"
-          />
-          <motion.circle
-            initial={{ strokeDashoffset: circumference }}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="currentColor"
-            strokeWidth={strokeWidth}
-            fill="transparent"
-            strokeDasharray={circumference}
-            className="text-primary"
-            strokeLinecap="round"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          {children}
-        </div>
-      </div>
-    );
+    // 5. CLOSE MODAL AFTER DELAY
+    setTimeout(() => {
+      setSelectedDay(null);
+      setSaving(false);
+      setShowSuccess(false);
+    }, 1800);
   };
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32 overflow-x-hidden">
-        
-        {/* Header Spacer */}
-        <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+      <div 
+        ref={scrollRef}
+        className="h-screen overflow-y-auto bg-background no-scrollbar relative"
+        style={{ scrollPaddingTop: '100px' }}
+      >
+        {/* Sticky Header Blur */}
+        <motion.div 
+          className="fixed top-0 left-0 right-0 h-[110px] bg-background/80 backdrop-blur-xl z-40 border-b border-white/5 pointer-events-none"
+          style={{ opacity: stickyHeaderOpacity }}
+        >
+          <div className="absolute bottom-4 left-0 right-0 text-center font-bold text-lg text-foreground">Summary</div>
+        </motion.div>
 
-        <div className="px-5 mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white">Summary</h1>
-            <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center overflow-hidden">
+        <div className="px-6 pt-[calc(env(safe-area-inset-top)+20px)] pb-40 max-w-2xl mx-auto">
+          
+          {/* Large Header */}
+          <motion.div 
+            style={{ opacity: headerOpacity, y: headerY }}
+            className="flex items-end justify-between mb-8"
+          >
+            <div>
+              <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground font-relative">
+                Summary
+              </h1>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-muted border-2 border-background ring-2 ring-border overflow-hidden shadow-xl">
                {(user?.user_metadata as any)?.avatar_url ? (
                  <img src={(user.user_metadata as any).avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                ) : (
-                 <span className="text-gray-500 font-semibold">{user?.email?.[0].toUpperCase()}</span>
+                 <div className="w-full h-full flex items-center justify-center text-lg font-bold bg-primary/10 text-primary">
+                   {user?.email?.[0].toUpperCase()}
+                 </div>
                )}
             </div>
-          </div>
-          <p className="text-gray-500 dark:text-gray-400 font-medium">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
-        </div>
+          </motion.div>
 
-        {/* Hero Activity Rings Card */}
-        <div className="px-4 mb-6">
-          <Card className="bg-white dark:bg-[#1C1C1E] border-none shadow-sm rounded-[24px] p-6 relative overflow-hidden">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-6">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">Activity</h2>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-primary">{completedDays}</span>
-                    <span className="text-gray-500 text-sm font-medium">/ {TOTAL_DAYS} days</span>
-                  </div>
-                </div>
-                
-                <div className="flex gap-4">
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Move</span>
-                    <span className="text-xl font-bold text-red-500">{Math.round(progressPercent)}%</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Streak</span>
-                    <span className="text-xl font-bold text-green-500">{currentStreak}d</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Rings */}
-              <div className="relative">
-                <CircularProgress value={progressPercent} size={100} strokeWidth={12}>
-                  <Flame className="w-8 h-8 text-primary fill-primary/20" />
-                </CircularProgress>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Monthly View - Bento Grid */}
-        <div className="px-4 mb-8">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4 px-1">History</h3>
-          <Card className="bg-white dark:bg-[#1C1C1E] border-none shadow-sm rounded-[24px] p-5">
-            {loading ? (
-              <div className="grid grid-cols-7 gap-3">
-                {Array.from({ length: 30 }).map((_, i) => (
-                  <div key={i} className="aspect-square bg-gray-100 dark:bg-gray-800 rounded-full animate-pulse" />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-7 gap-x-2 gap-y-4">
-                {/* Weekday Headers */}
-                {['S','M','T','W','T','F','S'].map((d, i) => (
-                  <div key={i} className="text-center text-xs font-semibold text-gray-400">{d}</div>
-                ))}
-                
-                {/* Days */}
-                {Array.from({ length: TOTAL_DAYS }).map((_, i) => {
-                  const dayNumber = i + 1;
-                  const day = trackerDays.find(d => d.day_number === dayNumber);
-                  const isCompleted = day?.completed || false;
-                  const isToday = false; // Logic for today highlighting can be added
-
-                  return (
-                    <motion.button
-                      key={dayNumber}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={() => handleDayClick(dayNumber)}
-                      className={cn(
-                        "aspect-square rounded-full flex items-center justify-center relative",
-                        isCompleted 
-                          ? "bg-gradient-to-br from-primary to-purple-600 shadow-md shadow-primary/30" 
-                          : "bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500"
-                      )}
-                    >
-                      {isCompleted ? (
-                        <Trophy className="w-3.5 h-3.5 text-white" />
-                      ) : (
-                        <span className="text-xs font-medium">{dayNumber}</span>
-                      )}
-                    </motion.button>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-        </div>
-
-        {/* Insights / Trends Section */}
-        <div className="px-4 grid grid-cols-2 gap-4">
-          <Card className="bg-white dark:bg-[#1C1C1E] border-none shadow-sm rounded-[24px] p-5 flex flex-col justify-between h-32">
-            <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-500">
-              <Flame className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{currentStreak}</span>
-              <p className="text-xs text-gray-500 font-medium">Current Streak</p>
-            </div>
-          </Card>
-
-          <Card className="bg-white dark:bg-[#1C1C1E] border-none shadow-sm rounded-[24px] p-5 flex flex-col justify-between h-32">
-            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-500">
-              <Target className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">{TOTAL_DAYS - completedDays}</span>
-              <p className="text-xs text-gray-500 font-medium">Days Left</p>
-            </div>
-          </Card>
-        </div>
-
-        {/* Log Day Modal */}
-        <Dialog open={selectedDay !== null} onOpenChange={() => setSelectedDay(null)}>
-          <DialogContent className="bg-[#F2F2F7] dark:bg-[#1C1C1E] border-none rounded-[24px] w-[90%] max-w-sm p-0 overflow-hidden">
-            <DialogHeader className="pt-6 px-6 pb-2">
-              <DialogTitle className="text-2xl font-bold text-center">Log Day {selectedDay}</DialogTitle>
-            </DialogHeader>
-
-            <div className="px-6 pb-6 space-y-6">
-              <p className="text-center text-gray-500 text-sm">How was your stress level today?</p>
-              
-              <div className="flex justify-between items-center px-2">
-                {[1, 2, 3, 4, 5].map(level => (
-                  <motion.button
-                    key={level}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => {
-                      triggerHaptic('light');
-                      setStressLevel(level);
-                    }}
-                    className={cn(
-                      "w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold transition-all shadow-sm",
-                      stressLevel === level
-                        ? "bg-primary text-white scale-110 ring-4 ring-primary/20"
-                        : "bg-white dark:bg-gray-800 text-gray-400"
-                    )}
-                  >
-                    {level}
-                  </motion.button>
-                ))}
-              </div>
-              <div className="flex justify-between text-xs text-gray-400 px-2 font-medium">
-                <span>Zen</span>
-                <span>Chaos</span>
-              </div>
-
-              <Button 
-                onClick={handleSave} 
-                disabled={saving} 
-                className="w-full h-14 text-lg font-semibold rounded-[18px] shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90"
+          {/* PRIMARY ACTION: Log Today (Card) */}
+          <AnimatePresence>
+            {nextActionableDay && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleDayClick(nextActionableDay.day_number)}
+                className="mb-8 relative overflow-hidden group cursor-pointer rounded-[32px] shadow-2xl shadow-primary/20"
               >
-                {saving ? 'Saving...' : 'Complete Day'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-purple-600 opacity-90" />
+                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
+                
+                <div className="relative z-10 p-6 md:p-8 flex items-center justify-between text-white border border-white/10 rounded-[32px]">
+                  <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-wider">
+                      <Zap className="w-3 h-3 fill-current" />
+                      <span>Action Required</span>
+                    </div>
+                    <h2 className="text-3xl font-black font-relative leading-none">
+                      Log Day {nextActionableDay.day_number}
+                    </h2>
+                    <p className="text-white/80 font-medium max-w-[200px] leading-tight">
+                      Keep your streak alive! Tap to complete.
+                    </p>
+                  </div>
+                  
+                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                     <Plus className="w-8 h-8" strokeWidth={3} />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
+          {/* Bento Grid Stats */}
+          <div className="grid grid-cols-2 gap-4 mb-8">
+            {/* Main Hero Card */}
+            <div className="col-span-2 bg-card dark:bg-[#1C1C1E] border border-border/40 p-6 rounded-[24px] relative overflow-hidden shadow-lg">
+              <div className="relative z-10 flex justify-between items-end">
+                <div>
+                  <h2 className="text-lg font-semibold text-muted-foreground mb-2">Total Progress</h2>
+                  <div className="text-5xl font-black font-relative tracking-tight">
+                    {Math.round(stats.progress)}<span className="text-2xl text-muted-foreground">%</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2 font-medium">
+                    {stats.completed} of {TOTAL_DAYS} days completed
+                  </p>
+                </div>
+                <div className="w-24 h-24 relative">
+                  {/* Simple SVG Ring */}
+                  <svg viewBox="0 0 100 100" className="transform -rotate-90 w-full h-full">
+                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8" className="text-muted/20" />
+                    <motion.circle 
+                      cx="50" cy="50" r="40" fill="none" stroke="currentColor" strokeWidth="8"
+                      className="text-primary"
+                      strokeLinecap="round"
+                      strokeDasharray={251.2}
+                      initial={{ strokeDashoffset: 251.2 }}
+                      animate={{ strokeDashoffset: 251.2 - (251.2 * stats.progress) / 100 }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Flame className="w-8 h-8 text-primary fill-primary/20" />
+                  </div>
+                </div>
+              </div>
+              {/* Background Mesh Gradient */}
+              <div className="absolute top-0 right-0 w-[150%] h-[150%] bg-gradient-to-br from-primary/5 via-transparent to-transparent rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+            </div>
+
+            <StatCard 
+              title="Current Streak" 
+              value={stats.streak} 
+              icon={Zap} 
+              color="bg-orange-500" 
+              delay={0.1} 
+            />
+            <StatCard 
+              title="Days Left" 
+              value={TOTAL_DAYS - stats.completed} 
+              icon={Target} 
+              color="bg-blue-500" 
+              delay={0.2} 
+            />
+          </div>
+
+          {/* Calendar Grid */}
+          <div className="mb-24">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <h3 className="text-xl font-bold text-foreground">History</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-transparent border-border/40">
+                   <ChevronLeft className="w-4 h-4" />
+                </Button>
+                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-transparent border-border/40">
+                   <ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="bg-card/40 dark:bg-[#1C1C1E]/50 backdrop-blur-md border border-border/40 rounded-[32px] p-6">
+               <div className="grid grid-cols-7 gap-3">
+                  {['S','M','T','W','T','F','S'].map((d, i) => (
+                    <div key={i} className="text-center text-xs font-bold text-muted-foreground mb-2">{d}</div>
+                  ))}
+                  
+                  {loading ? (
+                    Array.from({ length: 30 }).map((_, i) => (
+                      <div key={i} className="aspect-square rounded-2xl bg-muted/20 animate-pulse" />
+                    ))
+                  ) : (
+                    Array.from({ length: TOTAL_DAYS }).map((_, i) => {
+                      const dayNumber = i + 1;
+                      const day = trackerDays.find(d => d.day_number === dayNumber);
+                      const isToday = nextActionableDay?.day_number === dayNumber;
+
+                      return (
+                        <DayCell 
+                          key={dayNumber}
+                          day={day}
+                          dayNumber={dayNumber}
+                          isToday={isToday}
+                          onClick={() => handleDayClick(dayNumber)}
+                        />
+                      );
+                    })
+                  )}
+               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* FLOATING ACTION BUTTON (FAB) - MOVED OUTSIDE SCROLL CONTEXT VIA FIXED */}
+        <AnimatePresence>
+          {nextActionableDay && (
+            <motion.div
+              key="fab"
+              initial={{ opacity: 0, scale: 0, y: 100 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0, y: 100 }}
+              className="fixed bottom-28 right-6 z-[150]"
+            >
+              <Button
+                onClick={() => handleDayClick(nextActionableDay.day_number)}
+                className="h-14 w-14 rounded-full shadow-xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center"
+              >
+                <Plus className="w-8 h-8" />
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Log Interaction Overlay */}
+        <AnimatePresence>
+          {selectedDay !== null && (
+            <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center">
+              {/* Backdrop */}
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => !saving && !showSuccess && setSelectedDay(null)}
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              />
+
+              {/* Modal Card */}
+              <motion.div
+                initial={{ y: "100%", scale: 0.95 }}
+                animate={{ y: 0, scale: 1 }}
+                exit={{ y: "100%", scale: 0.95 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative w-full max-w-md bg-background dark:bg-[#1C1C1E] border-t border-white/10 rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl overflow-hidden"
+              >
+                {/* Success View Overlay */}
+                <AnimatePresence>
+                  {showSuccess && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="absolute inset-0 z-20 bg-green-500 flex flex-col items-center justify-center text-white p-6 text-center"
+                    >
+                      <motion.div
+                        initial={{ scale: 0.5, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ type: "spring", damping: 15 }}
+                        className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-md"
+                      >
+                        <Check className="w-12 h-12 stroke-[4]" />
+                      </motion.div>
+                      <h3 className="text-3xl font-black font-relative mb-2">Day Completed!</h3>
+                      <p className="text-white/90 font-medium">Streak updated successfully.</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted/30 rounded-full" />
+                
+                <div className="flex justify-between items-center mb-8 mt-4">
+                  <div>
+                    <div className="text-sm text-muted-foreground font-medium">Logging Progress</div>
+                    <h2 className="text-3xl font-black font-relative">Day {selectedDay}</h2>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => setSelectedDay(null)}
+                    className="rounded-full hover:bg-muted/20"
+                    disabled={saving}
+                  >
+                    <X className="w-6 h-6" />
+                  </Button>
+                </div>
+
+                <div className="space-y-8">
+                  <div className="space-y-4">
+                    <div className="flex justify-between text-sm font-medium px-2">
+                      <span className="text-muted-foreground">Stress Level</span>
+                      <span className={cn(
+                        "font-bold",
+                        stressLevel <= 2 ? "text-green-500" : stressLevel === 3 ? "text-yellow-500" : "text-red-500"
+                      )}>
+                        {stressLevel === 1 ? "Zen Mode" : stressLevel === 5 ? "Chaos" : "Moderate"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between gap-2">
+                      {[1, 2, 3, 4, 5].map((level) => (
+                        <motion.button
+                          key={level}
+                          whileTap={{ scale: 0.9 }}
+                          onClick={() => {
+                            triggerHaptic('selection');
+                            setStressLevel(level);
+                          }}
+                          disabled={saving}
+                          className={cn(
+                            "flex-1 aspect-[4/5] rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-200",
+                            stressLevel === level
+                              ? "bg-foreground text-background shadow-lg scale-105"
+                              : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                          )}
+                        >
+                          {level}
+                        </motion.button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <Button 
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="w-full h-16 text-lg font-bold rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                  >
+                    {saving ? (
+                      <span className="animate-pulse">Syncing...</span>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-6 h-6" />
+                        <span>Complete Day</span>
+                      </div>
+                    )}
+                  </Button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </div>
     </MainLayout>
   );
