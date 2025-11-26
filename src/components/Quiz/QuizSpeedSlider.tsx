@@ -46,8 +46,10 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
   const handleSliderChange = (newValue: number[]) => {
     const position = newValue[0];
 
-    // Haptic feedback
-    triggerHaptic('light');
+    // Só vibra se o valor realmente mudou
+    if (newValue[0] !== sliderValue[0]) {
+      triggerHaptic('light');
+    }
 
     setSliderValue(newValue);
     

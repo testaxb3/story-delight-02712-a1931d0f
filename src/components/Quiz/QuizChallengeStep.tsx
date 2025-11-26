@@ -39,8 +39,10 @@ export const QuizChallengeStep = memo(({
   const { triggerHaptic } = useHaptic();
 
   const handleLevelChange = (value: number[]) => {
-    triggerHaptic('light');
-    onLevelChange(value[0]);
+    if (value[0] !== challengeLevel) {
+      triggerHaptic('light');
+      onLevelChange(value[0]);
+    }
   };
 
   const handleDurationChange = (duration: string) => {

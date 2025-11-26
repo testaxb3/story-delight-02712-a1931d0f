@@ -56,7 +56,7 @@ export const QuizQuestionStep = memo(({ question, currentAnswer, onAnswer }: Qui
           )}
         </div>
 
-        <div className="space-y-4 px-6">
+        <div className="space-y-4 px-6 pb-32">
           {question.options.map((option, index) => (
             <QuizOptionCard
               key={option.value}

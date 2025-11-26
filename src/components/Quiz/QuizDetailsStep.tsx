@@ -13,8 +13,10 @@ export const QuizDetailsStep = memo(({ childAge, onChange }: QuizDetailsStepProp
   const { triggerHaptic } = useHaptic();
 
   const handleAgeChange = (value: number[]) => {
-    triggerHaptic('light');
-    onChange(value[0]);
+    if (value[0] !== childAge) {
+      triggerHaptic('light');
+      onChange(value[0]);
+    }
   };
 
   return (
