@@ -51,19 +51,24 @@ function CommentItemComponent({
   const isOwnComment = currentUserId && comment.user_id === currentUserId;
   const canReply = depth === 0; // Only allow replies to top-level comments (max 1 level)
 
+  // Fallback for seed comments
+  const photoUrl = comment.profiles?.photo_url || comment.author_photo_url;
+  const authorName = comment.profiles?.name || comment.author_name;
+  const displayName = authorName || comment.profiles?.email?.split('@')[0] || 'User';
+
   return (
     <div className={`${depth > 0 ? 'ml-12' : ''}`}>
       <div className="flex gap-3 items-start group">
         {/* Avatar */}
-        {comment.profiles?.photo_url ? (
+        {photoUrl ? (
           <img
-            src={comment.profiles.photo_url}
-            alt={`${comment.profiles?.name || comment.profiles?.email || 'User'} avatar`}
+            src={photoUrl}
+            alt={`${displayName} avatar`}
             className="w-8 h-8 rounded-full object-cover flex-shrink-0"
           />
         ) : (
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-accent to-pink-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-            {getInitialsFromName(comment.profiles?.name || comment.profiles?.email || 'U')}
+            {getInitialsFromName(authorName || 'U')}
           </div>
         )}
 
@@ -71,7 +76,7 @@ function CommentItemComponent({
           {/* Comment Content */}
           <div className="bg-muted/50 rounded-2xl px-4 py-2">
             <p className="text-sm font-semibold">
-              {comment.profiles?.name || comment.profiles?.email?.split('@')[0] || 'User'}
+              {displayName}
             </p>
             <p className="text-sm text-foreground">{comment.content}</p>
           </div>
