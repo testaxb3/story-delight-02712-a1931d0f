@@ -45,15 +45,30 @@ const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
   </motion.div>
 );
 
-const DayCell = ({ day, dayNumber, isToday, onClick }: { day?: TrackerDay; dayNumber: number; isToday: boolean; onClick: () => void }) => {
+const DayCell = ({ 
+  day, 
+  dayNumber, 
+  isToday, 
+  isPastUncompleted, 
+  isFuture, 
+  onClick 
+}: { 
+  day?: TrackerDay; 
+  dayNumber: number; 
+  isToday: boolean; 
+  isPastUncompleted: boolean;
+  isFuture: boolean;
+  onClick: () => void 
+}) => {
   const isCompleted = day?.completed;
+  const isLocked = isPastUncompleted || isFuture;
   
   return (
     <motion.button
-      whileTap={!isCompleted ? { scale: 0.9 } : undefined}
-      onClick={!isCompleted ? onClick : undefined}
+      whileTap={!isCompleted && !isLocked ? { scale: 0.9 } : undefined}
+      onClick={!isCompleted && !isLocked ? onClick : undefined}
       className="relative group"
-      disabled={isCompleted}
+      disabled={isCompleted || isLocked}
     >
       <div className={cn(
         "aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 border",
@@ -61,9 +76,13 @@ const DayCell = ({ day, dayNumber, isToday, onClick }: { day?: TrackerDay; dayNu
           ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30" 
           : isToday
             ? "bg-primary/10 border-primary text-primary ring-2 ring-primary/20"
-            : "bg-card/50 border-transparent text-muted-foreground hover:bg-card"
+            : isLocked
+              ? "bg-muted/20 border-transparent text-muted-foreground/40 opacity-50"
+              : "bg-card/50 border-transparent text-muted-foreground hover:bg-card"
       )}>
-        <span className="text-[10px] font-bold uppercase opacity-60">{isCompleted ? "Done" : "Day"}</span>
+        <span className="text-[10px] font-bold uppercase opacity-60">
+          {isCompleted ? "Done" : isLocked ? "Locked" : "Day"}
+        </span>
         <span className={cn("text-xl font-black font-relative", isCompleted ? "text-white" : "text-foreground")}>
           {dayNumber}
         </span>
@@ -74,6 +93,15 @@ const DayCell = ({ day, dayNumber, isToday, onClick }: { day?: TrackerDay; dayNu
             className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-2xl backdrop-blur-[1px]"
           >
             <Check className="w-6 h-6 text-white stroke-[4]" />
+          </motion.div>
+        )}
+        {isLocked && !isCompleted && (
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-1 right-1"
+          >
+            <Lock className="w-3 h-3 text-muted-foreground" />
           </motion.div>
         )}
       </div>
@@ -139,37 +167,53 @@ export default function TrackerCalAI() {
     return { completed, progress, streak };
   }, [trackerDays]);
 
-  // Improved Logic: Priority is Today's Date > First Incomplete Day
-  const nextActionableDay = useMemo(() => {
+  // Calculate today's day number based on current date
+  const todaysDayNumber = useMemo(() => {
     if (trackerDays.length === 0) return null;
-
-    // 1. Try to find today's date match
-    const todayStr = new Date().toISOString().split('T')[0];
-    const todayMatch = trackerDays.find(d => d.date === todayStr);
     
-    if (todayMatch && !todayMatch.completed) {
-      return todayMatch;
-    }
+    const today = new Date().toISOString().split('T')[0];
+    const todayMatch = trackerDays.find(d => d.date === today);
     
-    // 2. If today is done or not found, find the first incomplete day
-    const firstIncomplete = trackerDays.find(d => !d.completed);
-    
-    // 3. If all days are done, return null
-    return firstIncomplete || null;
+    return todayMatch ? todayMatch.day_number : null;
   }, [trackerDays]);
+
+  // Next actionable day is ONLY today if not completed
+  const nextActionableDay = useMemo(() => {
+    if (!todaysDayNumber) return null;
+    
+    const todayDay = trackerDays.find(d => d.day_number === todaysDayNumber);
+    
+    // Only return if today exists and is not completed
+    return todayDay && !todayDay.completed ? todayDay : null;
+  }, [trackerDays, todaysDayNumber]);
 
   const handleDayClick = (dayNumber: number) => {
     const day = trackerDays.find(d => d.day_number === dayNumber);
+    
+    // Check if completed
     if (day?.completed) {
       triggerHaptic('error');
       toast.info("This day is already completed!");
       return; 
     }
     
+    // Check if it's today
+    if (dayNumber !== todaysDayNumber) {
+      triggerHaptic('error');
+      
+      // Determine if past or future
+      if (todaysDayNumber && dayNumber < todaysDayNumber) {
+        toast.error("You can't log past days");
+      } else {
+        toast.error("This day hasn't arrived yet");
+      }
+      return;
+    }
+    
     triggerHaptic('light');
     setSelectedDay(dayNumber);
     setStressLevel(3);
-    setShowSuccess(false); // Reset success state
+    setShowSuccess(false);
   };
 
   const handleSave = async () => {
@@ -284,41 +328,6 @@ export default function TrackerCalAI() {
             </div>
           </motion.div>
 
-          {/* PRIMARY ACTION: Log Today (Card) */}
-          <AnimatePresence>
-            {nextActionableDay && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => handleDayClick(nextActionableDay.day_number)}
-                className="mb-8 relative overflow-hidden group cursor-pointer rounded-[32px] shadow-2xl shadow-primary/20"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-purple-600 opacity-90" />
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-                
-                <div className="relative z-10 p-6 md:p-8 flex items-center justify-between text-white border border-white/10 rounded-[32px]">
-                  <div className="space-y-2">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/10 text-xs font-bold uppercase tracking-wider">
-                      <Zap className="w-3 h-3 fill-current" />
-                      <span>Action Required</span>
-                    </div>
-                    <h2 className="text-3xl font-black font-relative leading-none">
-                      Log Day {nextActionableDay.day_number}
-                    </h2>
-                    <p className="text-white/80 font-medium max-w-[200px] leading-tight">
-                      Keep your streak alive! Tap to complete.
-                    </p>
-                  </div>
-                  
-                  <div className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-white text-primary flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
-                     <Plus className="w-8 h-8" strokeWidth={3} />
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Bento Grid Stats */}
           <div className="grid grid-cols-2 gap-4 mb-8">
@@ -398,10 +407,12 @@ export default function TrackerCalAI() {
                       <div key={i} className="aspect-square rounded-2xl bg-muted/20 animate-pulse" />
                     ))
                   ) : (
-                    Array.from({ length: TOTAL_DAYS }).map((_, i) => {
+                  Array.from({ length: TOTAL_DAYS }).map((_, i) => {
                       const dayNumber = i + 1;
                       const day = trackerDays.find(d => d.day_number === dayNumber);
-                      const isToday = nextActionableDay?.day_number === dayNumber;
+                      const isToday = todaysDayNumber === dayNumber;
+                      const isPastUncompleted = todaysDayNumber !== null && dayNumber < todaysDayNumber && !day?.completed;
+                      const isFuture = todaysDayNumber !== null && dayNumber > todaysDayNumber;
 
                       return (
                         <DayCell 
@@ -409,6 +420,8 @@ export default function TrackerCalAI() {
                           day={day}
                           dayNumber={dayNumber}
                           isToday={isToday}
+                          isPastUncompleted={isPastUncompleted}
+                          isFuture={isFuture}
                           onClick={() => handleDayClick(dayNumber)}
                         />
                       );
@@ -518,7 +531,7 @@ export default function TrackerCalAI() {
                           key={level}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => {
-                            triggerHaptic('selection');
+                            triggerHaptic('light');
                             setStressLevel(level);
                           }}
                           disabled={saving}
