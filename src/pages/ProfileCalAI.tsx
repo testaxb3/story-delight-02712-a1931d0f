@@ -139,7 +139,7 @@ export default function ProfileCalAI() {
               <p className="text-[15px] text-gray-500 dark:text-gray-400 truncate">{getEmail()}</p>
               <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800">
                 <Crown className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">Free Plan</span>
+                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">NEP Member</span>
               </div>
             </div>
             

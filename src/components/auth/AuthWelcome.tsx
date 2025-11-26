@@ -149,9 +149,15 @@ const MagneticButton = memo(function MagneticButton({
   variant?: 'primary' | 'secondary';
   delay?: number;
 }) {
+  const { triggerHaptic } = useHaptic();
   const [isHovered, setIsHovered] = useState(false);
 
   const isPrimary = variant === 'primary';
+
+  const handleClick = () => {
+    triggerHaptic('light');
+    onClick();
+  };
 
   return (
     <motion.button
@@ -165,7 +171,7 @@ const MagneticButton = memo(function MagneticButton({
       whileTap={{ scale: 0.98 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      onClick={onClick}
+      onClick={handleClick}
       className={`
         relative w-full py-4 rounded-2xl font-semibold text-lg
         transition-all duration-300 ease-out
