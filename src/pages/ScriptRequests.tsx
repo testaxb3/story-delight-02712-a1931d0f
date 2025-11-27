@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, memo } from 'react';
+import { useState, useEffect, useMemo, memo, useRef } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useScriptRequests, ScriptRequest } from '@/hooks/useScriptRequests';
 import { Badge } from '@/components/ui/badge';
@@ -6,11 +6,8 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
-  DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   AlertCircle, 
   Clock, 
@@ -22,72 +19,159 @@ import {
   Search,
   Plus,
   ArrowLeft,
-  ExternalLink
+  ExternalLink,
+  Sparkles,
+  Zap
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { RequestScriptModal } from '@/components/Scripts/RequestScriptModal';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useNavigate } from 'react-router-dom';
 
+// --- Types & Constants ---
+
 type RequestStatus = 'pending' | 'in_review' | 'completed' | 'rejected';
 
-interface FilteredRequests {
-  all: ScriptRequest[];
-  pending: ScriptRequest[];
-  in_review: ScriptRequest[];
-  completed: ScriptRequest[];
-  rejected: ScriptRequest[];
-}
-
-interface StatusCounts {
-  total: number;
-  pending: number;
-  in_review: number;
-  completed: number;
-}
-
-const STATUS_COLORS = {
-  pending: 'bg-yellow-500/15 dark:bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-500/30 dark:border-yellow-500/40',
-  in_review: 'bg-blue-500/15 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30 dark:border-blue-500/40',
-  completed: 'bg-green-500/15 dark:bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30 dark:border-green-500/40',
-  rejected: 'bg-red-500/15 dark:bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/30 dark:border-red-500/40',
+const STATUS_CONFIG = {
+  pending: {
+    label: 'Pending',
+    icon: AlertCircle,
+    color: 'text-amber-500',
+    bg: 'bg-amber-500/10',
+    border: 'border-amber-500/20',
+    shimmer: 'from-amber-500/5 via-amber-500/10 to-transparent'
+  },
+  in_review: {
+    label: 'In Review',
+    icon: Clock,
+    color: 'text-blue-500',
+    bg: 'bg-blue-500/10',
+    border: 'border-blue-500/20',
+    shimmer: 'from-blue-500/5 via-blue-500/10 to-transparent'
+  },
+  completed: {
+    label: 'Done',
+    icon: CheckCircle,
+    color: 'text-emerald-500',
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/20',
+    shimmer: 'from-emerald-500/5 via-emerald-500/10 to-transparent'
+  },
+  rejected: {
+    label: 'Rejected',
+    icon: XCircle,
+    color: 'text-red-500',
+    bg: 'bg-red-500/10',
+    border: 'border-red-500/20',
+    shimmer: 'from-red-500/5 via-red-500/10 to-transparent'
+  },
 };
 
-const STATUS_ICONS = {
-  pending: AlertCircle,
-  in_review: Clock,
-  completed: CheckCircle,
-  rejected: XCircle,
-};
+// --- Components ---
 
-const STATUS_LABELS = {
-  pending: 'Pending',
-  in_review: 'In Review',
-  completed: 'Completed',
-  rejected: 'Rejected',
-};
-
-// Premium Skeleton Component
-const SkeletonCard = memo(() => (
-  <div className="bg-card border border-border rounded-[24px] p-5 overflow-hidden">
-    <div className="animate-pulse space-y-3">
-      <div className="flex justify-between items-center">
-        <div className="h-5 w-20 bg-muted rounded-md" />
-        <div className="h-4 w-16 bg-muted rounded-md" />
+const BentoStat = memo(({ 
+  title, 
+  count, 
+  icon: Icon, 
+  config, 
+  isActive 
+}: { 
+  title: string; 
+  count: number; 
+  icon: any; 
+  config?: any;
+  isActive?: boolean; 
+}) => (
+  <div className={cn(
+    "relative overflow-hidden rounded-[24px] p-5 border transition-all duration-300 group",
+    isActive 
+      ? "bg-card border-primary/20 shadow-lg shadow-primary/5" 
+      : "bg-card/50 border-transparent hover:bg-card hover:border-border/50"
+  )}>
+    {config && (
+      <div className={cn("absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br pointer-events-none", config.shimmer)} />
+    )}
+    <div className="relative z-10 flex flex-col h-full justify-between">
+      <div className="flex items-center justify-between mb-2">
+        <div className={cn("p-2 rounded-full", config?.bg || "bg-muted")}>
+          <Icon className={cn("w-4 h-4", config?.color || "text-muted-foreground")} />
+        </div>
+        {isActive && <Sparkles className="w-3 h-3 text-primary animate-pulse" />}
       </div>
-      <div className="space-y-2">
-        <div className="h-4 w-full bg-muted rounded-md" />
-        <div className="h-4 w-3/4 bg-muted rounded-md" />
-      </div>
-      <div className="flex justify-between items-center pt-2">
-        <div className="h-6 w-16 bg-muted rounded-md" />
-        <div className="h-4 w-20 bg-muted rounded-md" />
+      <div>
+        <p className="text-3xl font-bold tracking-tight text-foreground">{count}</p>
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{title}</p>
       </div>
     </div>
   </div>
 ));
+
+const RequestCard = memo(({ 
+  request, 
+  onClick 
+}: { 
+  request: ScriptRequest; 
+  onClick: () => void 
+}) => {
+  const config = STATUS_CONFIG[request.status as RequestStatus];
+  const StatusIcon = config.icon;
+  const isUrgent = request.urgency_level === 'urgent';
+
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      className="group relative bg-card/80 backdrop-blur-sm p-5 rounded-[24px] border border-border/50 shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer overflow-hidden"
+    >
+      {/* Subtle highlight on hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+      <div className="relative z-10">
+        <div className="flex justify-between items-start mb-3">
+          <Badge variant="outline" className={cn("rounded-full px-3 py-1 text-[10px] font-bold border backdrop-blur-md", config.bg, config.color, config.border)}>
+            <StatusIcon className="w-3 h-3 mr-1.5" />
+            {config.label}
+          </Badge>
+          
+          <span className="text-[10px] font-medium text-muted-foreground/80 flex items-center gap-1">
+            {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
+          </span>
+        </div>
+
+        <h3 className="text-[16px] font-semibold text-foreground leading-snug mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+          {request.situation_description}
+        </h3>
+
+        <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/40">
+          <div className="flex items-center gap-2">
+             {request.child_brain_profile && (
+               <span className="text-[10px] px-2 py-1 bg-secondary rounded-md font-medium text-secondary-foreground">
+                 {request.child_brain_profile}
+               </span>
+             )}
+             {isUrgent && (
+               <span className="flex items-center gap-1 text-[10px] font-bold text-red-500 bg-red-500/10 px-2 py-1 rounded-md">
+                 <Zap className="w-3 h-3 fill-current" /> Urgent
+               </span>
+             )}
+          </div>
+          <div className="w-8 h-8 rounded-full bg-muted/50 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+            <ArrowLeft className="w-4 h-4 rotate-180" />
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+// --- Main Page ---
 
 export default function ScriptRequests() {
   const { requests, isLoading } = useScriptRequests();
@@ -96,412 +180,335 @@ export default function ScriptRequests() {
   const [selectedRequest, setSelectedRequest] = useState<ScriptRequest | null>(null);
   const [requestModalOpen, setRequestModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [activeTab, setActiveTab] = useState<string>('all');
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Debounced Search (300ms)
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  // Single-pass O(n) Filtering
-  const { filteredRequests, counts } = useMemo(() => {
-    if (!requests) {
-      return {
-        filteredRequests: { all: [], pending: [], in_review: [], completed: [], rejected: [] },
-        counts: { total: 0, pending: 0, in_review: 0, completed: 0 }
-      };
-    }
-    
-    const result: FilteredRequests = {
-      all: [],
-      pending: [],
-      in_review: [],
-      completed: [],
-      rejected: []
+  // Computed Stats & Filtered Lists
+  const { filteredData, stats } = useMemo(() => {
+    if (!requests) return { 
+      filteredData: [], 
+      stats: { total: 0, pending: 0, in_review: 0, completed: 0, rejected: 0 } 
     };
-    const statusCounts: StatusCounts = { total: 0, pending: 0, in_review: 0, completed: 0 };
+
+    const stats = { total: requests.length, pending: 0, in_review: 0, completed: 0, rejected: 0 };
     
-    for (const request of requests) {
-      const matchesSearch = !debouncedQuery || 
-        request.situation_description?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-        request.admin_notes?.toLowerCase().includes(debouncedQuery.toLowerCase());
+    const filtered = requests.filter(req => {
+      // Update stats regardless of search (showing global stats is usually better UX, or filtered stats? Let's do global for the cards)
+      if (req.status in stats) stats[req.status as keyof typeof stats]++;
       
-      if (!matchesSearch) continue;
-      
-      result.all.push(request);
-      statusCounts.total++;
-      
-      if (request.status in result) {
-        result[request.status as RequestStatus].push(request);
-        if (request.status !== 'rejected') {
-          statusCounts[request.status as keyof Omit<StatusCounts, 'total'>]++;
-        }
-      }
-    }
-    
-    return { filteredRequests: result, counts: statusCounts };
-  }, [requests, debouncedQuery]);
+      // Search Filter
+      const matchesSearch = !searchQuery || 
+        req.situation_description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        req.admin_notes?.toLowerCase().includes(searchQuery.toLowerCase());
+        
+      if (!matchesSearch) return false;
+
+      // Tab Filter
+      if (activeTab === 'all') return true;
+      return req.status === activeTab;
+    });
+
+    return { filteredData: filtered, stats };
+  }, [requests, searchQuery, activeTab]);
+
+  const handleTabChange = (tab: string) => {
+    triggerHaptic('light');
+    setActiveTab(tab);
+  };
 
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32">
-          <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
-          
-          <header className="px-5 mb-6">
-            <div className="flex items-end justify-between mb-4">
-              <div>
-                <div className="h-10 w-32 bg-muted rounded-lg mb-2 animate-pulse" />
-                <div className="h-5 w-48 bg-muted rounded-md animate-pulse" />
-              </div>
+         <div className="flex items-center justify-center h-screen bg-[#F2F2F7] dark:bg-black">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="h-12 w-12 bg-muted rounded-full mb-4" />
+              <div className="h-4 w-32 bg-muted rounded" />
             </div>
-            <div className="h-10 w-full bg-muted rounded-xl animate-pulse" />
-          </header>
-
-          <div className="flex gap-3 overflow-x-auto px-5 pb-6 scrollbar-hide">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="min-w-[140px] bg-card p-4 rounded-[20px] border border-border animate-pulse">
-                <div className="h-3 w-12 bg-muted rounded mb-2" />
-                <div className="h-8 w-16 bg-muted rounded" />
-              </div>
-            ))}
-          </div>
-
-          <div className="px-5 space-y-4">
-            {[1, 2, 3].map((i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        </div>
+         </div>
       </MainLayout>
     );
   }
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32">
+      <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32 selection:bg-primary/30">
         {/* Header Spacer */}
         <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
 
-        {/* Premium Header */}
-        <header className="px-5 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                triggerHaptic('light');
-                navigate(-1);
-              }}
-              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </motion.button>
-            <div className="flex-1">
-              <h1 className="text-4xl font-bold text-foreground tracking-tight mb-1">Requests</h1>
-              <p className="text-muted-foreground font-medium">Track your personalized scripts</p>
+        {/* Dynamic Header */}
+        <header className="px-5 mb-8 sticky top-4 z-50">
+          <div className="absolute inset-0 bg-[#F2F2F7]/80 dark:bg-black/80 backdrop-blur-xl -z-10 -m-5 mask-image-b-fade" />
+          
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onClick={() => navigate(-1)}
+                className="w-10 h-10 rounded-full bg-background/50 border border-border/50 flex items-center justify-center backdrop-blur-md shadow-sm"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </motion.button>
+              <div>
+                <h1 className="text-2xl font-bold tracking-tight">Request Studio</h1>
+              </div>
             </div>
             <motion.button
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
-                triggerHaptic('light');
+                triggerHaptic('medium');
                 setRequestModalOpen(true);
               }}
-              className="bg-primary text-primary-foreground rounded-full p-2.5 shadow-lg shadow-primary/30"
-              aria-label="Create new request"
+              className="h-10 px-4 bg-primary text-primary-foreground rounded-full font-semibold text-sm flex items-center gap-2 shadow-lg shadow-primary/25"
             >
-              <Plus className="w-6 h-6" />
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">New Request</span>
             </motion.button>
           </div>
 
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search requests"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-card h-10 rounded-xl pl-9 pr-4 text-[17px] placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all border border-border"
-            />
+          {/* Search Field */}
+          <div 
+            className="relative group"
+            onClick={() => searchInputRef.current?.focus()}
+          >
+            <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+            <div className="relative bg-background/50 backdrop-blur-md border border-border/50 rounded-2xl flex items-center px-4 h-12 shadow-sm group-focus-within:border-primary/50 group-focus-within:ring-2 group-focus-within:ring-primary/10 transition-all">
+              <Search className="w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search your requests..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="flex-1 bg-transparent border-none h-full px-3 text-[16px] placeholder:text-muted-foreground/70 focus:outline-none"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={(e) => { e.stopPropagation(); setSearchQuery(''); }}
+                  className="p-1 rounded-full hover:bg-muted text-muted-foreground"
+                >
+                  <XCircle className="w-4 h-4" />
+                </button>
+              )}
+            </div>
           </div>
         </header>
 
-        {/* Stats Cards - Horizontal Scroll */}
-        <div className="flex gap-3 overflow-x-auto px-5 pb-6 scrollbar-hide snap-x">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0 }}
-            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <MessageCircleHeart className="w-4 h-4 text-muted-foreground" />
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Total</p>
+        {/* Bento Grid Stats */}
+        <div className="px-5 mb-8">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="col-span-2">
+               <BentoStat 
+                 title="Total Requests" 
+                 count={stats.total} 
+                 icon={FileText} 
+                 isActive={true}
+               />
             </div>
-            <p className="text-3xl font-bold text-foreground">{counts.total}</p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.05 }}
-            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <AlertCircle className="w-4 h-4 text-yellow-500" />
-              <p className="text-xs font-bold text-yellow-500 uppercase tracking-wide">Pending</p>
-            </div>
-            <p className="text-3xl font-bold text-foreground">{counts.pending}</p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <Clock className="w-4 h-4 text-blue-500" />
-              <p className="text-xs font-bold text-blue-500 uppercase tracking-wide">Review</p>
-            </div>
-            <p className="text-3xl font-bold text-foreground">{counts.in_review}</p>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15 }}
-            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
-          >
-            <div className="flex items-center gap-2 mb-1">
-              <CheckCircle className="w-4 h-4 text-green-500" />
-              <p className="text-xs font-bold text-green-500 uppercase tracking-wide">Done</p>
-            </div>
-            <p className="text-3xl font-bold text-foreground">{counts.completed}</p>
-          </motion.div>
+            <BentoStat 
+              title="Pending" 
+              count={stats.pending} 
+              icon={AlertCircle} 
+              config={STATUS_CONFIG.pending} 
+            />
+            <BentoStat 
+              title="Review" 
+              count={stats.in_review} 
+              icon={Clock} 
+              config={STATUS_CONFIG.in_review} 
+            />
+            <BentoStat 
+              title="Done" 
+              count={stats.completed} 
+              icon={CheckCircle} 
+              config={STATUS_CONFIG.completed} 
+            />
+             <BentoStat 
+              title="Rejected" 
+              count={stats.rejected} 
+              icon={XCircle} 
+              config={STATUS_CONFIG.rejected} 
+            />
+          </div>
         </div>
 
-        {/* Requests List */}
-        <div className="px-5">
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="w-full bg-muted p-1 rounded-xl h-auto mb-6 overflow-x-auto flex justify-start">
-              <TabsTrigger value="all" className="rounded-lg text-xs font-semibold px-4 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                All
-              </TabsTrigger>
-              <TabsTrigger value="pending" className="rounded-lg text-xs font-semibold px-4 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                Pending
-              </TabsTrigger>
-              <TabsTrigger value="in_review" className="rounded-lg text-xs font-semibold px-4 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                Review
-              </TabsTrigger>
-              <TabsTrigger value="completed" className="rounded-lg text-xs font-semibold px-4 py-1.5 data-[state=active]:bg-background data-[state=active]:shadow-sm">
-                Done
-              </TabsTrigger>
-            </TabsList>
+        {/* Content Area */}
+        <div className="px-5 min-h-[500px]">
+          {/* Fluid Tabs */}
+          <div className="flex overflow-x-auto scrollbar-hide gap-2 mb-6 pb-2 sticky top-[140px] z-40 bg-[#F2F2F7]/95 dark:bg-black/95 backdrop-blur-xl py-2 -mx-5 px-5 mask-image-b-fade">
+            {['all', 'pending', 'in_review', 'completed'].map((tab) => {
+               const isActive = activeTab === tab;
+               return (
+                 <button
+                   key={tab}
+                   onClick={() => handleTabChange(tab)}
+                   className={cn(
+                     "relative px-5 py-2.5 rounded-full text-sm font-semibold transition-colors z-10",
+                     isActive ? "text-primary-foreground" : "text-muted-foreground hover:text-foreground"
+                   )}
+                 >
+                   {isActive && (
+                     <motion.div
+                       layoutId="activeTab"
+                       className="absolute inset-0 bg-primary rounded-full shadow-md shadow-primary/25"
+                       initial={false}
+                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                     />
+                   )}
+                   <span className="relative z-10 capitalize">
+                     {tab === 'in_review' ? 'In Review' : tab}
+                   </span>
+                 </button>
+               );
+            })}
+          </div>
 
-            {(['all', 'pending', 'in_review', 'completed'] as const).map((status) => (
-              <TabsContent key={status} value={status} className="space-y-4 mt-0 outline-none">
-                {filteredRequests[status].length === 0 ? (
+          {/* Animated List */}
+          <LayoutGroup>
+            <motion.div layout className="grid grid-cols-1 gap-4">
+              <AnimatePresence mode="popLayout">
+                {filteredData.length === 0 ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="flex flex-col items-center justify-center py-20"
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex flex-col items-center justify-center py-20 text-center"
                   >
-                    <div className="w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center mb-5">
-                      <FileText className="w-10 h-10 text-muted-foreground" />
+                    <div className="w-24 h-24 bg-muted/50 rounded-full flex items-center justify-center mb-6 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-primary/10 to-transparent animate-spin-slow" />
+                      <FileText className="w-10 h-10 text-muted-foreground/50" />
                     </div>
-                    <h3 className="text-lg font-bold text-foreground mb-1">No requests yet</h3>
-                    <p className="text-muted-foreground text-sm text-center max-w-[240px] mb-6">
-                      Request a personalized script for any challenging situation.
+                    <h3 className="text-xl font-bold text-foreground mb-2">No requests found</h3>
+                    <p className="text-muted-foreground max-w-[250px] mb-6">
+                      {searchQuery 
+                        ? "Try adjusting your search terms." 
+                        : "Start by creating your first script request."}
                     </p>
-                    {status === 'all' && (
+                    {!searchQuery && (
                       <Button
-                        onClick={() => {
-                          triggerHaptic('medium');
-                          setRequestModalOpen(true);
-                        }}
-                        className="h-12 px-6 rounded-2xl font-semibold"
+                        onClick={() => setRequestModalOpen(true)}
+                        className="h-12 px-8 rounded-2xl font-semibold"
                       >
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create First Request
+                        Create Request
                       </Button>
                     )}
                   </motion.div>
                 ) : (
-                  filteredRequests[status].map((request) => {
-                    const StatusIcon = STATUS_ICONS[request.status as RequestStatus];
-                    return (
-                      <motion.div
-                        key={request.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => {
-                          triggerHaptic('light');
-                          setSelectedRequest(request);
-                        }}
-                        className="bg-card p-5 rounded-[24px] border border-border relative overflow-hidden cursor-pointer"
-                      >
-                        <div className="flex justify-between items-start mb-3">
-                          <div className="flex items-center gap-2">
-                            <Badge className={cn("rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border", STATUS_COLORS[request.status as RequestStatus])}>
-                              <StatusIcon className="h-3 w-3 mr-1" />
-                              {STATUS_LABELS[request.status as RequestStatus]}
-                            </Badge>
-                            <span className="text-[10px] text-muted-foreground font-medium">
-                              {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
-                            </span>
-                          </div>
-                          {request.urgency_level === 'urgent' && (
-                            <span className="relative flex h-2.5 w-2.5">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500" />
-                            </span>
-                          )}
-                        </div>
-                        
-                        <p className="text-[15px] text-foreground font-medium line-clamp-2 leading-relaxed mb-3">
-                          {request.situation_description}
-                        </p>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            {request.child_brain_profile && (
-                              <span className="text-[10px] px-2 py-1 bg-muted text-muted-foreground rounded-md font-medium">
-                                {request.child_brain_profile}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center text-primary text-xs font-semibold">
-                            View Details <Eye className="w-3 h-3 ml-1" />
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })
+                  filteredData.map((request) => (
+                    <RequestCard 
+                      key={request.id} 
+                      request={request} 
+                      onClick={() => {
+                        triggerHaptic('light');
+                        setSelectedRequest(request);
+                      }} 
+                    />
+                  ))
                 )}
-              </TabsContent>
-            ))}
-          </Tabs>
+              </AnimatePresence>
+            </motion.div>
+          </LayoutGroup>
         </div>
       </div>
 
-      {/* Detail Modal - Premium iOS Sheet Style */}
+      {/* Detail Modal */}
       <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-        <DialogContent className="w-full max-w-md p-0 gap-0 bg-[#F2F2F7] dark:bg-[#1C1C1E] border-none rounded-[24px] overflow-hidden shadow-2xl max-h-[85vh]">
-          {/* Back Button Header */}
-          <div className="flex items-center justify-between p-4 bg-card border-b border-border">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => {
-                triggerHaptic('light');
-                setSelectedRequest(null);
-              }}
-              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
-              aria-label="Go back"
-            >
-              <ArrowLeft className="w-5 h-5 text-foreground" />
-            </motion.button>
-            <DialogTitle className="text-lg font-bold">Request Details</DialogTitle>
-            <div className="w-10" /> {/* Spacer for centering */}
-          </div>
-
+        <DialogContent className="w-full max-w-md p-0 gap-0 bg-[#F2F2F7] dark:bg-[#1C1C1E] border-none rounded-[32px] overflow-hidden shadow-2xl outline-none">
           {selectedRequest && (
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              className="p-6 overflow-y-auto max-h-[60vh] space-y-6"
-            >
-              {/* Status Badge */}
-              <div className="flex justify-center">
-                {(() => {
-                  const StatusIcon = STATUS_ICONS[selectedRequest.status as RequestStatus];
-                  return (
-                    <Badge className={cn("px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wider border", STATUS_COLORS[selectedRequest.status as RequestStatus])}>
-                      <StatusIcon className="h-4 w-4 mr-2" />
-                      {STATUS_LABELS[selectedRequest.status as RequestStatus]}
-                    </Badge>
-                  );
-                })()}
-              </div>
-
-              {/* Main Content Card */}
-              <div className="bg-card rounded-2xl p-5 border border-border">
-                <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Situation</h4>
-                <p className="text-[15px] leading-relaxed text-foreground whitespace-pre-wrap">
-                  {selectedRequest.situation_description}
-                </p>
-              </div>
-
-              {/* Meta Data Grid */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-card rounded-2xl p-4 border border-border">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Child</h4>
-                  <p className="font-semibold text-foreground">{selectedRequest.child_brain_profile || 'N/A'}</p>
-                  <p className="text-xs text-muted-foreground">{selectedRequest.child_age ? `${selectedRequest.child_age} years old` : ''}</p>
-                </div>
-                <div className="bg-card rounded-2xl p-4 border border-border">
-                  <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Urgency</h4>
-                  <p className={cn("font-semibold capitalize", 
-                    selectedRequest.urgency_level === 'urgent' ? 'text-red-500' : 
-                    selectedRequest.urgency_level === 'high' ? 'text-orange-500' : 'text-foreground'
-                  )}>
-                    {selectedRequest.urgency_level}
-                  </p>
-                </div>
-              </div>
-
-              {/* Completed Script Link */}
-              {selectedRequest.status === 'completed' && selectedRequest.created_script_id && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+            <div className="flex flex-col h-full max-h-[85vh]">
+               {/* Sticky Header */}
+              <div className="p-4 bg-background/80 backdrop-blur-xl border-b border-border/50 flex items-center justify-between sticky top-0 z-50">
+                <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className="rounded-full h-10 w-10" 
+                   onClick={() => setSelectedRequest(null)}
                 >
-                  <Button
-                    onClick={() => {
-                      triggerHaptic('medium');
-                      navigate(`/scripts/${selectedRequest.created_script_id}`);
-                    }}
-                    className="w-full h-12 rounded-2xl font-semibold bg-green-500 hover:bg-green-600 text-white"
-                  >
-                    View Created Script <ExternalLink className="w-4 h-4 ml-2" />
-                  </Button>
-                </motion.div>
-              )}
+                  <ArrowLeft className="w-5 h-5" />
+                </Button>
+                <DialogTitle className="text-sm font-bold uppercase tracking-widest opacity-70">Details</DialogTitle>
+                <div className="w-10" />
+              </div>
 
-              {/* Admin Response */}
-              {selectedRequest.admin_notes ? (
-                <div className="bg-blue-500/10 dark:bg-blue-500/15 rounded-2xl p-5 border border-blue-500/30 dark:border-blue-500/40">
-                  <h4 className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    <MessageCircleHeart className="w-4 h-4" /> Admin Response
-                  </h4>
-                  <p className="text-[15px] leading-relaxed text-blue-900 dark:text-blue-100">
-                    {selectedRequest.admin_notes}
-                  </p>
-                </div>
-              ) : (
-                <div className="text-center py-4 text-muted-foreground text-sm italic">
-                  No response yet. We're working on it!
-                </div>
-              )}
-            </motion.div>
+              <div className="p-6 overflow-y-auto space-y-6">
+                 {/* Status Banner */}
+                 <div className={cn("p-4 rounded-2xl border flex items-center justify-between", 
+                    STATUS_CONFIG[selectedRequest.status as RequestStatus].bg,
+                    STATUS_CONFIG[selectedRequest.status as RequestStatus].border
+                 )}>
+                    <div className="flex items-center gap-3">
+                      {(() => {
+                        const Icon = STATUS_CONFIG[selectedRequest.status as RequestStatus].icon;
+                        return <Icon className={cn("w-5 h-5", STATUS_CONFIG[selectedRequest.status as RequestStatus].color)} />;
+                      })()}
+                      <span className={cn("font-bold", STATUS_CONFIG[selectedRequest.status as RequestStatus].color)}>
+                        {STATUS_CONFIG[selectedRequest.status as RequestStatus].label}
+                      </span>
+                    </div>
+                    <span className="text-xs font-medium opacity-70">
+                       {new Date(selectedRequest.created_at).toLocaleDateString()}
+                    </span>
+                 </div>
+
+                 {/* Main Content */}
+                 <div className="space-y-2">
+                   <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Description</h4>
+                   <div className="bg-background p-5 rounded-[20px] shadow-sm border border-border/50">
+                     <p className="text-[16px] leading-relaxed text-foreground">
+                       {selectedRequest.situation_description}
+                     </p>
+                   </div>
+                 </div>
+
+                 {/* Grid Info */}
+                 <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-background p-4 rounded-[20px] border border-border/50">
+                      <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Child Profile</h4>
+                      <p className="font-semibold">{selectedRequest.child_brain_profile || 'Not specified'}</p>
+                    </div>
+                    <div className="bg-background p-4 rounded-[20px] border border-border/50">
+                      <h4 className="text-[10px] font-bold text-muted-foreground uppercase mb-1">Urgency</h4>
+                      <div className="flex items-center gap-2">
+                        <div className={cn("w-2 h-2 rounded-full", 
+                          selectedRequest.urgency_level === 'urgent' ? 'bg-red-500 animate-pulse' : 
+                          selectedRequest.urgency_level === 'high' ? 'bg-orange-500' : 'bg-blue-500'
+                        )} />
+                        <span className="capitalize font-medium">{selectedRequest.urgency_level}</span>
+                      </div>
+                    </div>
+                 </div>
+
+                 {/* Admin Response */}
+                 {selectedRequest.admin_notes && (
+                   <div className="space-y-2">
+                     <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider ml-1">Admin Response</h4>
+                     <div className="bg-blue-500/5 border border-blue-500/10 p-5 rounded-[20px]">
+                       <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-sm mb-2">
+                         <MessageCircleHeart className="w-4 h-4" />
+                         <span>Expert Note</span>
+                       </div>
+                       <p className="text-sm leading-relaxed opacity-90">
+                         {selectedRequest.admin_notes}
+                       </p>
+                     </div>
+                   </div>
+                 )}
+
+                 {/* Action */}
+                 {selectedRequest.status === 'completed' && selectedRequest.created_script_id && (
+                    <Button 
+                      onClick={() => navigate(`/scripts/${selectedRequest.created_script_id}`)}
+                      className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-green-500/20 bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      Open Script <ExternalLink className="w-5 h-5 ml-2" />
+                    </Button>
+                 )}
+              </div>
+            </div>
           )}
-          
-          <div className="p-4 bg-card border-t border-border">
-            <Button 
-              onClick={() => {
-                triggerHaptic('light');
-                setSelectedRequest(null);
-              }} 
-              className="w-full rounded-xl h-12 font-semibold text-[16px]"
-            >
-              Close
-            </Button>
-          </div>
         </DialogContent>
       </Dialog>
 
-      {/* New Request Modal */}
       <RequestScriptModal open={requestModalOpen} onOpenChange={setRequestModalOpen} />
     </MainLayout>
   );
