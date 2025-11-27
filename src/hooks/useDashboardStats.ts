@@ -72,17 +72,27 @@ export function useDashboardStats(childId?: string) {
       if (error) throw error;
       if (!data) throw new Error('No dashboard data found');
 
-      // Fetch streak data from user_achievements_stats, filtering by child_profile_id
-      let streakQuery = supabase
-        .from('user_achievements_stats')
-        .select('current_streak, longest_streak')
-        .eq('user_id', user.id);
-      
+      // Fetch streak data - use aggregated view when no childId, otherwise filter by child
+      let streakData: { current_streak: number; longest_streak: number } | null = null;
+
       if (childId) {
-        streakQuery = streakQuery.eq('child_profile_id', childId);
+        // Specific child - use base table with filter
+        const { data } = await supabase
+          .from('user_achievements_stats')
+          .select('current_streak, longest_streak')
+          .eq('user_id', user.id)
+          .eq('child_profile_id', childId)
+          .maybeSingle();
+        streakData = data;
+      } else {
+        // All children aggregated
+        const { data } = await supabase
+          .from('user_achievements_stats_aggregated')
+          .select('current_streak, longest_streak')
+          .eq('user_id', user.id)
+          .maybeSingle();
+        streakData = data;
       }
-      
-      const { data: streakData } = await streakQuery.single();
 
       // Transform snake_case to camelCase
       return {
