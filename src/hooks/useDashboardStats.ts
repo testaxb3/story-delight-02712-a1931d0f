@@ -52,11 +52,11 @@ export interface DashboardStats {
  * Optimized hook to fetch all dashboard stats in a single query
  * Uses React Query for caching, background refetching, and better UX
  */
-export function useDashboardStats() {
+export function useDashboardStats(childId?: string) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: ['dashboard-stats', user?.id],
+    queryKey: ['dashboard-stats', user?.id, childId],
     queryFn: async () => {
       if (!user?.id) {
         throw new Error('User not authenticated');
@@ -72,12 +72,17 @@ export function useDashboardStats() {
       if (error) throw error;
       if (!data) throw new Error('No dashboard data found');
 
-      // Fetch streak data from user_achievements_stats
-      const { data: streakData } = await supabase
+      // Fetch streak data from user_achievements_stats, filtering by child_profile_id
+      let streakQuery = supabase
         .from('user_achievements_stats')
         .select('current_streak, longest_streak')
-        .eq('user_id', user.id)
-        .single();
+        .eq('user_id', user.id);
+      
+      if (childId) {
+        streakQuery = streakQuery.eq('child_profile_id', childId);
+      }
+      
+      const { data: streakData } = await streakQuery.single();
 
       // Transform snake_case to camelCase
       return {

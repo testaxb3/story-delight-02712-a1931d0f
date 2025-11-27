@@ -3276,15 +3276,15 @@ export type Database = {
       leaderboard_cache: {
         Row: {
           brain_profile: string | null
-          created_at: string | null
           current_streak: number | null
           days_completed: number | null
           id: string | null
+          likes_received_count: number | null
           longest_streak: number | null
           name: string | null
           photo_url: string | null
+          posts_count: number | null
           scripts_used: number | null
-          username: string | null
         }
         Relationships: []
       }
@@ -3509,11 +3509,13 @@ export type Database = {
       }
       user_achievements_stats: {
         Row: {
+          badges_unlocked: number | null
           child_profile_id: string | null
           current_streak: number | null
           days_completed: number | null
           longest_streak: number | null
           posts_created: number | null
+          reactions_received: number | null
           scripts_used: number | null
           user_id: string | null
           videos_watched: number | null

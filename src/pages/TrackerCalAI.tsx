@@ -131,7 +131,7 @@ export default function TrackerCalAI() {
   }, [trackerStats]);
 
   // Stats Calculation - Use dashboard stats as source of truth
-  const { data: dashboardStats } = useDashboardStats();
+  const { data: dashboardStats } = useDashboardStats(activeChild?.id);
   
   const stats = useMemo(() => {
     const completed = trackerStats?.completedDays.length ?? 0;
