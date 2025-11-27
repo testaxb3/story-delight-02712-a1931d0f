@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useScriptRequests, CreateScriptRequestData } from '@/hooks/useScriptRequests';
-import { ArrowRight, ArrowLeft, Loader2, Check, Home, School, Car, Users, AlertTriangle } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, Check, Home, School, Car, Users, AlertTriangle, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
 
@@ -55,8 +55,13 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
     mode: 'onChange',
   });
 
-  const { watch, setValue, handleSubmit, formState: { errors, isValid } } = form;
-  const formValues = watch();
+  const { watch, setValue, handleSubmit, formState: { errors } } = form;
+  
+  // Watch specific fields for performance
+  const situationDescription = watch('situation_description');
+  const locationTypes = watch('location_type');
+  const parentState = watch('parent_emotional_state');
+  const urgencyLevel = watch('urgency_level');
 
   // Navigation Handlers
   const handleNext = async () => {
@@ -120,7 +125,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
             autoFocus
           />
           <div className="absolute bottom-4 right-4 text-xs text-muted-foreground">
-            {formValues.situation_description?.length || 0} chars
+            {situationDescription?.length || 0} chars
           </div>
         </div>
         {errors.situation_description && (
@@ -152,14 +157,14 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
             { id: 'public', label: 'Public', icon: Users },
             { id: 'transit', label: 'Transit', icon: Car },
           ].map((loc) => {
-            const isSelected = formValues.location_type?.includes(loc.id);
+            const isSelected = locationTypes?.includes(loc.id);
             return (
               <button
                 key={loc.id}
                 type="button"
                 onClick={() => {
                   triggerHaptic('light');
-                  const current = formValues.location_type || [];
+                  const current = locationTypes || [];
                   const next = isSelected ? current.filter(i => i !== loc.id) : [...current, loc.id];
                   setValue('location_type', next, { shouldValidate: true });
                 }}
@@ -169,6 +174,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                     ? "bg-primary/10 border-primary text-primary" 
                     : "bg-card border-border hover:bg-accent"
                 )}
+                aria-label={`Select ${loc.label}`}
+                aria-pressed={isSelected}
               >
                 <loc.icon className="w-5 h-5" />
                 <span className="font-medium">{loc.label}</span>
@@ -183,7 +190,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
         <label className="text-sm font-medium text-muted-foreground ml-1">How do you feel?</label>
         <div className="flex flex-wrap gap-2">
           {['Stressed', 'Anxious', 'Angry', 'Exhausted', 'Calm', 'Confused'].map((emotion) => {
-            const isSelected = formValues.parent_emotional_state === emotion;
+            const isSelected = parentState === emotion;
             return (
               <button
                 key={emotion}
@@ -198,6 +205,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-transparent border-border hover:border-primary/50"
                 )}
+                aria-label={`Feel ${emotion}`}
+                aria-pressed={isSelected}
               >
                 {emotion}
               </button>
@@ -228,7 +237,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
           { value: 'high', label: 'Daily Struggle', desc: 'Happens every day, exhausting', color: 'bg-orange-500' },
           { value: 'urgent', label: 'SOS / Crisis', desc: 'Need help immediately', color: 'bg-red-500' },
         ].map((level) => {
-          const isSelected = formValues.urgency_level === level.value;
+          const isSelected = urgencyLevel === level.value;
           return (
             <button
               key={level.value}
@@ -243,6 +252,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                   ? "border-primary ring-1 ring-primary bg-primary/5" 
                   : "border-border hover:bg-accent/50"
               )}
+              aria-label={`Urgency level: ${level.label}`}
+              aria-pressed={isSelected}
             >
               <div className={cn("w-3 h-full absolute left-0 top-0 bottom-0", level.color, isSelected ? "opacity-100" : "opacity-30 group-hover:opacity-60")} />
               <div className="pl-6 flex-1 text-left">
@@ -292,6 +303,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
             <button 
               onClick={() => onOpenChange(false)}
               className="p-2 -mr-2 rounded-full hover:bg-secondary transition-colors text-muted-foreground"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
@@ -324,11 +336,14 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
             
             <Button 
               onClick={currentStep === totalSteps ? handleSubmit(onSubmit) : handleNext}
-              disabled={isCreating || (currentStep === 1 && !formValues.situation_description)}
+              disabled={isCreating || (currentStep === 1 && !situationDescription)}
               className="flex-1 h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/25 transition-all active:scale-95"
             >
               {isCreating ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
+                <>
+                  <Loader2 className="w-6 h-6 animate-spin" />
+                  <span className="ml-2">Submitting...</span>
+                </>
               ) : currentStep === totalSteps ? (
                 'Submit Request'
               ) : (
@@ -341,13 +356,5 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
         </div>
       </DialogContent>
     </Dialog>
-  );
-}
-
-function X({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-    </svg>
   );
 }
