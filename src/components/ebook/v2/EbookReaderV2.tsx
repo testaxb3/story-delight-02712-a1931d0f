@@ -185,6 +185,15 @@ export const EbookReaderV2 = ({
     return () => window.removeEventListener('scroll', debugScroll);
   }, []);
 
+  const completedChaptersRef = useRef(completedChapters);
+  const currentChapterIndexRef = useRef(currentChapterIndex);
+
+  // Sync refs with state
+  useEffect(() => {
+    completedChaptersRef.current = completedChapters;
+    currentChapterIndexRef.current = currentChapterIndex;
+  }, [completedChapters, currentChapterIndex]);
+
   // Intelligent header visibility + save scroll position + mark chapter complete
   useEffect(() => {
     console.log('🔧 Setting up scroll listener on window');
@@ -197,9 +206,6 @@ export const EbookReaderV2 = ({
       // Update ref with current scroll position
       currentScrollY.current = scrollY;
 
-      // Debug: log every scroll event
-      console.log('📜 Window scroll event! scrollY:', Math.floor(scrollY), 'documentHeight:', documentHeight);
-
       // Smart header: show when scrolling up, hide when scrolling down
       if (scrollY < lastScrollY.current || scrollY < 100) {
         setShowHeader(true);
@@ -210,12 +216,15 @@ export const EbookReaderV2 = ({
 
       // Mark chapter as completed when reaching the end
       if (scrollPosition >= documentHeight - 100) {
-        if (!completedChapters.has(currentChapterIndex)) {
-          const newCompleted = new Set(completedChapters);
-          newCompleted.add(currentChapterIndex);
+        const currentIndex = currentChapterIndexRef.current;
+        const completed = completedChaptersRef.current;
+        
+        if (!completed.has(currentIndex)) {
+          const newCompleted = new Set(completed);
+          newCompleted.add(currentIndex);
           setCompletedChapters(newCompleted);
           localStorage.setItem("ebook-completed", JSON.stringify([...newCompleted]));
-          onChapterComplete?.(currentChapterIndex);
+          onChapterComplete?.(currentIndex);
         }
       }
 
@@ -224,7 +233,7 @@ export const EbookReaderV2 = ({
         clearTimeout(scrollTimeout.current);
       }
       scrollTimeout.current = setTimeout(() => {
-        console.log('💾 Saving scroll position:', Math.floor(scrollY));
+        // console.log('💾 Saving scroll position:', Math.floor(scrollY));
         onScrollPositionChange?.(Math.floor(scrollY));
       }, 2000);
     };
@@ -236,7 +245,7 @@ export const EbookReaderV2 = ({
         clearTimeout(scrollTimeout.current);
       }
     };
-  }, [currentChapterIndex, completedChapters, onChapterComplete, onScrollPositionChange]);
+  }, [onChapterComplete, onScrollPositionChange]);
 
   const handleNext = useCallback(() => {
     if (currentChapterIndex < chapters.length - 1) {
@@ -306,10 +315,10 @@ export const EbookReaderV2 = ({
           showHeader ? 'translate-y-0' : '-translate-y-full'
         }`}
       >
-        {/* Status Bar Spacer for PWA */}
-        <div className="w-full" style={{ height: 'env(safe-area-inset-top)' }} />
+        {/* Status Bar Spacer for PWA - Added extra padding to prevent touch conflict */}
+        <div className="w-full" style={{ height: 'calc(env(safe-area-inset-top) + 8px)' }} />
         
-        <div className="container mx-auto px-4 pt-2 pb-4 flex items-center justify-between gap-2 max-w-5xl">
+        <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-2 max-w-5xl">
           <div className="flex items-center gap-3 min-w-0 flex-shrink">
             <Button
               variant="ghost"

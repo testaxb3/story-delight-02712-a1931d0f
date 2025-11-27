@@ -24,7 +24,7 @@ export const TableOfContents = ({
           <BookOpen className="w-5 h-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80 sm:w-96">
+      <SheetContent side="left" className="w-80 sm:w-96 pt-[calc(env(safe-area-inset-top)+1rem)]">
         <SheetHeader>
           <SheetTitle className="font-display text-2xl">Table of Contents</SheetTitle>
         </SheetHeader>

@@ -670,12 +670,12 @@ const BonusGuidesCarousel = memo(function BonusGuidesCarousel({
             className="relative min-w-[130px] w-[130px] flex-shrink-0"
             style={{ perspective: 1000 }}
           >
-            {/* Book cover with 3D effect */}
+            {/* Book cover with 3D effect and premium frame */}
             <div
-              className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl"
+              className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-[3px] border-white/20 dark:border-white/10"
               style={{
                 transformStyle: 'preserve-3d',
-                boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05)',
+                boxShadow: '0 15px 30px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05)',
               }}
             >
               {ebook.thumbnail ? (
@@ -697,21 +697,21 @@ const BonusGuidesCarousel = memo(function BonusGuidesCarousel({
                   background: 'linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 50%, rgba(0,0,0,0.2) 100%)',
                 }}
               />
-
-              {/* Continue badge */}
-              {ebook.isStarted && (
-                <div className="absolute bottom-2 left-2 right-2 bg-black/80 backdrop-blur py-1.5 px-2 rounded-lg">
-                  <div className="flex items-center justify-center gap-1 text-[10px] font-semibold text-white dark:text-white">
-                    <Play className="w-2.5 h-2.5 fill-white dark:fill-white" /> Continue
-                  </div>
-                </div>
-              )}
             </div>
 
             {/* Title */}
-            <h4 className="mt-3 text-xs font-medium text-foreground/80 line-clamp-2 text-left">
+            <h4 className="mt-2 text-xs font-medium text-foreground/90 line-clamp-2 text-left h-8 leading-tight">
               {ebook.title}
             </h4>
+
+            {/* Continue Button - Outside */}
+            {ebook.isStarted && (
+              <div className="mt-2 flex">
+                <div className="bg-primary/10 text-primary dark:text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                  <Play className="w-2 h-2 fill-current" /> Continue
+                </div>
+              </div>
+            )}
           </motion.button>
         ))}
       </div>

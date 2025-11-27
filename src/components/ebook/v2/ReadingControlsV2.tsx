@@ -42,7 +42,7 @@ export const ReadingControlsV2 = ({
         <Button
           variant="ghost"
           size="icon"
-          className="hover:bg-accent/50"
+          className="hover:bg-accent/50 relative z-50"
           aria-label="Reading controls"
         >
           <svg
@@ -61,7 +61,16 @@ export const ReadingControlsV2 = ({
           </svg>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 font-sans">
+      {/* Added z-[60] to ensure it opens above the fixed header which is z-50.
+          Added mr-2 or style to handle safe area if aligned to edge. 
+          The DropdownMenuContent aligns 'end' which means right edge.
+          In PWA, top right is usually safe, but let's ensure padding.
+      */}
+      <DropdownMenuContent 
+        align="end" 
+        className="w-56 font-sans z-[60] mr-2 mt-2"
+        sideOffset={5}
+      >
         <div className="px-2 py-2">
           <p className="text-sm font-medium mb-2">Font Size</p>
           <div className="flex items-center gap-2">

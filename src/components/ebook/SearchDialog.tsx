@@ -83,7 +83,7 @@ export const SearchDialog = ({ chapters, onResultClick }: SearchDialogProps) => 
           <Search className="w-5 h-5" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl pt-[calc(env(safe-area-inset-top)+1.5rem)]">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl">Search Content</DialogTitle>
         </DialogHeader>

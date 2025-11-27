@@ -61,7 +61,7 @@ export const NotesPanel = ({ currentChapter }: NotesPanelProps) => {
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-80 sm:w-96">
+      <SheetContent side="right" className="w-80 sm:w-96 pt-[calc(env(safe-area-inset-top)+1rem)]">
         <SheetHeader>
           <SheetTitle className="font-display text-2xl">Notes</SheetTitle>
         </SheetHeader>

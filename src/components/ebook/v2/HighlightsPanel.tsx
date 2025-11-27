@@ -46,7 +46,7 @@ export const HighlightsPanel = ({
           )}
         </Button>
       </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px]">
+      <SheetContent className="w-[400px] sm:w-[540px] pt-[calc(env(safe-area-inset-top)+1rem)]">
         <SheetHeader>
           <SheetTitle className="font-display text-2xl">
             Highlights
