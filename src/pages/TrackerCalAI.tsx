@@ -12,6 +12,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import confetti from 'canvas-confetti';
+import { useDashboardStats } from '@/hooks/useDashboardStats';
 
 // --- TYPES ---
 interface TrackerDay {
@@ -152,20 +153,16 @@ export default function TrackerCalAI() {
     setLoading(false);
   };
 
-  // Stats Calculation
+  // Stats Calculation - Use dashboard stats as source of truth
+  const { data: dashboardStats } = useDashboardStats();
+  
   const stats = useMemo(() => {
     const completed = trackerDays.filter(d => d.completed).length;
     const progress = (completed / TOTAL_DAYS) * 100;
-    
-    const sorted = [...trackerDays].sort((a, b) => b.day_number - a.day_number);
-    let streak = 0;
-    for (const day of sorted) {
-      if (day.completed) streak++;
-      else break;
-    }
+    const streak = dashboardStats?.currentStreak ?? 0;
 
     return { completed, progress, streak };
-  }, [trackerDays]);
+  }, [trackerDays, dashboardStats]);
 
   // Calculate today's day number based on current date
   const todaysDayNumber = useMemo(() => {

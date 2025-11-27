@@ -927,14 +927,14 @@ export default function DashboardCalAI() {
                 value={dashboardStats?.scriptUsesWeek ?? 0}
                 trend="+12% from last week"
                 color="bg-indigo-500"
-                onPress={() => handleNavigate('/progress')}
+                onPress={() => handleNavigate('/tracker')}
               />
               <InsightCard
                 icon={<Sparkles className="w-5 h-5 text-amber-400" />}
                 label="Total uses"
                 value={dashboardStats?.totalScriptUses ?? 0}
                 color="bg-amber-500"
-                onPress={() => handleNavigate('/progress')}
+                onPress={() => handleNavigate('/tracker')}
               />
             </div>
 

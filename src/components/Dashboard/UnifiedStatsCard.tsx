@@ -104,7 +104,7 @@ export function UnifiedStatsCard({ scriptsUsed, scriptsTotal, className }: Unifi
 
       {/* Bottom section - Log Button */}
       <button
-        onClick={() => !isLoggedToday && navigate('/progress')}
+        onClick={() => !isLoggedToday && navigate('/tracker')}
         disabled={isLoggedToday || checking}
         className={cn(
           "w-full h-12 rounded-2xl flex items-center justify-center gap-2 text-sm font-semibold transition-all",

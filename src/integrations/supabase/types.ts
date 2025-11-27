@@ -3778,6 +3778,10 @@ export type Database = {
         Returns: undefined
       }
       archive_bonus: { Args: { p_bonus_id: string }; Returns: Json }
+      calculate_badge_progress: {
+        Args: { p_requirement: string; p_stats: Json }
+        Returns: Json
+      }
       calculate_streak: {
         Args: { p_child_profile_id: string; p_user_id: string }
         Returns: number
@@ -3881,6 +3885,10 @@ export type Database = {
         }[]
       }
       get_update_statistics: { Args: never; Returns: Json }
+      get_user_achievements_enriched: {
+        Args: { p_user_id: string }
+        Returns: Json
+      }
       get_user_collection_counts: { Args: never; Returns: Json }
       get_user_likes_count: {
         Args: { target_user_id: string }
