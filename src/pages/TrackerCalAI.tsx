@@ -16,6 +16,15 @@ import { TrackerFAB } from '@/components/Tracker/TrackerFAB';
 
 const TOTAL_DAYS = 30;
 
+// --- UTILITY FUNCTIONS ---
+
+const formatCountdown = (ms: number | null): string => {
+  if (!ms) return "Cooldown";
+  const hours = Math.floor(ms / (1000 * 60 * 60));
+  const minutes = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+};
+
 // --- TYPES ---
 
 interface UserMetadata {
@@ -72,7 +81,7 @@ const DayCell = ({
       disabled={isCompleted || isLocked}
     >
       <div className={cn(
-        "aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 border",
+        "aspect-square rounded-lg flex items-center justify-center transition-all duration-300 border relative",
         isCompleted 
           ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30" 
           : isNext
@@ -81,29 +90,20 @@ const DayCell = ({
               ? "bg-muted/20 border-border/20 text-muted-foreground/40 opacity-50"
               : "bg-card/50 border-border/30 text-muted-foreground hover:bg-card hover:border-border"
       )}>
-        <span className="text-[10px] font-bold uppercase opacity-60">
-          {isCompleted ? "Done" : isNext ? "Next" : isLocked ? "Locked" : "Day"}
-        </span>
-        <span className={cn("text-xl font-black font-relative", isCompleted ? "text-white" : "text-foreground")}>
+        <span className={cn("text-base font-bold", isCompleted ? "text-white" : "text-foreground")}>
           {dayNumber}
         </span>
         {isCompleted && (
           <motion.div 
             initial={{ scale: 0, rotate: -180 }} 
             animate={{ scale: 1, rotate: 0 }} 
-            className="absolute inset-0 flex items-center justify-center bg-black/10 rounded-2xl backdrop-blur-[1px]"
+            className="absolute inset-0 flex items-center justify-center"
           >
-            <Check className="w-6 h-6 text-white stroke-[4]" />
+            <Check className="w-4 h-4 text-white stroke-[3]" />
           </motion.div>
         )}
         {isLocked && !isCompleted && (
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute top-1 right-1"
-          >
-            <Lock className="w-3 h-3 text-muted-foreground" />
-          </motion.div>
+          <Lock className="w-3 h-3 text-muted-foreground absolute top-1 right-1" />
         )}
       </div>
     </motion.button>
@@ -145,17 +145,6 @@ export default function TrackerCalAI() {
   const nextDay = trackerStats?.nextDay;
   const canLog = trackerStats?.canLogToday ?? false;
   const timeUntilNextLog = trackerStats?.timeUntilNextLog ?? null;
-
-  // Organize days into weeks
-  const weeks = useMemo(() => {
-    const weeksArray: number[][] = [];
-    for (let i = 0; i < TOTAL_DAYS; i += 7) {
-      weeksArray.push(
-        Array.from({ length: 7 }, (_, j) => i + j + 1).filter(d => d <= TOTAL_DAYS)
-      );
-    }
-    return weeksArray;
-  }, []);
 
   const handleDayClick = (dayNumber: number) => {
     // Check if this is the next day in sequence
@@ -264,27 +253,11 @@ export default function TrackerCalAI() {
           </div>
         </header>
 
-        <div className="px-6 pt-6 pb-40 max-w-2xl mx-auto">
+        <div className="px-4 pt-4 pb-40 max-w-2xl mx-auto">
           
-          {/* Large Header */}
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">
-                {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
-              </div>
-              <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground font-relative">
-                Summary
-              </h1>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-muted border-2 border-background ring-2 ring-border overflow-hidden shadow-xl">
-               {avatarUrl ? (
-                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-               ) : (
-                 <div className="w-full h-full flex items-center justify-center text-lg font-bold bg-primary/10 text-primary">
-                   {user?.email?.[0].toUpperCase()}
-                 </div>
-               )}
-            </div>
+          {/* Date Label */}
+          <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-6">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
           </div>
 
           {/* Bento Grid Stats */}
@@ -348,25 +321,25 @@ export default function TrackerCalAI() {
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-primary/10 border-2 border-primary rounded-2xl p-4 mb-6"
+              className="bg-card border border-primary/30 rounded-xl p-4 mb-6"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-primary font-bold uppercase tracking-wide">NEXT UP</p>
-                  <p className="text-2xl font-black text-foreground">Day {nextDay.day_number}</p>
+                  <p className="text-xs text-primary font-bold uppercase tracking-wide">NEXT UP</p>
+                  <p className="text-xl font-black text-foreground">Day {nextDay.day_number}</p>
                 </div>
                 <Button 
                   onClick={handleFABClick} 
                   disabled={!canLog}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-6"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-4 h-9 text-sm"
                 >
                   {canLog ? (
                     <>
-                      <Plus className="w-4 h-4 mr-2" />
+                      <Plus className="w-4 h-4 mr-1" />
                       Log Now
                     </>
                   ) : (
-                    "Cooldown"
+                    formatCountdown(timeUntilNextLog)
                   )}
                 </Button>
               </div>
@@ -375,45 +348,38 @@ export default function TrackerCalAI() {
 
           {/* 30-Day Challenge Grid */}
           <div className="mb-24">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h3 className="text-xl font-bold text-foreground">30-Day Challenge Progress</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-foreground">30-Day Challenge Progress</h3>
             </div>
             
-            <div className="bg-card/40 border border-border/40 rounded-[32px] p-6 space-y-3">
+            <div className="bg-card/40 border border-border/40 rounded-2xl p-4">
               {loading ? (
-                <div className="grid grid-cols-7 gap-3">
+                <div className="grid grid-cols-7 gap-2">
                   {Array.from({ length: 30 }).map((_, i) => (
-                    <div key={i} className="aspect-square rounded-2xl bg-muted/20 animate-pulse" />
+                    <div key={i} className="aspect-square rounded-lg bg-muted/20 animate-pulse" />
                   ))}
                 </div>
               ) : (
-                weeks.map((week, weekIndex) => (
-                  <div key={weekIndex} className="flex items-center gap-3">
-                    <span className="w-16 text-xs font-bold text-muted-foreground">
-                      Week {weekIndex + 1}
-                    </span>
-                    <div className="grid grid-cols-7 gap-2 flex-1">
-                      {week.map(dayNumber => {
-                        const day = trackerDays.find(d => d.day_number === dayNumber);
-                        const isNextDay = nextDay?.day_number === dayNumber;
-                        const isPastUncompleted = nextDay && dayNumber < nextDay.day_number && !day?.completed;
-                        const isFuture = nextDay && dayNumber > nextDay.day_number;
+                <div className="grid grid-cols-7 gap-2">
+                  {Array.from({ length: TOTAL_DAYS }, (_, i) => i + 1).map(dayNumber => {
+                    const day = trackerDays.find(d => d.day_number === dayNumber);
+                    const isNextDay = nextDay?.day_number === dayNumber;
+                    const isPastUncompleted = nextDay && dayNumber < nextDay.day_number && !day?.completed;
+                    const isFuture = nextDay && dayNumber > nextDay.day_number;
 
-                        return (
-                          <DayCell 
-                            key={dayNumber}
-                            day={day}
-                            dayNumber={dayNumber}
-                            isNext={isNextDay}
-                            isPastUncompleted={isPastUncompleted}
-                            isFuture={isFuture}
-                            onClick={() => handleDayClick(dayNumber)}
-                          />
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))
+                    return (
+                      <DayCell 
+                        key={dayNumber}
+                        day={day}
+                        dayNumber={dayNumber}
+                        isNext={isNextDay}
+                        isPastUncompleted={isPastUncompleted}
+                        isFuture={isFuture}
+                        onClick={() => handleDayClick(dayNumber)}
+                      />
+                    );
+                  })}
+                </div>
               )}
             </div>
           </div>
