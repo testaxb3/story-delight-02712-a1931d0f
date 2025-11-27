@@ -186,8 +186,19 @@ export default function ScriptRequests() {
 
         {/* Premium Header */}
         <header className="px-5 mb-6">
-          <div className="flex items-end justify-between mb-4">
-            <div>
+          <div className="flex items-center gap-3 mb-4">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                triggerHaptic('light');
+                navigate(-1);
+              }}
+              className="w-10 h-10 rounded-full bg-muted flex items-center justify-center"
+              aria-label="Go back"
+            >
+              <ArrowLeft className="w-5 h-5 text-foreground" />
+            </motion.button>
+            <div className="flex-1">
               <h1 className="text-4xl font-bold text-foreground tracking-tight mb-1">Requests</h1>
               <p className="text-muted-foreground font-medium">Track your personalized scripts</p>
             </div>
@@ -219,22 +230,54 @@ export default function ScriptRequests() {
 
         {/* Stats Cards - Horizontal Scroll */}
         <div className="flex gap-3 overflow-x-auto px-5 pb-6 scrollbar-hide snap-x">
-          <div className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border">
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-1">Total</p>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0 }}
+            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <MessageCircleHeart className="w-4 h-4 text-muted-foreground" />
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">Total</p>
+            </div>
             <p className="text-3xl font-bold text-foreground">{counts.total}</p>
-          </div>
-          <div className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border">
-            <p className="text-xs font-bold text-yellow-500 uppercase tracking-wide mb-1">Pending</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.05 }}
+            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <AlertCircle className="w-4 h-4 text-yellow-500" />
+              <p className="text-xs font-bold text-yellow-500 uppercase tracking-wide">Pending</p>
+            </div>
             <p className="text-3xl font-bold text-foreground">{counts.pending}</p>
-          </div>
-          <div className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border">
-            <p className="text-xs font-bold text-blue-500 uppercase tracking-wide mb-1">Review</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 }}
+            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="w-4 h-4 text-blue-500" />
+              <p className="text-xs font-bold text-blue-500 uppercase tracking-wide">Review</p>
+            </div>
             <p className="text-3xl font-bold text-foreground">{counts.in_review}</p>
-          </div>
-          <div className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border">
-            <p className="text-xs font-bold text-green-500 uppercase tracking-wide mb-1">Done</p>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
+            className="min-w-[140px] bg-card p-4 rounded-[20px] shadow-sm snap-center border border-border"
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <CheckCircle className="w-4 h-4 text-green-500" />
+              <p className="text-xs font-bold text-green-500 uppercase tracking-wide">Done</p>
+            </div>
             <p className="text-3xl font-bold text-foreground">{counts.completed}</p>
-          </div>
+          </motion.div>
         </div>
 
         {/* Requests List */}
