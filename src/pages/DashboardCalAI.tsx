@@ -777,7 +777,7 @@ export default function DashboardCalAI() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { activeChild } = useChildProfiles();
-  const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats();
+  const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats(activeChild?.id);
   const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
   const { data: categoryStats, isLoading: categoriesLoading } = useCategoryStats();
   const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
