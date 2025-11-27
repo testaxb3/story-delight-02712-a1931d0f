@@ -3276,6 +3276,7 @@ export type Database = {
       leaderboard_cache: {
         Row: {
           brain_profile: string | null
+          comments_count: number | null
           current_streak: number | null
           days_completed: number | null
           id: string | null
@@ -3284,7 +3285,10 @@ export type Database = {
           name: string | null
           photo_url: string | null
           posts_count: number | null
+          posts_created: number | null
           scripts_used: number | null
+          username: string | null
+          videos_watched: number | null
         }
         Relationships: []
       }
