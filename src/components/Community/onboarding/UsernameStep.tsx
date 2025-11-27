@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Check, X } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface UsernameStepProps {
   onContinue: (username: string) => void;
@@ -22,11 +23,21 @@ export function UsernameStep({ onContinue }: UsernameStepProps) {
 
   const checkAvailability = async () => {
     setIsChecking(true);
-    // TODO: Check username availability in database
-    setTimeout(() => {
-      setIsAvailable(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('username')
+        .eq('username', username.toLowerCase())
+        .maybeSingle();
+
+      if (error) throw error;
+      setIsAvailable(!data);
+    } catch (error) {
+      console.error('Error checking username:', error);
+      setIsAvailable(null);
+    } finally {
       setIsChecking(false);
-    }, 500);
+    }
   };
 
   const handleContinue = () => {

@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { CreateCommunityNameStep } from './create/CreateCommunityNameStep';
 import { CreateCommunityLogoStep } from './create/CreateCommunityLogoStep';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface CreateCommunityFlowProps {
   onComplete: (communityId: string) => void;
@@ -9,6 +12,7 @@ interface CreateCommunityFlowProps {
 }
 
 export function CreateCommunityFlow({ onComplete, onBack }: CreateCommunityFlowProps) {
+  const { user } = useAuth();
   const [currentStep, setCurrentStep] = useState<'name' | 'logo'>('name');
   const [communityData, setCommunityData] = useState({
     name: '',
@@ -22,10 +26,41 @@ export function CreateCommunityFlow({ onComplete, onBack }: CreateCommunityFlowP
   };
 
   const handleLogoComplete = async (logo: string) => {
-    setCommunityData({ ...communityData, logo });
-    // TODO: Save community to database
-    const communityId = 'mock-id';
-    onComplete(communityId);
+    if (!user) {
+      toast.error('You must be logged in to create a community');
+      return;
+    }
+
+    try {
+      const inviteCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+      
+      const { data: newCommunity, error } = await supabase
+        .from('communities')
+        .insert({
+          name: communityData.name,
+          description: communityData.description,
+          logo_emoji: logo,
+          created_by: user.id,
+          invite_code: inviteCode,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Add creator as leader
+      await supabase.from('community_members').insert({
+        community_id: newCommunity.id,
+        user_id: user.id,
+        role: 'leader',
+      });
+
+      toast.success('Community created successfully!');
+      onComplete(newCommunity.id);
+    } catch (error) {
+      console.error('Error creating community:', error);
+      toast.error('Failed to create community');
+    }
   };
 
   const handleBackClick = () => {

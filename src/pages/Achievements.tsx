@@ -28,11 +28,6 @@ const AchievementsContent = () => {
     enableRealtime: true
   });
 
-  console.log('[Achievements Page] User:', user?.id);
-  console.log('[Achievements Page] Loading:', isLoading);
-  console.log('[Achievements Page] Error:', error);
-  console.log('[Achievements Page] Data:', data);
-
   const nextMilestone = data?.badges
     ?.filter((b: Badge) => !b.unlocked && b.progress)
     .sort((a: Badge, b: Badge) => {
