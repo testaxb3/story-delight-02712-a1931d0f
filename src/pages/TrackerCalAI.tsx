@@ -1,14 +1,12 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Flame, Target, Trophy, Calendar, ChevronLeft, ChevronRight, X, Zap, Plus, Lock, Check } from 'lucide-react';
+import { CheckCircle2, Flame, Target, X, Zap, Plus, Lock, Check } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { toast } from 'sonner';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import confetti from 'canvas-confetti';
@@ -18,15 +16,24 @@ import { TrackerFAB } from '@/components/Tracker/TrackerFAB';
 
 const TOTAL_DAYS = 30;
 
+// --- TYPES ---
+
+interface UserMetadata {
+  avatar_url?: string;
+  full_name?: string;
+}
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+}
+
 // --- UTILITY COMPONENTS ---
 
-const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay, type: "spring", stiffness: 300, damping: 30 }}
-    className="bg-white/5 dark:bg-[#1C1C1E] backdrop-blur-xl border border-white/10 p-4 rounded-[20px] flex flex-col justify-between h-32 relative overflow-hidden group"
-  >
+const StatCard = ({ title, value, icon: Icon, color }: StatCardProps) => (
+  <div className="bg-card border border-border/40 backdrop-blur-xl p-4 rounded-[20px] flex flex-col justify-between h-32 relative overflow-hidden group">
     <div className={cn("w-10 h-10 rounded-full flex items-center justify-center transition-transform group-hover:scale-110", color)}>
       <Icon className="w-5 h-5 text-white" />
     </div>
@@ -36,20 +43,20 @@ const StatCard = ({ title, value, icon: Icon, color, delay }: any) => (
     </div>
     {/* Ambient Glow */}
     <div className={cn("absolute -bottom-4 -right-4 w-20 h-20 rounded-full blur-2xl opacity-20", color)} />
-  </motion.div>
+  </div>
 );
 
 const DayCell = ({ 
   day, 
   dayNumber, 
-  isToday, 
+  isNext, 
   isPastUncompleted, 
   isFuture, 
   onClick 
 }: { 
   day?: TrackerDay; 
   dayNumber: number; 
-  isToday: boolean; 
+  isNext: boolean; 
   isPastUncompleted: boolean;
   isFuture: boolean;
   onClick: () => void 
@@ -68,14 +75,14 @@ const DayCell = ({
         "aspect-square rounded-2xl flex flex-col items-center justify-center transition-all duration-300 border",
         isCompleted 
           ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/30" 
-          : isToday
-            ? "bg-primary/10 border-primary text-primary ring-2 ring-primary/20"
+          : isNext
+            ? "bg-primary/10 border-primary text-primary ring-2 ring-primary/20 animate-pulse"
             : isLocked
-              ? "bg-muted/20 border-transparent text-muted-foreground/40 opacity-50"
-              : "bg-card/50 border-transparent text-muted-foreground hover:bg-card"
+              ? "bg-muted/20 border-border/20 text-muted-foreground/40 opacity-50"
+              : "bg-card/50 border-border/30 text-muted-foreground hover:bg-card hover:border-border"
       )}>
         <span className="text-[10px] font-bold uppercase opacity-60">
-          {isCompleted ? "Done" : isLocked ? "Locked" : "Day"}
+          {isCompleted ? "Done" : isNext ? "Next" : isLocked ? "Locked" : "Day"}
         </span>
         <span className={cn("text-xl font-black font-relative", isCompleted ? "text-white" : "text-foreground")}>
           {dayNumber}
@@ -113,13 +120,6 @@ export default function TrackerCalAI() {
   const [saving, setSaving] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const { triggerHaptic } = useHaptic();
-  const scrollRef = useRef(null);
-  const { scrollY } = useScroll({ container: scrollRef });
-  
-  // Header animations
-  const headerOpacity = useTransform(scrollY, [0, 50], [1, 0]);
-  const stickyHeaderOpacity = useTransform(scrollY, [40, 60], [0, 1]);
-  const headerY = useTransform(scrollY, [0, 50], [0, -20]);
 
   // Fetch tracker data using new hook
   const { data: trackerStats, isLoading: loading, refetch } = useTrackerDays(user?.id, activeChild?.id);
@@ -145,6 +145,17 @@ export default function TrackerCalAI() {
   const nextDay = trackerStats?.nextDay;
   const canLog = trackerStats?.canLogToday ?? false;
   const timeUntilNextLog = trackerStats?.timeUntilNextLog ?? null;
+
+  // Organize days into weeks
+  const weeks = useMemo(() => {
+    const weeksArray: number[][] = [];
+    for (let i = 0; i < TOTAL_DAYS; i += 7) {
+      weeksArray.push(
+        Array.from({ length: 7 }, (_, j) => i + j + 1).filter(d => d <= TOTAL_DAYS)
+      );
+    }
+    return weeksArray;
+  }, []);
 
   const handleDayClick = (dayNumber: number) => {
     // Check if this is the next day in sequence
@@ -241,28 +252,22 @@ export default function TrackerCalAI() {
     }, 1800);
   };
 
+  const avatarUrl = (user?.user_metadata as UserMetadata)?.avatar_url;
+
   return (
     <MainLayout>
-      <div 
-        ref={scrollRef}
-        className="h-screen overflow-y-auto bg-background no-scrollbar relative"
-        style={{ scrollPaddingTop: '100px' }}
-      >
-        {/* Sticky Header Blur */}
-        <motion.div 
-          className="fixed top-0 left-0 right-0 h-[110px] bg-background/80 backdrop-blur-xl z-40 border-b border-white/5 pointer-events-none"
-          style={{ opacity: stickyHeaderOpacity }}
-        >
-          <div className="absolute bottom-4 left-0 right-0 text-center font-bold text-lg text-foreground">Summary</div>
-        </motion.div>
+      <div className="h-screen overflow-y-auto bg-background no-scrollbar relative">
+        {/* Sticky Header */}
+        <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40">
+          <div className="flex items-center justify-center h-14">
+            <h2 className="font-bold text-lg text-foreground">Summary</h2>
+          </div>
+        </header>
 
-        <div className="px-6 pt-[calc(env(safe-area-inset-top)+20px)] pb-40 max-w-2xl mx-auto">
+        <div className="px-6 pt-6 pb-40 max-w-2xl mx-auto">
           
           {/* Large Header */}
-          <motion.div 
-            style={{ opacity: headerOpacity, y: headerY }}
-            className="flex items-end justify-between mb-8"
-          >
+          <div className="flex items-end justify-between mb-8">
             <div>
               <div className="text-sm font-bold text-muted-foreground uppercase tracking-widest mb-1">
                 {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
@@ -272,21 +277,25 @@ export default function TrackerCalAI() {
               </h1>
             </div>
             <div className="w-12 h-12 rounded-full bg-muted border-2 border-background ring-2 ring-border overflow-hidden shadow-xl">
-               {(user?.user_metadata as any)?.avatar_url ? (
-                 <img src={(user.user_metadata as any).avatar_url} alt="Avatar" className="w-full h-full object-cover" />
+               {avatarUrl ? (
+                 <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                ) : (
                  <div className="w-full h-full flex items-center justify-center text-lg font-bold bg-primary/10 text-primary">
                    {user?.email?.[0].toUpperCase()}
                  </div>
                )}
             </div>
-          </motion.div>
-
+          </div>
 
           {/* Bento Grid Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="grid grid-cols-2 gap-4 mb-8"
+          >
             {/* Main Hero Card */}
-            <div className="col-span-2 bg-card dark:bg-[#1C1C1E] border border-border/40 p-6 rounded-[24px] relative overflow-hidden shadow-lg">
+            <div className="col-span-2 bg-card border border-border/40 p-6 rounded-[24px] relative overflow-hidden shadow-lg">
               <div className="relative z-10 flex justify-between items-end">
                 <div>
                   <h2 className="text-lg font-semibold text-muted-foreground mb-2">Total Progress</h2>
@@ -325,63 +334,87 @@ export default function TrackerCalAI() {
               value={stats.streak} 
               icon={Zap} 
               color="bg-orange-500" 
-              delay={0.1} 
             />
             <StatCard 
               title="Days Left" 
               value={TOTAL_DAYS - stats.completed} 
               icon={Target} 
               color="bg-blue-500" 
-              delay={0.2} 
             />
-          </div>
+          </motion.div>
 
-          {/* Calendar Grid */}
-          <div className="mb-24">
-            <div className="flex items-center justify-between mb-4 px-1">
-              <h3 className="text-xl font-bold text-foreground">History</h3>
-              <div className="flex gap-2">
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-transparent border-border/40">
-                   <ChevronLeft className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="icon" className="h-8 w-8 rounded-full bg-transparent border-border/40">
-                   <ChevronRight className="w-4 h-4" />
+          {/* Next Action Card */}
+          {nextDay && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-primary/10 border-2 border-primary rounded-2xl p-4 mb-6"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-primary font-bold uppercase tracking-wide">NEXT UP</p>
+                  <p className="text-2xl font-black text-foreground">Day {nextDay.day_number}</p>
+                </div>
+                <Button 
+                  onClick={handleFABClick} 
+                  disabled={!canLog}
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-full px-6"
+                >
+                  {canLog ? (
+                    <>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Log Now
+                    </>
+                  ) : (
+                    "Cooldown"
+                  )}
                 </Button>
               </div>
+            </motion.div>
+          )}
+
+          {/* 30-Day Challenge Grid */}
+          <div className="mb-24">
+            <div className="flex items-center justify-between mb-4 px-1">
+              <h3 className="text-xl font-bold text-foreground">30-Day Challenge Progress</h3>
             </div>
             
-            <div className="bg-card/40 dark:bg-[#1C1C1E]/50 backdrop-blur-md border border-border/40 rounded-[32px] p-6">
-               <div className="grid grid-cols-7 gap-3">
-                  {['S','M','T','W','T','F','S'].map((d, i) => (
-                    <div key={i} className="text-center text-xs font-bold text-muted-foreground mb-2">{d}</div>
+            <div className="bg-card/40 border border-border/40 rounded-[32px] p-6 space-y-3">
+              {loading ? (
+                <div className="grid grid-cols-7 gap-3">
+                  {Array.from({ length: 30 }).map((_, i) => (
+                    <div key={i} className="aspect-square rounded-2xl bg-muted/20 animate-pulse" />
                   ))}
-                  
-                  {loading ? (
-                    Array.from({ length: 30 }).map((_, i) => (
-                      <div key={i} className="aspect-square rounded-2xl bg-muted/20 animate-pulse" />
-                    ))
-                  ) : (
-                  Array.from({ length: TOTAL_DAYS }).map((_, i) => {
-                      const dayNumber = i + 1;
-                      const day = trackerDays.find(d => d.day_number === dayNumber);
-                      const isNextDay = nextDay?.day_number === dayNumber;
-                      const isPastUncompleted = nextDay && dayNumber < nextDay.day_number && !day?.completed;
-                      const isFuture = nextDay && dayNumber > nextDay.day_number;
+                </div>
+              ) : (
+                weeks.map((week, weekIndex) => (
+                  <div key={weekIndex} className="flex items-center gap-3">
+                    <span className="w-16 text-xs font-bold text-muted-foreground">
+                      Week {weekIndex + 1}
+                    </span>
+                    <div className="grid grid-cols-7 gap-2 flex-1">
+                      {week.map(dayNumber => {
+                        const day = trackerDays.find(d => d.day_number === dayNumber);
+                        const isNextDay = nextDay?.day_number === dayNumber;
+                        const isPastUncompleted = nextDay && dayNumber < nextDay.day_number && !day?.completed;
+                        const isFuture = nextDay && dayNumber > nextDay.day_number;
 
-                      return (
-                        <DayCell 
-                          key={dayNumber}
-                          day={day}
-                          dayNumber={dayNumber}
-                          isToday={isNextDay}
-                          isPastUncompleted={isPastUncompleted}
-                          isFuture={isFuture}
-                          onClick={() => handleDayClick(dayNumber)}
-                        />
-                      );
-                    })
-                  )}
-               </div>
+                        return (
+                          <DayCell 
+                            key={dayNumber}
+                            day={day}
+                            dayNumber={dayNumber}
+                            isNext={isNextDay}
+                            isPastUncompleted={isPastUncompleted}
+                            isFuture={isFuture}
+                            onClick={() => handleDayClick(dayNumber)}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -414,7 +447,7 @@ export default function TrackerCalAI() {
                 animate={{ y: 0, scale: 1 }}
                 exit={{ y: "100%", scale: 0.95 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="relative w-full max-w-md bg-background dark:bg-[#1C1C1E] border-t border-white/10 rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl overflow-hidden"
+                className="relative w-full max-w-md bg-card border-t border-border/40 rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl overflow-hidden"
               >
                 {/* Success View Overlay */}
                 <AnimatePresence>
@@ -441,70 +474,61 @@ export default function TrackerCalAI() {
 
                 <div className="absolute top-4 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-muted/30 rounded-full" />
                 
-                <div className="flex justify-between items-center mb-8 mt-4">
-                  <div>
-                    <div className="text-sm text-muted-foreground font-medium">Logging Progress</div>
-                    <h2 className="text-3xl font-black font-relative">Day {selectedDay}</h2>
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    onClick={() => setSelectedDay(null)}
-                    className="rounded-full hover:bg-muted/20"
-                    disabled={saving}
-                  >
-                    <X className="w-6 h-6" />
-                  </Button>
-                </div>
+                <button
+                  onClick={() => !saving && !showSuccess && setSelectedDay(null)}
+                  className="absolute top-4 right-4 p-2 rounded-full hover:bg-muted/20 transition-colors"
+                  disabled={saving || showSuccess}
+                >
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
 
-                <div className="space-y-8">
-                  <div className="space-y-4">
-                    <div className="flex justify-between text-sm font-medium px-2">
-                      <span className="text-muted-foreground">Stress Level</span>
-                      <span className={cn(
-                        "font-bold",
-                        stressLevel <= 2 ? "text-green-500" : stressLevel === 3 ? "text-yellow-500" : "text-red-500"
-                      )}>
-                        {stressLevel === 1 ? "Zen Mode" : stressLevel === 5 ? "Chaos" : "Moderate"}
-                      </span>
+                <div className="mt-6">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                      <CheckCircle2 className="w-6 h-6 text-primary" />
                     </div>
-                    <div className="flex justify-between gap-2">
-                      {[1, 2, 3, 4, 5].map((level) => (
-                        <motion.button
-                          key={level}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => {
-                            triggerHaptic('light');
-                            setStressLevel(level);
-                          }}
-                          disabled={saving}
-                          className={cn(
-                            "flex-1 aspect-[4/5] rounded-2xl flex items-center justify-center text-xl font-bold transition-all duration-200",
-                            stressLevel === level
-                              ? "bg-foreground text-background shadow-lg scale-105"
-                              : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
-                          )}
-                        >
-                          {level}
-                        </motion.button>
-                      ))}
+                    <div>
+                      <h3 className="text-2xl font-black font-relative text-foreground">Day {selectedDay}</h3>
+                      <p className="text-sm text-muted-foreground font-medium">Log your progress</p>
                     </div>
                   </div>
 
-                  <Button 
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="w-full h-16 text-lg font-bold rounded-2xl bg-primary text-primary-foreground shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
-                  >
-                    {saving ? (
-                      <span className="animate-pulse">Syncing...</span>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <CheckCircle2 className="w-6 h-6" />
-                        <span>Complete Day</span>
+                  <div className="space-y-6">
+                    <div>
+                      <label className="block text-sm font-bold text-foreground mb-3">
+                        How was your stress level today?
+                      </label>
+                      <div className="flex gap-2 justify-between">
+                        {[1, 2, 3, 4, 5].map((level) => (
+                          <button
+                            key={level}
+                            onClick={() => !saving && setStressLevel(level)}
+                            disabled={saving}
+                            className={cn(
+                              "flex-1 aspect-square rounded-2xl border-2 font-bold text-lg transition-all",
+                              stressLevel === level
+                                ? "bg-primary border-primary text-primary-foreground shadow-lg scale-105"
+                                : "bg-card border-border/40 text-muted-foreground hover:border-primary/50 hover:bg-card/80"
+                            )}
+                          >
+                            {level}
+                          </button>
+                        ))}
                       </div>
-                    )}
-                  </Button>
+                      <div className="flex justify-between mt-2 px-1">
+                        <span className="text-xs text-muted-foreground font-medium">Calm</span>
+                        <span className="text-xs text-muted-foreground font-medium">Stressed</span>
+                      </div>
+                    </div>
+
+                    <Button
+                      onClick={handleSave}
+                      disabled={saving}
+                      className="w-full h-14 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-2xl shadow-xl"
+                    >
+                      {saving ? "Saving..." : "Complete Day"}
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             </div>
