@@ -13,6 +13,8 @@ import { AchievementsErrorBoundary } from '@/components/ErrorBoundary/Achievemen
 import { BadgeStatsV2 } from '@/components/Badges/BadgeStatsV2';
 import { NextMilestone } from '@/components/Badges/NextMilestone';
 import { BadgesGridV2 } from '@/components/Badges/BadgesGridV2';
+
+// Use BadgeCardV3 by default in BadgesGridV2
 import { useAchievementsRealtime } from '@/hooks/useAchievementsRealtime';
 import { useBadgeUnlockCelebration } from '@/hooks/useBadgeUnlockCelebration';
 import type { Badge } from '@/types/achievements';

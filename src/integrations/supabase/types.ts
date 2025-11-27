@@ -3672,9 +3672,8 @@ export type Database = {
       check_and_unlock_badges: {
         Args: { p_user_id: string }
         Returns: {
-          unlocked_badge_icon: string
-          unlocked_badge_id: string
-          unlocked_badge_name: string
+          badge_id: string
+          badge_name: string
         }[]
       }
       check_streak_milestone: {
