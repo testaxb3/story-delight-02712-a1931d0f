@@ -13,15 +13,8 @@ import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import confetti from 'canvas-confetti';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
-
-// --- TYPES ---
-interface TrackerDay {
-  id: string;
-  day_number: number;
-  date: string;
-  completed: boolean;
-  stress_level: number | null;
-}
+import { useTrackerDays, type TrackerDay } from '@/hooks/useTrackerDays';
+import { TrackerFAB } from '@/components/Tracker/TrackerFAB';
 
 const TOTAL_DAYS = 30;
 
@@ -115,12 +108,10 @@ const DayCell = ({
 export default function TrackerCalAI() {
   const { user } = useAuth();
   const { activeChild } = useChildProfiles();
-  const [trackerDays, setTrackerDays] = useState<TrackerDay[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [stressLevel, setStressLevel] = useState<number>(3);
   const [saving, setSaving] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false); // New state for success view
+  const [showSuccess, setShowSuccess] = useState(false);
   const { triggerHaptic } = useHaptic();
   const scrollRef = useRef(null);
   const { scrollY } = useScroll({ container: scrollRef });
@@ -130,80 +121,43 @@ export default function TrackerCalAI() {
   const stickyHeaderOpacity = useTransform(scrollY, [40, 60], [0, 1]);
   const headerY = useTransform(scrollY, [0, 50], [0, -20]);
 
-  useEffect(() => {
-    if (user && activeChild) {
-      fetchTracker();
-    }
-  }, [user, activeChild]);
-
-  const fetchTracker = async () => {
-    if (!user?.id || !activeChild?.id) return;
-
-    const { data, error } = await supabase
-      .from('tracker_days')
-      .select('*')
-      .eq('user_id', user.id)
-      .eq('child_profile_id', activeChild.id)
-      .order('day_number');
-
-    if (!error && data) {
-      console.log('Tracker data loaded:', data.length, 'days');
-      setTrackerDays(data);
-    }
-    setLoading(false);
-  };
+  // Fetch tracker data using new hook
+  const { data: trackerStats, isLoading: loading, refetch } = useTrackerDays(user?.id, activeChild?.id);
+  
+  // Extract data from hook
+  const trackerDays = useMemo(() => {
+    if (!trackerStats) return [];
+    return [...trackerStats.completedDays, trackerStats.nextDay].filter(Boolean) as TrackerDay[];
+  }, [trackerStats]);
 
   // Stats Calculation - Use dashboard stats as source of truth
   const { data: dashboardStats } = useDashboardStats();
   
   const stats = useMemo(() => {
-    const completed = trackerDays.filter(d => d.completed).length;
+    const completed = trackerStats?.completedDays.length ?? 0;
     const progress = (completed / TOTAL_DAYS) * 100;
     const streak = dashboardStats?.currentStreak ?? 0;
 
     return { completed, progress, streak };
-  }, [trackerDays, dashboardStats]);
+  }, [trackerStats, dashboardStats]);
 
-  // Calculate today's day number based on current date
-  const todaysDayNumber = useMemo(() => {
-    if (trackerDays.length === 0) return null;
-    
-    const today = new Date().toISOString().split('T')[0];
-    const todayMatch = trackerDays.find(d => d.date === today);
-    
-    return todayMatch ? todayMatch.day_number : null;
-  }, [trackerDays]);
-
-  // Next actionable day is ONLY today if not completed
-  const nextActionableDay = useMemo(() => {
-    if (!todaysDayNumber) return null;
-    
-    const todayDay = trackerDays.find(d => d.day_number === todaysDayNumber);
-    
-    // Only return if today exists and is not completed
-    return todayDay && !todayDay.completed ? todayDay : null;
-  }, [trackerDays, todaysDayNumber]);
+  // Next day to log (sequence-based)
+  const nextDay = trackerStats?.nextDay;
+  const canLog = trackerStats?.canLogToday ?? false;
+  const timeUntilNextLog = trackerStats?.timeUntilNextLog ?? null;
 
   const handleDayClick = (dayNumber: number) => {
-    const day = trackerDays.find(d => d.day_number === dayNumber);
-    
-    // Check if completed
-    if (day?.completed) {
+    // Check if this is the next day in sequence
+    if (!nextDay || dayNumber !== nextDay.day_number) {
       triggerHaptic('error');
-      toast.info("This day is already completed!");
-      return; 
+      toast.error("You can only log the next day in your sequence");
+      return;
     }
-    
-    // Check if it's today
-    if (dayNumber !== todaysDayNumber) {
+
+    // Check cooldown
+    if (!canLog) {
       triggerHaptic('error');
-      
-      // Determine if past or future
-      if (todaysDayNumber && dayNumber < todaysDayNumber) {
-        toast.error("You can't log past days");
-      } else {
-        toast.error("This day hasn't arrived yet");
-      }
+      toast.error("Please wait before logging your next day");
       return;
     }
     
@@ -213,24 +167,22 @@ export default function TrackerCalAI() {
     setShowSuccess(false);
   };
 
+  const handleFABClick = () => {
+    if (nextDay && canLog) {
+      handleDayClick(nextDay.day_number);
+    }
+  };
+
   const handleSave = async () => {
     if (!selectedDay || !user?.id || !activeChild?.id) return;
 
     setSaving(true);
     triggerHaptic('success');
     
-    // 1. OPTIMISTIC UPDATE: Update local state immediately
-    const updatedDays = trackerDays.map(d => 
-      d.day_number === selectedDay 
-        ? { ...d, completed: true, stress_level: stressLevel }
-        : d
-    );
-    setTrackerDays(updatedDays);
-
-    // 2. SHOW SUCCESS UI
+    // 1. SHOW SUCCESS UI
     setShowSuccess(true);
     
-    // 3. TRIGGER CONFETTI
+    // 2. TRIGGER CONFETTI
     const end = Date.now() + 1000;
     const colors = ['#bb0000', '#ffffff'];
 
@@ -257,8 +209,8 @@ export default function TrackerCalAI() {
       }
     })();
 
-    // 4. DB UPDATE (Background)
-    const day = trackerDays.find(d => d.day_number === selectedDay);
+    // 3. DB UPDATE
+    const day = nextDay;
     if (day) {
       const { error } = await supabase
         .from('tracker_days')
@@ -270,13 +222,18 @@ export default function TrackerCalAI() {
         .eq('id', day.id);
 
       if (error) {
-        // Revert if failed (optional, but good practice)
-        fetchTracker(); 
         toast.error('Connection error. Please check your internet.');
+        setSaving(false);
+        setShowSuccess(false);
+        setSelectedDay(null);
+        return;
       }
+
+      // Refetch data to update UI
+      refetch();
     }
 
-    // 5. CLOSE MODAL AFTER DELAY
+    // 4. CLOSE MODAL AFTER DELAY
     setTimeout(() => {
       setSelectedDay(null);
       setSaving(false);
@@ -407,16 +364,16 @@ export default function TrackerCalAI() {
                   Array.from({ length: TOTAL_DAYS }).map((_, i) => {
                       const dayNumber = i + 1;
                       const day = trackerDays.find(d => d.day_number === dayNumber);
-                      const isToday = todaysDayNumber === dayNumber;
-                      const isPastUncompleted = todaysDayNumber !== null && dayNumber < todaysDayNumber && !day?.completed;
-                      const isFuture = todaysDayNumber !== null && dayNumber > todaysDayNumber;
+                      const isNextDay = nextDay?.day_number === dayNumber;
+                      const isPastUncompleted = nextDay && dayNumber < nextDay.day_number && !day?.completed;
+                      const isFuture = nextDay && dayNumber > nextDay.day_number;
 
                       return (
                         <DayCell 
                           key={dayNumber}
                           day={day}
                           dayNumber={dayNumber}
-                          isToday={isToday}
+                          isToday={isNextDay}
                           isPastUncompleted={isPastUncompleted}
                           isFuture={isFuture}
                           onClick={() => handleDayClick(dayNumber)}
@@ -429,25 +386,14 @@ export default function TrackerCalAI() {
           </div>
         </div>
 
-        {/* FLOATING ACTION BUTTON (FAB) - MOVED OUTSIDE SCROLL CONTEXT VIA FIXED */}
-        <AnimatePresence>
-          {nextActionableDay && (
-            <motion.div
-              key="fab"
-              initial={{ opacity: 0, scale: 0, y: 100 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0, y: 100 }}
-              className="fixed bottom-28 right-6 z-[150]"
-            >
-              <Button
-                onClick={() => handleDayClick(nextActionableDay.day_number)}
-                className="h-14 w-14 rounded-full shadow-xl shadow-primary/30 bg-primary text-white hover:bg-primary/90 flex items-center justify-center"
-              >
-                <Plus className="w-8 h-8" />
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* FLOATING ACTION BUTTON (FAB) - Always visible with countdown */}
+        {nextDay && (
+          <TrackerFAB
+            isEnabled={canLog}
+            timeUntilNextLog={timeUntilNextLog}
+            onClick={handleFABClick}
+          />
+        )}
 
         {/* Log Interaction Overlay */}
         <AnimatePresence>

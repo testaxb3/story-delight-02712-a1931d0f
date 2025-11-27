@@ -8,12 +8,32 @@ type TrackerDayRow = Database["public"]["Tables"]["tracker_days"]["Row"];
 
 type AuthDestination = "dashboard" | "quiz";
 
-export async function ensureTrackerDays(userId: string) {
+export async function ensureTrackerDays(userId: string, childProfileId?: string) {
   try {
+    // If no childProfileId provided, get the active child
+    let targetChildId = childProfileId;
+    
+    if (!targetChildId) {
+      const { data: activeChild } = await supabase
+        .from("child_profiles")
+        .select("id")
+        .eq("parent_id", userId)
+        .eq("is_active", true)
+        .maybeSingle();
+      
+      if (!activeChild) {
+        console.warn("No active child profile found for user", userId);
+        return;
+      }
+      
+      targetChildId = activeChild.id;
+    }
+
     const { data, error } = await supabase
       .from("tracker_days")
       .select("day_number, date")
       .eq("user_id", userId)
+      .eq("child_profile_id", targetChildId)
       .order("day_number", { ascending: true });
 
     if (error && error.code !== "PGRST116") {
@@ -49,6 +69,7 @@ export async function ensureTrackerDays(userId: string) {
       
       return {
         user_id: userId,
+        child_profile_id: targetChildId,
         day_number: dayNumber,
         completed: false,
         date: dayDate.toISOString().split('T')[0],
@@ -58,7 +79,7 @@ export async function ensureTrackerDays(userId: string) {
     const { error: insertError } = await supabase.from("tracker_days").insert(payload);
 
     if (insertError) {
-      console.error(`Failed to insert tracker days for user ${userId}`, insertError);
+      console.error(`Failed to insert tracker days for user ${userId}, child ${targetChildId}`, insertError);
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -94,7 +115,17 @@ export async function ensureUserScaffolding(userId: string, email: string) {
     console.error(`Failed to scaffold profile information for user ${userId}`, error);
   }
 
-  await ensureTrackerDays(userId);
+  // Ensure tracker days for all child profiles
+  const { data: childProfiles } = await supabase
+    .from("child_profiles")
+    .select("id")
+    .eq("parent_id", userId);
+  
+  if (childProfiles && childProfiles.length > 0) {
+    for (const child of childProfiles) {
+      await ensureTrackerDays(userId, child.id);
+    }
+  }
 }
 
 export async function resolveAuthDestination(userId: string): Promise<AuthDestination> {
