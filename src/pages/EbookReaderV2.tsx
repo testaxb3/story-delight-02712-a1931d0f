@@ -25,25 +25,6 @@ const EbookReaderV2Page = () => {
     saveHighlight
   } = useEbookProgress(ebook?.id);
 
-  console.log('📊 Progress loaded:', {
-    urlParam: ebookId,
-    ebookIdFromDB: ebook?.id,
-    ebookSlug: ebook?.slug,
-    hasProgress: !!progress,
-    currentChapter: progress?.current_chapter,
-    scrollPosition: progress?.scroll_position,
-    completedChapters: progress?.completed_chapters,
-    highlights: progress?.highlights
-  });
-
-  console.log('🔍 DEBUG - Save callbacks:', {
-    hasEbookId: !!ebook?.id,
-    ebookId: ebook?.id,
-    hasUpdateCurrentChapter: !!updateCurrentChapter,
-    hasMarkChapterComplete: !!markChapterComplete,
-    hasUpdateScrollPosition: !!updateScrollPosition
-  });
-
   const handleClose = () => {
     // Invalidate queries to refresh progress on next open
     queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebook?.id] });
@@ -81,15 +62,6 @@ const EbookReaderV2Page = () => {
 
   // Use dynamic chapters if available, fallback to hardcoded
   const finalChapters = chapters && chapters.length > 0 ? chapters : ebookContent;
-
-  console.log('🔍 Ebook Debug:', { 
-    ebookId, 
-    hasEbook: !!ebook, 
-    ebookTitle: ebook?.title,
-    chaptersCount: chapters?.length,
-    finalChaptersCount: finalChapters?.length,
-    firstChapter: finalChapters?.[0]
-  });
 
   if (!finalChapters || finalChapters.length === 0) {
     return (

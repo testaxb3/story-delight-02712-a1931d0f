@@ -96,10 +96,7 @@ export function useBonuses(filters?: {
         .from("bonuses")
         .select("category");
 
-      if (categoryError) {
-        console.error("❌ Error fetching category counts:", categoryError);
-        throw categoryError;
-      }
+      if (categoryError) throw categoryError;
 
       // Calculate counts from all bonuses (not just current page)
       const categoryCounts = {
@@ -131,10 +128,7 @@ export function useBonuses(filters?: {
 
       const { count, error: countError } = await countQuery;
       
-      if (countError) {
-        console.error("❌ Error counting bonuses:", countError);
-        throw countError;
-      }
+      if (countError) throw countError;
 
       // Fetch paginated bonuses with ebook thumbnails
       let bonusQuery = supabase
@@ -165,10 +159,7 @@ export function useBonuses(filters?: {
 
       const { data: bonusesData, error: bonusesError } = await bonusQuery;
 
-      if (bonusesError) {
-        console.error("❌ Error fetching bonuses:", bonusesError);
-        throw bonusesError;
-      }
+      if (bonusesError) throw bonusesError;
 
       // If user is logged in, fetch their progress
       let userProgressMap = new Map<string, { progress: number; completed: boolean }>();
@@ -203,9 +194,6 @@ export function useBonuses(filters?: {
           completed: userProgress?.completed || false,
         };
       }) || [];
-
-      console.log("✅ Bonuses fetched successfully:", bonuses.length, "items");
-      console.log("✅ Category counts:", categoryCounts);
       
       return {
         data: bonuses,

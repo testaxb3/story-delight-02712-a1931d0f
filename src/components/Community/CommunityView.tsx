@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ChevronDown, Users, Share2, MessageSquare, Copy, Crown } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface CommunityViewProps {
   communityId: string;
@@ -11,8 +13,28 @@ interface CommunityViewProps {
 }
 
 export function CommunityView({ communityId, onLeave }: CommunityViewProps) {
+  const { user } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
-  const isLeader = true; // TODO: Check if user is community leader
+  const [isLeader, setIsLeader] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkLeaderStatus = async () => {
+      const { data, error } = await supabase
+        .from('community_members')
+        .select('role')
+        .eq('community_id', communityId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (!error && data) {
+        setIsLeader(data.role === 'leader');
+      }
+    };
+
+    checkLeaderStatus();
+  }, [communityId, user]);
 
   // Mock data
   const community = {
