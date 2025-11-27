@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { ArrowLeft, AlertTriangle, CheckCircle, DollarSign, Mail, Shield, Zap, RefreshCcw, X } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle, DollarSign, Mail, Shield, Zap, RefreshCcw, X, Clock } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,37 @@ export default function RefundRequest() {
   const [submitting, setSubmitting] = useState(false);
   const [customerName, setCustomerName] = useState('');
   const [purchaseEmail, setPurchaseEmail] = useState('');
+  const [hasExistingRequest, setHasExistingRequest] = useState(false);
+  const [checkingExisting, setCheckingExisting] = useState(true);
+
+  useEffect(() => {
+    const checkExistingRequest = async () => {
+      if (!user?.id) {
+        setCheckingExisting(false);
+        return;
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from('refund_requests')
+          .select('id')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!error && data) {
+          setHasExistingRequest(true);
+        }
+      } catch (error) {
+        // No existing request
+      } finally {
+        setCheckingExisting(false);
+      }
+    };
+
+    checkExistingRequest();
+  }, [user]);
 
   const reasons = [
     { id: 'not-satisfied', icon: '😕', label: "Content didn't meet expectations", desc: "I expected something different." },
@@ -86,6 +117,36 @@ export default function RefundRequest() {
                   <h1 className="text-3xl md:text-4xl font-black tracking-tight font-relative">Before you go...</h1>
                   <p className="text-muted-foreground">Please review our 30-Day Guarantee policy.</p>
                 </div>
+
+                {/* Existing Request Banner */}
+                {hasExistingRequest && !checkingExisting && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-blue-500/10 dark:bg-blue-500/15 border border-blue-500/30 dark:border-blue-500/40 rounded-2xl p-5"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 dark:bg-blue-500/30 flex items-center justify-center">
+                        <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-blue-900 dark:text-blue-100 mb-1">
+                          You Already Have a Refund Request
+                        </h3>
+                        <p className="text-sm text-blue-800 dark:text-blue-200 mb-3">
+                          We found an active refund request associated with your account. You can track its status instead of submitting a new one.
+                        </p>
+                        <Button
+                          onClick={() => navigate('/refund-status')}
+                          variant="outline"
+                          className="h-10 bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/30 text-blue-900 dark:text-blue-100 font-semibold rounded-xl"
+                        >
+                          View Refund Status
+                        </Button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
 
                 <div className="space-y-4">
                   <div className="bg-card/50 border border-border/50 rounded-2xl p-5 backdrop-blur-sm">
