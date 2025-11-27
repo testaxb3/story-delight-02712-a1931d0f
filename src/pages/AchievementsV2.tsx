@@ -22,16 +22,11 @@ const AchievementsContent = () => {
   const { user } = useAuth();
   const { celebrate } = useBadgeUnlockCelebration();
 
-  const { data, isLoading, error } = useAchievementsRealtime({
+  const { data, isLoading } = useAchievementsRealtime({
     userId: user?.id,
     onBadgeUnlock: celebrate,
     enableRealtime: true
   });
-
-  console.log('[Achievements Page] User:', user?.id);
-  console.log('[Achievements Page] Loading:', isLoading);
-  console.log('[Achievements Page] Error:', error);
-  console.log('[Achievements Page] Data:', data);
 
   const nextMilestone = data?.badges
     ?.filter((b: Badge) => !b.unlocked && b.progress)
@@ -44,7 +39,7 @@ const AchievementsContent = () => {
   return (
     <div className="min-h-screen bg-background">
       <StickyHeader
-        title="Achievements"
+        title="Conquistas"
         static
         leftAction={
           <Button
@@ -52,7 +47,7 @@ const AchievementsContent = () => {
             size="icon"
             onClick={() => navigate('/')}
             className="w-10 h-10 rounded-full bg-card hover:bg-card/80"
-            aria-label="Back to home"
+            aria-label="Voltar"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
@@ -60,28 +55,7 @@ const AchievementsContent = () => {
       />
 
       <main className="px-4 max-w-md mx-auto pt-4 pb-20">
-        {/* Loading State */}
-        {isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              <p className="text-muted-foreground">Loading achievements...</p>
-            </div>
-          </div>
-        )}
-
-        {/* Error State */}
-        {error && !isLoading && (
-          <div className="flex items-center justify-center py-12">
-            <div className="text-center bg-destructive/10 rounded-2xl p-6 border border-destructive/20">
-              <p className="text-destructive font-semibold mb-2">Failed to load achievements</p>
-              <p className="text-sm text-muted-foreground">{(error as Error).message}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Data State */}
-        {data && !isLoading && (
+        {data && (
           <>
             <BadgeStatsV2 stats={data.stats} />
 
@@ -102,7 +76,7 @@ const AchievementsContent = () => {
   );
 };
 
-export default function Achievements() {
+export default function AchievementsV2() {
   return (
     <AchievementsErrorBoundary>
       <AchievementsContent />
