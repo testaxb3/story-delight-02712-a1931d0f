@@ -13,6 +13,7 @@ export default function EditProfile() {
   const navigate = useNavigate();
   const { user, refreshUser } = useAuth();
   const queryClient = useQueryClient();
+  const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
@@ -25,11 +26,14 @@ export default function EditProfile() {
   useEffect(() => {
     if (user?.profileId) {
       fetchProfile();
+    } else {
+      setLoading(false);
     }
   }, [user?.profileId]);
 
   const fetchProfile = async () => {
     if (!user?.profileId) return;
+    setLoading(true);
 
     try {
       const { data, error } = await supabase
@@ -51,6 +55,8 @@ export default function EditProfile() {
     } catch (error) {
       console.error('Error fetching profile:', error);
       toast.error('Failed to load profile');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -245,16 +251,25 @@ export default function EditProfile() {
     usernameStatus !== 'checking' &&
     usernameStatus !== 'invalid';
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0d0d0d] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-white animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0d0d0d] text-white relative">
       {/* Header */}
-      <div className="fixed top-0 left-0 right-0 z-10 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-[#0d0d0d]">
+      <div className="fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] px-4 pb-4 bg-[#0d0d0d]">
         <div className="flex items-center justify-between">
           <button
+            type="button"
             onClick={() => navigate(-1)}
-            className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:bg-[#333] transition-colors"
+            className="w-10 h-10 rounded-full bg-[#2a2a2a] flex items-center justify-center hover:bg-[#333] transition-colors relative z-10"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-5 h-5 pointer-events-none" />
           </button>
           <h1 className="text-xl font-bold">Edit Profile</h1>
           <div className="w-10" />
