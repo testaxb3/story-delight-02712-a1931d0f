@@ -39,6 +39,13 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string; border: string
   'tantrums': { bg: 'bg-red-500/10', text: 'text-red-600 dark:text-red-400', border: 'border-red-500/20', icon: '😤' },
   'morning routines': { bg: 'bg-orange-500/10', text: 'text-orange-600 dark:text-orange-400', border: 'border-orange-500/20', icon: '☀️' },
   'social': { bg: 'bg-purple-500/10', text: 'text-purple-600 dark:text-purple-400', border: 'border-purple-500/20', icon: '👋' },
+  'hygiene': { bg: 'bg-teal-500/10', text: 'text-teal-600 dark:text-teal-400', border: 'border-teal-500/20', icon: '🦷' },
+  'homework': { bg: 'bg-amber-500/10', text: 'text-amber-600 dark:text-amber-400', border: 'border-amber-500/20', icon: '📚' },
+  'transitions': { bg: 'bg-cyan-500/10', text: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-500/20', icon: '🔄' },
+  'public behavior': { bg: 'bg-pink-500/10', text: 'text-pink-600 dark:text-pink-400', border: 'border-pink-500/20', icon: '🏪' },
+  'daily responsibilities': { bg: 'bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-500/20', icon: '✅' },
+  'school': { bg: 'bg-sky-500/10', text: 'text-sky-600 dark:text-sky-400', border: 'border-sky-500/20', icon: '🏫' },
+  'learning': { bg: 'bg-violet-500/10', text: 'text-violet-600 dark:text-violet-400', border: 'border-violet-500/20', icon: '🧠' },
   'default': { bg: 'bg-secondary/50', text: 'text-foreground', border: 'border-border/50', icon: '📝' }
 };
 
@@ -113,6 +120,12 @@ function ScriptsContent() {
     { name: 'Morning', value: 'Morning Routines', emoji: '☀️' },
     { name: 'Social', value: 'Social', emoji: '👋' },
     { name: 'Hygiene', value: 'Hygiene', emoji: '🦷' },
+    { name: 'Homework', value: 'Homework', emoji: '📚' },
+    { name: 'Transitions', value: 'Transitions', emoji: '🔄' },
+    { name: 'Public', value: 'Public Behavior', emoji: '🏪' },
+    { name: 'Tasks', value: 'Daily Responsibilities', emoji: '✅' },
+    { name: 'School', value: 'School', emoji: '🏫' },
+    { name: 'Learning', value: 'Learning', emoji: '🧠' },
   ], []);
 
   // Prepare Scripts
