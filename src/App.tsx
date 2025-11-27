@@ -39,7 +39,6 @@ const CreatePost = lazy(() => import("./pages/Community/CreatePost"));
 const MembersList = lazy(() => import("./pages/Community/MembersList"));
 const JoinCommunity = lazy(() => import("./pages/Community/JoinCommunity"));
 const Tracker = lazy(() => import("./pages/TrackerCalAI"));
-const Progress = lazy(() => import("./pages/ProgressCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
@@ -230,14 +229,8 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/progress"
-          element={
-            <ProtectedRoute>
-              <Progress />
-            </ProtectedRoute>
-          }
-        />
+        {/* Redirect old progress route to tracker */}
+        <Route path="/progress" element={<Navigate to="/tracker" replace />} />
         <Route
           path="/profile"
           element={
