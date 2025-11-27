@@ -11,6 +11,7 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react';
+import { useTrackerDays } from '@/hooks/useTrackerDays';
 
 import { useCategoryStats } from '@/hooks/useCategoryStats';
 import { useProfileStats } from '@/hooks/useProfileStats';
@@ -780,6 +781,7 @@ export default function DashboardCalAI() {
   const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
   const { data: categoryStats, isLoading: categoriesLoading } = useCategoryStats();
   const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
+  const { data: trackerStats } = useTrackerDays(user?.id, activeChild?.id);
   const { triggerHaptic } = useHaptic();
 
   const isLoading = statsLoading || dataLoading || categoriesLoading || profileStatsLoading;
@@ -789,10 +791,15 @@ export default function DashboardCalAI() {
   const scriptsRead = profileStats?.scriptsMastered ?? 0;
   const totalScripts = profileStats?.totalScripts ?? 0;
 
+  // Get real active days from tracker data
   const activeDays = useMemo(() => {
-    const today = new Date().getDate();
-    return [today - 2, today - 1, today];
-  }, []);
+    if (!trackerStats?.completedDays) return [];
+    
+    return trackerStats.completedDays.map(day => {
+      const date = new Date(day.completed_at!);
+      return date.getDate();
+    });
+  }, [trackerStats]);
 
   const handleNavigate = useCallback((path: string) => {
     triggerHaptic('light');

@@ -2321,7 +2321,7 @@ export type Database = {
       tracker_days: {
         Row: {
           child_id: string | null
-          child_profile_id: string | null
+          child_profile_id: string
           completed: boolean
           completed_at: string | null
           created_at: string
@@ -2337,7 +2337,7 @@ export type Database = {
         }
         Insert: {
           child_id?: string | null
-          child_profile_id?: string | null
+          child_profile_id: string
           completed?: boolean
           completed_at?: string | null
           created_at?: string
@@ -2353,7 +2353,7 @@ export type Database = {
         }
         Update: {
           child_id?: string | null
-          child_profile_id?: string | null
+          child_profile_id?: string
           completed?: boolean
           completed_at?: string | null
           created_at?: string
