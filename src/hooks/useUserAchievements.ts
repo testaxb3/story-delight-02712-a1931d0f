@@ -110,14 +110,24 @@ export const useUserAchievements = (userId: string | undefined) => {
 
       if (userBadgesError) throw userBadgesError;
 
-      // Fetch user stats
+      // Fetch user stats from aggregated view (returns single row per user)
       const { data: stats, error: statsError } = await supabase
-        .from('user_achievements_stats')
+        .from('user_achievements_stats_aggregated')
         .select('*')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
-      if (statsError) throw statsError;
+      // Use default stats if no data found
+      const userStats: UserStats = stats || {
+        current_streak: 0,
+        longest_streak: 0,
+        days_completed: 0,
+        scripts_used: 0,
+        videos_watched: 0,
+        posts_created: 0,
+        reactions_received: 0,
+        badges_unlocked: 0
+      };
 
       // Create a map of unlocked badges
       const unlockedMap = new Map<string, string>();
@@ -129,7 +139,7 @@ export const useUserAchievements = (userId: string | undefined) => {
       const badgesWithProgress: BadgeWithProgress[] = (badges || []).map((badge: Badge) => {
         const unlocked = unlockedMap.has(badge.id);
         const unlockedAt = unlockedMap.get(badge.id);
-        const progress = !unlocked ? calculateProgress(badge, stats) : undefined;
+        const progress = !unlocked ? calculateProgress(badge, userStats) : undefined;
 
         return {
           id: badge.id,
@@ -154,8 +164,8 @@ export const useUserAchievements = (userId: string | undefined) => {
           unlockedCount,
           totalCount,
           percentage,
-          currentStreak: stats.current_streak,
-          longestStreak: stats.longest_streak,
+          currentStreak: userStats.current_streak,
+          longestStreak: userStats.longest_streak,
           nextGoal: badgesWithProgress
             .filter(b => !b.unlocked && b.progress)
             .sort((a, b) => {
