@@ -121,6 +121,9 @@ export default {
         'colored': 'var(--shadow-colored)',
         'glow': '0 0 40px -10px hsl(var(--primary) / 0.5)',
         'glow-lg': '0 0 60px -15px hsl(var(--primary) / 0.6)',
+        'fab': '0 8px 32px var(--glow-orange), 0 0 0 1px rgba(255,255,255,0.1) inset',
+        'glow-orange': '0 8px 32px rgba(249,115,22,0.4)',
+        'glow-indigo': '0 8px 32px rgba(99,102,241,0.3)',
       },
       backdropBlur: {
         'glass': '12px',
@@ -129,6 +132,10 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        'hero': '28px',     // Hero cards - Dashboard main card
+        'card': '24px',     // Standard cards
+        'panel': '22px',    // Panels
+        'item': '18px',     // List items
       },
       keyframes: {
         "accordion-down": {

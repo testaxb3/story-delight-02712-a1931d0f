@@ -57,20 +57,18 @@ const AmbientBackground = memo(function AmbientBackground() {
     <div className="fixed inset-0 pointer-events-none overflow-hidden">
       {/* Primary gradient orb - CSS animation */}
       <div
-        className="absolute -top-[30%] -right-[20%] w-[70%] h-[70%] rounded-full animate-ambient-1 opacity-100 dark:opacity-100"
+        className="absolute -top-[30%] -right-[20%] w-[70%] h-[70%] rounded-full animate-ambient-1 opacity-100 dark:opacity-100 blur-[40px]"
         style={{
-          background: 'radial-gradient(circle, rgba(251,146,60,0.08) 0%, rgba(251,146,60,0.02) 50%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, var(--ambient-orange) 0%, transparent 70%)',
           willChange: 'transform',
         }}
       />
 
       {/* Secondary accent orb - CSS animation */}
       <div
-        className="absolute -bottom-[20%] -left-[25%] w-[60%] h-[60%] rounded-full animate-ambient-2 opacity-100 dark:opacity-100"
+        className="absolute -bottom-[20%] -left-[25%] w-[60%] h-[60%] rounded-full animate-ambient-2 opacity-100 dark:opacity-100 blur-[40px]"
         style={{
-          background: 'radial-gradient(circle, rgba(99,102,241,0.06) 0%, rgba(99,102,241,0.02) 50%, transparent 70%)',
-          filter: 'blur(40px)',
+          background: 'radial-gradient(circle, var(--ambient-indigo) 0%, transparent 70%)',
           willChange: 'transform',
         }}
       />
@@ -272,10 +270,10 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
         transformPerspective: 1000,
         transformStyle: "preserve-3d",
       }}
-      className="relative w-full p-5 rounded-[28px] overflow-hidden text-left"
+      className="relative w-full p-5 rounded-hero overflow-hidden text-left"
     >
       {/* Mesh gradient background - Theme aware with better contrast */}
-      <div className="absolute inset-0 bg-gradient-to-br from-card via-card/95 to-card/90 dark:from-[#1a1a2e] dark:via-[#16213e] dark:to-[#0f0f23]" />
+      <div className="absolute inset-0 bg-gradient-to-br from-card via-card/95 to-card/90 dark:from-background/80 dark:via-background/60 dark:to-background/40" />
 
       {/* Animated mesh overlay */}
       <div
@@ -299,7 +297,7 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
       />
 
       {/* Glass border - stronger in light mode */}
-      <div className="absolute inset-0 rounded-[28px] border-2 border-border/30 dark:border-border" />
+      <div className="absolute inset-0 rounded-hero border-2 border-border/30 dark:border-border" />
 
       {/* Content */}
       <div className="relative z-10 flex items-center justify-between">
@@ -409,11 +407,11 @@ const InsightCard = memo(function InsightCard({
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onPress}
-      className="relative flex-1 p-4 rounded-[22px] overflow-hidden text-left"
+      className="relative flex-1 p-4 rounded-panel overflow-hidden text-left"
     >
       {/* Glass background */}
       <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
-      <div className="absolute inset-0 rounded-[22px] border border-border" />
+      <div className="absolute inset-0 rounded-panel border border-border" />
 
       {/* Colored accent glow */}
       <div
@@ -455,11 +453,11 @@ const CategoryRings = memo(function CategoryRings({
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.99 }}
       onClick={onPress}
-      className="relative w-full p-5 rounded-[24px] overflow-hidden text-left"
+      className="relative w-full p-5 rounded-card overflow-hidden text-left"
     >
       {/* Glass background */}
       <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
-      <div className="absolute inset-0 rounded-[24px] border border-border" />
+      <div className="absolute inset-0 rounded-card border border-border" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
@@ -584,10 +582,10 @@ const RecentActivity = memo(function RecentActivity({
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="relative p-6 rounded-[20px] overflow-hidden text-center"
+            className="relative p-6 rounded-2xl overflow-hidden text-center"
           >
             <div className="absolute inset-0 bg-card/30" />
-            <div className="absolute inset-0 rounded-[20px] border border-dashed border-border" />
+            <div className="absolute inset-0 rounded-2xl border border-dashed border-border" />
             <div className="relative z-10">
               <div className="text-4xl mb-3">📚</div>
               <p className="text-sm text-muted-foreground">No scripts read yet today</p>
@@ -604,10 +602,10 @@ const RecentActivity = memo(function RecentActivity({
               whileHover={{ scale: 1.01, x: 4 }}
               whileTap={{ scale: 0.99 }}
               onClick={() => onScriptPress(script.id)}
-              className="relative w-full p-4 rounded-[18px] overflow-hidden text-left"
+              className="relative w-full p-4 rounded-item overflow-hidden text-left"
             >
               <div className="absolute inset-0 bg-card/50" />
-              <div className="absolute inset-0 rounded-[18px] border border-border" />
+              <div className="absolute inset-0 rounded-item border border-border" />
 
               <div className="relative z-10 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-secondary/50 flex items-center justify-center text-2xl">
@@ -743,12 +741,10 @@ const FloatingActionButton = memo(function FloatingActionButton({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={handlePress}
-      className="fixed z-50 w-[60px] h-[60px] rounded-full flex items-center justify-center"
+      className="fixed z-50 w-[60px] h-[60px] rounded-full flex items-center justify-center bg-gradient-to-br from-orange-500 to-orange-600 shadow-fab"
       style={{
         bottom: 'calc(env(safe-area-inset-bottom, 0px) + 6rem)',
         right: '1.25rem',
-        background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-        boxShadow: '0 8px 32px rgba(249,115,22,0.4), 0 0 0 1px rgba(255,255,255,0.1) inset',
       }}
     >
       {/* Pulsing glow */}
@@ -895,13 +891,12 @@ export default function DashboardCalAI() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => handleNavigate('/achievements')}
-                className="relative flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer"
-                style={{
-                  background: currentStreak > 0
-                    ? 'linear-gradient(135deg, rgba(251,146,60,0.2) 0%, rgba(251,146,60,0.05) 100%)'
-                    : 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(251,146,60,0.3)',
-                }}
+                className={cn(
+                  "relative flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer border",
+                  currentStreak > 0 
+                    ? "bg-orange-500/15 border-orange-500/30" 
+                    : "bg-white/5 dark:bg-white/5 border-border/20"
+                )}
               >
                 <Flame className={cn(
                   "w-4 h-4",

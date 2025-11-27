@@ -80,6 +80,12 @@ header, main {
     /* Light Mode - Cal AI Exact Colors */
     --background: 0 0% 95%;              /* #F2F2F2 - Light gray background */
     --foreground: 0 0% 13%;              /* #212121 - Dark text */
+    
+    /* Dashboard-specific CSS Variables */
+    --gradient-orange: linear-gradient(135deg, hsl(24 95% 53%) 0%, hsl(14 100% 50%) 100%);
+    --glow-orange: 0 8px 32px rgba(249,115,22,0.4);
+    --ambient-orange: rgba(251,146,60,0.08);
+    --ambient-indigo: rgba(99,102,241,0.06);
 
     /* Light Mode - Pure White Cards */
     --card: 0 0% 100%;                   /* #FFFFFF - Pure white */
@@ -164,6 +170,10 @@ header, main {
     /* Premium Dark Mode - Cal AI Inspired (from screenshot analysis) */
     --background: 0 0% 7%;               /* #121212 - Rich dark gray (not pure black) */
     --foreground: 0 0% 98%;              /* #FAFAFA - Soft white text */
+    
+    /* Dark mode ambient colors (same intensity) */
+    --ambient-orange: rgba(251,146,60,0.08);
+    --ambient-indigo: rgba(99,102,241,0.06);
 
     --card: 0 0% 11%;                    /* #1C1C1E - iOS-style elevated surface */
     --card-foreground: 0 0% 98%;

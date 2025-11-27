@@ -22,10 +22,16 @@ export const typography = {
 } as const;
 
 export const radius = {
-  sm: 'rounded-xl',
-  md: 'rounded-2xl',
-  lg: 'rounded-3xl',
+  sm: 'rounded-xl',    // 12px - small items
+  md: 'rounded-2xl',   // 16px - standard cards
+  lg: 'rounded-3xl',   // 24px - panels
+  xl: 'rounded-hero',  // 28px - hero cards
   full: 'rounded-full',
+} as const;
+
+export const glow = {
+  orange: 'shadow-glow-orange',
+  indigo: 'shadow-glow-indigo',
 } as const;
 
 export const shadow = {
