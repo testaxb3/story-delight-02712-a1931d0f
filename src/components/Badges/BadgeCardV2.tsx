@@ -4,7 +4,7 @@
  * Zero requestAnimationFrame, zero JS thread blocking
  */
 
-import { memo, useMemo, useCallback } from 'react';
+import { memo, useMemo, useCallback, useId } from 'react';
 import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -33,6 +33,7 @@ const ICON_SIZE_CLASSES = {
 } as const;
 
 export const BadgeCardV2 = memo(({ badge, size = 'md', onClick }: BadgeCardProps) => {
+  const uniqueId = useId();
   const IconComponent = getBadgeIcon(badge.icon);
   const rarityConfig = BADGE_RARITY_CONFIG[badge.rarity as BadgeRarity];
 
@@ -112,7 +113,7 @@ export const BadgeCardV2 = memo(({ badge, size = 'md', onClick }: BadgeCardProps
                     cx="50"
                     cy="50"
                     r="48"
-                    stroke="url(#gradient-progress)"
+                    stroke={`url(#gradient-progress-${uniqueId})`}
                     strokeWidth={rarityConfig.ringWidth}
                     fill="none"
                     strokeDasharray={circumference}
@@ -123,7 +124,7 @@ export const BadgeCardV2 = memo(({ badge, size = 'md', onClick }: BadgeCardProps
                     }}
                   />
                   <defs>
-                    <linearGradient id="gradient-progress" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id={`gradient-progress-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#3b82f6" />
                       <stop offset="100%" stopColor="#8b5cf6" />
                     </linearGradient>
@@ -142,13 +143,13 @@ export const BadgeCardV2 = memo(({ badge, size = 'md', onClick }: BadgeCardProps
                     cx="50"
                     cy="50"
                     r="48"
-                    stroke="url(#gradient-unlocked)"
+                    stroke={`url(#gradient-unlocked-${uniqueId})`}
                     strokeWidth={rarityConfig.ringWidth}
                     fill="none"
                     strokeDasharray={circumference}
                   />
                   <defs>
-                    <linearGradient id="gradient-unlocked" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <linearGradient id={`gradient-unlocked-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="#fbbf24" />
                       <stop offset="100%" stopColor="#f59e0b" />
                     </linearGradient>

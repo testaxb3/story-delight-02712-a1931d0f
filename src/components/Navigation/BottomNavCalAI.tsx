@@ -36,7 +36,6 @@ function NavButton({ icon, label, path, lottieData }: {
       onClick={(e) => {
         e.stopPropagation();
         triggerHaptic('medium');
-        console.log('Navigating to:', path);
         navigate(path);
       }}
       className={cn(
