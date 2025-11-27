@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { BadgeCardV2 } from './BadgeCardV2';
+import { BadgeCardV3 } from './BadgeCardV3';
 import { ShareBadgeModal } from './ShareBadgeModal';
 import type { Badge, BadgeCategory, BadgeRarity } from '@/types/achievements';
 import { BADGE_CATEGORY_LABELS } from '@/types/achievements';
@@ -72,7 +72,7 @@ const BadgeList = memo(({ badges, onBadgeClick }: { badges: Badge[]; onBadgeClic
       {unlockedBadges.length > 0 && (
         <div className="grid grid-cols-3 gap-x-4 gap-y-6 justify-items-center">
           {unlockedBadges.map((badge) => (
-            <BadgeCardV2 key={badge.id} badge={badge} onClick={onBadgeClick} />
+            <BadgeCardV3 key={badge.id} badge={badge} onClick={onBadgeClick} />
           ))}
         </div>
       )}
@@ -84,7 +84,7 @@ const BadgeList = memo(({ badges, onBadgeClick }: { badges: Badge[]; onBadgeClic
           </h2>
           <div className="grid grid-cols-3 gap-x-4 gap-y-6 justify-items-center">
             {lockedBadges.map((badge) => (
-              <BadgeCardV2 key={badge.id} badge={badge} onClick={onBadgeClick} />
+              <BadgeCardV3 key={badge.id} badge={badge} onClick={onBadgeClick} />
             ))}
           </div>
         </div>

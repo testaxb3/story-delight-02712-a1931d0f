@@ -1,23 +1,51 @@
 /**
- * NEXT MILESTONE COMPONENT
- * Gamified CTA using psychology triggers: Near-miss effect + Progress illusion
- * Drives user engagement through visual urgency
+ * NEXT MILESTONE COMPONENT V2
+ * Auto-unlock on 100% progress + Premium redesign
+ * Gamified CTA using psychology triggers
  */
 
-import { memo, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
+import { ArrowRight, Flame, BookOpen, Video, BarChart3, Users, Trophy, Loader2 } from 'lucide-react';
+import { useHaptic } from '@/hooks/useHaptic';
+import { useAuth } from '@/contexts/AuthContext';
+import { useBadgeUnlockCelebration } from '@/hooks/useBadgeUnlockCelebration';
+import { useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { BadgeCardV2 } from './BadgeCardV2';
 import type { Badge } from '@/types/achievements';
+import { BadgeCardV3 } from './BadgeCardV3';
 
 interface NextMilestoneProps {
   badge: Badge;
 }
 
-export const NextMilestone = memo(({ badge }: NextMilestoneProps) => {
+const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
+  streak: Flame,
+  scripts: BookOpen,
+  videos: Video,
+  tracker: BarChart3,
+  community: Users,
+  special: Trophy
+};
+
+const categoryRoutes: Record<string, string> = {
+  streak: '/tracker',
+  scripts: '/scripts',
+  videos: '/bonuses',
+  tracker: '/tracker',
+  community: '/community',
+  special: '/scripts'
+};
+
+export const NextMilestone = ({ badge }: NextMilestoneProps) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const { celebrate } = useBadgeUnlockCelebration();
+  const { triggerHaptic } = useHaptic();
+  const [isUnlocking, setIsUnlocking] = useState(false);
 
   const progressPercent = useMemo(() => {
     return badge.progress?.percentage || 0;
@@ -40,39 +68,77 @@ export const NextMilestone = memo(({ badge }: NextMilestoneProps) => {
         bgGradient: 'from-orange-500/10 to-red-500/10',
         borderColor: 'border-orange-500/30',
         textColor: 'text-orange-600 dark:text-orange-400',
-        ctaText: 'Unlock NOW',
+        buttonClass: 'bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white',
+        buttonText: 'Unlock NOW!',
         pulseIntensity: 'animate-pulse'
       },
       high: {
         bgGradient: 'from-yellow-500/10 to-orange-500/10',
         borderColor: 'border-yellow-500/30',
         textColor: 'text-yellow-600 dark:text-yellow-400',
-        ctaText: 'Almost there!',
+        buttonClass: 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white',
+        buttonText: 'Almost there!',
         pulseIntensity: 'animate-pulse-slow'
       },
       medium: {
         bgGradient: 'from-blue-500/10 to-purple-500/10',
         borderColor: 'border-blue-500/20',
         textColor: 'text-blue-600 dark:text-blue-400',
-        ctaText: 'Continue',
+        buttonClass: 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white',
+        buttonText: 'Continue',
         pulseIntensity: ''
       }
     };
     return config[urgencyLevel];
   }, [urgencyLevel]);
 
-  const handleCTA = () => {
-    const categoryRoutes: Record<string, string> = {
-      streak: '/tracker',
-      scripts: '/scripts',
-      videos: '/videos',
-      tracker: '/tracker',
-      community: '/community',
-      special: '/scripts'
-    };
+  const handleCTA = useCallback(async () => {
+    triggerHaptic('medium');
 
+    // Se progresso = 100%, tentar desbloquear badge
+    if (progressPercent >= 100 && user?.id) {
+      setIsUnlocking(true);
+      
+      try {
+        const { data, error } = await supabase.rpc('check_and_unlock_badges', {
+          p_user_id: user.id
+        });
+
+        if (error) throw error;
+
+        // Se desbloqueou badge(s)
+        if (data && data.length > 0) {
+          celebrate({
+            badge,
+            timestamp: new Date().toISOString()
+          });
+
+          queryClient.invalidateQueries({ queryKey: ['achievements-enriched', user.id] });
+          
+          toast.success('🎉 Badge Unlocked!', {
+            description: `You earned ${badge.name}!`,
+            duration: 4000
+          });
+
+          setIsUnlocking(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Failed to unlock badge:', error);
+        toast.error('Failed to unlock badge', {
+          description: 'Please try again or contact support.',
+          duration: 3000
+        });
+      } finally {
+        setIsUnlocking(false);
+      }
+    }
+
+    // Fallback: navegar para página relevante
     navigate(categoryRoutes[badge.category] || '/scripts');
-  };
+  }, [badge, progressPercent, user, navigate, triggerHaptic, celebrate, queryClient]);
+
+  const Icon = categoryIcons[badge.category] || Trophy;
 
   return (
     <div
@@ -84,16 +150,13 @@ export const NextMilestone = memo(({ badge }: NextMilestoneProps) => {
       `}
     >
       <div className="flex items-center gap-6">
-        <div className="relative flex-shrink-0">
-          <BadgeCardV2 badge={badge} size="featured" />
-          {urgencyLevel === 'critical' && (
-            <div className="absolute inset-0 bg-gradient-radial from-orange-500/20 to-transparent rounded-full pointer-events-none animate-pulse" />
-          )}
+        <div className="flex-1 flex justify-center">
+          <BadgeCardV3 badge={badge} size="featured" />
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className={`text-xs font-bold mb-1 tracking-wider ${urgencyConfig.textColor}`}>
-            NEXT MILESTONE
+          <div className={`text-xs font-bold mb-1 tracking-wider uppercase ${urgencyConfig.textColor}`}>
+            Next Milestone
           </div>
           <h3 className="text-xl font-bold mb-2 line-clamp-1">{badge.name}</h3>
           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
@@ -115,14 +178,30 @@ export const NextMilestone = memo(({ badge }: NextMilestoneProps) => {
           </div>
 
           {urgencyLevel === 'critical' && (
-            <Button
+            <button
               onClick={handleCTA}
-              size="sm"
-              className="mt-4 w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg"
+              disabled={isUnlocking}
+              className={`
+                mt-4 w-full py-3 px-4 rounded-2xl font-bold
+                flex items-center justify-center gap-2
+                transition-all duration-300 disabled:opacity-50
+                ${urgencyConfig.buttonClass}
+                ${urgencyLevel === 'critical' ? 'animate-pulse-slow shadow-xl' : 'shadow-md'}
+              `}
             >
-              {urgencyConfig.ctaText}
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+              {isUnlocking ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <span>Unlocking...</span>
+                </>
+              ) : (
+                <>
+                  <Icon className="w-5 h-5" />
+                  <span>{progressPercent >= 100 ? 'Unlock NOW!' : urgencyConfig.buttonText}</span>
+                  <ArrowRight className="w-5 h-5" />
+                </>
+              )}
+            </button>
           )}
         </div>
       </div>
@@ -137,6 +216,4 @@ export const NextMilestone = memo(({ badge }: NextMilestoneProps) => {
       )}
     </div>
   );
-});
-
-NextMilestone.displayName = 'NextMilestone';
+};

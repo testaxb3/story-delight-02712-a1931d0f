@@ -170,6 +170,18 @@ export default {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
+        "shine-diagonal": {
+          "0%": { transform: "translateX(-150%) translateY(-150%) rotate(45deg)" },
+          "100%": { transform: "translateX(150%) translateY(150%) rotate(45deg)" }
+        },
+        "pulse-glow": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.95)" },
+          "50%": { opacity: "0.6", transform: "scale(1.05)" }
+        },
+        "spin-ring": {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -179,6 +191,9 @@ export default {
         "shine": "shine 3s ease-in-out infinite",
         "pulse-slow": "pulse-slow 2s ease-in-out infinite",
         "spin-slow": "spin-slow 8s linear infinite",
+        "shine-diagonal": "shine-diagonal 4s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 3s ease-in-out infinite",
+        "spin-ring": "spin-ring 12s linear infinite",
       },
     },
   },
