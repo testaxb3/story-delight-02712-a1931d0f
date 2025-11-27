@@ -69,6 +69,17 @@ const RARITY_VISUALS = {
   }
 } as const;
 
+// Static gradient color mappings (avoid dynamic Tailwind classes for SVG)
+const GRADIENT_COLORS: Record<string, [string, string, string?]> = {
+  'from-gray-400 to-gray-500': ['#9ca3af', '#6b7280'],
+  'from-blue-400 to-blue-500': ['#60a5fa', '#3b82f6'],
+  'from-purple-400 to-purple-500': ['#c084fc', '#a855f7'],
+  'from-orange-400 to-orange-500': ['#fb923c', '#f97316'],
+  'from-blue-400 via-blue-500 to-blue-600': ['#60a5fa', '#3b82f6', '#2563eb'],
+  'from-purple-400 via-purple-500 to-pink-500': ['#c084fc', '#a855f7', '#ec4899'],
+  'from-yellow-300 via-orange-400 to-amber-500': ['#fde047', '#fb923c', '#f59e0b'],
+};
+
 export const BadgeCardV3 = memo(({ badge, size = 'md', onClick, onUnlock }: BadgeCardV3Props) => {
   const uniqueId = useId();
   const IconComponent = getBadgeIcon(badge.icon);
@@ -127,6 +138,9 @@ export const BadgeCardV3 = memo(({ badge, size = 'md', onClick, onUnlock }: Badg
     return 'from-orange-400 to-orange-500';
   }, [progressPercent]);
 
+  const progressColors = GRADIENT_COLORS[progressRingColor] || ['#9ca3af', '#6b7280'];
+  const ringColors = GRADIENT_COLORS[rarityVisual.ringGradient] || ['#9ca3af', '#6b7280'];
+
   return (
     <TooltipProvider>
       <Tooltip delayDuration={200}>
@@ -181,8 +195,8 @@ export const BadgeCardV3 = memo(({ badge, size = 'md', onClick, onUnlock }: Badg
                   />
                   <defs>
                     <linearGradient id={`gradient-progress-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" className={`text-${progressRingColor.split('-')[1]}-400`} stopColor="currentColor" />
-                      <stop offset="100%" className={`text-${progressRingColor.split('-')[1]}-500`} stopColor="currentColor" />
+                      <stop offset="0%" stopColor={progressColors[0]} />
+                      <stop offset="100%" stopColor={progressColors[1]} />
                     </linearGradient>
                   </defs>
                 </svg>
@@ -212,9 +226,9 @@ export const BadgeCardV3 = memo(({ badge, size = 'md', onClick, onUnlock }: Badg
                     />
                     <defs>
                       <linearGradient id={`gradient-unlocked-${uniqueId}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" className={`text-${rarityVisual.ringGradient.split('-')[1]}-400`} stopColor="currentColor" />
-                        <stop offset="50%" className={`text-${rarityVisual.ringGradient.split('-')[1]}-500`} stopColor="currentColor" />
-                        <stop offset="100%" className={`text-${rarityVisual.ringGradient.split('-')[1]}-600`} stopColor="currentColor" />
+                        <stop offset="0%" stopColor={ringColors[0]} />
+                        <stop offset="50%" stopColor={ringColors[1]} />
+                        <stop offset="100%" stopColor={ringColors[2] || ringColors[1]} />
                       </linearGradient>
                     </defs>
                   </svg>

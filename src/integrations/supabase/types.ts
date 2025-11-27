@@ -3534,6 +3534,20 @@ export type Database = {
           },
         ]
       }
+      user_achievements_stats_aggregated: {
+        Row: {
+          badges_unlocked: number | null
+          current_streak: number | null
+          days_completed: number | null
+          longest_streak: number | null
+          posts_created: number | null
+          reactions_received: number | null
+          scripts_used: number | null
+          user_id: string | null
+          videos_watched: number | null
+        }
+        Relationships: []
+      }
       user_recent_ebooks: {
         Row: {
           bonus_id: string | null
