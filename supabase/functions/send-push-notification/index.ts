@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface NotificationRequest {
-  type: 'new_script' | 'refund_update' | 'tracker_reminder' | 'new_content' | 'broadcast';
+  type: 'new_script' | 'refund_update' | 'tracker_reminder' | 'new_content' | 'broadcast' | 'admin_script_request' | 'admin_refund_request';
   target_profile?: 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'ALL';
   target_user_id?: string;
   title: string;
@@ -76,7 +76,19 @@ serve(async (req) => {
     // Get player IDs based on target
     let playerIds: string[] = [];
 
-    if (type === 'tracker_reminder') {
+    if (type === 'admin_script_request' || type === 'admin_refund_request') {
+      // Send to all admins
+      console.log('[Push] Getting admin player IDs for:', type);
+      const { data: adminPlayerIds, error } = await supabase
+        .rpc('get_admin_player_ids');
+
+      if (error) {
+        console.error('[Push] Error getting admin player IDs:', error);
+      } else {
+        playerIds = (adminPlayerIds || []).map((r: { player_id: string }) => r.player_id);
+        console.log('[Push] Found admin player IDs:', playerIds);
+      }
+    } else if (type === 'tracker_reminder') {
       // Special handling: get users who haven't logged today but have streak
       console.log('[Push] Getting player IDs for tracker reminder (active users who haven\'t logged today)');
       const { data: reminderPlayerIds, error } = await supabase

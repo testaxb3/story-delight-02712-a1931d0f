@@ -10,7 +10,9 @@ import {
   Play, 
   DollarSign, 
   Sparkles,
-  Megaphone
+  Megaphone,
+  FileQuestion,
+  Wallet
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -74,6 +76,10 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
         return <Megaphone className="w-4 h-4 text-blue-500" />;
       case 'tracker_reminder':
         return <Bell className="w-4 h-4 text-orange-500" />;
+      case 'script_request':
+        return <FileQuestion className="w-4 h-4 text-indigo-500" />;
+      case 'refund_request':
+        return <Wallet className="w-4 h-4 text-amber-500" />;
       default:
         return <Bell className="w-4 h-4 text-muted-foreground" />;
     }
@@ -108,6 +114,10 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
         return 'New message about your refund';
       case 'app_update':
         return 'App update available';
+      case 'script_request':
+        return 'New script request';
+      case 'refund_request':
+        return 'New refund request';
       default:
         return notification.content || notification.message || 'New notification';
     }
@@ -138,6 +148,10 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
         navigate('/scripts');
       } else if (notification.type === 'new_ebook' || notification.type === 'new_video') {
         navigate('/bonuses');
+      } else if (notification.type === 'script_request') {
+        navigate('/admin/script-requests');
+      } else if (notification.type === 'refund_request') {
+        navigate('/admin/refunds');
       }
     }
 
