@@ -6,7 +6,7 @@ import {
   Megaphone, CreditCard,
   Shield,
   ChevronRight, Moon, 
-  Bell, HelpCircle, Lock, Zap, Check, GraduationCap
+  Bell, Lock, Zap, Check, GraduationCap
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +20,8 @@ import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
+import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
+import { Headphones } from 'lucide-react';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -31,6 +33,7 @@ export default function ProfileCalAI() {
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [childModalOpen, setChildModalOpen] = useState(false);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   const handleLogout = async () => {
     triggerHaptic('medium');
@@ -283,10 +286,10 @@ export default function ProfileCalAI() {
               onClick={() => navigate('/refund')} 
             />
             <SettingsRow 
-              icon={HelpCircle} 
+              icon={Headphones} 
               iconColor="bg-blue-400" 
-              label="Help Center" 
-              onClick={() => window.location.href = 'mailto:support@nepsystem.pro'} 
+              label="Live Support" 
+              onClick={() => setSupportModalOpen(true)} 
             />
             <SettingsRow 
               icon={Shield} 
@@ -323,6 +326,9 @@ export default function ProfileCalAI() {
 
       {/* Child Profiles Modal */}
       <ChildProfilesModal open={childModalOpen} onOpenChange={setChildModalOpen} />
+      
+      {/* Live Support Modal */}
+      <LiveSupportModal open={supportModalOpen} onOpenChange={setSupportModalOpen} />
     </MainLayout>
   );
 }
