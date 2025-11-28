@@ -31,13 +31,13 @@ type Notification = {
   id: string;
   user_id: string;
   type: string;
-  content: string | null;
+  type_enum: string | null;
+  title: string | null;
+  message: string | null;
   read: boolean;
-  metadata: any;
+  link: string | null;
+  actor_id: string | null;
   created_at: string;
-  title?: string;
-  message?: string;
-  link?: string;
 };
 
 interface NotificationBellProps {
@@ -91,19 +91,16 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
       return notification.title;
     }
 
-    // Legacy format using metadata
-    const metadata = notification.metadata as any;
-    const actorName = metadata?.actor_name || 'Someone';
-
+    // Fallback messages by type
     switch (notification.type) {
       case 'like':
-        return `${actorName} liked your post`;
+        return 'Someone liked your post';
       case 'comment':
-        return `${actorName} commented on your post`;
+        return 'Someone commented on your post';
       case 'reply':
-        return `${actorName} replied to your comment`;
+        return 'Someone replied to your comment';
       case 'follow':
-        return `${actorName} started following you`;
+        return 'Someone started following you';
       case 'new_script':
         return 'New script available';
       case 'new_ebook':
@@ -119,7 +116,7 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
       case 'refund_request':
         return 'New refund request';
       default:
-        return notification.content || notification.message || 'New notification';
+        return notification.message || 'New notification';
     }
   };
 
@@ -138,21 +135,18 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
     // Navigate based on link or type
     if (notification.link) {
       navigate(notification.link);
-    } else {
-      const metadata = notification.metadata as any;
-      if (metadata?.post_id) {
-        navigate('/community', { state: { scrollToPost: metadata.post_id } });
-      } else if (notification.type === 'refund_response') {
-        navigate('/refund-status');
-      } else if (notification.type === 'new_script') {
-        navigate('/scripts');
-      } else if (notification.type === 'new_ebook' || notification.type === 'new_video') {
-        navigate('/bonuses');
-      } else if (notification.type === 'script_request') {
-        navigate('/admin/script-requests');
-      } else if (notification.type === 'refund_request') {
-        navigate('/admin/refunds');
-      }
+    } else if (notification.type === 'refund_response') {
+      navigate('/refund-status');
+    } else if (notification.type === 'new_script') {
+      navigate('/scripts');
+    } else if (notification.type === 'new_ebook' || notification.type === 'new_video') {
+      navigate('/bonuses');
+    } else if (notification.type === 'script_request') {
+      navigate('/admin/script-requests');
+    } else if (notification.type === 'refund_request') {
+      navigate('/admin/refunds');
+    } else if (notification.type === 'like' || notification.type === 'comment' || notification.type === 'reply') {
+      navigate('/community');
     }
 
     setOpen(false);
