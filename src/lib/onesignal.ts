@@ -1,5 +1,6 @@
 // @ts-nocheck
 import OneSignal from 'react-onesignal';
+import { supabase } from '@/integrations/supabase/client';
 
 /**
  * OneSignal Push Notifications Integration
@@ -14,7 +15,7 @@ import OneSignal from 'react-onesignal';
  * Features:
  * - Automatic user subscription
  * - Send notifications from Admin panel
- * - Segment users by device, location, etc.
+ * - Segment users by brain profile
  * - Analytics and delivery tracking
  */
 
@@ -89,6 +90,81 @@ export async function initOneSignal() {
     return true;
   } catch (error) {
     console.error('[OneSignal] Initialization failed:', error);
+    return false;
+  }
+}
+
+/**
+ * Register push subscription in Supabase for targeting
+ * This saves the player ID so we can send targeted notifications
+ */
+export async function registerPushSubscription(userId: string): Promise<boolean> {
+  if (!initialized) {
+    console.warn('[OneSignal] Not initialized. Call initOneSignal() first.');
+    return false;
+  }
+
+  try {
+    const playerId = await getPlayerId();
+    
+    if (!playerId) {
+      console.warn('[OneSignal] No player ID available');
+      return false;
+    }
+
+    console.log('[OneSignal] Registering push subscription:', { userId, playerId });
+
+    const { error } = await supabase
+      .from('user_push_subscriptions')
+      .upsert({
+        user_id: userId,
+        onesignal_player_id: playerId,
+        device_type: 'web',
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: 'user_id,onesignal_player_id'
+      });
+
+    if (error) {
+      console.error('[OneSignal] Failed to register subscription:', error);
+      return false;
+    }
+
+    console.log('[OneSignal] Push subscription registered successfully');
+    return true;
+  } catch (error) {
+    console.error('[OneSignal] Exception registering subscription:', error);
+    return false;
+  }
+}
+
+/**
+ * Unregister push subscription (mark as inactive)
+ */
+export async function unregisterPushSubscription(userId: string): Promise<boolean> {
+  try {
+    const playerId = await getPlayerId();
+    
+    if (!playerId) {
+      return false;
+    }
+
+    const { error } = await supabase
+      .from('user_push_subscriptions')
+      .update({ is_active: false, updated_at: new Date().toISOString() })
+      .eq('user_id', userId)
+      .eq('onesignal_player_id', playerId);
+
+    if (error) {
+      console.error('[OneSignal] Failed to unregister subscription:', error);
+      return false;
+    }
+
+    console.log('[OneSignal] Push subscription unregistered');
+    return true;
+  } catch (error) {
+    console.error('[OneSignal] Exception unregistering subscription:', error);
     return false;
   }
 }
@@ -187,8 +263,9 @@ export async function isSubscribed(): Promise<boolean> {
 /**
  * Show the native notification permission prompt
  * Uses browser's native Notification API instead of OneSignal's deprecated method
+ * @param userId - Optional user ID to register the subscription in Supabase
  */
-export async function showPermissionPrompt(): Promise<boolean> {
+export async function showPermissionPrompt(userId?: string): Promise<boolean> {
   if (!initialized) {
     console.warn('[OneSignal] Not initialized. Call initOneSignal() first.');
     return false;
@@ -212,6 +289,14 @@ export async function showPermissionPrompt(): Promise<boolean> {
         await OneSignal.registerForPushNotifications();
       } catch (error) {
         console.error('[OneSignal] Failed to register for push:', error);
+      }
+
+      // Register subscription in Supabase for targeting
+      if (userId) {
+        // Wait a bit for OneSignal to get the player ID
+        setTimeout(async () => {
+          await registerPushSubscription(userId);
+        }, 2000);
       }
 
       return true;

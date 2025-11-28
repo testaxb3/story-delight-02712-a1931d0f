@@ -1498,6 +1498,57 @@ export type Database = {
         }
         Relationships: []
       }
+      push_notification_log: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          data: Json | null
+          error_message: string | null
+          id: string
+          message: string
+          notification_type: string
+          onesignal_notification_id: string | null
+          recipients_count: number | null
+          sent_at: string | null
+          status: string | null
+          target_profile: string | null
+          target_user_id: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          data?: Json | null
+          error_message?: string | null
+          id?: string
+          message: string
+          notification_type: string
+          onesignal_notification_id?: string | null
+          recipients_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          target_profile?: string | null
+          target_user_id?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          data?: Json | null
+          error_message?: string | null
+          id?: string
+          message?: string
+          notification_type?: string
+          onesignal_notification_id?: string | null
+          recipients_count?: number | null
+          sent_at?: string | null
+          status?: string | null
+          target_profile?: string | null
+          target_user_id?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
       reactions: {
         Row: {
           created_at: string
@@ -2794,6 +2845,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_push_subscriptions: {
+        Row: {
+          created_at: string | null
+          device_type: string | null
+          id: string
+          is_active: boolean | null
+          onesignal_player_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          onesignal_player_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_type?: string | null
+          id?: string
+          is_active?: boolean | null
+          onesignal_player_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -3762,6 +3843,19 @@ export type Database = {
           slug: string
           title: string
           total_chapters: number
+        }[]
+      }
+      get_player_ids_by_profile: {
+        Args: { target_profile: string }
+        Returns: {
+          player_id: string
+          user_id: string
+        }[]
+      }
+      get_player_ids_for_user: {
+        Args: { p_user_id: string }
+        Returns: {
+          player_id: string
         }[]
       }
       get_post_reactions: {
