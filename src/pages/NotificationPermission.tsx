@@ -14,7 +14,7 @@ const NotificationPermission = () => {
   const { user } = useAuth();
   const { triggerHaptic } = useHaptic();
   const [isLoading, setIsLoading] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<NotificationPermission>('default');
+  const [permissionStatus, setPermissionStatus] = useState<globalThis.NotificationPermission>('default');
   const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
