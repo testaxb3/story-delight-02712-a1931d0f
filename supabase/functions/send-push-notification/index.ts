@@ -76,7 +76,18 @@ serve(async (req) => {
     // Get player IDs based on target
     let playerIds: string[] = [];
 
-    if (target_user_id) {
+    if (type === 'tracker_reminder') {
+      // Special handling: get users who haven't logged today but have streak
+      console.log('[Push] Getting player IDs for tracker reminder (active users who haven\'t logged today)');
+      const { data: reminderPlayerIds, error } = await supabase
+        .rpc('get_tracker_reminder_player_ids');
+
+      if (error) {
+        console.error('[Push] Error getting tracker reminder player IDs:', error);
+      } else {
+        playerIds = (reminderPlayerIds || []).map((r: { player_id: string }) => r.player_id);
+      }
+    } else if (target_user_id) {
       // Send to specific user
       console.log('[Push] Getting player IDs for user:', target_user_id);
       const { data: userPlayerIds, error } = await supabase

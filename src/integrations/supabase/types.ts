@@ -3904,6 +3904,13 @@ export type Database = {
           usage_count: number
         }[]
       }
+      get_tracker_reminder_player_ids: {
+        Args: never
+        Returns: {
+          player_id: string
+          user_id: string
+        }[]
+      }
       get_update_statistics: { Args: never; Returns: Json }
       get_user_achievements_enriched: {
         Args: { p_user_id: string }
