@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Crown, 
@@ -22,6 +22,8 @@ import { Switch } from '@/components/ui/switch';
 import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
 import { Headphones } from 'lucide-react';
+import { notificationManager } from '@/lib/notifications';
+import { registerPushSubscription, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -31,9 +33,17 @@ export default function ProfileCalAI() {
   const navigate = useNavigate();
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationsLoading, setNotificationsLoading] = useState(false);
   const [childModalOpen, setChildModalOpen] = useState(false);
   const [supportModalOpen, setSupportModalOpen] = useState(false);
+
+  // Check notification permission status on mount
+  useEffect(() => {
+    if (notificationManager.isSupported()) {
+      setNotificationsEnabled(notificationManager.getPermission() === 'granted');
+    }
+  }, []);
 
   const handleLogout = async () => {
     triggerHaptic('medium');
@@ -234,7 +244,47 @@ export default function ProfileCalAI() {
               label="Notifications" 
               hasSwitch 
               switchValue={notificationsEnabled}
-              onSwitchChange={setNotificationsEnabled}
+              onSwitchChange={async (checked) => {
+                if (notificationsLoading) return;
+                setNotificationsLoading(true);
+                
+                try {
+                  if (checked) {
+                    // Enable notifications
+                    const granted = await notificationManager.requestPermission();
+                    if (!granted) {
+                      toast.error('Permission denied. Enable in browser settings.');
+                      setNotificationsLoading(false);
+                      return;
+                    }
+                    setNotificationsEnabled(true);
+                    
+                    // Register with OneSignal
+                    if (user?.profileId && isOneSignalInitialized()) {
+                      await registerPushSubscription(user.profileId);
+                    }
+                    
+                    await notificationManager.showNotification('Notifications Enabled!', {
+                      body: "You'll receive reminders and updates.",
+                      icon: '/icon-192.png'
+                    });
+                    toast.success('Notifications enabled!');
+                  } else {
+                    // Disable notifications
+                    await notificationManager.unsubscribe();
+                    if (user?.profileId) {
+                      await unregisterPushSubscription(user.profileId);
+                    }
+                    setNotificationsEnabled(false);
+                    toast.success('Notifications disabled');
+                  }
+                } catch (error) {
+                  console.error('Notification toggle error:', error);
+                  toast.error('Failed to update notifications');
+                } finally {
+                  setNotificationsLoading(false);
+                }
+              }}
             />
             <SettingsRow 
               icon={Globe} 
