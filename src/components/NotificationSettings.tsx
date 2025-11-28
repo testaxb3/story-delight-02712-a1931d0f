@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { notificationManager } from '@/lib/notifications';
-import { supabase } from '@/integrations/supabase/client';
+import { registerPushSubscription, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -82,6 +82,14 @@ export function NotificationSettings() {
       //   });
       // }
 
+      // Register subscription in Supabase for targeted notifications
+      if (user?.profileId && isOneSignalInitialized()) {
+        // Wait for OneSignal to get player ID, then register
+        setTimeout(async () => {
+          await registerPushSubscription(user.profileId);
+        }, 2000);
+      }
+
       // Show a test notification
       await notificationManager.showNotification(
         'Notifications Enabled! 🎉',
@@ -107,12 +115,9 @@ export function NotificationSettings() {
       // Unsubscribe from push
       await notificationManager.unsubscribe();
 
-      // Remove subscription from database
+      // Mark subscription as inactive in Supabase
       if (user?.profileId) {
-        await supabase
-          .from('push_subscriptions')
-          .delete()
-          .eq('user_id', user.profileId);
+        await unregisterPushSubscription(user.profileId);
       }
 
       setIsEnabled(false);
