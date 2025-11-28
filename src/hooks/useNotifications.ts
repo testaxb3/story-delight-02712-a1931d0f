@@ -1,12 +1,16 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+
 type Notification = {
   id: string;
   user_id: string;
   type: string;
-  content: string | null;
+  type_enum: string | null;
+  title: string | null;
+  message: string | null;
   read: boolean;
-  metadata: any;
+  link: string | null;
+  actor_id: string | null;
   created_at: string;
 };
 
@@ -31,8 +35,7 @@ export function useNotifications(userId: string | null) {
       try {
         const { data, error } = await supabase
           .from('notifications')
-          // ✅ PERFORMANCE: Only select needed columns
-          .select('id, user_id, type, content, read, metadata, created_at')
+          .select('id, user_id, type, type_enum, title, message, read, link, actor_id, created_at')
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
           .limit(50);
