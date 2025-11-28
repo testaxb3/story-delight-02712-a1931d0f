@@ -3821,6 +3821,13 @@ export type Database = {
       }
       force_app_update: { Args: { update_message?: string }; Returns: Json }
       generate_invite_code: { Args: never; Returns: string }
+      get_admin_player_ids: {
+        Args: never
+        Returns: {
+          player_id: string
+          user_id: string
+        }[]
+      }
       get_app_version: { Args: never; Returns: Json }
       get_community_members: {
         Args: { p_community_id: string }
@@ -4063,6 +4070,8 @@ export type Database = {
         | "new_content"
         | "refund_response"
         | "tracker_reminder"
+        | "script_request"
+        | "refund_request"
       reaction_type:
         | "like"
         | "love"
@@ -4210,6 +4219,8 @@ export const Constants = {
         "new_content",
         "refund_response",
         "tracker_reminder",
+        "script_request",
+        "refund_request",
       ],
       reaction_type: [
         "like",
