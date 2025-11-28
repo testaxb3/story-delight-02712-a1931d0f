@@ -12,7 +12,6 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { icon: 'home', label: 'Home', path: '/' },
   { icon: 'scripts', label: 'Scripts', path: '/scripts' },
-  { icon: 'videos', label: 'Videos', path: '/videos' },
   { icon: 'bonuses', label: 'Bonuses', path: '/bonuses' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
