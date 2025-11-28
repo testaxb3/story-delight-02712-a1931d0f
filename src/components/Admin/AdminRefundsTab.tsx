@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { DollarSign, Calendar, Mail, User, MessageSquare, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { format } from 'date-fns';
+import { RefundChat } from './RefundChat';
 
 interface RefundRequest {
   id: string;
@@ -18,6 +19,7 @@ interface RefundRequest {
   created_at: string;
   updated_at: string;
   notes: string | null;
+  user_id: string | null;
 }
 
 export function AdminRefundsTab() {
@@ -174,17 +176,22 @@ export function AdminRefundsTab() {
               </div>
 
               {refund.reason_details && (
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <div className="flex items-start gap-2 mb-2">
-                    <MessageSquare className="w-4 h-4 text-blue-600 mt-0.5" />
-                    <p className="text-sm font-medium text-blue-900">Additional Details:</p>
+                    <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
+                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Additional Details:</p>
                   </div>
-                  <p className="text-sm text-blue-800 pl-6">{refund.reason_details}</p>
+                  <p className="text-sm text-blue-800 dark:text-blue-200 pl-6">{refund.reason_details}</p>
                 </div>
               )}
 
               {/* Actions */}
               <div className="flex flex-wrap gap-2 pt-2 border-t">
+                <RefundChat 
+                  refundId={refund.id} 
+                  customerName={refund.customer_name}
+                  customerUserId={refund.user_id || undefined}
+                />
                 <Button
                   size="sm"
                   variant="default"
