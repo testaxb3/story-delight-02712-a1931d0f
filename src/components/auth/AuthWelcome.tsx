@@ -200,7 +200,7 @@ export const AuthWelcome = memo(function AuthWelcome({
   onGetStarted, 
   onSignIn 
 }: AuthWelcomeProps) {
-  const features = ['Science-based', 'Personalized scripts', 'Instant results'];
+  const features = ['Science-based', 'Personalized scripts', 'Ready-to-use'];
 
   return (
     <motion.div

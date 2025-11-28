@@ -109,7 +109,6 @@ const BonusesFilter = memo(({ active, onChange }: { active: string; onChange: (i
     { id: 'all', label: 'Discover' },
     { id: 'video', label: 'Watch' },
     { id: 'ebook', label: 'Read' },
-    { id: 'tool', label: 'Tools' }
   ];
 
   return (
@@ -258,14 +257,12 @@ function BonusesContent() {
 
     const videoShelf = remaining.filter(b => b.category === 'video');
     const bookShelf = remaining.filter(b => b.category === 'ebook');
-    const toolShelf = remaining.filter(b => b.category === 'tool' || b.category === 'template');
 
     return {
       featured: featuredItems,
       shelves: [
         { id: 'videos', title: 'Watch & Learn', items: videoShelf, type: 'video' as const },
         { id: 'books', title: 'Read & Reflect', items: bookShelf, type: 'book' as const },
-        { id: 'tools', title: 'Tools & Templates', items: toolShelf, type: 'tool' as const },
       ].filter(s => s.items.length > 0)
     };
   }, [allBonuses]);
