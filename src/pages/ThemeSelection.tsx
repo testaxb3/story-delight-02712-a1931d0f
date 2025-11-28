@@ -44,13 +44,9 @@ const ThemeSelection = () => {
       }
     }
 
-    // Smooth transition to quiz or dashboard if already completed
+    // Navigate to notification permission page
     setTimeout(() => {
-      if (user?.quiz_completed) {
-        navigate("/");
-      } else {
-        navigate("/quiz");
-      }
+      navigate("/notification-permission");
     }, 500);
   };
 

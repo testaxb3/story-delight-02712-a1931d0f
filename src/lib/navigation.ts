@@ -18,6 +18,7 @@ export const routes = {
   pwaInstall: '/pwa-install',
   pwaCheck: '/pwa-check',
   themeSelection: '/theme-selection',
+  notificationPermission: '/notification-permission',
   
   // Primary Pages
   scripts: '/scripts',
