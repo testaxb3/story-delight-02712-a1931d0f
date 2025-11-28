@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Flame, ChevronRight, Book, Play, Plus, Sparkles } from 'lucide-react';
+import { Flame, ChevronRight, Book, Play, Plus, Sparkles, MessageCircle } from 'lucide-react';
+import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
@@ -768,6 +769,25 @@ const FloatingActionButton = memo(function FloatingActionButton({
 });
 
 // ============================================================================
+// SUPPORT FAB - WhatsApp style support button
+// ============================================================================
+const SupportFAB = memo(function SupportFAB({ onPress }: { onPress: () => void }) {
+  return (
+    <motion.button
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={onPress}
+      className="fixed bottom-[calc(env(safe-area-inset-bottom)+6rem)] left-5 z-50 w-14 h-14 rounded-full bg-green-500 shadow-lg shadow-green-500/30 flex items-center justify-center"
+    >
+      <MessageCircle className="w-6 h-6 text-white" />
+    </motion.button>
+  );
+});
+
+// ============================================================================
 // MAIN DASHBOARD COMPONENT
 // ============================================================================
 export default function DashboardCalAI() {
@@ -780,6 +800,7 @@ export default function DashboardCalAI() {
   const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
   const { data: trackerStats } = useTrackerDays(user?.id, activeChild?.id);
   const { triggerHaptic } = useHaptic();
+  const [showSupportModal, setShowSupportModal] = useState(false);
 
   const isLoading = statsLoading || dataLoading || categoriesLoading || profileStatsLoading;
   const currentStreak = dashboardStats?.currentStreak ?? 0;
@@ -970,6 +991,15 @@ export default function DashboardCalAI() {
 
         {/* FAB */}
         <FloatingActionButton onPress={() => handleNavigate('/tracker')} />
+        
+        {/* Support FAB - Left side */}
+        <SupportFAB onPress={() => setShowSupportModal(true)} />
+        
+        {/* Support Modal */}
+        <LiveSupportModal 
+          open={showSupportModal} 
+          onOpenChange={setShowSupportModal} 
+        />
       </div>
     </MainLayout>
   );
