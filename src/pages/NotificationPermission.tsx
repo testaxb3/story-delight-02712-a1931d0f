@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useHaptic } from "@/hooks/useHaptic";
 import { toast } from "sonner";
 import { notificationManager } from "@/lib/notifications";
-import { registerPushSubscription, isOneSignalInitialized } from "@/lib/onesignal";
+import { registerPushSubscriptionWithRetry, isOneSignalInitialized } from "@/lib/onesignal";
 
 const NotificationPermission = () => {
   const navigate = useNavigate();
@@ -56,11 +56,18 @@ const NotificationPermission = () => {
 
       setPermissionStatus('granted');
       
-      // Register with OneSignal if available
+      // Register with OneSignal if available - use retry mechanism
       if (user?.profileId && isOneSignalInitialized()) {
-        setTimeout(async () => {
-          await registerPushSubscription(user.profileId);
-        }, 2000);
+        console.log('[NotificationPermission] Starting push registration with retry...');
+        // Don't await - let it run in background with retries
+        registerPushSubscriptionWithRetry(user.profileId, 5, 2000).then(success => {
+          console.log('[NotificationPermission] Push registration result:', success);
+        });
+      } else {
+        console.log('[NotificationPermission] Skipping push registration:', {
+          hasProfileId: !!user?.profileId,
+          isInitialized: isOneSignalInitialized()
+        });
       }
 
       // Show success notification
