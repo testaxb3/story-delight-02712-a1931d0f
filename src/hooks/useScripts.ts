@@ -6,26 +6,36 @@ type ScriptRow = Database['public']['Tables']['scripts']['Row'];
 
 interface UseScriptsOptions {
   brainProfile?: string | null;
+  childAge?: number | null;
   enabled?: boolean;
 }
 
-export function useScripts({ brainProfile, enabled = true }: UseScriptsOptions = {}) {
+export function useScripts({ brainProfile, childAge, enabled = true }: UseScriptsOptions = {}) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['scripts', brainProfile],
+    queryKey: ['scripts', brainProfile, childAge],
     queryFn: async () => {
       if (!brainProfile) {
         return [];
       }
 
-      // ✅ PERFORMANCE: Filter by profile on server (saves ~66% data)
-      const { data, error } = await supabase
+      // Build query with profile filter
+      let queryBuilder = supabase
         .from('scripts')
         .select('*')
         .eq('profile', brainProfile.toUpperCase())
         .order('created_at', { ascending: false })
         .limit(100);
+
+      // Add age filtering if childAge is provided
+      if (childAge !== null && childAge !== undefined) {
+        queryBuilder = queryBuilder
+          .lte('age_min', childAge)  // age_min <= childAge
+          .gte('age_max', childAge); // age_max >= childAge
+      }
+
+      const { data, error } = await queryBuilder;
 
       if (error) {
         console.error('Failed to load scripts:', error);
@@ -42,19 +52,27 @@ export function useScripts({ brainProfile, enabled = true }: UseScriptsOptions =
   });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['scripts', brainProfile] });
+    queryClient.invalidateQueries({ queryKey: ['scripts', brainProfile, childAge] });
   };
 
-  const prefetch = async (profile: string) => {
+  const prefetch = async (profile: string, age?: number | null) => {
     await queryClient.prefetchQuery({
-      queryKey: ['scripts', profile],
+      queryKey: ['scripts', profile, age],
       queryFn: async () => {
-        const { data } = await supabase
+        let queryBuilder = supabase
           .from('scripts')
           .select('*')
           .eq('profile', profile.toUpperCase())
           .order('created_at', { ascending: false })
           .limit(100);
+
+        if (age !== null && age !== undefined) {
+          queryBuilder = queryBuilder
+            .lte('age_min', age)
+            .gte('age_max', age);
+        }
+
+        const { data } = await queryBuilder;
         return data ?? [];
       },
     });
