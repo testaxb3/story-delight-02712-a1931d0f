@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import {
@@ -13,11 +14,17 @@ import {
   DollarSign,
   Mail,
   Calendar,
-  FileText
+  FileText,
+  MessageCircle,
+  Send,
+  User,
+  Shield
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { format } from 'date-fns';
 import { MainLayout } from '@/components/Layout/MainLayout';
+import { useRefundMessages } from '@/hooks/useRefundMessages';
+import { cn } from '@/lib/utils';
 
 interface RefundRequest {
   id: string;
@@ -428,6 +435,9 @@ export default function RefundStatus() {
           )}
         </motion.div>
 
+        {/* Messages Section */}
+        <RefundMessagesSection refundRequestId={refundRequest.id} userId={user?.id || null} />
+
         {/* Expected Timeline */}
         {refundRequest.status !== 'processed' && refundRequest.status !== 'rejected' && (
           <motion.div
@@ -458,5 +468,131 @@ export default function RefundStatus() {
         )}
       </div>
     </MainLayout>
+  );
+}
+
+// Messages Section Component
+function RefundMessagesSection({ refundRequestId, userId }: { refundRequestId: string; userId: string | null }) {
+  const { messages, loading, sending, sendMessage, markAsRead } = useRefundMessages(refundRequestId);
+  const [newMessage, setNewMessage] = useState('');
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // Mark messages as read on mount
+  useEffect(() => {
+    markAsRead();
+  }, [markAsRead]);
+
+  const handleSend = async () => {
+    if (!newMessage.trim() || !userId) return;
+
+    const success = await sendMessage(newMessage, 'user', userId);
+    if (success) {
+      setNewMessage('');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.25 }}
+      className="bg-card border border-border rounded-[22px] p-6 mb-6"
+    >
+      <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
+        <MessageCircle className="w-5 h-5 text-primary" />
+        Messages
+      </h3>
+
+      {/* Messages List */}
+      <div 
+        ref={scrollRef}
+        className="max-h-80 overflow-y-auto mb-4 space-y-3"
+      >
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary" />
+          </div>
+        ) : messages.length === 0 ? (
+          <div className="text-center py-8 text-muted-foreground">
+            <MessageCircle className="w-10 h-10 mx-auto mb-2 opacity-50" />
+            <p className="text-sm font-medium">No messages yet</p>
+            <p className="text-xs">Our team will respond to your request here</p>
+          </div>
+        ) : (
+          messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={cn(
+                "flex gap-2",
+                msg.sender_type === 'user' ? "justify-end" : "justify-start"
+              )}
+            >
+              {msg.sender_type === 'admin' && (
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-4 h-4 text-primary" />
+                </div>
+              )}
+              <div
+                className={cn(
+                  "max-w-[80%] rounded-2xl px-4 py-2.5",
+                  msg.sender_type === 'user'
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted"
+                )}
+              >
+                <p className="text-sm whitespace-pre-wrap">{msg.message}</p>
+                <p className={cn(
+                  "text-[10px] mt-1",
+                  msg.sender_type === 'user'
+                    ? "text-primary-foreground/70"
+                    : "text-muted-foreground"
+                )}>
+                  {msg.sender_type === 'admin' ? 'Support Team' : 'You'} • {format(new Date(msg.created_at), 'MMM d, h:mm a')}
+                </p>
+              </div>
+              {msg.sender_type === 'user' && (
+                <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-muted-foreground" />
+                </div>
+              )}
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="flex gap-2 pt-4 border-t border-border">
+        <Input
+          placeholder="Type a message..."
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          disabled={sending}
+          className="flex-1 rounded-full"
+        />
+        <Button
+          onClick={handleSend}
+          disabled={!newMessage.trim() || sending}
+          size="icon"
+          className="rounded-full"
+        >
+          <Send className="w-4 h-4" />
+        </Button>
+      </div>
+    </motion.div>
   );
 }

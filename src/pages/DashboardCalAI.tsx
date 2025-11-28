@@ -12,6 +12,7 @@ import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useTrackerDays } from '@/hooks/useTrackerDays';
+import { NotificationBell } from '@/components/Community/NotificationBell';
 
 import { useCategoryStats } from '@/hooks/useCategoryStats';
 import { useProfileStats } from '@/hooks/useProfileStats';
@@ -886,24 +887,29 @@ export default function DashboardCalAI() {
                 </div>
               </div>
 
-              {/* Streak badge */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleNavigate('/achievements')}
-                className={cn(
-                  "relative flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer border",
-                  currentStreak > 0 
-                    ? "bg-orange-500/15 border-orange-500/30" 
-                    : "bg-white/5 dark:bg-white/5 border-border/20"
-                )}
-              >
-                <Flame className={cn(
-                  "w-4 h-4",
-                  currentStreak > 0 ? "text-orange-400 fill-orange-400" : "text-muted-foreground"
-                )} />
-                <span className="text-sm font-bold text-foreground">{currentStreak}</span>
-              </motion.div>
+              <div className="flex items-center gap-2">
+                {/* Notification Bell */}
+                <NotificationBell userId={user?.id || null} />
+
+                {/* Streak badge */}
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleNavigate('/achievements')}
+                  className={cn(
+                    "relative flex items-center gap-2 px-4 py-2 rounded-full cursor-pointer border",
+                    currentStreak > 0 
+                      ? "bg-orange-500/15 border-orange-500/30" 
+                      : "bg-white/5 dark:bg-white/5 border-border/20"
+                  )}
+                >
+                  <Flame className={cn(
+                    "w-4 h-4",
+                    currentStreak > 0 ? "text-orange-400 fill-orange-400" : "text-muted-foreground"
+                  )} />
+                  <span className="text-sm font-bold text-foreground">{currentStreak}</span>
+                </motion.div>
+              </div>
             </div>
           </motion.header>
 
