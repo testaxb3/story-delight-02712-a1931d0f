@@ -473,7 +473,7 @@ export default function RefundStatus() {
 
 // Messages Section Component
 function RefundMessagesSection({ refundRequestId, userId }: { refundRequestId: string; userId: string | null }) {
-  const { messages, loading, sending, sendMessage, markAsRead } = useRefundMessages(refundRequestId);
+  const { messages, loading, sending, sendMessage, markAsRead, refetch } = useRefundMessages(refundRequestId);
   const [newMessage, setNewMessage] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -495,6 +495,11 @@ function RefundMessagesSection({ refundRequestId, userId }: { refundRequestId: s
     const success = await sendMessage(newMessage, 'user', userId);
     if (success) {
       setNewMessage('');
+      toast.success('Message sent');
+      // Fallback: refetch if realtime doesn't catch it
+      setTimeout(() => refetch(), 500);
+    } else {
+      toast.error('Failed to send message');
     }
   };
 
