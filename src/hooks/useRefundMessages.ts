@@ -96,6 +96,7 @@ export function useRefundMessages(refundRequestId: string | null) {
         await supabase.from('notifications').insert({
           user_id: customerUserId,
           type: 'refund_response',
+          type_enum: 'refund_response',
           title: 'New message about your refund',
           message: 'You have a new response regarding your refund request',
           link: '/refund-status',

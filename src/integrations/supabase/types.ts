@@ -4053,7 +4053,16 @@ export type Database = {
     Enums: {
       app_role: "admin" | "user"
       difficulty_level: "Easy" | "Moderate" | "Hard"
-      notification_type: "like" | "comment" | "reply" | "mention" | "follow"
+      notification_type:
+        | "like"
+        | "comment"
+        | "reply"
+        | "mention"
+        | "follow"
+        | "new_script"
+        | "new_content"
+        | "refund_response"
+        | "tracker_reminder"
       reaction_type:
         | "like"
         | "love"
@@ -4191,7 +4200,17 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "user"],
       difficulty_level: ["Easy", "Moderate", "Hard"],
-      notification_type: ["like", "comment", "reply", "mention", "follow"],
+      notification_type: [
+        "like",
+        "comment",
+        "reply",
+        "mention",
+        "follow",
+        "new_script",
+        "new_content",
+        "refund_response",
+        "tracker_reminder",
+      ],
       reaction_type: [
         "like",
         "love",

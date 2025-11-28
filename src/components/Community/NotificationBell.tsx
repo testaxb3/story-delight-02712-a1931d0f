@@ -72,6 +72,8 @@ export function NotificationBell({ userId, className }: NotificationBellProps) {
         return <Sparkles className="w-4 h-4 text-amber-500" />;
       case 'announcement':
         return <Megaphone className="w-4 h-4 text-blue-500" />;
+      case 'tracker_reminder':
+        return <Bell className="w-4 h-4 text-orange-500" />;
       default:
         return <Bell className="w-4 h-4 text-muted-foreground" />;
     }
