@@ -214,7 +214,7 @@ const NotificationPermission = () => {
 
           <button
             onClick={handleSkip}
-            className="w-full py-3 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+            className="w-full py-3 text-foreground/60 hover:text-foreground transition-colors text-sm font-medium"
           >
             Skip for now
           </button>
@@ -225,7 +225,7 @@ const NotificationPermission = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mt-8 text-xs text-muted-foreground/60"
+          className="mt-8 text-xs text-foreground/40"
         >
           You can change this anytime in Profile → Settings
         </motion.p>
