@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  User, Crown, Plus, CreditCard, Settings, 
-  Globe, Users, Target, Flag, Clock, 
-  Mail, Megaphone, RefreshCw, FileText, 
-  Shield, Instagram, MessageCircle, Twitter,
-  LogOut, ChevronRight, Moon, Sun, Star, 
-  Bell, HelpCircle, Lock, Zap, Smartphone, Check, GraduationCap
+  Crown, 
+  Globe, Users, Target, 
+  Megaphone, CreditCard,
+  Shield,
+  ChevronRight, Moon, 
+  Bell, HelpCircle, Lock, Zap, Check, GraduationCap
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -14,11 +14,12 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { useHaptic } from '@/hooks/useHaptic';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
+import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -29,6 +30,7 @@ export default function ProfileCalAI() {
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [childModalOpen, setChildModalOpen] = useState(false);
 
   const handleLogout = async () => {
     triggerHaptic('medium');
@@ -152,7 +154,7 @@ export default function ProfileCalAI() {
           <div className="mb-8">
             <div className="flex items-center justify-between px-1 mb-3">
               <h3 className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">My Family</h3>
-              <button onClick={() => toast.info('Manage children in Quiz settings')} className="text-blue-500 text-[15px] font-medium">Manage</button>
+              <button onClick={() => setChildModalOpen(true)} className="text-blue-500 text-[15px] font-medium">Manage</button>
             </div>
             
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
@@ -318,6 +320,9 @@ export default function ProfileCalAI() {
           </div>
         </div>
       </div>
+
+      {/* Child Profiles Modal */}
+      <ChildProfilesModal open={childModalOpen} onOpenChange={setChildModalOpen} />
     </MainLayout>
   );
 }

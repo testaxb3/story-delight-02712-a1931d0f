@@ -71,6 +71,7 @@ function ScriptsContent() {
   const currentBrain = activeChild?.brain_profile ?? 'INTENSE';
   const { scripts, isLoading: loadingScripts } = useScripts({
     brainProfile: currentBrain,
+    childAge: activeChild?.age,
     enabled: !!activeChild,
   });
   
