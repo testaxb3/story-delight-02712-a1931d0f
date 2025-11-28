@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, MessageCircle, User, Shield } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -23,7 +24,7 @@ interface RefundChatProps {
 
 export function RefundChat({ refundId, customerName, customerUserId }: RefundChatProps) {
   const { user } = useAuth();
-  const { messages, loading, sending, sendMessage, markAsRead } = useRefundMessages(refundId);
+  const { messages, loading, sending, sendMessage, markAsRead, refetch } = useRefundMessages(refundId);
   const [newMessage, setNewMessage] = useState('');
   const [open, setOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -48,6 +49,11 @@ export function RefundChat({ refundId, customerName, customerUserId }: RefundCha
     const success = await sendMessage(newMessage, 'admin', user.id, customerUserId);
     if (success) {
       setNewMessage('');
+      toast.success('Message sent');
+      // Fallback: refetch messages if realtime doesn't catch it
+      setTimeout(() => refetch(), 500);
+    } else {
+      toast.error('Failed to send message');
     }
   };
 
