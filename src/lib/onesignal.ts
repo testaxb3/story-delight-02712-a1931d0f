@@ -140,6 +140,38 @@ export async function registerPushSubscription(userId: string): Promise<boolean>
 }
 
 /**
+ * Register push subscription with retry mechanism
+ * Attempts multiple times with increasing delays to ensure player ID is captured
+ */
+export async function registerPushSubscriptionWithRetry(
+  userId: string, 
+  maxAttempts = 5, 
+  baseDelay = 2000
+): Promise<boolean> {
+  console.log(`[OneSignal] Starting registration with retry for user: ${userId}`);
+  
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    console.log(`[OneSignal] Registration attempt ${attempt}/${maxAttempts}`);
+    
+    const success = await registerPushSubscription(userId);
+    
+    if (success) {
+      console.log(`[OneSignal] Registration successful on attempt ${attempt}`);
+      return true;
+    }
+    
+    if (attempt < maxAttempts) {
+      const delay = baseDelay * attempt;
+      console.log(`[OneSignal] Waiting ${delay}ms before next attempt...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  console.error(`[OneSignal] Registration failed after ${maxAttempts} attempts`);
+  return false;
+}
+
+/**
  * Unregister push subscription (mark as inactive)
  */
 export async function unregisterPushSubscription(userId: string): Promise<boolean> {
