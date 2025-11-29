@@ -163,13 +163,13 @@ const BonusesShelf = memo(({ title, items, type, onSelect }: { title: string; it
           >
             {/* Thumbnail */}
             <div className={cn(
-              "overflow-hidden bg-card transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-1 border border-white/5",
+              "relative overflow-hidden bg-card transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-1 ring-1 ring-white/5 ring-inset",
               item.category === 'ebook' ? "aspect-[3/4] rounded-[18px] shadow-lg" : "aspect-video rounded-2xl shadow-md"
             )}>
               <img 
                 src={item.thumbnail || "/placeholder.svg"} 
                 alt={item.title}
-                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 loading="lazy"
               />
               
