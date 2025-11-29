@@ -1,11 +1,18 @@
-import { Chapter } from '@/data/ebookContent';
+// Support both V1 (content) and V2 (blocks) chapter formats
+interface ChapterV1V2 {
+  id: string;
+  title: string;
+  subtitle?: string;
+  content?: any[];
+  blocks?: any[];
+}
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BookOpen, FileText, List, AlertCircle } from 'lucide-react';
 
 interface ChaptersPreviewProps {
-  chapters: Chapter[];
+  chapters: ChapterV1V2[];
 }
 
 export function ChaptersPreview({ chapters }: ChaptersPreviewProps) {
@@ -35,7 +42,7 @@ export function ChaptersPreview({ chapters }: ChaptersPreviewProps) {
             <span className="text-sm font-medium">Seções</span>
           </div>
           <p className="text-2xl font-bold">
-            {chapters.reduce((sum, ch) => sum + ch.content.length, 0)}
+            {chapters.reduce((sum, ch) => sum + (ch.content || ch.blocks || []).length, 0)}
           </p>
         </Card>
         <Card className="p-4">
@@ -45,7 +52,8 @@ export function ChaptersPreview({ chapters }: ChaptersPreviewProps) {
           </div>
           <p className="text-2xl font-bold">
             {chapters.reduce((sum, ch) => {
-              return sum + ch.content.reduce((contentSum, section) => {
+              const items = ch.content || ch.blocks || [];
+              return sum + items.reduce((contentSum: number, section: any) => {
                 if (typeof section.content === 'string') {
                   return contentSum + section.content.split(/\s+/).length;
                 }
@@ -71,7 +79,7 @@ export function ChaptersPreview({ chapters }: ChaptersPreviewProps) {
                           Capítulo {index + 1}
                         </Badge>
                         <Badge variant="secondary" className="text-xs">
-                          {chapter.content.length} seções
+                          {(chapter.content || chapter.blocks || []).length} seções
                         </Badge>
                       </div>
                       <h4 className="font-semibold">{chapter.title}</h4>
@@ -86,23 +94,28 @@ export function ChaptersPreview({ chapters }: ChaptersPreviewProps) {
                   {/* Section Types Preview */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {Array.from(
-                      new Set(chapter.content.map((section) => section.type))
+                      new Set((chapter.content || chapter.blocks || []).map((section: any) => section.type))
                     ).map((type) => (
-                      <Badge key={type} variant="outline" className="text-xs">
-                        {type}
+                      <Badge key={type as string} variant="outline" className="text-xs">
+                        {type as string}
                       </Badge>
                     ))}
                   </div>
 
                   {/* First paragraph preview */}
-                  {chapter.content.length > 0 && (
-                    <div className="text-sm text-muted-foreground line-clamp-2 mt-2 pl-4 border-l-2 border-muted">
-                      {typeof chapter.content[0].content === 'string'
-                        ? chapter.content[0].content.substring(0, 150)
-                        : 'Preview não disponível'}
-                      ...
-                    </div>
-                  )}
+                  {(() => {
+                    const items = chapter.content || chapter.blocks || [];
+                    if (items.length === 0) return null;
+                    const firstItem = items[0];
+                    const previewText = typeof firstItem.content === 'string'
+                      ? firstItem.content.substring(0, 150)
+                      : 'Preview não disponível';
+                    return (
+                      <div className="text-sm text-muted-foreground line-clamp-2 mt-2 pl-4 border-l-2 border-muted">
+                        {previewText}...
+                      </div>
+                    );
+                  })()}
                 </div>
               </Card>
             ))}
