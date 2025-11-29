@@ -983,7 +983,7 @@ export default function DashboardCalAI() {
             {/* Bonus Guides */}
             <BonusGuidesCarousel
               ebooks={ebooks}
-              onEbookPress={(slug) => handleNavigate(`/ebook-v2/${slug}`)}
+              onEbookPress={(slug) => handleNavigate(`/ebook/${slug}`)}
               onSeeAll={() => handleNavigate('/bonuses?category=ebook')}
             />
           </main>

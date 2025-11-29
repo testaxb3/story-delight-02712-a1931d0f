@@ -276,7 +276,7 @@ function BonusesContent() {
     if (bonus.category === 'ebook') {
       if (bonus.viewUrl) { navigate(bonus.viewUrl); return; }
       const { data } = await supabase.from('ebooks').select('slug').eq('bonus_id', bonus.id).single();
-      if (data?.slug) navigate(`/ebook-v2/${data.slug}`);
+      if (data?.slug) navigate(`/ebook/${data.slug}`);
       return;
     }
     if (bonus.viewUrl) navigate(bonus.viewUrl);
