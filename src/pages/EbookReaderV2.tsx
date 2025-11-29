@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { EbookReaderV2 } from "@/components/ebook/v2/EbookReaderV2";
+import { EbookCoverPage } from "@/components/ebook/EbookCoverPage";
 import { ebookContent } from "@/data/ebookContent";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEbookContent } from "@/hooks/useEbookContent";
 import { useEbookProgress } from "@/hooks/useEbookProgress";
-import { Badge } from "@/components/ui/badge";
 import { useQueryClient } from "@tanstack/react-query";
 
 const EbookReaderV2Page = () => {
@@ -25,6 +26,27 @@ const EbookReaderV2Page = () => {
     saveHighlight
   } = useEbookProgress(ebook?.id);
 
+  // Check if user has seen cover before
+  const [showCover, setShowCover] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (ebook?.id) {
+      // Check localStorage for cover seen status
+      const hasSeenCover = localStorage.getItem(`ebook-cover-seen-${ebook.id}`);
+      // Also check if user has any progress (meaning they've read before)
+      const hasProgress = progress && (progress.current_chapter > 0 || progress.scroll_position > 0);
+      
+      setShowCover(!hasSeenCover && !hasProgress);
+    }
+  }, [ebook?.id, progress]);
+
+  const handleStartReading = () => {
+    if (ebook?.id) {
+      localStorage.setItem(`ebook-cover-seen-${ebook.id}`, 'true');
+    }
+    setShowCover(false);
+  };
+
   const handleClose = () => {
     // Invalidate queries to refresh progress on next open
     queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebook?.id] });
@@ -32,7 +54,7 @@ const EbookReaderV2Page = () => {
   };
 
   // Wait for BOTH ebook AND progress to load before rendering
-  if (isLoading || (ebook?.id && isProgressLoading)) {
+  if (isLoading || (ebook?.id && isProgressLoading) || showCover === null) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -77,6 +99,20 @@ const EbookReaderV2Page = () => {
           </button>
         </div>
       </div>
+    );
+  }
+
+  // Show cover page on first visit
+  if (showCover) {
+    return (
+      <EbookCoverPage
+        title={ebook?.title || finalChapters[0]?.title || 'Untitled'}
+        subtitle={ebook?.subtitle || undefined}
+        readingTime={ebook?.estimated_reading_time ? `${ebook.estimated_reading_time} min` : undefined}
+        chapterCount={finalChapters.length}
+        coverColor={ebook?.cover_color || '#6366f1'}
+        onStartReading={handleStartReading}
+      />
     );
   }
 
