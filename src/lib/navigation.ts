@@ -41,7 +41,6 @@ export const routes = {
   // Content Pages
   library: '/library',
   ebookReader: (ebookId: string) => `/ebook/${ebookId}`,
-  ebookReaderV2: (ebookId: string) => `/ebook-v2/${ebookId}`,
   
   // Admin & Tools
   admin: '/admin',

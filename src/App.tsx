@@ -44,8 +44,7 @@ const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
 const Bonuses = lazy(() => import("./pages/Bonuses"));
-const EbookReader = lazy(() => import("./pages/EbookReader"));
-const EbookReaderV2 = lazy(() => import("./pages/EbookReaderV2"));
+const EbookReader = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 const ScriptRequests = lazy(() => import("./pages/ScriptRequests"));
@@ -262,14 +261,6 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <EbookReader />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/ebook-v2/:ebookId"
-          element={
-            <ProtectedRoute>
-              <EbookReaderV2 />
             </ProtectedRoute>
           }
         />
