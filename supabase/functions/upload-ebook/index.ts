@@ -9,7 +9,7 @@ interface Chapter {
   id: string;
   title: string;
   subtitle?: string;
-  content: Array<{
+  blocks: Array<{
     type: string;
     content: string | string[];
     level?: number;
@@ -45,7 +45,7 @@ function parseMarkdownToChapters(markdown: string): Chapter[] {
         id: `chapter-${chapters.length}`,
         title,
         subtitle,
-        content: [],
+        blocks: [],
       };
       continue;
     }
@@ -54,7 +54,7 @@ function parseMarkdownToChapters(markdown: string): Chapter[] {
       currentChapter = {
         id: 'intro',
         title: 'Introduction',
-        content: [],
+        blocks: [],
       };
     }
 
@@ -62,7 +62,7 @@ function parseMarkdownToChapters(markdown: string): Chapter[] {
       if (trimmed.match(/^#{1,6}\s+/)) {
         const level = (trimmed.match(/^(#{1,6})/) || ['', '#'])[1].length;
         const content = trimmed.replace(/^#{1,6}\s+/, '').trim();
-        currentChapter.content.push({ type: 'heading', level, content });
+        currentChapter.blocks.push({ type: 'heading', level, content });
       } else if (trimmed.startsWith('[!')) {
         const calloutMatch = trimmed.match(/^\[!(NOTE|WARNING|TIP|SCIENCE)\]\s*(.+)/i);
         if (calloutMatch) {
@@ -74,7 +74,7 @@ function parseMarkdownToChapters(markdown: string): Chapter[] {
             tip: 'try',
             science: 'science',
           };
-          currentChapter.content.push({
+          currentChapter.blocks.push({
             type: 'callout',
             calloutType: calloutTypeMap[type] || 'remember',
             content,
@@ -82,14 +82,14 @@ function parseMarkdownToChapters(markdown: string): Chapter[] {
         }
       } else if (trimmed.match(/^[-*•]\s+/) || trimmed.match(/^\d+\.\s+/)) {
         const content = trimmed.replace(/^[-*•]\s+/, '').replace(/^\d+\.\s+/, '').trim();
-        const lastSection = currentChapter.content[currentChapter.content.length - 1];
-        if (lastSection && lastSection.type === 'list') {
-          (lastSection.content as string[]).push(content);
+        const lastBlock = currentChapter.blocks[currentChapter.blocks.length - 1];
+        if (lastBlock && lastBlock.type === 'list') {
+          (lastBlock.content as string[]).push(content);
         } else {
-          currentChapter.content.push({ type: 'list', content: [content] });
+          currentChapter.blocks.push({ type: 'list', content: [content] });
         }
       } else {
-        currentChapter.content.push({ type: 'paragraph', content: trimmed });
+        currentChapter.blocks.push({ type: 'paragraph', content: trimmed });
       }
     }
   }
@@ -105,15 +105,15 @@ function calculateStats(chapters: Chapter[]) {
   let totalWords = 0;
   
   chapters.forEach(chapter => {
-    chapter.content.forEach(section => {
-      if (section.type === 'paragraph' || section.type === 'heading') {
-        totalWords += (section.content as string).split(/\s+/).length;
-      } else if (section.type === 'list' && Array.isArray(section.content)) {
-        section.content.forEach(item => {
+    chapter.blocks.forEach(block => {
+      if (block.type === 'paragraph' || block.type === 'heading') {
+        totalWords += (block.content as string).split(/\s+/).length;
+      } else if (block.type === 'list' && Array.isArray(block.content)) {
+        block.content.forEach(item => {
           totalWords += item.split(/\s+/).length;
         });
-      } else if (section.type === 'callout') {
-        totalWords += (section.content as string).split(/\s+/).length;
+      } else if (block.type === 'callout') {
+        totalWords += (block.content as string).split(/\s+/).length;
       }
     });
   });
