@@ -237,6 +237,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
+      // ✅ CARTPANDA INTEGRATION: Check if email is approved (purchased)
+      const { data: isApproved, error: rpcError } = await supabase.rpc('is_email_approved', {
+        p_email: email.toLowerCase().trim()
+      });
+
+      if (rpcError) {
+        console.error('[AuthContext] Error checking email approval:', rpcError);
+        // Continue with signup if RPC fails (fail-open for existing users)
+      } else if (!isApproved) {
+        console.log('[AuthContext] Email not approved:', email);
+        return { 
+          error: { 
+            message: 'Purchase required to create account',
+            code: 'EMAIL_NOT_APPROVED'
+          }, 
+          user: null 
+        };
+      }
+
+      console.log('[AuthContext] Email approved, proceeding with signup:', email);
+
       // Create account - profile will be created automatically by database trigger
       const { error, data } = await supabase.auth.signUp({
         email,
