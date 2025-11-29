@@ -258,6 +258,7 @@ export type Database = {
           archived_at: string | null
           archived_by: string | null
           category: string
+          collection_id: string | null
           completed: boolean | null
           created_at: string
           description: string
@@ -279,6 +280,7 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           category: string
+          collection_id?: string | null
           completed?: boolean | null
           created_at?: string
           description: string
@@ -300,6 +302,7 @@ export type Database = {
           archived_at?: string | null
           archived_by?: string | null
           category?: string
+          collection_id?: string | null
           completed?: boolean | null
           created_at?: string
           description?: string
@@ -344,6 +347,13 @@ export type Database = {
             columns: ["archived_by"]
             isOneToOne: false
             referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bonuses_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "video_collections"
             referencedColumns: ["id"]
           },
         ]
@@ -2914,6 +2924,39 @@ export type Database = {
           id?: string
           user_id?: string
           video_id?: string
+        }
+        Relationships: []
+      }
+      video_collections: {
+        Row: {
+          created_at: string
+          description: string | null
+          display_order: number
+          icon_name: string | null
+          id: string
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon_name?: string | null
+          id?: string
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          icon_name?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          updated_at?: string
         }
         Relationships: []
       }

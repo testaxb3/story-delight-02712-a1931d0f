@@ -43,7 +43,7 @@ const Tracker = lazy(() => import("./pages/TrackerCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
-const Bonuses = lazy(() => import("./pages/Bonuses"));
+const Bonuses = lazy(() => import("./pages/BonusesPremium"));
 const EbookReader = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
