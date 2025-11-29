@@ -66,8 +66,8 @@ export function useEbookContent(ebookId: string | undefined) {
       
       // Ensure each chapter has required fields
       const chapters: Chapter[] = rawChapters.map((chapter: any, index: number) => {
-        // Handle different content field names - prioritize sections over content
-        const content = chapter.sections || chapter.content || [];
+        // Handle different content field names - prioritize V2 blocks format
+        const content = chapter.blocks || chapter.sections || chapter.content || [];
         
         console.log(`📖 Chapter ${index + 1} "${chapter.title}":`, {
           title: chapter.title,
