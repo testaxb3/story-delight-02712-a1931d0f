@@ -68,11 +68,11 @@ const BonusesHero = memo(({ items, onPlay }: { items: BonusData[]; onPlay: (b: B
           
           {/* Ebook Cover (Floating) */}
           {isEbook && (
-            <div className="w-[100px] sm:w-[140px] aspect-[3/4] rounded-lg shadow-2xl overflow-hidden border border-white/10 flex-shrink-0 mb-2 sm:-mb-2 transform rotate-[-2deg]">
+            <div className="w-[140px] sm:w-[180px] aspect-[3/4] rounded-lg shadow-2xl overflow-hidden border border-white/10 flex-shrink-0 mb-2 sm:-mb-2 transform rotate-[-2deg]">
               <img 
                 src={featured.thumbnail || ""} 
                 alt={featured.title} 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-fill"
               />
             </div>
           )}
@@ -157,19 +157,22 @@ const BonusesShelf = memo(({ title, items, type, onSelect }: { title: string; it
             onClick={() => onSelect(item)}
             className={cn(
               "snap-center shrink-0 group cursor-pointer relative",
-              item.category === 'ebook' ? "w-[130px]" :
+              (item.category === 'ebook' || type === 'book') ? "w-[180px]" :
               type === 'video' ? "w-[280px]" : "w-[160px]"
             )}
           >
             {/* Thumbnail */}
             <div className={cn(
               "relative overflow-hidden bg-card transition-all duration-500 group-hover:shadow-2xl group-hover:-translate-y-1 ring-1 ring-white/5 ring-inset",
-              item.category === 'ebook' ? "aspect-[3/4] rounded-[18px] shadow-lg" : "aspect-video rounded-2xl shadow-md"
+              (item.category === 'ebook' || type === 'book') ? "aspect-[3/4] rounded-[18px] shadow-lg" : "aspect-video rounded-2xl shadow-md"
             )}>
               <img 
                 src={item.thumbnail || "/placeholder.svg"} 
                 alt={item.title}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                className={cn(
+                  "absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105",
+                  (item.category === 'ebook' || type === 'book') ? "object-fill" : "object-cover"
+                )}
                 loading="lazy"
               />
               

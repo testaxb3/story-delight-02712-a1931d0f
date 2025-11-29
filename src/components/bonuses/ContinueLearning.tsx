@@ -34,7 +34,7 @@ export const ContinueLearning = memo(function ContinueLearning({ inProgressBonus
             transition={{ duration: 0.4, delay: index * 0.1 }}
             className={cn(
               "snap-center first:pl-1",
-              bonus.category === 'ebook' ? "min-w-[130px] w-[130px]" : "min-w-[280px] md:min-w-[320px]"
+              bonus.category === 'ebook' ? "min-w-[180px] w-[180px]" : "min-w-[280px] md:min-w-[320px]"
             )}
             onClick={() => onContinue(bonus)}
           >
@@ -51,7 +51,10 @@ export const ContinueLearning = memo(function ContinueLearning({ inProgressBonus
                   <img
                     src={bonus.thumbnail}
                     alt={bonus.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className={cn(
+                      "w-full h-full transition-transform duration-700 group-hover:scale-105",
+                      bonus.category === 'ebook' ? "object-fill" : "object-cover"
+                    )}
                   />
                 ) : (
                   <div className="w-full h-full bg-muted flex items-center justify-center">
