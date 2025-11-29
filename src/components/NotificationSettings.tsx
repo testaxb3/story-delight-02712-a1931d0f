@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { notificationManager } from '@/lib/notifications';
-import { registerPushSubscription, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
+import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -83,11 +83,15 @@ export function NotificationSettings() {
       // }
 
       // Register subscription in Supabase for targeted notifications
-      if (user?.profileId && isOneSignalInitialized()) {
-        // Wait for OneSignal to get player ID, then register
-        setTimeout(async () => {
-          await registerPushSubscription(user.profileId);
-        }, 2000);
+      if (user?.profileId) {
+        // Use retry mechanism for robust registration
+        registerPushSubscriptionWithRetry(user.profileId, 5, 2000).then(result => {
+          if (!result.success) {
+            console.error('[NotificationSettings] Push registration failed:', result.reason);
+          } else {
+            console.log('[NotificationSettings] Push registration successful, player ID:', result.playerId);
+          }
+        });
       }
 
       // Show a test notification
