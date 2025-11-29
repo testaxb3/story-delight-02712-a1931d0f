@@ -4072,6 +4072,8 @@ export type Database = {
         | "tracker_reminder"
         | "script_request"
         | "refund_request"
+        | "new_ebook"
+        | "new_video"
       reaction_type:
         | "like"
         | "love"
@@ -4221,6 +4223,8 @@ export const Constants = {
         "tracker_reminder",
         "script_request",
         "refund_request",
+        "new_ebook",
+        "new_video",
       ],
       reaction_type: [
         "like",

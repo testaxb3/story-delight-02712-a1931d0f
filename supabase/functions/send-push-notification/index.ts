@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 interface NotificationRequest {
-  type: 'new_script' | 'refund_update' | 'tracker_reminder' | 'new_content' | 'broadcast' | 'admin_script_request' | 'admin_refund_request';
+  type: 'new_script' | 'new_ebook' | 'new_video' | 'refund_update' | 'tracker_reminder' | 'new_content' | 'broadcast' | 'admin_script_request' | 'admin_refund_request';
   target_profile?: 'INTENSE' | 'DISTRACTED' | 'DEFIANT' | 'ALL';
   target_user_id?: string;
   title: string;
@@ -230,13 +230,24 @@ serve(async (req) => {
 
       const uniqueUserIds = [...new Set((subscriptions || []).map(s => s.user_id))];
 
+      // Map type to valid notification_type enum value
+      const getTypeEnum = (t: string) => {
+        const typeMap: Record<string, string> = {
+          'new_script': 'new_script',
+          'new_ebook': 'new_ebook',
+          'new_video': 'new_video',
+          'refund_update': 'refund_response',
+          'new_content': 'new_content',
+          'broadcast': 'new_content'
+        };
+        return typeMap[t] || null;
+      };
+
       // Create in-app notifications
       const notificationInserts = uniqueUserIds.map(userId => ({
         user_id: userId,
         type: type,
-        type_enum: type === 'new_script' ? 'new_script' : 
-                   type === 'new_content' ? 'new_content' : 
-                   type === 'refund_update' ? 'refund_response' : null,
+        type_enum: getTypeEnum(type),
         title,
         message,
         read: false,
