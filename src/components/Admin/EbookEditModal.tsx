@@ -25,7 +25,7 @@ interface EbookEditModalProps {
 
 const PRESET_COLORS = [
   '#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
-  '#ec4899', '#8b5cf6', '#6366f1', '#14b8a6', '#f97316'
+  '#ec4899', '#a855f7', '#6366f1', '#14b8a6', '#f97316'
 ];
 
 export function EbookEditModal({ open, onOpenChange, ebook, onSuccess }: EbookEditModalProps) {
