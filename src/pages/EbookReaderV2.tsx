@@ -111,6 +111,7 @@ const EbookReaderV2Page = () => {
         readingTime={ebook?.estimated_reading_time ? `${ebook.estimated_reading_time} min` : undefined}
         chapterCount={finalChapters.length}
         coverColor={ebook?.cover_color || '#6366f1'}
+        thumbnail={ebook?.thumbnail_url}
         onStartReading={handleStartReading}
       />
     );

@@ -8,6 +8,7 @@ interface EbookCoverPageProps {
   readingTime?: string;
   chapterCount: number;
   coverColor?: string;
+  thumbnail?: string | null;
   onStartReading: () => void;
 }
 
@@ -17,6 +18,7 @@ export function EbookCoverPage({
   readingTime,
   chapterCount,
   coverColor = '#6366f1',
+  thumbnail,
   onStartReading
 }: EbookCoverPageProps) {
   return (
@@ -34,22 +36,35 @@ export function EbookCoverPage({
           style={{ backgroundColor: coverColor }}
         />
         
-        {/* Book icon with animation */}
+        {/* Book cover or fallback icon */}
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className="relative mb-8"
         >
-          <div 
-            className="w-28 h-28 rounded-3xl flex items-center justify-center shadow-2xl"
-            style={{ 
-              backgroundColor: coverColor,
-              boxShadow: `0 20px 60px ${coverColor}40`
-            }}
-          >
-            <BookOpen className="w-14 h-14 text-white" strokeWidth={1.5} />
-          </div>
+          {thumbnail ? (
+            <div 
+              className="w-40 h-56 rounded-2xl overflow-hidden shadow-2xl"
+              style={{ boxShadow: `0 20px 60px ${coverColor}40` }}
+            >
+              <img 
+                src={thumbnail} 
+                alt={title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          ) : (
+            <div 
+              className="w-28 h-28 rounded-3xl flex items-center justify-center shadow-2xl"
+              style={{ 
+                backgroundColor: coverColor,
+                boxShadow: `0 20px 60px ${coverColor}40`
+              }}
+            >
+              <BookOpen className="w-14 h-14 text-white" strokeWidth={1.5} />
+            </div>
+          )}
         </motion.div>
 
         {/* Title */}
