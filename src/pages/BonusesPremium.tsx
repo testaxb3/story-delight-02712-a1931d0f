@@ -244,7 +244,8 @@ function BonusesPremiumContent() {
             <EbookShelf 
               title="Read & Reflect" 
               items={ebooks} 
-              onSelect={handleBonusAction} 
+              onSelect={handleBonusAction}
+              onSeeAll={() => setActiveFilter('ebook')}
             />
           )}
 
