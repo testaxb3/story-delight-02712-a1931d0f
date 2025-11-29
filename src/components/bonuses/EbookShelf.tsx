@@ -8,12 +8,14 @@ interface EbookShelfProps {
   title: string;
   items: BonusData[];
   onSelect: (bonus: BonusData) => void;
+  onSeeAll?: () => void;
 }
 
 export const EbookShelf = memo(function EbookShelf({
   title,
   items,
   onSelect,
+  onSeeAll,
 }: EbookShelfProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -60,10 +62,15 @@ export const EbookShelf = memo(function EbookShelf({
             {title}
           </h3>
         </div>
-        <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          See All
-          <ChevronRight className="w-4 h-4" />
-        </button>
+        {onSeeAll && (
+          <button 
+            onClick={onSeeAll}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            See All
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        )}
       </div>
       
       {/* Scroll Arrows */}
