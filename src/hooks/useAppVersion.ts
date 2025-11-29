@@ -26,13 +26,13 @@ export function useAppVersion() {
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
   const [checking, setChecking] = useState(false);
 
-  const checkVersion = async () => {
+  const checkVersion = async (): Promise<boolean> => {
     try {
       // Não mostrar update se acabou de atualizar (iOS flag)
       if (sessionStorage.getItem('pwa_just_updated') === 'true') {
         sessionStorage.removeItem('pwa_just_updated');
         logger.log('⏭️ Skipping version check - app just updated');
-        return;
+        return false;
       }
 
       // Não mostrar update em páginas específicas
@@ -40,7 +40,7 @@ export function useAppVersion() {
       const excludedPaths = ['/auth', '/quiz', '/onboarding'];
 
       if (excludedPaths.some(path => currentPath.startsWith(path))) {
-        return;
+        return false;
       }
 
       // Verificar se já passou tempo mínimo desde o início da sessão
@@ -48,7 +48,7 @@ export function useAppVersion() {
       if (sessionStart) {
         const elapsed = Date.now() - parseInt(sessionStart, 10);
         if (elapsed < MIN_SESSION_TIME) {
-          return; // Muito cedo para mostrar update
+          return false; // Muito cedo para mostrar update
         }
       }
 
@@ -57,11 +57,11 @@ export function useAppVersion() {
 
       if (error) {
         logger.error('Failed to check app version:', error);
-        return;
+        return false;
       }
 
       if (!data) {
-        return;
+        return false;
       }
 
       const versionData = data as AppVersionInfo;
@@ -79,12 +79,15 @@ export function useAppVersion() {
         if (acknowledgedVersion !== backendVersion) {
           logger.log(`Update available: ${backendVersion}`);
           setShowUpdatePrompt(true);
+          return true;
         } else {
           logger.log(`Update already acknowledged: ${backendVersion}`);
         }
       }
+      return false;
     } catch (error) {
       logger.error('Error checking app version:', error);
+      return false;
     } finally {
       setChecking(false);
     }

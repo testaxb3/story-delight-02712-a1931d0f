@@ -32,7 +32,7 @@ export default function ProfileCalAI() {
   const { theme, toggleTheme } = useTheme();
   const { isAdmin } = useAdminStatus();
   const { triggerHaptic } = useHaptic();
-  const { versionInfo, checking, handleUpdate } = useAppVersion();
+  const { versionInfo, checking, handleUpdate, checkVersion } = useAppVersion();
   const navigate = useNavigate();
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
@@ -373,6 +373,15 @@ export default function ProfileCalAI() {
               onClick={async () => {
                 triggerHaptic('medium');
                 toast.info('Checking for updates...');
+                const hasUpdate = await checkVersion();
+                
+                if (!hasUpdate) {
+                  toast.success('App is up to date!', {
+                    description: `Version ${versionInfo?.version || '2.4'}.${versionInfo?.build || '0'}`
+                  });
+                  return;
+                }
+                
                 await handleUpdate();
               }}
             />
