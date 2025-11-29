@@ -331,6 +331,9 @@ export const BonusCard = memo(function BonusCard({ bonus, onAction, index = 0 }:
   // PERFORMANCE: Custom comparison for memo
   return (
     prevProps.bonus.id === nextProps.bonus.id &&
+    prevProps.bonus.category === nextProps.bonus.category &&
+    prevProps.bonus.thumbnail === nextProps.bonus.thumbnail &&
+    prevProps.bonus.title === nextProps.bonus.title &&
     prevProps.bonus.progress === nextProps.bonus.progress &&
     prevProps.bonus.completed === nextProps.bonus.completed &&
     prevProps.bonus.locked === nextProps.bonus.locked &&
