@@ -89,9 +89,15 @@ const Auth = memo(function Auth() {
 
       if (error) {
         const errorMessage = error.message || 'An error occurred';
+        const errorCode = (error as any).code || '';
         
-        // Enhanced error messages
-        if (errorMessage.includes('500') || errorMessage.includes('EOF')) {
+        // ✅ CARTPANDA: Handle email not approved error
+        if (errorCode === 'EMAIL_NOT_APPROVED' || errorMessage.includes('Purchase required')) {
+          toast.error('Purchase Required', {
+            description: 'Please complete your purchase first. Use the same email you used for payment.',
+            duration: 8000,
+          });
+        } else if (errorMessage.includes('500') || errorMessage.includes('EOF')) {
           toast.error('Connection issue. Please try again.', { duration: 4000 });
         } else if (errorMessage.includes('Connection failed') || errorMessage.includes('internet')) {
           toast.error('Please check your internet connection and try again.', { duration: 5000 });

@@ -5,7 +5,26 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface CartpandaWebhookData {
+// Cartpanda sends nested order structure
+interface CartpandaPayload {
+  event?: string;
+  order?: {
+    id?: string;
+    email?: string;
+    status?: string;
+    total_price?: string;
+    currency?: string;
+    customer?: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+    };
+    line_items?: Array<{
+      product_id?: string;
+      name?: string;
+    }>;
+  };
+  // Fallback flat structure (some webhooks may use this)
   email?: string;
   order_id?: string;
   product_id?: string;
@@ -14,38 +33,6 @@ interface CartpandaWebhookData {
   currency?: string;
   first_name?: string;
   last_name?: string;
-  datetime_unix?: string;
-  utm_source?: string;
-  utm_medium?: string;
-  utm_campaign?: string;
-  cid?: string; // may carry extra query params like ?email=...
-}
-
-// Helper to resolve a valid email from webhook payload or CID
-function resolveEmail(data: CartpandaWebhookData): string | null {
-  const raw = (data.email || '').trim();
-  const looksValid = raw && raw.includes('@') && !/^\{.*\}$/.test(raw);
-  if (looksValid) return raw.toLowerCase();
-
-  const cid = data.cid;
-  if (cid) {
-    try {
-      const decoded = decodeURIComponent(cid);
-      // Check if CID contains query string (e.g., "123?email=foo@bar.com")
-      const qIndex = decoded.indexOf('?');
-      const query = qIndex >= 0 ? decoded.slice(qIndex + 1) : decoded;
-      const params = new URLSearchParams(query);
-      const fromParam = params.get('email');
-      if (fromParam && fromParam.includes('@')) return fromParam.toLowerCase();
-      // Fallback: regex search within CID
-      const match = decoded.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-      if (match) return match[0].toLowerCase();
-    } catch (_) {
-      // ignore parse errors
-    }
-  }
-
-  return null;
 }
 
 Deno.serve(async (req) => {
@@ -55,147 +42,229 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // ✅ SECURITY: Validate webhook secret
-    const authHeader = req.headers.get('authorization');
+    // ✅ SECURITY: Validate webhook secret via query parameter
+    const url = new URL(req.url);
+    const secretParam = url.searchParams.get('secret');
     const webhookSecret = Deno.env.get('CARTPANDA_WEBHOOK_SECRET');
     
-    if (webhookSecret && authHeader !== `Bearer ${webhookSecret}`) {
-      console.error('❌ Unauthorized webhook attempt');
+    if (!webhookSecret) {
+      console.error('❌ CARTPANDA_WEBHOOK_SECRET not configured');
+      return new Response(
+        JSON.stringify({ error: 'Webhook not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    if (secretParam !== webhookSecret) {
+      console.error('❌ Invalid webhook secret');
       return new Response(
         JSON.stringify({ error: 'Unauthorized' }),
-        { 
-          status: 401, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('🎯 Cartpanda webhook received');
+    console.log('🎯 Cartpanda webhook received - authenticated');
     
-    // Parse request - can be GET or POST
-    let webhookData: CartpandaWebhookData = {};
+    // Parse request body
+    let payload: CartpandaPayload = {};
     
     if (req.method === 'POST') {
-      webhookData = await req.json();
+      payload = await req.json();
     } else if (req.method === 'GET') {
-      // Cartpanda may send via GET with query params
-      const url = new URL(req.url);
-      webhookData = Object.fromEntries(url.searchParams.entries());
+      // Some webhooks send via GET with query params
+      payload = Object.fromEntries(url.searchParams.entries()) as any;
     }
 
-    console.log('📦 Webhook data:', JSON.stringify(webhookData, null, 2));
+    console.log('📦 Webhook payload:', JSON.stringify(payload, null, 2));
 
-// Resolve and validate email
-const resolvedEmail = resolveEmail(webhookData);
-if (!resolvedEmail) {
-  console.error('❌ Email missing or invalid in webhook data (including CID check)');
-  return new Response(
-    JSON.stringify({ error: 'Email is required', note: 'Include a valid email or pass it through cid query (e.g., cid=123?email=user@example.com)' }),
-    { 
-      status: 400, 
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+    // Extract data from nested or flat structure
+    const order = payload.order || {};
+    const customer = order.customer || {};
+    const lineItems = order.line_items || [];
+    
+    // Resolve email (try multiple locations)
+    const email = (
+      order.email || 
+      customer.email || 
+      payload.email || 
+      ''
+    ).toLowerCase().trim();
+    
+    if (!email || !email.includes('@')) {
+      console.error('❌ No valid email in webhook payload');
+      return new Response(
+        JSON.stringify({ error: 'Email is required' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-  );
-}
 
-const email = resolvedEmail.toLowerCase().trim();
-console.log('📧 Resolved email:', email);
+    console.log('📧 Email:', email);
+
+    // Determine event type
+    const eventType = payload.event || order.status || 'order.paid';
+    console.log('📌 Event type:', eventType);
 
     // Create Supabase client with service role
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-// Persist full payload including resolved email for audit
-const webhookRecord = { ...webhookData, resolved_email: email } as Record<string, unknown>;
-
-// Insert or update approved_users
-const { data: approvedUser, error: approvedError } = await supabase
-  .from('approved_users')
-  .upsert({
-    email,
-    order_id: webhookData.order_id || null,
-    product_id: webhookData.product_id || null,
-    product_name: webhookData.product_name || null,
-    total_price: webhookData.total_price ? parseFloat(webhookData.total_price) : null,
-    currency: webhookData.currency || 'USD',
-    first_name: webhookData.first_name || null,
-    last_name: webhookData.last_name || null,
-    status: 'active',
-    approved_at: new Date().toISOString(),
-    webhook_data: webhookRecord, // Save complete data for audit
-    updated_at: new Date().toISOString(),
-  }, {
-    onConflict: 'email',
-    ignoreDuplicates: false
-  })
-  .select()
-  .single();
-
-    if (approvedError) {
-      console.error('❌ Error inserting approved user:', approvedError);
-      return new Response(
-        JSON.stringify({ error: 'Database error', details: approvedError.message }),
-        { 
-          status: 500, 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-        }
-      );
-    }
-
-    console.log('✅ Approved user created/updated:', approvedUser.id);
-
-    // If user already exists, upgrade to premium
-    const { data: existingProfile } = await supabase
-      .from('profiles')
-      .select('id, email, premium')
-      .eq('email', email)
-      .single();
-
-    if (existingProfile && !existingProfile.premium) {
-      console.log('🎁 User exists, upgrading to premium...');
+    // Handle different event types
+    if (eventType.includes('refund') || eventType === 'order.refunded') {
+      // ========== REFUND EVENT ==========
+      console.log('💸 Processing REFUND for:', email);
       
       const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ 
-          premium: true,
-          updated_at: new Date().toISOString()
+        .from('approved_users')
+        .update({
+          status: 'refunded',
+          updated_at: new Date().toISOString(),
         })
-        .eq('id', existingProfile.id);
+        .eq('email', email);
 
       if (updateError) {
-        console.error('⚠️  Error upgrading user to premium:', updateError);
-      } else {
-        console.log('✅ User upgraded to premium');
+        console.error('❌ Error updating approved_users for refund:', updateError);
+      }
+
+      // Revoke premium from existing profile
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ premium: false, updated_at: new Date().toISOString() })
+        .eq('email', email);
+
+      if (profileError) {
+        console.error('⚠️ Error revoking premium:', profileError);
+      }
+
+      console.log('✅ Refund processed for:', email);
+      return new Response(
+        JSON.stringify({ success: true, action: 'refund', email }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } else if (eventType.includes('chargeback') || eventType === 'order.chargedback') {
+      // ========== CHARGEBACK EVENT ==========
+      console.log('🚨 Processing CHARGEBACK for:', email);
+      
+      const { error: updateError } = await supabase
+        .from('approved_users')
+        .update({
+          status: 'chargeback',
+          updated_at: new Date().toISOString(),
+        })
+        .eq('email', email);
+
+      if (updateError) {
+        console.error('❌ Error updating approved_users for chargeback:', updateError);
+      }
+
+      // Revoke premium
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ premium: false, updated_at: new Date().toISOString() })
+        .eq('email', email);
+
+      if (profileError) {
+        console.error('⚠️ Error revoking premium:', profileError);
+      }
+
+      console.log('✅ Chargeback processed for:', email);
+      return new Response(
+        JSON.stringify({ success: true, action: 'chargeback', email }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+
+    } else {
+      // ========== ORDER PAID (default) ==========
+      console.log('💰 Processing ORDER PAID for:', email);
+
+      const orderId = order.id || payload.order_id || null;
+      const firstName = customer.first_name || payload.first_name || null;
+      const lastName = customer.last_name || payload.last_name || null;
+      const totalPrice = order.total_price || payload.total_price || null;
+      const currency = order.currency || payload.currency || 'BRL';
+      const productId = lineItems[0]?.product_id || payload.product_id || null;
+      const productName = lineItems[0]?.name || payload.product_name || null;
+
+      // Insert or update approved_users
+      const { data: approvedUser, error: approvedError } = await supabase
+        .from('approved_users')
+        .upsert({
+          email,
+          order_id: orderId,
+          product_id: productId,
+          product_name: productName,
+          total_price: totalPrice ? parseFloat(totalPrice) : null,
+          currency,
+          first_name: firstName,
+          last_name: lastName,
+          status: 'active',
+          approved_at: new Date().toISOString(),
+          webhook_data: payload,
+          updated_at: new Date().toISOString(),
+        }, {
+          onConflict: 'email',
+          ignoreDuplicates: false
+        })
+        .select()
+        .single();
+
+      if (approvedError) {
+        console.error('❌ Error inserting approved_users:', approvedError);
+        return new Response(
+          JSON.stringify({ error: 'Database error', details: approvedError.message }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log('✅ Approved user created/updated:', approvedUser.id);
+
+      // If user already exists in profiles, upgrade to premium
+      const { data: existingProfile } = await supabase
+        .from('profiles')
+        .select('id, email, premium')
+        .eq('email', email)
+        .single();
+
+      if (existingProfile) {
+        console.log('🎁 User exists, upgrading to premium...');
         
-        // Update approved_users with user_id
-        await supabase
-          .from('approved_users')
-          .update({
-            user_id: existingProfile.id,
-            account_created: true,
-            account_created_at: new Date().toISOString()
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ 
+            premium: true,
+            updated_at: new Date().toISOString()
           })
-          .eq('email', email);
+          .eq('id', existingProfile.id);
+
+        if (updateError) {
+          console.error('⚠️ Error upgrading to premium:', updateError);
+        } else {
+          console.log('✅ User upgraded to premium');
+          
+          // Link approved_users to profile
+          await supabase
+            .from('approved_users')
+            .update({
+              user_id: existingProfile.id,
+              account_created: true,
+              account_created_at: new Date().toISOString()
+            })
+            .eq('email', email);
+        }
       }
+
+      console.log('🎉 Order processed successfully for:', email);
+      return new Response(
+        JSON.stringify({ 
+          success: true, 
+          action: 'order_paid',
+          email,
+          approved_user_id: approvedUser.id
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
-
-    // Success log
-    console.log('🎉 Webhook processed successfully for:', email);
-
-    // Return success to Cartpanda
-    return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Webhook processed successfully',
-        email,
-        approved_user_id: approvedUser.id
-      }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
-    );
 
   } catch (error) {
     console.error('💥 Unexpected error:', error);
@@ -204,10 +273,7 @@ const { data: approvedUser, error: approvedError } = await supabase
         error: 'Internal server error', 
         details: error instanceof Error ? error.message : 'Unknown error' 
       }),
-      { 
-        status: 500, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
-      }
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
