@@ -16,7 +16,7 @@ export interface CollectionWithBonuses extends VideoCollection {
 }
 
 // Transform database row to BonusData
-function transformBonusRow(row: any): BonusData {
+function transformBonusRow(row: any): BonusData & { collectionId?: string } {
   const validCategory = (row.category && 
     Object.values(BonusCategory).includes(row.category as BonusCategory))
     ? row.category as BonusCategory
@@ -39,6 +39,7 @@ function transformBonusRow(row: any): BonusData {
     downloadUrl: row.download_url || undefined,
     requirement: row.unlock_requirement || undefined,
     videoUrl: row.view_url || undefined,
+    collectionId: row.collection_id || undefined,
   };
 }
 
@@ -106,35 +107,17 @@ export function useBonusesByCollection() {
       const videos = allBonuses.filter(b => b.category === 'video');
       const ebooks = allBonuses.filter(b => b.category === 'ebook');
 
-      // Group videos by collection
+      // Group videos by collection using collection_id
       const collectionsWithBonuses: CollectionWithBonuses[] = collections.map(col => ({
         ...col,
-        bonuses: videos.filter((b: any) => {
-          // For now, auto-categorize by duration until collection_id is set
-          const durationMin = parseDuration(b.duration);
-          switch (col.slug) {
-            case 'quick-bites':
+        bonuses: col.slug === 'quick-bites'
+          // Quick Bites: filter by duration < 5 min (special case)
+          ? videos.filter((b: any) => {
+              const durationMin = parseDuration(b.duration);
               return durationMin !== null && durationMin < 5;
-            case 'understanding-development':
-              return b.tags?.some((t: string) => 
-                ['brain', 'development', 'growth', 'stages'].includes(t.toLowerCase())
-              );
-            case 'parenting-foundations':
-              return b.tags?.some((t: string) => 
-                ['parenting', 'styles', 'techniques', 'discipline'].includes(t.toLowerCase())
-              );
-            case 'managing-emotions':
-              return b.tags?.some((t: string) => 
-                ['emotions', 'tantrums', 'meltdowns', 'anger', 'anxiety'].includes(t.toLowerCase())
-              );
-            case 'activities-play':
-              return b.tags?.some((t: string) => 
-                ['activities', 'play', 'sensory', 'games'].includes(t.toLowerCase())
-              );
-            default:
-              return false;
-          }
-        }),
+            })
+          // Other collections: use collection_id directly
+          : videos.filter((b: any) => b.collectionId === col.id),
       }));
 
       // Find videos that don't belong to any collection
