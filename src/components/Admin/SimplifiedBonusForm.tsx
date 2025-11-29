@@ -352,21 +352,25 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder={isEbookCategory ? "Auto-filled from file" : "Enter title"}
-                readOnly={isEbookCategory && parsedChapters.length > 0}
+                placeholder="Enter ebook title"
               />
+              {isEbookCategory && parsedChapters.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">Auto-filled from file. You can edit.</p>
+              )}
             </div>
 
             <div>
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Description / Subtitle</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder={isEbookCategory ? "Auto-filled from file" : "Enter description"}
+                placeholder="Enter ebook subtitle or description"
                 rows={3}
-                readOnly={isEbookCategory && parsedChapters.length > 0}
               />
+              {isEbookCategory && parsedChapters.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">Auto-filled from file. You can edit.</p>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-3">
