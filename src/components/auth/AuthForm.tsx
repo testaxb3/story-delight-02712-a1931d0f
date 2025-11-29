@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react';
+import { ArrowLeft, Check, AlertCircle, Eye, EyeOff, Loader2, MessageCircle, Mail } from 'lucide-react';
 import { memo, useState, useMemo } from 'react';
 
 interface AuthFormProps {
@@ -476,6 +476,38 @@ export const AuthForm = memo(function AuthForm({
               {isSignUp ? 'Sign In' : 'Sign Up'}
             </span>
           </button>
+        </motion.div>
+
+        {/* Support section */}
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="pb-4"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-white/30 text-xs">Need help?</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+          
+          <div className="flex justify-center gap-4">
+            <button
+              type="button"
+              onClick={() => window.open('https://wa.me/27617525578?text=Hi!%20I%20need%20help%20with%20NEP%20System', '_blank')}
+              className="w-11 h-11 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center hover:bg-green-500/30 transition-colors"
+            >
+              <MessageCircle className="w-5 h-5 text-green-400" />
+            </button>
+            
+            <button
+              type="button"
+              onClick={() => window.location.href = 'mailto:support@nepsystem.pro'}
+              className="w-11 h-11 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center hover:bg-blue-500/30 transition-colors"
+            >
+              <Mail className="w-5 h-5 text-blue-400" />
+            </button>
+          </div>
         </motion.div>
       </div>
 
