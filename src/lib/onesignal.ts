@@ -94,14 +94,27 @@ export async function initOneSignal() {
   }
 }
 
+export interface RegistrationResult {
+  success: boolean;
+  reason?: string;
+  playerId?: string;
+}
+
 /**
  * Register push subscription in Supabase for targeting
  * This saves the player ID so we can send targeted notifications
  */
-export async function registerPushSubscription(userId: string): Promise<boolean> {
+export async function registerPushSubscription(userId: string): Promise<RegistrationResult> {
+  const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
+  
+  if (!appId) {
+    console.error('[OneSignal] App ID not configured');
+    return { success: false, reason: 'OneSignal App ID not configured' };
+  }
+  
   if (!initialized) {
     console.warn('[OneSignal] Not initialized. Call initOneSignal() first.');
-    return false;
+    return { success: false, reason: 'OneSignal not initialized' };
   }
 
   try {
@@ -109,7 +122,7 @@ export async function registerPushSubscription(userId: string): Promise<boolean>
     
     if (!playerId) {
       console.warn('[OneSignal] No player ID available');
-      return false;
+      return { success: false, reason: 'No player ID - ensure notifications are enabled in browser' };
     }
 
     console.log('[OneSignal] Registering push subscription:', { userId, playerId });
@@ -128,15 +141,39 @@ export async function registerPushSubscription(userId: string): Promise<boolean>
 
     if (error) {
       console.error('[OneSignal] Failed to register subscription:', error);
-      return false;
+      return { success: false, reason: `Database error: ${error.message}`, playerId };
     }
 
     console.log('[OneSignal] Push subscription registered successfully');
-    return true;
-  } catch (error) {
+    return { success: true, playerId };
+  } catch (error: any) {
     console.error('[OneSignal] Exception registering subscription:', error);
-    return false;
+    return { success: false, reason: error.message || 'Unknown error' };
   }
+}
+
+/**
+ * Get OneSignal diagnostics for debugging
+ */
+export async function getOneSignalDiagnostics(): Promise<{
+  appIdConfigured: boolean;
+  initialized: boolean;
+  playerId: string | null;
+  permissionStatus: NotificationPermission | 'unsupported';
+  subscribed: boolean;
+}> {
+  const appId = import.meta.env.VITE_ONESIGNAL_APP_ID;
+  const playerId = initialized ? await getPlayerId() : null;
+  const subscribed = initialized ? await isSubscribed() : false;
+  const permissionStatus = 'Notification' in window ? Notification.permission : 'unsupported';
+  
+  return {
+    appIdConfigured: !!appId,
+    initialized,
+    playerId,
+    permissionStatus,
+    subscribed
+  };
 }
 
 /**
@@ -147,18 +184,23 @@ export async function registerPushSubscriptionWithRetry(
   userId: string, 
   maxAttempts = 5, 
   baseDelay = 2000
-): Promise<boolean> {
+): Promise<RegistrationResult> {
   console.log(`[OneSignal] Starting registration with retry for user: ${userId}`);
+  
+  let lastResult: RegistrationResult = { success: false, reason: 'No attempts made' };
   
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     console.log(`[OneSignal] Registration attempt ${attempt}/${maxAttempts}`);
     
-    const success = await registerPushSubscription(userId);
+    const result = await registerPushSubscription(userId);
+    lastResult = result;
     
-    if (success) {
+    if (result.success) {
       console.log(`[OneSignal] Registration successful on attempt ${attempt}`);
-      return true;
+      return result;
     }
+    
+    console.log(`[OneSignal] Attempt ${attempt} failed: ${result.reason}`);
     
     if (attempt < maxAttempts) {
       const delay = baseDelay * attempt;
@@ -168,7 +210,7 @@ export async function registerPushSubscriptionWithRetry(
   }
   
   console.error(`[OneSignal] Registration failed after ${maxAttempts} attempts`);
-  return false;
+  return { ...lastResult, reason: `Failed after ${maxAttempts} attempts: ${lastResult.reason}` };
 }
 
 /**

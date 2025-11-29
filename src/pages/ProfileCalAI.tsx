@@ -23,7 +23,7 @@ import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
 import { Headphones } from 'lucide-react';
 import { notificationManager } from '@/lib/notifications';
-import { registerPushSubscription, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
+import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -259,9 +259,21 @@ export default function ProfileCalAI() {
                     }
                     setNotificationsEnabled(true);
                     
-                    // Register with OneSignal
-                    if (user?.profileId && isOneSignalInitialized()) {
-                      await registerPushSubscription(user.profileId);
+                    // Register with OneSignal using retry mechanism
+                    if (user?.profileId) {
+                      if (!isOneSignalInitialized()) {
+                        console.warn('[Profile] OneSignal not initialized - push notifications may not work');
+                      }
+                      
+                      // Use retry mechanism for robust registration
+                      const result = await registerPushSubscriptionWithRetry(user.profileId, 5, 2000);
+                      
+                      if (!result.success) {
+                        console.error('[Profile] Push registration failed:', result.reason);
+                        toast.warning('Local notifications enabled, but push notifications may not work.');
+                      } else {
+                        console.log('[Profile] Push registration successful, player ID:', result.playerId);
+                      }
                     }
                     
                     await notificationManager.showNotification('Notifications Enabled!', {
