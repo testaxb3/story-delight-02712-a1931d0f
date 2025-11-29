@@ -8,12 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { BonusData, BonusCategory } from '@/types/bonus';
 import { BonusCard } from '@/components/bonuses/BonusCard';
-import { Loader2, Upload, CheckCircle2, AlertCircle, FileText, BookOpen } from 'lucide-react';
+import { Loader2, Upload, CheckCircle2, AlertCircle, BookOpen } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { parseMarkdownToChapters } from '@/utils/markdownToChapters';
 import { validateMarkdown } from '@/utils/markdownValidator';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ChaptersPreview } from './ChaptersPreview';
 
@@ -55,11 +54,11 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
   const [showPreview, setShowPreview] = useState(true);
   
   // Ebook-specific state
-  const [markdownFile, setMarkdownFile] = useState<File | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [markdownContent, setMarkdownContent] = useState('');
   const [validationResult, setValidationResult] = useState<any>(null);
   const [parsedChapters, setParsedChapters] = useState<any[]>([]);
-  const [processingMarkdown, setProcessingMarkdown] = useState(false);
+  const [processingFile, setProcessingFile] = useState(false);
 
   useEffect(() => {
     if (bonus) {
@@ -96,68 +95,146 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
         requirement: ''
       });
       setTagsInput('');
-      setMarkdownFile(null);
+      setUploadedFile(null);
       setMarkdownContent('');
       setValidationResult(null);
       setParsedChapters([]);
     }
   }, [bonus, open]);
 
-  const handleMarkdownFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleJsonUpload = (content: string, file: File) => {
+    try {
+      const jsonData = JSON.parse(content);
+      
+      // Support both array of chapters and object with chapters property
+      let chapters = Array.isArray(jsonData) ? jsonData : jsonData.chapters;
+      
+      if (!chapters || !Array.isArray(chapters) || chapters.length === 0) {
+        toast.error('Invalid JSON: must contain chapters array');
+        setValidationResult({ isValid: false, errors: ['JSON must contain a chapters array'] });
+        return;
+      }
+      
+      // Validate chapter structure
+      const isValid = chapters.every((ch: any) => 
+        ch.title && (ch.blocks || ch.sections || ch.content)
+      );
+      
+      if (!isValid) {
+        toast.error('Invalid chapter structure');
+        setValidationResult({ isValid: false, errors: ['Each chapter needs title and blocks/sections/content'] });
+        return;
+      }
+      
+      // Normalize to blocks format (V2)
+      const normalizedChapters = chapters.map((ch: any, index: number) => ({
+        id: ch.id || `chapter-${index}`,
+        title: ch.title,
+        subtitle: ch.subtitle,
+        blocks: ch.blocks || ch.sections || ch.content || []
+      }));
+      
+      setParsedChapters(normalizedChapters);
+      setValidationResult({ isValid: true });
+      setMarkdownContent(content); // Store JSON as "source"
+      
+      // Extract metadata
+      const title = jsonData.title || normalizedChapters[0]?.title || file.name.replace('.json', '');
+      const subtitle = jsonData.subtitle || normalizedChapters[0]?.subtitle || '';
+      
+      // Calculate word count from blocks
+      let wordCount = 0;
+      normalizedChapters.forEach((ch: any) => {
+        ch.blocks?.forEach((block: any) => {
+          if (typeof block.content === 'string') {
+            wordCount += block.content.split(/\s+/).length;
+          } else if (Array.isArray(block.content)) {
+            block.content.forEach((item: string) => {
+              if (typeof item === 'string') {
+                wordCount += item.split(/\s+/).length;
+              }
+            });
+          }
+        });
+      });
+      
+      const estimatedTime = Math.max(1, Math.ceil(wordCount / 200));
+      
+      setFormData(prev => ({
+        ...prev,
+        title,
+        description: subtitle,
+        size: `${(file.size / 1024).toFixed(0)} KB`,
+        duration: `${estimatedTime} min`,
+        category: BonusCategory.EBOOK,
+      }));
+      
+      toast.success(`JSON loaded: ${normalizedChapters.length} chapters, ~${estimatedTime} min read`);
+      
+    } catch (error) {
+      console.error('Error parsing JSON:', error);
+      toast.error('Invalid JSON file');
+      setValidationResult({ isValid: false, errors: ['Failed to parse JSON file'] });
+    }
+  };
+
+  const handleMarkdownUpload = (content: string, file: File) => {
+    setMarkdownContent(content);
+
+    const validation = validateMarkdown(content);
+    setValidationResult(validation);
+
+    if (validation.isValid) {
+      const chapters = parseMarkdownToChapters(content);
+      setParsedChapters(chapters);
+
+      const firstLines = content.split('\n').slice(0, 10);
+      const titleMatch = firstLines.find(line => line.startsWith('#'));
+      const title = titleMatch ? titleMatch.replace(/^#+\s*/, '').trim() : file.name.replace('.md', '');
+      
+      const descMatch = content.match(/\n\n([^\n]+)\n/);
+      const description = descMatch ? descMatch[1].substring(0, 200) : '';
+
+      const fileSize = `${(file.size / 1024).toFixed(0)} KB`;
+      const wordCount = content.split(/\s+/).length;
+      const estimatedTime = Math.ceil(wordCount / 200);
+
+      setFormData(prev => ({
+        ...prev,
+        title,
+        description,
+        size: fileSize,
+        duration: `${estimatedTime} min`,
+        category: BonusCategory.EBOOK,
+      }));
+
+      toast.success(`Markdown loaded: ${chapters.length} chapters, ${estimatedTime} min read`);
+    } else {
+      toast.error('Invalid markdown format');
+    }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setMarkdownFile(file);
-    setProcessingMarkdown(true);
+    setUploadedFile(file);
+    setProcessingFile(true);
 
     try {
       const content = await file.text();
-      setMarkdownContent(content);
-
-      // Validate markdown
-      const validation = validateMarkdown(content);
-      setValidationResult(validation);
-
-      if (validation.isValid) {
-        // Parse chapters
-        const chapters = parseMarkdownToChapters(content);
-        setParsedChapters(chapters);
-
-        // Auto-extract data from markdown
-        const firstLines = content.split('\n').slice(0, 10);
-        const titleMatch = firstLines.find(line => line.startsWith('#'));
-        const title = titleMatch ? titleMatch.replace(/^#+\s*/, '').trim() : file.name.replace('.md', '');
-        
-        // Extract description from first paragraph
-        const descMatch = content.match(/\n\n([^\n]+)\n/);
-        const description = descMatch ? descMatch[1].substring(0, 200) : '';
-
-        // Calculate file size
-        const fileSize = `${(file.size / 1024).toFixed(0)} KB`;
-
-        // Calculate estimated reading time (avg 200 words per minute)
-        const wordCount = content.split(/\s+/).length;
-        const estimatedTime = Math.ceil(wordCount / 200);
-
-        // Auto-fill form data
-        setFormData(prev => ({
-          ...prev,
-          title: title,
-          description: description,
-          size: fileSize,
-          duration: `${estimatedTime} min`,
-          category: BonusCategory.EBOOK,
-        }));
-
-        toast.success(`Ebook data extracted: ${chapters.length} chapters, ${estimatedTime} min read time`);
+      const isJson = file.name.toLowerCase().endsWith('.json');
+      
+      if (isJson) {
+        handleJsonUpload(content, file);
       } else {
-        toast.error('Invalid markdown format. Please check the file.');
+        handleMarkdownUpload(content, file);
       }
     } catch (error) {
-      console.error('Error processing markdown:', error);
-      toast.error('Error processing markdown file');
+      console.error('Error processing file:', error);
+      toast.error('Error processing file');
     } finally {
-      setProcessingMarkdown(false);
+      setProcessingFile(false);
     }
   };
 
@@ -166,7 +243,6 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
     const finalData = { ...formData, tags };
 
     if (formData.category === BonusCategory.EBOOK && parsedChapters.length > 0) {
-      // Include ebook data when creating an ebook bonus
       onSave(finalData, { chapters: parsedChapters, markdownSource: markdownContent });
     } else {
       onSave(finalData);
@@ -212,39 +288,39 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                 <Alert className="border-primary/50 bg-primary/5">
                   <BookOpen className="w-4 h-4" />
                   <AlertDescription className="text-sm">
-                    Upload a markdown file (.md) to automatically extract title, description, chapters, and reading time.
+                    Upload a <strong>JSON</strong> or <strong>Markdown</strong> file to automatically extract chapters and metadata.
                   </AlertDescription>
                 </Alert>
 
                 <div>
-                  <Label htmlFor="markdown-file" className="cursor-pointer">
+                  <Label htmlFor="ebook-file" className="cursor-pointer">
                     <div className="border-2 border-dashed border-border rounded-lg p-6 hover:border-primary/50 transition-colors">
                       <div className="flex flex-col items-center gap-2 text-center">
                         <Upload className="w-8 h-8 text-muted-foreground" />
                         <div>
                           <p className="text-sm font-medium">
-                            {markdownFile ? markdownFile.name : 'Upload Markdown File'}
+                            {uploadedFile ? uploadedFile.name : 'Upload JSON or Markdown'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            Click to browse or drag and drop
+                            .json (recommended) or .md
                           </p>
                         </div>
                       </div>
                     </div>
                     <Input
-                      id="markdown-file"
+                      id="ebook-file"
                       type="file"
-                      accept=".md"
+                      accept=".json,.md"
                       className="hidden"
-                      onChange={handleMarkdownFileChange}
+                      onChange={handleFileChange}
                     />
                   </Label>
                 </div>
 
-                {processingMarkdown && (
+                {processingFile && (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Processing markdown...
+                    Processing file...
                   </div>
                 )}
 
@@ -252,7 +328,7 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                   <Alert variant="destructive">
                     <AlertCircle className="w-4 h-4" />
                     <AlertDescription>
-                      {validationResult.errors.map((err: string, i: number) => (
+                      {validationResult.errors?.map((err: string, i: number) => (
                         <div key={i}>{err}</div>
                       ))}
                     </AlertDescription>
@@ -263,7 +339,7 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                   <Alert className="border-green-500/50 bg-green-500/5">
                     <CheckCircle2 className="w-4 h-4 text-green-500" />
                     <AlertDescription className="text-green-600">
-                      ✓ Valid markdown • {parsedChapters.length} chapters extracted
+                      ✓ Valid • {parsedChapters.length} chapters extracted
                     </AlertDescription>
                   </Alert>
                 )}
@@ -276,7 +352,7 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder={isEbookCategory ? "Auto-filled from markdown" : "Enter title"}
+                placeholder={isEbookCategory ? "Auto-filled from file" : "Enter title"}
                 readOnly={isEbookCategory && parsedChapters.length > 0}
               />
             </div>
@@ -287,7 +363,7 @@ export function SimplifiedBonusForm({ open, onOpenChange, bonus, onSave, saving 
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder={isEbookCategory ? "Auto-filled from markdown" : "Enter description"}
+                placeholder={isEbookCategory ? "Auto-filled from file" : "Enter description"}
                 rows={3}
                 readOnly={isEbookCategory && parsedChapters.length > 0}
               />
