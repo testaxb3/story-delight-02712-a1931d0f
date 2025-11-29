@@ -177,7 +177,7 @@ export function AdminBonusesTab({ onContentChanged }: AdminBonusesTabProps) {
               await updateMutation.mutateAsync({
                 id: savedBonusId,
                 updates: {
-                  viewUrl: `/ebook-v2/${ebook.id}`,
+                  viewUrl: `/ebook/${ebook.id}`,
                 }
               });
               toast.success('Bonus and ebook created successfully! ✅');

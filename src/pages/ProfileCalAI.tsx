@@ -6,13 +6,15 @@ import {
   Megaphone, CreditCard,
   Shield,
   ChevronRight, Moon, 
-  Bell, Lock, Zap, Check, GraduationCap
+  Bell, Lock, Zap, Check, GraduationCap,
+  RefreshCw
 } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { useHaptic } from '@/hooks/useHaptic';
+import { useAppVersion } from '@/hooks/useAppVersion';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -30,6 +32,7 @@ export default function ProfileCalAI() {
   const { theme, toggleTheme } = useTheme();
   const { isAdmin } = useAdminStatus();
   const { triggerHaptic } = useHaptic();
+  const { versionInfo, checking, handleUpdate } = useAppVersion();
   const navigate = useNavigate();
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
@@ -361,6 +364,20 @@ export default function ProfileCalAI() {
             />
           </SettingsGroup>
 
+          <SettingsGroup title="App">
+            <SettingsRow 
+              icon={RefreshCw} 
+              iconColor="bg-emerald-500" 
+              label="Check for Updates" 
+              value={checking ? "Checking..." : undefined}
+              onClick={async () => {
+                triggerHaptic('medium');
+                toast.info('Checking for updates...');
+                await handleUpdate();
+              }}
+            />
+          </SettingsGroup>
+
           {isAdmin && (
             <SettingsGroup title="Admin">
               <SettingsRow 
@@ -380,7 +397,7 @@ export default function ProfileCalAI() {
               Log Out
             </button>
             <p className="text-center text-gray-400 text-xs mt-4">
-              Version 2.4.0 • NEP System
+              Version {versionInfo?.version || '2.4'}.{versionInfo?.build || '0'} • NEP System
             </p>
           </div>
         </div>
