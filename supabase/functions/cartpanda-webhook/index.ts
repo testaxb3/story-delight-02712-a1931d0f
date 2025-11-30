@@ -238,7 +238,7 @@ async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean
         body: new URLSearchParams({
           To: phone,
           From: twilioPhone,
-          Body: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: nepsystem.vercel.app`,
+          Body: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: https://nepsystem.vercel.app`,
         }),
       }
     );
