@@ -9,6 +9,7 @@ import {
   Bell, Lock, Zap, Check, GraduationCap,
   RefreshCw
 } from 'lucide-react';
+import { APP_VERSION, APP_BUILD } from '@/config/version';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -395,8 +396,8 @@ export default function ProfileCalAI() {
             >
               Log Out
             </button>
-            <p className="text-center text-gray-400 text-xs mt-4">
-              Version {versionInfo?.version || '2.4'}.{versionInfo?.build || '0'} • NEP System
+            <p className="text-center text-muted-foreground text-xs mt-4">
+              Version {APP_VERSION}.{APP_BUILD} • NEP System
             </p>
           </div>
         </div>
