@@ -12,10 +12,10 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
 import { cn } from '@/lib/utils';
 import { memo, useMemo, useState, useEffect, useCallback, useRef } from 'react';
-import { useTrackerDays } from '@/hooks/useTrackerDays';
+// Removed: useTrackerDays - HorizontalDatePicker removed
 import { NotificationBell } from '@/components/Community/NotificationBell';
 
-import { useCategoryStats } from '@/hooks/useCategoryStats';
+// Removed: useCategoryStats - CategoryRings removed
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { 
   NewUserHeroCard, 
@@ -90,126 +90,7 @@ const AmbientBackground = memo(function AmbientBackground() {
   );
 });
 
-// ============================================================================
-// HORIZONTAL DATE PICKER - Dark Mode Calendar Strip
-// Scrollable horizontal calendar with dashed/solid borders
-// ============================================================================
-const HorizontalDatePicker = memo(function HorizontalDatePicker({
-  activeDays = [],
-  onDayPress,
-}: {
-  activeDays?: number[];
-  onDayPress?: (day: number) => void;
-}) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const today = new Date();
-  const currentDay = today.getDate();
-
-  // Generate 14 days: 7 past + today + 6 future
-  const dates = useMemo(() => {
-    const result = [];
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-
-    for (let i = -7; i <= 6; i++) {
-      const date = new Date(today);
-      date.setDate(currentDay + i);
-
-      result.push({
-        dayName: dayNames[date.getDay()],
-        dayNumber: date.getDate(),
-        fullDate: date,
-        isToday: i === 0,
-        isPast: i < 0,
-        isFuture: i > 0,
-        isActive: activeDays.includes(date.getDate()),
-      });
-    }
-    return result;
-  }, [currentDay, activeDays]);
-
-  // Auto-scroll to today on mount
-  useEffect(() => {
-    if (scrollRef.current) {
-      const todayIndex = 7; // Today is at index 7 (after 7 past days)
-      const itemWidth = 64; // Approximate width of each item
-      const scrollPosition = todayIndex * itemWidth - (scrollRef.current.offsetWidth / 2) + (itemWidth / 2);
-      scrollRef.current.scrollLeft = scrollPosition;
-    }
-  }, []);
-
-  return (
-    <motion.div
-      variants={itemVariants}
-      className="relative -mx-5"
-    >
-      {/* Gradient fade on edges */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-
-      <div
-        ref={scrollRef}
-        className="flex gap-1.5 overflow-x-auto px-5 scrollbar-hide scroll-smooth"
-        style={{
-          scrollbarWidth: 'none',
-          msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch',
-        }}
-      >
-        {dates.map((day, index) => (
-          <motion.button
-            key={index}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.02, duration: 0.3 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => onDayPress?.(day.dayNumber)}
-            className={cn(
-              "relative flex-shrink-0 flex flex-col items-center gap-1.5 py-2 px-3 transition-all duration-300",
-              day.isToday && "bg-primary/10 dark:bg-white/[0.06] rounded-2xl",
-              day.isFuture && "opacity-40"
-            )}
-          >
-            {/* Day name */}
-            <span className={cn(
-              "text-[10px] font-medium tracking-wide",
-              day.isToday ? "text-foreground" : "text-muted-foreground"
-            )}>
-              {day.dayName}
-            </span>
-
-            {/* Day number with circular border */}
-            <div className="relative flex items-center justify-center">
-              <div
-                className={cn(
-                  "w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300",
-                  day.isToday
-                    ? "border-foreground border-solid"
-                    : "border-foreground/30 dark:border-white/30 border-dashed"
-                )}
-              >
-                <span className={cn(
-                  "text-[15px] font-semibold",
-                  day.isToday ? "text-foreground" : "text-foreground/70"
-                )}>
-                  {day.dayNumber}
-                </span>
-              </div>
-
-              {/* Activity indicator */}
-              {day.isActive && !day.isToday && (
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  className="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-orange-500"
-                />
-              )}
-            </div>
-          </motion.button>
-        ))}
-      </div>
-    </motion.div>
-  );
-});
+// REMOVED: HorizontalDatePicker - UI without functionality
 
 // ============================================================================
 // HERO METRICS CARD - 3D Tilt Effect with Mesh Gradient
@@ -463,113 +344,7 @@ const InsightCard = memo(function InsightCard({
   );
 });
 
-// ============================================================================
-// CATEGORY RINGS - Apple Watch inspired
-// ============================================================================
-const CategoryRings = memo(function CategoryRings({
-  categories,
-  onPress,
-}: {
-  categories: { name: string; progress: number; color: string; emoji: string }[];
-  onPress: () => void;
-}) {
-  return (
-    <motion.button
-      variants={itemVariants}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-      onClick={onPress}
-      className="relative w-full p-5 rounded-card overflow-hidden text-left"
-    >
-      {/* Glass background */}
-      <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
-      <div className="absolute inset-0 rounded-card border border-border" />
-
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-semibold text-muted-foreground">Categories</h3>
-          <Sparkles className="w-4 h-4 text-muted-foreground/50" />
-        </div>
-
-        {categories.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-4 text-center">
-            <div className="text-4xl mb-2 opacity-30">📊</div>
-            <p className="text-sm text-muted-foreground font-medium">No data yet</p>
-            <p className="text-xs text-muted-foreground/60">Start using scripts to see your stats</p>
-          </div>
-        ) : (
-          <div className="flex items-center justify-around">
-            {/* Concentric rings */}
-            <div className="relative w-32 h-32">
-              {categories.map((cat, index) => {
-                const size = 120 - index * 28;
-                const radius = (size - 12) / 2;
-                const circumference = 2 * Math.PI * radius;
-                const offset = circumference - (cat.progress / 100) * circumference;
-
-                return (
-                  <svg
-                    key={cat.name}
-                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-90"
-                    width={size}
-                    height={size}
-                  >
-                    {/* Track */}
-                    <circle
-                      cx={size / 2}
-                      cy={size / 2}
-                      r={radius}
-                      className="stroke-foreground/[0.08]"
-                      strokeWidth="10"
-                      fill="none"
-                    />
-                    {/* Progress */}
-                    <motion.circle
-                      cx={size / 2}
-                      cy={size / 2}
-                      r={radius}
-                      stroke={cat.color}
-                      strokeWidth="10"
-                      fill="none"
-                      strokeLinecap="round"
-                      initial={{ strokeDashoffset: circumference }}
-                      animate={{ strokeDashoffset: offset }}
-                      transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 + index * 0.15 }}
-                      style={{ strokeDasharray: circumference }}
-                    />
-                  </svg>
-                );
-              })}
-            </div>
-
-            {/* Legend */}
-            <div className="flex flex-col gap-3">
-              {categories.map((cat, index) => (
-                <motion.div
-                  key={cat.name}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + index * 0.1 }}
-                  className="flex items-center gap-2"
-                >
-                  <div
-                    className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: cat.color }}
-                  />
-                  <span className="text-lg">{cat.emoji}</span>
-                  <div className="flex flex-col">
-                    <span className="text-xs font-semibold text-foreground/80">{cat.name}</span>
-                    <span className="text-[10px] text-muted-foreground">{cat.progress}%</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
-    </motion.button>
-  );
-});
+// REMOVED: CategoryRings - replaced by JourneyStartCard
 
 // ============================================================================
 // RECENT ACTIVITY - Timeline style
@@ -803,27 +578,15 @@ export default function DashboardCalAI() {
   const { activeChild } = useChildProfiles();
   const { data: dashboardStats, isLoading: statsLoading, error } = useDashboardStats(activeChild?.id);
   const { scripts: recentScripts, ebooks, isLoading: dataLoading } = useDashboardData(activeChild, user?.id);
-  const { data: categoryStats, isLoading: categoriesLoading } = useCategoryStats();
   const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
-  const { data: trackerStats } = useTrackerDays(user?.id, activeChild?.id);
   const { triggerHaptic } = useHaptic();
 
-  const isLoading = statsLoading || dataLoading || categoriesLoading || profileStatsLoading;
+  const isLoading = statsLoading || dataLoading || profileStatsLoading;
   const currentStreak = dashboardStats?.currentStreak ?? 0;
   
   // Use profile-specific stats if available, otherwise fallback (or 0)
   const scriptsRead = profileStats?.scriptsMastered ?? 0;
   const totalScripts = profileStats?.totalScripts ?? 0;
-
-  // Get real active days from tracker data
-  const activeDays = useMemo(() => {
-    if (!trackerStats?.completedDays) return [];
-    
-    return trackerStats.completedDays.map(day => {
-      const date = new Date(day.completed_at!);
-      return date.getDate();
-    });
-  }, [trackerStats]);
 
   const handleNavigate = useCallback((path: string) => {
     triggerHaptic('light');
@@ -940,10 +703,7 @@ export default function DashboardCalAI() {
             </div>
           </motion.header>
 
-          {/* Horizontal Date Picker */}
-          <section className="mb-3">
-            <HorizontalDatePicker activeDays={activeDays} />
-          </section>
+          {/* Removed: HorizontalDatePicker - no functionality */}
 
           {/* Main Content */}
           <main className="px-5 space-y-4">
@@ -996,15 +756,8 @@ export default function DashboardCalAI() {
               )}
             </div>
 
-            {/* Journey/Category Section - Conditional based on data */}
-            {(!categoryStats || categoryStats.length === 0) ? (
-              <JourneyStartCard onPress={() => handleNavigate('/scripts')} />
-            ) : (
-              <CategoryRings
-                categories={categoryStats}
-                onPress={() => handleNavigate('/scripts')}
-              />
-            )}
+            {/* Journey Section - Always show milestones */}
+            <JourneyStartCard onPress={() => handleNavigate('/scripts')} />
 
             {/* Recent Activity - Conditional empty state */}
             {recentScripts.length === 0 ? (
