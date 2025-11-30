@@ -27,7 +27,6 @@ import { FloatingActionButton } from '@/components/Dashboard/FloatingActionButto
 // Zero State Components
 import { 
   NewUserHeroCard, 
-  JourneyStartCard, 
   MotivationInsightCard,
   EmptyRecentActivity 
 } from '@/components/Dashboard/DashboardZeroStates';
@@ -203,9 +202,6 @@ export default function DashboardCalAI() {
                 />
               )}
             </div>
-
-            {/* Journey Section */}
-            <JourneyStartCard onPress={() => handleNavigate('/scripts')} />
 
             {/* Recent Activity */}
             {recentScripts.length === 0 ? (
