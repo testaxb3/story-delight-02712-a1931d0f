@@ -17,6 +17,12 @@ import { NotificationBell } from '@/components/Community/NotificationBell';
 
 import { useCategoryStats } from '@/hooks/useCategoryStats';
 import { useProfileStats } from '@/hooks/useProfileStats';
+import { 
+  NewUserHeroCard, 
+  JourneyStartCard, 
+  MotivationInsightCard,
+  EmptyRecentActivity 
+} from '@/components/Dashboard/DashboardZeroStates';
 
 // ============================================================================
 // PERFORMANCE-OPTIMIZED DESIGN SYSTEM
@@ -941,46 +947,75 @@ export default function DashboardCalAI() {
 
           {/* Main Content */}
           <main className="px-5 space-y-4">
-            {/* Hero Metrics */}
-            <HeroMetricsCard
-              scriptsRead={scriptsRead}
-              totalScripts={totalScripts}
-              onPress={() => handleNavigate('/scripts')}
-            />
+            {/* Hero Section - Conditional based on user stage */}
+            {scriptsRead === 0 && totalScripts === 0 ? (
+              <NewUserHeroCard
+                childName={activeChild?.name}
+                onPress={() => handleNavigate('/scripts')}
+              />
+            ) : (
+              <HeroMetricsCard
+                scriptsRead={scriptsRead}
+                totalScripts={totalScripts}
+                onPress={() => handleNavigate('/scripts')}
+              />
+            )}
 
             {/* Situation Picker - Quick access for "Exhausted Emily" */}
             <SituationPicker />
 
-            {/* Insight Cards Row */}
+            {/* Insight Cards Row - Conditional zero-states */}
             <div className="flex gap-3">
-              <InsightCard
-                icon={<Book className="w-5 h-5 text-indigo-400" />}
-                label="This week"
-                value={dashboardStats?.scriptUsesWeek ?? 0}
-                color="bg-indigo-500"
-                onPress={() => handleNavigate('/tracker')}
-              />
-              <InsightCard
-                icon={<Sparkles className="w-5 h-5 text-amber-400" />}
-                label="Total uses"
-                value={dashboardStats?.totalScriptUses ?? 0}
-                color="bg-amber-500"
-                onPress={() => handleNavigate('/tracker')}
-              />
+              {(dashboardStats?.scriptUsesWeek ?? 0) === 0 ? (
+                <MotivationInsightCard
+                  type="weekly"
+                  onPress={() => handleNavigate('/scripts')}
+                />
+              ) : (
+                <InsightCard
+                  icon={<Book className="w-5 h-5 text-indigo-400" />}
+                  label="This week"
+                  value={dashboardStats?.scriptUsesWeek ?? 0}
+                  color="bg-indigo-500"
+                  onPress={() => handleNavigate('/tracker')}
+                />
+              )}
+              {(dashboardStats?.totalScriptUses ?? 0) === 0 ? (
+                <MotivationInsightCard
+                  type="total"
+                  onPress={() => handleNavigate('/scripts')}
+                />
+              ) : (
+                <InsightCard
+                  icon={<Sparkles className="w-5 h-5 text-amber-400" />}
+                  label="Total uses"
+                  value={dashboardStats?.totalScriptUses ?? 0}
+                  color="bg-amber-500"
+                  onPress={() => handleNavigate('/tracker')}
+                />
+              )}
             </div>
 
-            {/* Category Rings */}
-            <CategoryRings
-              categories={categoryStats || []}
-              onPress={() => handleNavigate('/scripts')}
-            />
+            {/* Journey/Category Section - Conditional based on data */}
+            {(!categoryStats || categoryStats.length === 0) ? (
+              <JourneyStartCard onPress={() => handleNavigate('/scripts')} />
+            ) : (
+              <CategoryRings
+                categories={categoryStats}
+                onPress={() => handleNavigate('/scripts')}
+              />
+            )}
 
-            {/* Recent Activity */}
-            <RecentActivity
-              scripts={recentScripts}
-              onScriptPress={(id) => handleNavigate(`/scripts`)}
-              onSeeAll={() => handleNavigate('/scripts')}
-            />
+            {/* Recent Activity - Conditional empty state */}
+            {recentScripts.length === 0 ? (
+              <EmptyRecentActivity onPress={() => handleNavigate('/scripts')} />
+            ) : (
+              <RecentActivity
+                scripts={recentScripts}
+                onScriptPress={(id) => handleNavigate(`/scripts`)}
+                onSeeAll={() => handleNavigate('/scripts')}
+              />
+            )}
 
             {/* Bonus Guides */}
             <BonusGuidesCarousel
