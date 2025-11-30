@@ -25,9 +25,27 @@ export function useAppVersion() {
   const [versionInfo, setVersionInfo] = useState<AppVersionInfo | null>(null);
   const [showUpdatePrompt, setShowUpdatePrompt] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [swUpdateAvailable, setSwUpdateAvailable] = useState(false);
+
+  // Listen for Service Worker update events (automatic detection)
+  useEffect(() => {
+    const handleSwUpdate = () => {
+      logger.log('🔄 Service Worker detected new version available');
+      setSwUpdateAvailable(true);
+      setShowUpdatePrompt(true);
+    };
+
+    window.addEventListener('sw-update-available', handleSwUpdate);
+    return () => window.removeEventListener('sw-update-available', handleSwUpdate);
+  }, []);
 
   const checkVersion = async (): Promise<boolean> => {
     try {
+      // Skip if SW already detected update
+      if (swUpdateAvailable) {
+        return true;
+      }
+
       // Não mostrar update se acabou de atualizar (iOS flag)
       if (sessionStorage.getItem('pwa_just_updated') === 'true') {
         sessionStorage.removeItem('pwa_just_updated');
@@ -48,7 +66,7 @@ export function useAppVersion() {
       if (sessionStart) {
         const elapsed = Date.now() - parseInt(sessionStart, 10);
         if (elapsed < MIN_SESSION_TIME) {
-          return false; // Muito cedo para mostrar update
+          return false;
         }
       }
 
@@ -75,7 +93,6 @@ export function useAppVersion() {
       if (versionData.force_update) {
         const acknowledgedVersion = localStorage.getItem(STORAGE_KEY);
         
-        // Check if user hasn't acknowledged this specific version yet
         if (acknowledgedVersion !== backendVersion) {
           logger.log(`Update available: ${backendVersion}`);
           setShowUpdatePrompt(true);
@@ -94,43 +111,39 @@ export function useAppVersion() {
   };
 
   const handleUpdate = async () => {
-    if (!versionInfo) return;
-
     try {
       setChecking(true);
 
-      // Mark as acknowledged
-      const currentVersion = `${versionInfo.version}-${versionInfo.build}`;
-      localStorage.setItem(STORAGE_KEY, currentVersion);
+      // Mark as acknowledged if we have version info from database
+      if (versionInfo) {
+        const currentVersion = `${versionInfo.version}-${versionInfo.build}`;
+        localStorage.setItem(STORAGE_KEY, currentVersion);
+        await supabase.rpc('acknowledge_app_update');
+      }
 
-      // Save to database
-      await supabase.rpc('acknowledge_app_update');
-
-      // Remove the update attempt counter
+      // Clear update flags
       localStorage.removeItem(UPDATE_ATTEMPT_KEY);
+      setSwUpdateAvailable(false);
 
       // Log platform info for debugging
       const platform = getPlatformInfo();
-      logger.log('🔄 Performing update for platform:', {
+      logger.log('🔄 Performing update:', {
+        source: swUpdateAvailable ? 'Service Worker' : 'Database',
         browser: platform.browserName,
         isIOS: platform.isIOS,
-        requiresHardReload: platform.requiresHardReload,
       });
 
-      // Show appropriate toast message
-      const updateMethod = platform.requiresHardReload ? 'hard reload' : 'Service Worker';
       toast.success('Updating app...', {
-        description: `Using ${updateMethod}. The app will reload in a moment.`,
+        description: 'The app will reload in a moment.',
         duration: 2000,
       });
 
-      // Wait a bit for toast to show, then perform platform-specific update
+      // Wait for toast, then update
       setTimeout(async () => {
         try {
           await performPlatformUpdate();
         } catch (error) {
           logger.error('Error during platform update:', error);
-          // Fallback: simple reload
           window.location.reload();
         }
       }, 1500);
