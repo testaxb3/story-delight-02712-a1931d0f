@@ -32,7 +32,7 @@ export default function ProfileCalAI() {
   const { theme, toggleTheme } = useTheme();
   const { isAdmin } = useAdminStatus();
   const { triggerHaptic } = useHaptic();
-  const { versionInfo, checking, handleUpdate, checkVersion } = useAppVersion();
+  const { versionInfo, checking, forceAppRefresh } = useAppVersion();
   const navigate = useNavigate();
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
@@ -368,21 +368,11 @@ export default function ProfileCalAI() {
             <SettingsRow 
               icon={RefreshCw} 
               iconColor="bg-emerald-500" 
-              label="Check for Updates" 
-              value={checking ? "Checking..." : undefined}
+              label="Refresh App" 
+              value={checking ? "Refreshing..." : undefined}
               onClick={async () => {
                 triggerHaptic('medium');
-                toast.info('Checking for updates...');
-                const hasUpdate = await checkVersion();
-                
-                if (!hasUpdate) {
-                  toast.success('App is up to date!', {
-                    description: `Version ${versionInfo?.version || '2.4'}.${versionInfo?.build || '0'}`
-                  });
-                  return;
-                }
-                
-                await handleUpdate();
+                await forceAppRefresh();
               }}
             />
           </SettingsGroup>
