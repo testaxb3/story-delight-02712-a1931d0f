@@ -153,6 +153,46 @@ export function useAppVersion() {
     setShowUpdatePrompt(false);
   };
 
+  // Force app refresh - always executes regardless of version state
+  const forceAppRefresh = async () => {
+    try {
+      setChecking(true);
+      
+      // Clear all version-related storage to ensure fresh state
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(SESSION_START_KEY);
+      localStorage.removeItem(UPDATE_ATTEMPT_KEY);
+      
+      // Log platform info
+      const platform = getPlatformInfo();
+      logger.log('🔄 Forcing app refresh:', {
+        browser: platform.browserName,
+        isIOS: platform.isIOS,
+        requiresHardReload: platform.requiresHardReload,
+      });
+
+      toast.info('Refreshing app...', { duration: 1500 });
+
+      // Wait for toast to show, then perform platform-specific update
+      setTimeout(async () => {
+        try {
+          await performPlatformUpdate();
+        } catch (error) {
+          logger.error('Error during forced refresh:', error);
+          // Fallback: hard reload
+          window.location.reload();
+        }
+      }, 1000);
+
+    } catch (error) {
+      logger.error('Error during force refresh:', error);
+      toast.error('Refresh failed', {
+        description: 'Please try refreshing the page manually.',
+      });
+      setChecking(false);
+    }
+  };
+
   useEffect(() => {
     // Log platform info on mount for debugging
     logPlatformInfo();
@@ -183,5 +223,6 @@ export function useAppVersion() {
     handleUpdate,
     dismissUpdate,
     checkVersion,
+    forceAppRefresh,
   };
 }
