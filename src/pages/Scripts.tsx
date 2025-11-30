@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Search, Sparkles, Heart, TrendingUp, Flame, Clock, MessageCircleHeart, ArrowRight, X } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from '@/components/ui/use-toast';
@@ -60,8 +60,17 @@ const SEARCH_PLACEHOLDERS = [
 
 function ScriptsContent() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  
+  // Initialize category from URL param
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(() => {
+    const urlCategory = searchParams.get('category');
+    if (!urlCategory) return null;
+    // Match exact category or case-insensitive
+    const categories = ['Tantrums', 'Bedtime', 'Screens', 'Mealtime', 'Morning Routines', 'Social', 'Hygiene', 'Homework', 'Transitions', 'Public Behavior', 'Daily Responsibilities', 'School', 'Learning'];
+    return categories.find(c => c.toLowerCase() === urlCategory.toLowerCase()) || null;
+  });
   const [selectedScript, setSelectedScript] = useState<ScriptItem | null>(null);
   const [selectedScriptRow, setSelectedScriptRow] = useState<any | null>(null);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
