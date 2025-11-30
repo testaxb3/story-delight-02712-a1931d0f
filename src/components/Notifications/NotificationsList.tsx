@@ -45,7 +45,7 @@ export function NotificationsList() {
         `)
         .eq('user_id', user.profileId)
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(5);
 
       if (error) throw error;
       return data as Notification[];
