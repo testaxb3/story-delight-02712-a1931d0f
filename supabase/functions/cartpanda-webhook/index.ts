@@ -208,14 +208,14 @@ async function sendWelcomeEmail(email: string, firstName: string): Promise<void>
   }
 }
 
-// Send welcome SMS via OneSignal/Twilio
+// Send welcome SMS via Twilio Direct API
 async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean> {
-  const onesignalAppId = Deno.env.get('ONESIGNAL_APP_ID');
-  const onesignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
+  const twilioAccountSid = Deno.env.get('TWILIO_ACCOUNT_SID');
+  const twilioAuthToken = Deno.env.get('TWILIO_AUTH_TOKEN');
   const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
-  if (!onesignalAppId || !onesignalApiKey) {
-    console.warn('⚠️ OneSignal credentials not configured, skipping welcome SMS');
+  if (!twilioAccountSid || !twilioAuthToken) {
+    console.warn('⚠️ Twilio credentials not configured, skipping welcome SMS');
     return false;
   }
 
@@ -224,37 +224,35 @@ async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean
     return false;
   }
 
-  console.log('📱 Sending welcome SMS to:', phone, 'from:', twilioPhone);
+  console.log('📱 Sending welcome SMS via Twilio to:', phone, 'from:', twilioPhone);
 
   try {
-    const response = await fetch('https://api.onesignal.com/notifications', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Key ${onesignalApiKey}`,
-      },
-      body: JSON.stringify({
-        app_id: onesignalAppId,
-        target_channel: 'sms',
-        include_phone_numbers: [phone],
-        sms_from: twilioPhone,
-        name: 'Welcome SMS',
-        contents: { 
-          en: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: nepsystem.vercel.app`
+    const response = await fetch(
+      `https://api.twilio.com/2010-04-01/Accounts/${twilioAccountSid}/Messages.json`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Basic ' + btoa(`${twilioAccountSid}:${twilioAuthToken}`),
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-      }),
-    });
+        body: new URLSearchParams({
+          To: phone,
+          From: twilioPhone,
+          Body: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: nepsystem.vercel.app`,
+        }),
+      }
+    );
 
     const result = await response.json();
-    console.log('📱 OneSignal SMS full response:', JSON.stringify(result));
-    
-    if (!response.ok || result.errors) {
-      console.error('❌ OneSignal SMS error:', result);
+    console.log('📱 Twilio SMS response:', JSON.stringify(result));
+
+    if (result.sid) {
+      console.log('✅ Welcome SMS sent successfully, SID:', result.sid);
+      return true;
+    } else {
+      console.error('❌ Twilio SMS error:', result);
       return false;
     }
-    
-    console.log('✅ Welcome SMS sent successfully:', result.id);
-    return true;
   } catch (error) {
     console.error('⚠️ Failed to send welcome SMS:', error);
     return false;
