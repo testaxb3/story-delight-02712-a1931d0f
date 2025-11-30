@@ -18,6 +18,13 @@ interface CartpandaPayload {
       first_name?: string;
       last_name?: string;
       email?: string;
+      phone?: string;
+    };
+    billing_address?: {
+      phone?: string;
+    };
+    shipping_address?: {
+      phone?: string;
     };
     line_items?: Array<{
       product_id?: string;
@@ -33,6 +40,36 @@ interface CartpandaPayload {
   currency?: string;
   first_name?: string;
   last_name?: string;
+  phone?: string;
+}
+
+// Format phone to E.164 format for OneSignal/Twilio
+function formatPhoneE164(phone: string | undefined | null): string | null {
+  if (!phone) return null;
+  
+  // Remove all non-digit characters
+  let digits = phone.replace(/\D/g, '');
+  
+  if (digits.length < 10) return null;
+  
+  // If starts with 0, remove it
+  if (digits.startsWith('0')) {
+    digits = digits.substring(1);
+  }
+  
+  // If doesn't start with country code, assume US (+1) or Brazil (+55)
+  if (!digits.startsWith('1') && !digits.startsWith('55')) {
+    // If 10 digits, assume US
+    if (digits.length === 10) {
+      digits = '1' + digits;
+    }
+    // If 11 digits starting with 9, assume Brazil mobile
+    else if (digits.length === 11 && digits.charAt(2) === '9') {
+      digits = '55' + digits;
+    }
+  }
+  
+  return '+' + digits;
 }
 
 // Welcome email HTML template
@@ -168,7 +205,51 @@ async function sendWelcomeEmail(email: string, firstName: string): Promise<void>
     }
   } catch (error) {
     console.error('⚠️ Failed to send welcome email:', error);
-    // Don't throw - email failure shouldn't break the webhook
+  }
+}
+
+// Send welcome SMS via OneSignal/Twilio
+async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean> {
+  const onesignalAppId = Deno.env.get('ONESIGNAL_APP_ID');
+  const onesignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
+
+  if (!onesignalAppId || !onesignalApiKey) {
+    console.warn('⚠️ OneSignal credentials not configured, skipping welcome SMS');
+    return false;
+  }
+
+  console.log('📱 Sending welcome SMS to:', phone);
+
+  try {
+    const response = await fetch('https://api.onesignal.com/notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Key ${onesignalApiKey}`,
+      },
+      body: JSON.stringify({
+        app_id: onesignalAppId,
+        target_channel: 'sms',
+        include_phone_numbers: [phone],
+        name: 'Welcome SMS',
+        contents: { 
+          en: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: nepsystem.vercel.app`
+        },
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (!response.ok) {
+      console.error('❌ OneSignal SMS error:', result);
+      return false;
+    } else {
+      console.log('✅ Welcome SMS sent:', result.id || 'success');
+      return true;
+    }
+  } catch (error) {
+    console.error('⚠️ Failed to send welcome SMS:', error);
+    return false;
   }
 }
 
@@ -208,7 +289,6 @@ Deno.serve(async (req) => {
     if (req.method === 'POST') {
       payload = await req.json();
     } else if (req.method === 'GET') {
-      // Some webhooks send via GET with query params
       payload = Object.fromEntries(url.searchParams.entries()) as any;
     }
 
@@ -235,7 +315,18 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Resolve phone (try multiple locations)
+    const rawPhone = 
+      customer.phone || 
+      order.billing_address?.phone || 
+      order.shipping_address?.phone ||
+      payload.phone ||
+      null;
+    
+    const phone = formatPhoneE164(rawPhone);
+    
     console.log('📧 Email:', email);
+    console.log('📱 Phone:', phone || 'not provided');
 
     // Determine event type
     const eventType = payload.event || order.status || 'order.paid';
@@ -323,11 +414,12 @@ Deno.serve(async (req) => {
       const productId = lineItems[0]?.product_id || payload.product_id || null;
       const productName = lineItems[0]?.name || payload.product_name || null;
 
-      // Insert or update approved_users
+      // Insert or update approved_users (now with phone)
       const { data: approvedUser, error: approvedError } = await supabase
         .from('approved_users')
         .upsert({
           email,
+          phone,
           order_id: orderId,
           product_id: productId,
           product_name: productName,
@@ -394,14 +486,30 @@ Deno.serve(async (req) => {
       // 📧 Send welcome email via OneSignal
       await sendWelcomeEmail(email, firstName || 'there');
 
+      // 📱 Send welcome SMS if phone available
+      let smsSent = false;
+      if (phone) {
+        smsSent = await sendWelcomeSMS(phone, firstName || 'there');
+        
+        // Update sms_sent flag
+        if (smsSent) {
+          await supabase
+            .from('approved_users')
+            .update({ sms_sent: true })
+            .eq('email', email);
+        }
+      }
+
       console.log('🎉 Order processed successfully for:', email);
       return new Response(
         JSON.stringify({ 
           success: true, 
           action: 'order_paid',
           email,
+          phone,
           approved_user_id: approvedUser.id,
-          welcome_email_sent: true
+          welcome_email_sent: true,
+          welcome_sms_sent: smsSent
         }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );

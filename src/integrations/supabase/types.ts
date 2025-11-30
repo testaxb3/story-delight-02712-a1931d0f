@@ -111,8 +111,10 @@ export type Database = {
           last_name: string | null
           notes: string | null
           order_id: string | null
+          phone: string | null
           product_id: string | null
           product_name: string | null
+          sms_sent: boolean | null
           status: string | null
           total_price: number | null
           updated_at: string | null
@@ -132,8 +134,10 @@ export type Database = {
           last_name?: string | null
           notes?: string | null
           order_id?: string | null
+          phone?: string | null
           product_id?: string | null
           product_name?: string | null
+          sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
           updated_at?: string | null
@@ -153,8 +157,10 @@ export type Database = {
           last_name?: string | null
           notes?: string | null
           order_id?: string | null
+          phone?: string | null
           product_id?: string | null
           product_name?: string | null
+          sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
           updated_at?: string | null
