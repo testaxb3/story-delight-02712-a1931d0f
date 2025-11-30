@@ -315,13 +315,23 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Resolve phone (try multiple locations)
+    // Resolve phone (try multiple locations) - v1.1.0
     const rawPhone = 
       customer.phone || 
+      (order as any).address?.phone ||  // CartPanda sometimes uses this
       order.billing_address?.phone || 
       order.shipping_address?.phone ||
       payload.phone ||
       null;
+    
+    console.log('🔍 Phone extraction debug:', {
+      customerPhone: customer.phone,
+      addressPhone: (order as any).address?.phone,
+      billingPhone: order.billing_address?.phone,
+      shippingPhone: order.shipping_address?.phone,
+      payloadPhone: payload.phone,
+      rawPhone,
+    });
     
     const phone = formatPhoneE164(rawPhone);
     
