@@ -1,12 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { Flame, ChevronRight, Book, Play, Plus, Sparkles, MessageCircle } from 'lucide-react';
-import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
+import { Flame, ChevronRight, Book, Play, Plus, Sparkles } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { useAuth } from '@/contexts/AuthContext';
 import { useChildProfiles } from '@/contexts/ChildProfilesContext';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
 import { DashboardSkeletonPremium } from '@/components/Dashboard/DashboardSkeletonPremium';
 import { useDashboardData } from '@/hooks/useDashboardData';
+import { SituationPicker } from '@/components/Dashboard/SituationPicker';
 import { CATEGORY_EMOJIS } from '@/lib/scriptUtils';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useHaptic } from '@/hooks/useHaptic';
@@ -54,15 +54,20 @@ const itemVariants = {
 // ============================================================================
 // AMBIENT BACKGROUND - CSS ONLY (GPU Accelerated) - Theme Aware
 // ============================================================================
+// GPU-optimized ambient background - absolute positioning to prevent scroll jank
 const AmbientBackground = memo(function AmbientBackground() {
   return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div 
+      className="absolute inset-0 pointer-events-none overflow-hidden"
+      style={{ contain: 'strict' }}
+    >
       {/* Primary gradient orb - CSS animation */}
       <div
         className="absolute -top-[30%] -right-[20%] w-[70%] h-[70%] rounded-full animate-ambient-1 opacity-100 dark:opacity-100 blur-[40px]"
         style={{
           background: 'radial-gradient(circle, var(--ambient-orange) 0%, transparent 70%)',
           willChange: 'transform',
+          contain: 'layout paint',
         }}
       />
 
@@ -72,6 +77,7 @@ const AmbientBackground = memo(function AmbientBackground() {
         style={{
           background: 'radial-gradient(circle, var(--ambient-indigo) 0%, transparent 70%)',
           willChange: 'transform',
+          contain: 'layout paint',
         }}
       />
     </div>
@@ -239,23 +245,35 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
   const circumference = 2 * Math.PI * 44;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-  // Animated counter
+  // Animated counter using requestAnimationFrame (60fps, non-blocking)
   const [displayCount, setDisplayCount] = useState(0);
   useEffect(() => {
-    const duration = 1500;
-    const steps = 60;
-    const increment = scriptsRead / steps;
-    let current = 0;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= scriptsRead) {
-        setDisplayCount(scriptsRead);
-        clearInterval(timer);
-      } else {
-        setDisplayCount(Math.floor(current));
+    if (scriptsRead === 0) {
+      setDisplayCount(0);
+      return;
+    }
+    
+    const duration = 1200; // ms
+    const startTime = performance.now();
+    let animationId: number;
+    
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing: ease-out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = Math.floor(eased * scriptsRead);
+      
+      setDisplayCount(value);
+      
+      if (progress < 1) {
+        animationId = requestAnimationFrame(animate);
       }
-    }, duration / steps);
-    return () => clearInterval(timer);
+    };
+    
+    animationId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationId);
   }, [scriptsRead]);
 
   return (
@@ -318,8 +336,8 @@ const HeroMetricsCard = memo(function HeroMetricsCard({
               <span className="text-xl text-muted-foreground font-medium">/ {totalScripts}</span>
             </div>
 
-            {/* Label */}
-            <p className="text-sm text-muted-foreground font-medium">Scripts mastered</p>
+            {/* Label - Impact focused, not ego metric */}
+            <p className="text-sm text-muted-foreground font-medium">Times you helped</p>
           </motion.div>
         </div>
 
@@ -683,6 +701,8 @@ const BonusGuidesCarousel = memo(function BonusGuidesCarousel({
                 <img
                   src={ebook.thumbnail}
                   alt={ebook.title}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -769,25 +789,6 @@ const FloatingActionButton = memo(function FloatingActionButton({
 });
 
 // ============================================================================
-// SUPPORT FAB - WhatsApp style support button
-// ============================================================================
-const SupportFAB = memo(function SupportFAB({ onPress }: { onPress: () => void }) {
-  return (
-    <motion.button
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ delay: 0.5, type: "spring", stiffness: 200, damping: 20 }}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={onPress}
-      className="fixed bottom-[calc(env(safe-area-inset-bottom)+6rem)] left-5 z-50 w-14 h-14 rounded-full bg-green-500 shadow-lg shadow-green-500/30 flex items-center justify-center"
-    >
-      <MessageCircle className="w-6 h-6 text-white" />
-    </motion.button>
-  );
-});
-
-// ============================================================================
 // MAIN DASHBOARD COMPONENT
 // ============================================================================
 export default function DashboardCalAI() {
@@ -800,7 +801,6 @@ export default function DashboardCalAI() {
   const { data: profileStats, isLoading: profileStatsLoading } = useProfileStats(activeChild?.brain_profile);
   const { data: trackerStats } = useTrackerDays(user?.id, activeChild?.id);
   const { triggerHaptic } = useHaptic();
-  const [showSupportModal, setShowSupportModal] = useState(false);
 
   const isLoading = statsLoading || dataLoading || categoriesLoading || profileStatsLoading;
   const currentStreak = dashboardStats?.currentStreak ?? 0;
@@ -948,13 +948,15 @@ export default function DashboardCalAI() {
               onPress={() => handleNavigate('/scripts')}
             />
 
+            {/* Situation Picker - Quick access for "Exhausted Emily" */}
+            <SituationPicker />
+
             {/* Insight Cards Row */}
             <div className="flex gap-3">
               <InsightCard
                 icon={<Book className="w-5 h-5 text-indigo-400" />}
                 label="This week"
                 value={dashboardStats?.scriptUsesWeek ?? 0}
-                trend="+12% from last week"
                 color="bg-indigo-500"
                 onPress={() => handleNavigate('/tracker')}
               />
@@ -990,16 +992,7 @@ export default function DashboardCalAI() {
         </motion.div>
 
         {/* FAB */}
-        <FloatingActionButton onPress={() => handleNavigate('/tracker')} />
-        
-        {/* Support FAB - Left side */}
-        <SupportFAB onPress={() => setShowSupportModal(true)} />
-        
-        {/* Support Modal */}
-        <LiveSupportModal 
-          open={showSupportModal} 
-          onOpenChange={setShowSupportModal} 
-        />
+        <FloatingActionButton onPress={() => handleNavigate('/scripts')} />
       </div>
     </MainLayout>
   );
