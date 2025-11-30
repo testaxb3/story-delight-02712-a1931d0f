@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight, Sparkles, Target, Zap, BookOpen, Heart } from 'lucide-react';
+import { ChevronRight, Sparkles, Zap, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const SPRING = {
@@ -73,74 +73,6 @@ export const NewUserHeroCard = memo(function NewUserHeroCard({
             <ChevronRight className="w-5 h-5" />
           </motion.div>
         </div>
-      </div>
-    </motion.button>
-  );
-});
-
-// ============================================================================
-// JOURNEY START CARD - Replaces CategoryRings when empty
-// ============================================================================
-export const JourneyStartCard = memo(function JourneyStartCard({
-  onPress,
-}: {
-  onPress: () => void;
-}) {
-  const milestones = [
-    { icon: '🎯', label: 'First script', complete: false },
-    { icon: '📚', label: '5 scripts', complete: false },
-    { icon: '🔥', label: '3-day streak', complete: false },
-  ];
-
-  return (
-    <motion.button
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.1, ...SPRING.gentle }}
-      whileTap={{ scale: 0.99 }}
-      onClick={onPress}
-      className="relative w-full p-5 rounded-3xl overflow-hidden text-left"
-    >
-      {/* Background */}
-      <div className="absolute inset-0 bg-card/50 backdrop-blur-xl" />
-      <div className="absolute inset-0 rounded-3xl border border-border" />
-
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-4">
-          <Target className="w-5 h-5 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">Your Journey</h3>
-        </div>
-
-        {/* Milestones */}
-        <div className="flex items-center justify-between gap-2">
-          {milestones.map((milestone, index) => (
-            <div key={index} className="flex flex-col items-center flex-1">
-              <div className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center mb-2 border-2 border-dashed transition-all",
-                milestone.complete 
-                  ? "border-primary bg-primary/10" 
-                  : "border-muted-foreground/30"
-              )}>
-                <span className="text-xl opacity-50">{milestone.icon}</span>
-              </div>
-              <span className="text-[10px] text-muted-foreground text-center">{milestone.label}</span>
-            </div>
-          ))}
-        </div>
-
-        {/* Progress bar */}
-        <div className="mt-4 h-1.5 bg-muted rounded-full overflow-hidden">
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: '5%' }}
-            transition={{ delay: 0.5, duration: 1 }}
-            className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full"
-          />
-        </div>
-
-        <p className="text-xs text-muted-foreground mt-2 text-center">
-          Start your journey → Unlock milestones
-        </p>
       </div>
     </motion.button>
   );
