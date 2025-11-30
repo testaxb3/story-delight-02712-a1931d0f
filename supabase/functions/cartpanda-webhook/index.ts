@@ -212,13 +212,19 @@ async function sendWelcomeEmail(email: string, firstName: string): Promise<void>
 async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean> {
   const onesignalAppId = Deno.env.get('ONESIGNAL_APP_ID');
   const onesignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
+  const twilioPhone = Deno.env.get('TWILIO_PHONE_NUMBER');
 
   if (!onesignalAppId || !onesignalApiKey) {
     console.warn('⚠️ OneSignal credentials not configured, skipping welcome SMS');
     return false;
   }
 
-  console.log('📱 Sending welcome SMS to:', phone);
+  if (!twilioPhone) {
+    console.warn('⚠️ TWILIO_PHONE_NUMBER not configured, skipping welcome SMS');
+    return false;
+  }
+
+  console.log('📱 Sending welcome SMS to:', phone, 'from:', twilioPhone);
 
   try {
     const response = await fetch('https://api.onesignal.com/notifications', {
@@ -231,6 +237,7 @@ async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean
         app_id: onesignalAppId,
         target_channel: 'sms',
         include_phone_numbers: [phone],
+        sms_from: twilioPhone,
         name: 'Welcome SMS',
         contents: { 
           en: `Hi ${firstName}! 🎉 Your NEP System access is ready. Start now: nepsystem.vercel.app`
@@ -239,14 +246,15 @@ async function sendWelcomeSMS(phone: string, firstName: string): Promise<boolean
     });
 
     const result = await response.json();
+    console.log('📱 OneSignal SMS full response:', JSON.stringify(result));
     
-    if (!response.ok) {
+    if (!response.ok || result.errors) {
       console.error('❌ OneSignal SMS error:', result);
       return false;
-    } else {
-      console.log('✅ Welcome SMS sent:', result.id || 'success');
-      return true;
     }
+    
+    console.log('✅ Welcome SMS sent successfully:', result.id);
+    return true;
   } catch (error) {
     console.error('⚠️ Failed to send welcome SMS:', error);
     return false;
