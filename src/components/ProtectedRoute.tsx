@@ -1,10 +1,13 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isStandaloneMode } from '@/utils/platform';
+import { toast } from 'sonner';
+import { useEffect, useRef } from 'react';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const hasShownStandaloneToast = useRef(false);
 
   // 🔍 DEBUG: Log detalhado para diagnosticar problema
   console.log('[ProtectedRoute] Estado atual:', {
@@ -17,6 +20,16 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     pathname: location.pathname,
     isStandalone: isStandaloneMode()
   });
+
+  // ✅ FIX: Show informative toast when auto-completing PWA flow in standalone mode
+  const isStandalone = isStandaloneMode();
+  
+  useEffect(() => {
+    if (isStandalone && !localStorage.getItem('pwa_flow_completed') && !hasShownStandaloneToast.current) {
+      hasShownStandaloneToast.current = true;
+      toast.success('App already installed! Continuing setup...', { duration: 2000 });
+    }
+  }, [isStandalone]);
 
   if (loading) {
     console.log('[ProtectedRoute] LOADING - mostrando spinner');
@@ -34,7 +47,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   // Check if PWA flow is completed (before quiz)
   // ✅ FIX: If running in standalone mode, consider flow completed automatically
-  const isStandalone = isStandaloneMode();
   if (isStandalone && !localStorage.getItem('pwa_flow_completed')) {
     console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA e tema');
     localStorage.setItem('pwa_flow_completed', 'true');

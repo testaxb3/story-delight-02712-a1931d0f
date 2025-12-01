@@ -4,15 +4,49 @@ import { Button } from '@/components/ui/button';
 import { Bell, Download, Zap, Lock, WifiOff, Rocket } from 'lucide-react';
 import { isIOSDevice } from '@/utils/platform';
 import { trackEvent } from '@/lib/analytics';
-import { useEffect } from 'react';
+import { useEffect, useState, Component, ReactNode } from 'react';
 import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
+
+// ✅ Local Error Boundary for YouTube Player
+class YouTubeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('[PWAInstall] YouTube player error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center bg-muted/50 rounded-xl">
+          <p className="text-muted-foreground text-sm">Video unavailable</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const PWAInstall = () => {
   const navigate = useNavigate();
   const isIOS = isIOSDevice();
+  const [trackingError, setTrackingError] = useState(false);
 
   useEffect(() => {
-    trackEvent('pwa_install_page_viewed');
+    // ✅ FIX: Wrap analytics in try-catch to prevent crashes
+    try {
+      trackEvent('pwa_install_page_viewed');
+    } catch (err) {
+      console.error('[PWAInstall] Analytics tracking failed:', err);
+      setTrackingError(true);
+    }
   }, []);
 
   const features = [
@@ -80,17 +114,19 @@ const PWAInstall = () => {
             </p>
           </div>
 
-        {/* Video Tutorial */}
+        {/* Video Tutorial - Wrapped in Error Boundary */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.3 }}
           className="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden shadow-lg md:shadow-xl bg-black border border-border/50"
         >
-          <OptimizedYouTubePlayer
-            videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
-            videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
-          />
+          <YouTubeErrorBoundary>
+            <OptimizedYouTubePlayer
+              videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
+              videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
+            />
+          </YouTubeErrorBoundary>
         </motion.div>
 
         {/* Features Grid */}
