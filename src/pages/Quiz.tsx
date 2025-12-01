@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
+import { trackEvent } from '@/lib/analytics';
 
 // Custom hooks
 import { useQuizState } from '@/hooks/useQuizState';
@@ -19,13 +20,9 @@ import { QuizSpeedSlider } from '@/components/Quiz/QuizSpeedSlider';
 import { QuizChallengeStep } from '@/components/Quiz/QuizChallengeStep';
 import { QuizQuestionStep } from '@/components/Quiz/QuizQuestionStep';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
-import { QuizPreLoadingScreen } from '@/components/Quiz/QuizPreLoadingScreen';
-import { QuizPostSpeedMotivationalScreen } from '@/components/Quiz/QuizPostSpeedMotivationalScreen';
 import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
-import { QuizThankYouScreen } from '@/components/Quiz/QuizThankYouScreen';
 import { QuizEnhancedResults } from '@/components/Quiz/QuizEnhancedResults';
 import { QuizResultsSkeleton } from '@/components/Quiz/QuizResultsSkeleton';
-import { QuizMotivationalScreen } from '@/components/Quiz/QuizMotivationalScreen';
 import { QuizErrorBoundary } from '@/components/Quiz/ui/QuizErrorBoundary';
 import { quizQuestions } from '@/lib/quizQuestions';
 
@@ -50,7 +47,20 @@ export default function Quiz() {
   });
   const submission = useQuizSubmission();
 
-  // Skeleton → Real Results Transition (MUST be before any early returns)
+  // Track quiz start
+  useEffect(() => {
+    trackEvent('quiz_started');
+  }, []);
+
+  // Track step changes
+  useEffect(() => {
+    trackEvent('quiz_step_changed', { 
+      step: quizState.quizStep,
+      question: quizState.quizStep === 'questions' ? quizState.currentQuestion + 1 : undefined
+    });
+  }, [quizState.quizStep, quizState.currentQuestion]);
+
+  // Skeleton → Real Results Transition
   useEffect(() => {
     if (quizState.showEnhancedResults && quizState.result) {
       setShowResultsSkeleton(true);
@@ -64,13 +74,13 @@ export default function Quiz() {
   // Start quiz flow
   const startQuiz = useCallback(() => {
     quizState.setHasStarted(true);
-    quizState.setShowPreLoading(true);
-    setTimeout(() => quizState.setShowPreLoading(false), 1500);
+    trackEvent('quiz_questions_started');
   }, [quizState]);
 
   // Complete quiz
   const handleCompleteQuiz = useCallback(async () => {
     console.log('🔵 [Quiz] Iniciando conclusão do quiz');
+    trackEvent('quiz_completing');
     const result = quizState.calculateResult();
     
     if (!result) {
@@ -79,11 +89,6 @@ export default function Quiz() {
     }
 
     const sanitizedName = validation.sanitizeName();
-    
-    console.log('🔵 [Quiz] Chamando submission.completeQuiz', { 
-      childName: sanitizedName, 
-      brainProfile: result.type 
-    });
     
     await submission.completeQuiz({
       childName: sanitizedName,
@@ -96,10 +101,10 @@ export default function Quiz() {
       resultSpeed: quizState.resultSpeed,
     });
     
-    console.log('✅ [Quiz] submission.completeQuiz completado com sucesso');
+    trackEvent('quiz_completed', { brainProfile: result.type });
   }, [quizState, validation, submission]);
 
-  // Countdown timer - Fixed to prevent double execution
+  // Countdown timer
   useEffect(() => {
     if (!quizState.showCountdown) return;
     
@@ -109,7 +114,6 @@ export default function Quiz() {
       }, 1000);
       return () => clearTimeout(timer);
     } else if (quizState.countdown === 0) {
-      // Only execute once when countdown reaches 0
       quizState.setShowCountdown(false);
       quizState.setShowLoading(true);
       handleCompleteQuiz();
@@ -133,7 +137,6 @@ export default function Quiz() {
         quizState.setQuizStep('speed');
         break;
       case 'speed':
-        quizState.setShowPostSpeedMotivational(false);
         quizState.setQuizStep('challenge');
         break;
       case 'challenge':
@@ -143,12 +146,9 @@ export default function Quiz() {
       case 'questions':
         if (progress.isLastQuestion) {
           quizState.setShowCountdown(true);
-          quizState.setCountdown(3); // Reset countdown to 3
+          quizState.setCountdown(3);
         } else {
-          const nextQuestion = quizState.currentQuestion + 1;
-          quizState.setCurrentQuestion(nextQuestion);
-          
-          // Milestone screens removed - go directly to next question
+          quizState.setCurrentQuestion(quizState.currentQuestion + 1);
         }
         break;
     }
@@ -165,7 +165,6 @@ export default function Quiz() {
         quizState.setQuizStep('details');
         break;
       case 'speed':
-        quizState.setShowPostSpeedMotivational(false);
         quizState.setQuizStep('goals');
         break;
       case 'challenge':
@@ -181,22 +180,12 @@ export default function Quiz() {
     }
   }, [quizState, triggerHaptic]);
 
-  // Conditional screen renders
-  if (quizState.showPreLoading) {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="min-h-screen flex items-center justify-center bg-background">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-6">
-          <h2 className="text-3xl md:text-4xl font-black text-foreground font-relative">Let's start the quiz!</h2>
-          <p className="text-base md:text-lg text-muted-foreground">Get ready to discover {quizState.childName}'s brain profile</p>
-        </motion.div>
-      </motion.div>
-    );
-  }
-
+  // Loading screen
   if (quizState.showLoading) {
     return <QuizLoadingScreen onComplete={() => { quizState.setShowLoading(false); quizState.setShowEnhancedResults(true); }} />;
   }
 
+  // Results screen
   if (quizState.showEnhancedResults && quizState.result) {
     return (
       <div className="min-h-screen flex flex-col bg-background">
@@ -208,21 +197,11 @@ export default function Quiz() {
         <div className="flex-1 px-4 md:px-5 lg:px-6 pb-24 md:pb-26 lg:pb-28 overflow-y-auto" style={{ paddingTop: 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
           <AnimatePresence mode="wait">
             {showResultsSkeleton ? (
-              <motion.div
-                key="skeleton"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-              >
+              <motion.div key="skeleton" initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.3 }}>
                 <QuizResultsSkeleton />
               </motion.div>
             ) : (
-              <motion.div
-                key="results"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.4 }}
-              >
+              <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }}>
                 <QuizEnhancedResults
                   brainType={quizState.result.type}
                   childName={quizState.childName}
@@ -234,7 +213,7 @@ export default function Quiz() {
           </AnimatePresence>
         </div>
         <div className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-md z-50">
-          <div className="bg-background/80 backdrop-blur-2xl border border-white/20 shadow-2xl rounded-full p-1.5 ring-1 ring-black/5 dark:ring-white/10">
+          <div className="bg-background/80 backdrop-blur-2xl border border-border/20 shadow-2xl rounded-full p-1.5 ring-1 ring-border/10">
             <Button 
               onClick={() => { 
                 triggerHaptic('light'); 
@@ -251,22 +230,21 @@ export default function Quiz() {
     );
   }
 
-  // Motivational milestone screens removed
-
-  if (quizState.showPostSpeedMotivational) {
-    return <QuizPostSpeedMotivationalScreen selectedGoals={quizState.parentGoals} onContinue={handleNext} />;
-  }
-
+  // Final celebration → navigate directly to dashboard
   if (quizState.showFinalCelebration && quizState.result) {
-    return <QuizFinalCelebration brainType={quizState.result.type} onComplete={() => { quizState.setShowFinalCelebration(false); quizState.setShowThankYou(true); }} />;
+    return <QuizFinalCelebration brainType={quizState.result.type} onComplete={() => navigate('/', { state: { quizJustCompleted: true } })} />;
   }
 
-  if (quizState.showThankYou) {
-    return <QuizThankYouScreen onContinue={() => navigate('/', { state: { quizJustCompleted: true } })} />;
-  }
+  const showBackButton = quizState.quizStep !== 'name' && !quizState.showCountdown && !quizState.showFinalCelebration && !quizState.showLoading && !quizState.showEnhancedResults;
+  const showProgressBar = !quizState.showFinalCelebration && !quizState.showLoading && !quizState.showEnhancedResults;
 
-  const showBackButton = progress.showBackButton(quizState.quizStep, quizState.showPreLoading, quizState.showPostSpeedMotivational, quizState.showCountdown, quizState.completingQuiz, quizState.showFinalCelebration, quizState.showThankYou, quizState.showLoading, quizState.showEnhancedResults, quizState.showMotivationalMilestone);
-  const showProgressBar = !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showLoading && !quizState.showEnhancedResults;
+  // Calculate progress text for questions
+  const getProgressText = () => {
+    if (quizState.quizStep === 'questions') {
+      return `Question ${quizState.currentQuestion + 1} of ${quizQuestions.length}`;
+    }
+    return null;
+  };
 
   return (
     <QuizErrorBoundary>
@@ -280,15 +258,20 @@ export default function Quiz() {
                   <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
                 </motion.button>
               )}
-              <div className="flex-1 h-1 bg-muted rounded-full overflow-hidden">
-                <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
+              <div className="flex-1 flex flex-col gap-1">
+                <div className="h-1 bg-muted rounded-full overflow-hidden">
+                  <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
+                </div>
+                {getProgressText() && (
+                  <span className="text-xs text-muted-foreground">{getProgressText()}</span>
+                )}
               </div>
             </div>
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-20 md:pb-24" style={{ paddingTop: showProgressBar ? 'calc(env(safe-area-inset-top) + 3.5rem)' : 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
+        <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-20 md:pb-24" style={{ paddingTop: showProgressBar ? 'calc(env(safe-area-inset-top) + 4rem)' : 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
           <AnimatePresence mode="wait">
             {quizState.showCountdown ? (
               <motion.div key="countdown" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.5 }} className="text-center">
@@ -303,7 +286,7 @@ export default function Quiz() {
             ) : quizState.quizStep === 'speed' ? (
               <div key="speed" className="w-full max-w-2xl"><QuizSpeedSlider value={quizState.resultSpeed} onChange={quizState.setResultSpeed} /></div>
             ) : quizState.quizStep === 'challenge' ? (
-              <QuizChallengeStep key="challenge" challengeLevel={quizState.challengeLevel} challengeDuration={quizState.challengeDuration} triedApproaches={quizState.triedApproaches} onLevelChange={quizState.setChallengeLevel} onDurationChange={quizState.setChallengeDuration} onApproachToggle={quizState.toggleTriedApproach} />
+              <QuizChallengeStep key="challenge" challengeLevel={quizState.challengeLevel} challengeDuration={quizState.challengeDuration} onLevelChange={quizState.setChallengeLevel} onDurationChange={quizState.setChallengeDuration} />
             ) : quizState.quizStep === 'questions' && quizState.hasStarted ? (
               <QuizQuestionStep key={`question-${quizState.currentQuestion}`} question={quizQuestions[quizState.currentQuestion]} currentAnswer={quizState.answers[quizState.currentQuestion]} onAnswer={(answer) => quizState.setAnswer(quizState.currentQuestion, answer)} />
             ) : null}
@@ -311,9 +294,9 @@ export default function Quiz() {
         </div>
 
         {/* Fixed Bottom Button */}
-        {!quizState.showCountdown && !quizState.showFinalCelebration && !quizState.showThankYou && !quizState.showPostSpeedMotivational && !quizState.showPreLoading && !quizState.showLoading && !quizState.showEnhancedResults && (
+        {!quizState.showCountdown && !quizState.showFinalCelebration && !quizState.showLoading && !quizState.showEnhancedResults && (
           <div className="fixed bottom-0 left-0 right-0 bg-background/80 backdrop-blur-xl border-t border-border/50 px-4 md:px-6 pt-2.5 md:pt-3 lg:pt-4 z-50" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.75rem)' }}>
-            <Button onClick={quizState.quizStep === 'speed' ? () => quizState.setShowPostSpeedMotivational(true) : handleNext} disabled={!validation.canProceed} className="w-full h-11 md:h-12 lg:h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-sm md:text-base font-bold rounded-xl transition-all shadow-lg">
+            <Button onClick={handleNext} disabled={!validation.canProceed} className="w-full h-11 md:h-12 lg:h-14 bg-foreground text-background hover:bg-foreground/90 disabled:bg-muted disabled:text-muted-foreground text-sm md:text-base font-bold rounded-xl transition-all shadow-lg">
               {progress.buttonText}
             </Button>
           </div>

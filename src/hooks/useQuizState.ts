@@ -14,7 +14,7 @@ interface QuizState {
   parentGoals: string[];
   challengeLevel: number;
   challengeDuration: string;
-  triedApproaches: string[];
+  triedApproaches: string[]; // Kept for backward compatibility but no longer used
   resultSpeed: 'slow' | 'balanced' | 'intensive';
   answers: Record<number, string>;
   
@@ -23,13 +23,8 @@ interface QuizState {
   showCountdown: boolean;
   countdown: number;
   completingQuiz: boolean;
-  showPreLoading: boolean;
-  showPostSpeedMotivational: boolean;
   showFinalCelebration: boolean;
-  showThankYou: boolean;
   showEnhancedResults: boolean;
-  showMotivationalMilestone: boolean;
-  currentMilestone: 25 | 50 | 75;
   showLoading: boolean;
   
   // Results
@@ -53,13 +48,8 @@ export function useQuizState() {
     showCountdown: false,
     countdown: 3,
     completingQuiz: false,
-    showPreLoading: false,
-    showPostSpeedMotivational: false,
     showFinalCelebration: false,
-    showThankYou: false,
     showEnhancedResults: false,
-    showMotivationalMilestone: false,
-    currentMilestone: 25,
     showLoading: false,
     result: null,
   });
@@ -175,32 +165,12 @@ export function useQuizState() {
     setState(prev => ({ ...prev, completingQuiz: completing }));
   }, []);
 
-  const setShowPreLoading = useCallback((show: boolean) => {
-    setState(prev => ({ ...prev, showPreLoading: show }));
-  }, []);
-
-  const setShowPostSpeedMotivational = useCallback((show: boolean) => {
-    setState(prev => ({ ...prev, showPostSpeedMotivational: show }));
-  }, []);
-
   const setShowFinalCelebration = useCallback((show: boolean) => {
     setState(prev => ({ ...prev, showFinalCelebration: show }));
   }, []);
 
-  const setShowThankYou = useCallback((show: boolean) => {
-    setState(prev => ({ ...prev, showThankYou: show }));
-  }, []);
-
   const setShowEnhancedResults = useCallback((show: boolean) => {
     setState(prev => ({ ...prev, showEnhancedResults: show }));
-  }, []);
-
-  const setShowMotivationalMilestone = useCallback((show: boolean) => {
-    setState(prev => ({ ...prev, showMotivationalMilestone: show }));
-  }, []);
-
-  const setCurrentMilestone = useCallback((milestone: 25 | 50 | 75) => {
-    setState(prev => ({ ...prev, currentMilestone: milestone }));
   }, []);
 
   const setShowLoading = useCallback((show: boolean) => {
@@ -228,13 +198,8 @@ export function useQuizState() {
     setShowCountdown,
     setCountdown,
     setCompletingQuiz,
-    setShowPreLoading,
-    setShowPostSpeedMotivational,
     setShowFinalCelebration,
-    setShowThankYou,
     setShowEnhancedResults,
-    setShowMotivationalMilestone,
-    setCurrentMilestone,
     setShowLoading,
   };
 }
