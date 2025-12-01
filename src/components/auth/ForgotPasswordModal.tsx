@@ -72,24 +72,24 @@ export function ForgotPasswordModal({ isOpen, onClose, initialEmail = '' }: Forg
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed inset-x-4 top-1/2 -translate-y-1/2 z-50 max-w-md mx-auto"
           >
-            <div className="bg-[#1A1A1A] rounded-3xl border border-white/10 overflow-hidden">
+            <div className="bg-card rounded-3xl border border-border overflow-hidden">
               {/* Header */}
               <div className="relative px-6 pt-6 pb-4">
                 <button
                   onClick={handleClose}
-                  className="absolute right-4 top-4 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors"
+                  className="absolute right-4 top-4 w-8 h-8 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/80 transition-colors"
                 >
-                  <X className="w-4 h-4 text-white/60" />
+                  <X className="w-4 h-4 text-muted-foreground" />
                 </button>
 
-                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
-                  <Mail className="w-6 h-6 text-white/80" />
+                <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center mb-4">
+                  <Mail className="w-6 h-6 text-foreground" />
                 </div>
 
-                <h2 className="text-xl font-semibold text-white mb-1">
+                <h2 className="text-xl font-semibold text-foreground mb-1">
                   {success ? 'Check your email' : 'Reset password'}
                 </h2>
-                <p className="text-white/50 text-sm">
+                <p className="text-muted-foreground text-sm">
                   {success
                     ? 'We sent a password reset link to your email'
                     : 'Enter your email and we\'ll send you a reset link'
@@ -112,14 +112,14 @@ export function ForgotPasswordModal({ isOpen, onClose, initialEmail = '' }: Forg
                         <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
                           <Check className="w-4 h-4 text-emerald-400" />
                         </div>
-                        <p className="text-sm text-white/70">
-                          Email sent to <span className="text-white font-medium">{email}</span>
+                        <p className="text-sm text-muted-foreground">
+                          Email sent to <span className="text-foreground font-medium">{email}</span>
                         </p>
                       </div>
 
                       <button
                         onClick={handleClose}
-                        className="w-full h-12 rounded-xl bg-white text-black font-medium hover:bg-white/90 transition-colors"
+                        className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
                       >
                         Done
                       </button>
@@ -141,14 +141,14 @@ export function ForgotPasswordModal({ isOpen, onClose, initialEmail = '' }: Forg
                           placeholder="Enter your email"
                           disabled={loading}
                           autoFocus
-                          className="w-full h-14 px-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all disabled:opacity-50"
+                          className="w-full h-14 px-4 rounded-2xl bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:bg-secondary/80 transition-all disabled:opacity-50"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={!isValidEmail || loading}
-                        className="w-full h-14 rounded-2xl bg-white text-black font-semibold flex items-center justify-center gap-2 hover:bg-white/90 transition-all disabled:bg-white/20 disabled:text-white/50 disabled:cursor-not-allowed"
+                        className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
                       >
                         {loading ? (
                           <>
