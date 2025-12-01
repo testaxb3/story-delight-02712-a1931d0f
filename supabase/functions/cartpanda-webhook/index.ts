@@ -29,6 +29,7 @@ interface CartpandaPayload {
     line_items?: Array<{
       product_id?: string;
       name?: string;
+      price?: string;
     }>;
   };
   // Fallback flat structure (some webhooks may use this)
@@ -430,7 +431,36 @@ Deno.serve(async (req) => {
       const productId = lineItems[0]?.product_id || payload.product_id || null;
       const productName = lineItems[0]?.name || payload.product_name || null;
 
-      // Insert or update approved_users (now with phone)
+      // 🎯 Build products array from ALL line_items (not just first)
+      const purchasedProducts = lineItems.map((item, index) => ({
+        id: item.product_id || '',
+        name: item.name || '',
+        type: index === 0 ? 'main' : 'addon', // First = main product, rest = order bumps/upsells
+        price: item.price ? parseFloat(item.price) : null,
+        purchased_at: new Date().toISOString()
+      })).filter(p => p.id); // Remove empty products
+
+      console.log('🛍️ Purchased products:', purchasedProducts);
+
+      // Fetch existing approved_users record to merge products
+      const { data: existingApprovedUser } = await supabase
+        .from('approved_users')
+        .select('products')
+        .eq('email', email)
+        .single();
+
+      // Merge existing products with new purchases (avoid duplicates)
+      const existingProducts = (existingApprovedUser?.products as any[]) || [];
+      const existingProductIds = new Set(existingProducts.map((p: any) => p.id));
+      
+      const mergedProducts = [
+        ...existingProducts,
+        ...purchasedProducts.filter(p => !existingProductIds.has(p.id))
+      ];
+
+      console.log('🔄 Merged products:', mergedProducts);
+
+      // Insert or update approved_users (now with phone AND products array)
       const { data: approvedUser, error: approvedError } = await supabase
         .from('approved_users')
         .upsert({
@@ -446,6 +476,7 @@ Deno.serve(async (req) => {
           status: 'active',
           approved_at: new Date().toISOString(),
           webhook_data: payload,
+          products: mergedProducts, // ✅ Save ALL purchased products
           updated_at: new Date().toISOString(),
         }, {
           onConflict: 'email',
@@ -524,6 +555,8 @@ Deno.serve(async (req) => {
           email,
           phone,
           approved_user_id: approvedUser.id,
+          products_count: purchasedProducts.length,
+          products: purchasedProducts.map(p => ({ id: p.id, name: p.name, type: p.type })),
           welcome_email_sent: true,
           welcome_sms_sent: smsSent
         }),
