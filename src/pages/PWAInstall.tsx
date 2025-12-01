@@ -48,14 +48,16 @@ const PWAInstall = () => {
     }
   ];
 
-  const handleShowHow = () => {
-    trackEvent('pwa_install_clicked_show_how');
+  const handleInstalled = () => {
+    trackEvent('pwa_install_clicked_installed');
     navigate('/pwa-check');
   };
 
-  const handleLater = () => {
-    trackEvent('pwa_install_clicked_later');
-    navigate('/pwa-check');
+  const handleSkip = () => {
+    trackEvent('pwa_install_clicked_skip');
+    localStorage.setItem('pwa_flow_completed', 'true');
+    localStorage.setItem('pwa_install_skipped', Date.now().toString());
+    navigate('/theme-selection');
   };
 
   return (
@@ -121,6 +123,11 @@ const PWAInstall = () => {
           ))}
         </motion.div>
 
+        {/* Instruction text */}
+        <p className="text-center text-sm md:text-base text-muted-foreground px-4">
+          Watch the video above, then tap the button below when done
+        </p>
+
         {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -129,26 +136,26 @@ const PWAInstall = () => {
           className="flex flex-col gap-2 md:gap-3 pt-1 md:pt-2"
         >
           <Button
-            onClick={handleShowHow}
+            onClick={handleInstalled}
             size="lg"
             className="w-full text-sm md:text-base lg:text-lg h-11 md:h-12 lg:h-14 font-semibold shadow-lg hover:shadow-xl transition-all"
           >
-            Show Me How to Install →
+            I've Installed It ✓
           </Button>
 
           <Button
-            onClick={handleLater}
+            onClick={handleSkip}
             variant="ghost"
             size="lg"
             className="w-full text-sm md:text-base lg:text-lg h-11 md:h-12 lg:h-14 hover:bg-muted/50"
           >
-            I'll Install It Later
+            Skip for Now
           </Button>
         </motion.div>
 
         {/* Platform indicator */}
         <p className="text-center text-xs md:text-sm text-muted-foreground/70 pb-2">
-          {isIOS ? '📱 iOS' : '🤖 Android'} installation instructions shown above
+          {isIOS ? '📱 iOS' : '🤖 Android'} instructions shown above
         </p>
         </motion.div>
       </div>
