@@ -43,9 +43,8 @@ function CelebrationComponent() {
 ## Current Integration
 
 ### Quiz Components
-1. **QuizLoadingScreen** - Uses `your_weight_transition_dark.json` for progress display
-2. **QuizMotivationalScreen** - Uses `clap_dark.json` for milestone celebrations
-3. **Quiz Result Screen** - Uses `finger_heart_dark.json` for final celebration
+1. **QuizLoadingScreen** - Progress display with checklist animation
+2. **QuizFinalCelebration** - Uses `finger_heart_dark.json` / `finger_heart_light.json` for final celebration
 
 ## Typography Integration
 

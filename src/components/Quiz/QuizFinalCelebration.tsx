@@ -33,7 +33,7 @@ export const QuizFinalCelebration = ({ brainType, onComplete }: QuizFinalCelebra
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.4 }}
-      className="fixed inset-0 z-50 bg-white dark:bg-black flex flex-col items-center justify-center"
+      className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center"
     >
       {/* Gradient Ring */}
       <motion.div
@@ -77,10 +77,10 @@ export const QuizFinalCelebration = ({ brainType, onComplete }: QuizFinalCelebra
         transition={{ delay: 0.5, duration: 0.5 }}
         className="text-center space-y-3 mt-8 px-6"
       >
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-black dark:text-white font-relative">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-foreground font-relative">
           All done!
         </h2>
-        <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-md">
+        <p className="text-base md:text-lg text-muted-foreground max-w-md">
           Let's start your journey to calmer, happier parenting
         </p>
       </motion.div>

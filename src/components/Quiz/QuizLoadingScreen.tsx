@@ -70,15 +70,8 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="flex flex-col items-center justify-center min-h-screen bg-white dark:bg-black px-6 py-12 relative"
+      className="flex flex-col items-center justify-center min-h-screen bg-background px-6 py-12 relative"
     >
-      {/* Page Number */}
-      <div className="fixed top-4 left-4 z-50">
-        <div className="w-8 h-8 bg-black/10 dark:bg-white/10 rounded-full flex items-center justify-center">
-          <span className="text-xs font-bold text-black dark:text-white">19</span>
-        </div>
-      </div>
-
       {/* Giant Percentage */}
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -86,7 +79,7 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
         transition={{ duration: 0.5 }}
         className="text-center mb-8"
       >
-        <div className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black text-black dark:text-white tracking-tight font-relative leading-none">
+        <div className="text-[8rem] md:text-[10rem] lg:text-[12rem] font-black text-foreground tracking-tight font-relative leading-none">
           {percentage}%
         </div>
       </motion.div>
@@ -95,14 +88,14 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
       <motion.h3
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white text-center font-relative px-6 max-w-2xl leading-tight mb-8"
+        className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground text-center font-relative px-6 max-w-2xl leading-tight mb-8"
       >
         We're setting everything up for you
       </motion.h3>
 
       {/* Progress Bar */}
       <div className="w-full max-w-2xl px-6 md:px-8 mb-12">
-        <div className="h-3 md:h-4 bg-gray-200 dark:bg-gray-800 rounded-full overflow-hidden">
+        <div className="h-3 md:h-4 bg-muted rounded-full overflow-hidden">
           <motion.div
             className="h-full bg-gradient-to-r from-primary via-accent to-primary rounded-full"
             initial={{ width: "0%" }}
@@ -124,19 +117,19 @@ export const QuizLoadingScreen = ({ onComplete }: QuizLoadingScreenProps = {}) =
           >
             <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
               item.completed 
-                ? 'bg-black dark:bg-white border-black dark:border-white' 
-                : 'border-gray-300 dark:border-gray-700'
+                ? 'bg-foreground border-foreground' 
+                : 'border-muted-foreground/30'
             }`}>
               {item.completed && (
-                <svg className="w-3 h-3 text-white dark:text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-3 h-3 text-background" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </div>
             <span className={`text-base md:text-lg transition-colors ${
               item.completed 
-                ? 'text-black dark:text-white font-medium' 
-                : 'text-gray-400 dark:text-gray-600'
+                ? 'text-foreground font-medium' 
+                : 'text-muted-foreground'
             }`}>
               {item.text}
             </span>
