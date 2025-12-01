@@ -52,6 +52,7 @@ const ScriptRequests = lazy(() => import("./pages/ScriptRequests"));
 const GenerateWelcomePDF = lazy(() => import("./pages/GenerateWelcomePDF"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
 
 // Loading fallback component for Suspense
@@ -103,6 +104,7 @@ function AppContent() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pwa-install" element={<ProtectedRoute><PWAInstall /></ProtectedRoute>} />
         <Route path="/pwa-check" element={<ProtectedRoute><PWACheck /></ProtectedRoute>} />
         <Route path="/theme-selection" element={<ProtectedRoute><ThemeSelection /></ProtectedRoute>} />

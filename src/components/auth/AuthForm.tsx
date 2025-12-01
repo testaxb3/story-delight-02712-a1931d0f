@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, AlertCircle, Eye, EyeOff, Loader2, MessageCircle, Mail } from 'lucide-react';
 import { memo, useState, useMemo } from 'react';
+import { ForgotPasswordModal } from './ForgotPasswordModal';
 
 interface AuthFormProps {
   isSignUp: boolean;
@@ -329,6 +330,8 @@ export const AuthForm = memo(function AuthForm({
   onBack,
   onToggleMode,
 }: AuthFormProps) {
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+
   // Simple email validation
   const emailError = useMemo(() => {
     if (!email) return undefined;
@@ -450,11 +453,22 @@ export const AuthForm = memo(function AuthForm({
             transition={{ delay: 0.4 }}
             className="mt-6 text-center"
           >
-            <button className="text-white/40 text-sm hover:text-white/60 transition-colors">
+            <button 
+              type="button"
+              onClick={() => setShowForgotPassword(true)}
+              className="text-white/40 text-sm hover:text-white/60 transition-colors"
+            >
               Forgot password?
             </button>
           </motion.div>
         )}
+
+        {/* Forgot Password Modal */}
+        <ForgotPasswordModal
+          isOpen={showForgotPassword}
+          onClose={() => setShowForgotPassword(false)}
+          initialEmail={email}
+        />
 
         {/* Spacer */}
         <div className="flex-1" />
