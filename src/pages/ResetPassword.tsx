@@ -40,12 +40,12 @@ function PasswordStrength({ password }: { password: string }) {
               animate={{ scaleX: 1 }}
               transition={{ delay: level * 0.05 }}
               className={`h-1 flex-1 rounded-full origin-left ${
-                level <= strength.score ? strength.color : 'bg-white/10'
+                level <= strength.score ? strength.color : 'bg-muted'
               }`}
             />
           ))}
         </div>
-        <span className={`text-xs font-medium ${strength.score <= 2 ? 'text-white/40' : 'text-white/60'}`}>
+        <span className={`text-xs font-medium ${strength.score <= 2 ? 'text-muted-foreground/60' : 'text-muted-foreground'}`}>
           {strength.label}
         </span>
       </div>
@@ -78,10 +78,10 @@ export default function ResetPassword() {
           }
         });
 
-        // Set timeout to show error if no session
+        // Set timeout to show error if no session (8s for slow connections)
         setTimeout(() => {
           setValidSession(prev => prev === null ? false : prev);
-        }, 3000);
+        }, 8000);
 
         return () => subscription.unsubscribe();
       }
@@ -125,10 +125,10 @@ export default function ResetPassword() {
   // Loading state while checking session
   if (validSession === null) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-white/60 animate-spin" />
-          <p className="text-white/40 text-sm">Verifying reset link...</p>
+          <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
+          <p className="text-muted-foreground/60 text-sm">Verifying reset link...</p>
         </div>
       </div>
     );
@@ -137,7 +137,7 @@ export default function ResetPassword() {
   // Invalid or expired link
   if (validSession === false) {
     return (
-      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center px-6">
+      <div className="min-h-screen bg-background flex items-center justify-center px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,13 +146,13 @@ export default function ResetPassword() {
           <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-8 h-8 text-red-400" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Invalid or expired link</h1>
-          <p className="text-white/50 mb-8">
+          <h1 className="text-2xl font-bold text-foreground mb-2">Invalid or expired link</h1>
+          <p className="text-muted-foreground mb-8">
             This password reset link is invalid or has expired. Please request a new one.
           </p>
           <button
             onClick={() => navigate('/auth')}
-            className="w-full h-14 rounded-2xl bg-white text-black font-semibold hover:bg-white/90 transition-colors"
+            className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors"
           >
             Back to Sign In
           </button>
@@ -162,7 +162,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A0A0A] flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Safe area padding */}
       <div className="pt-[max(env(safe-area-inset-top),44px)]" />
 
@@ -174,15 +174,15 @@ export default function ResetPassword() {
           transition={{ duration: 0.5 }}
         >
           {/* Icon */}
-          <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mx-auto mb-6">
-            <Lock className="w-8 h-8 text-white/80" />
+          <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center mx-auto mb-6">
+            <Lock className="w-8 h-8 text-foreground" />
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-white text-center mb-2">
+          <h1 className="text-3xl font-bold text-foreground text-center mb-2">
             Set new password
           </h1>
-          <p className="text-white/50 text-center mb-8">
+          <p className="text-muted-foreground text-center mb-8">
             Your new password must be at least 8 characters
           </p>
 
@@ -197,13 +197,13 @@ export default function ResetPassword() {
                 placeholder="New password"
                 disabled={loading}
                 autoFocus
-                className="w-full h-14 px-4 pr-12 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all disabled:opacity-50"
+                className="w-full h-14 px-4 pr-12 rounded-2xl bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:bg-secondary/80 transition-all disabled:opacity-50"
               />
               {password && (
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -219,13 +219,13 @@ export default function ResetPassword() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
                 disabled={loading}
-                className="w-full h-14 px-4 pr-12 rounded-2xl bg-white/5 border border-white/10 text-white placeholder:text-white/30 outline-none focus:border-white/20 focus:bg-white/[0.07] transition-all disabled:opacity-50"
+                className="w-full h-14 px-4 pr-12 rounded-2xl bg-secondary border border-border text-foreground placeholder:text-muted-foreground outline-none focus:border-ring focus:bg-secondary/80 transition-all disabled:opacity-50"
               />
               {confirmPassword && (
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
                 >
                   {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -263,7 +263,7 @@ export default function ResetPassword() {
               <button
                 type="submit"
                 disabled={!formValid || loading}
-                className="w-full h-14 rounded-2xl bg-white text-black font-semibold flex items-center justify-center gap-2 hover:bg-white/90 transition-all disabled:bg-white/20 disabled:text-white/50 disabled:cursor-not-allowed"
+                className="w-full h-14 rounded-2xl bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-all disabled:bg-muted disabled:text-muted-foreground disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <>
