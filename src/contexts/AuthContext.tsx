@@ -196,12 +196,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }));
         }
 
-        // ✅ CRITICAL FIX: Limpar TODO o cache após login para evitar dados stale
-        // Especialmente importante para PWA no iPhone onde cache pode persistir
+        // ✅ FIX: Invalidate specific queries instead of clearing all cache
+        // This prevents race conditions where components need cache during navigation
         if (data?.user?.id) {
-          console.log('[AuthContext] 🧹 Limpando TODO o cache do React Query após login');
-          queryClient.clear();
-          console.log('[AuthContext] ✅ Cache limpo - dados frescos serão carregados');
+          console.log('[AuthContext] 🧹 Invalidating user profile cache after login');
+          queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+          console.log('[AuthContext] ✅ Profile cache invalidated - fresh data will be loaded');
         }
 
         return { error: null, user: data.user };
@@ -284,11 +284,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }));
       }
 
-      // ✅ FIX: Clear React Query cache on sign-up to prevent stale data
+      // ✅ FIX: Invalidate specific queries instead of clearing all cache
+      // This prevents race conditions where components need cache during navigation
       if (data?.user?.id) {
-        console.log('[AuthContext] 🧹 Clearing React Query cache after sign-up');
-        queryClient.clear();
-        console.log('[AuthContext] ✅ Cache cleared - fresh data will be loaded');
+        console.log('[AuthContext] 🧹 Invalidating user profile cache after sign-up');
+        queryClient.invalidateQueries({ queryKey: ['user-profile'] });
+        console.log('[AuthContext] ✅ Profile cache invalidated - fresh data will be loaded');
       }
 
       // Profile and user_progress are created automatically by the handle_new_user() trigger
