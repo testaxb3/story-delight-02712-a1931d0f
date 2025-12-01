@@ -114,6 +114,7 @@ export type Database = {
           phone: string | null
           product_id: string | null
           product_name: string | null
+          products: Json | null
           sms_sent: boolean | null
           status: string | null
           total_price: number | null
@@ -137,6 +138,7 @@ export type Database = {
           phone?: string | null
           product_id?: string | null
           product_name?: string | null
+          products?: Json | null
           sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
@@ -160,6 +162,7 @@ export type Database = {
           phone?: string | null
           product_id?: string | null
           product_name?: string | null
+          products?: Json | null
           sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
@@ -274,10 +277,12 @@ export type Database = {
           id: string
           is_new: boolean | null
           locked: boolean | null
+          preview_available: boolean | null
           progress: number | null
           tags: string[] | null
           thumbnail: string | null
           title: string
+          unlock_key: string | null
           unlock_requirement: string | null
           updated_at: string
           view_url: string | null
@@ -296,10 +301,12 @@ export type Database = {
           id?: string
           is_new?: boolean | null
           locked?: boolean | null
+          preview_available?: boolean | null
           progress?: number | null
           tags?: string[] | null
           thumbnail?: string | null
           title: string
+          unlock_key?: string | null
           unlock_requirement?: string | null
           updated_at?: string
           view_url?: string | null
@@ -318,10 +325,12 @@ export type Database = {
           id?: string
           is_new?: boolean | null
           locked?: boolean | null
+          preview_available?: boolean | null
           progress?: number | null
           tags?: string[] | null
           thumbnail?: string | null
           title?: string
+          unlock_key?: string | null
           unlock_requirement?: string | null
           updated_at?: string
           view_url?: string | null
@@ -1426,6 +1435,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      product_config: {
+        Row: {
+          created_at: string | null
+          id: string
+          product_id: string
+          product_name: string
+          product_type: string
+          unlocks: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          product_id: string
+          product_name: string
+          product_type: string
+          unlocks?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          product_id?: string
+          product_name?: string
+          product_type?: string
+          unlocks?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
