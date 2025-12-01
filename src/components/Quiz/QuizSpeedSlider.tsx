@@ -45,7 +45,6 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
     const position = newValue[0];
     setSliderValue(newValue);
     
-    // Map position to speed value
     if (position <= -0.5) {
       onChange('slow');
     } else if (position >= 0.5) {
@@ -65,11 +64,11 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
     >
       {/* Question */}
       <div className="text-center space-y-3">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-black dark:text-white font-relative">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground font-relative">
           How fast do you want to see results?
         </h2>
-        <p className="text-base md:text-lg text-gray-500 dark:text-gray-400 max-w-2xl mx-auto">
-          Choose the pace that feels right for your family's situation
+        <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto">
+          Choose the pace that feels right for your family
         </p>
       </div>
 
@@ -119,10 +118,10 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
         className="text-center space-y-3 max-w-xl mx-auto"
       >
         <div className="text-4xl md:text-5xl">{currentOption.icon}</div>
-        <h3 className="text-xl md:text-2xl font-bold text-black dark:text-white font-relative">
+        <h3 className="text-xl md:text-2xl font-bold text-foreground font-relative">
           {currentOption.label}
         </h3>
-        <p className="text-sm md:text-base text-gray-600 dark:text-gray-400">
+        <p className="text-sm md:text-base text-muted-foreground">
           {currentOption.description}
         </p>
         
@@ -131,9 +130,9 @@ export const QuizSpeedSlider = ({ value, onChange }: QuizSpeedSliderProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded-xl"
+          className="mt-4 p-4 bg-muted rounded-xl"
         >
-          <p className="text-xs md:text-sm text-gray-700 dark:text-gray-300">
+          <p className="text-xs md:text-sm text-muted-foreground">
             💡 {currentOption.feedback}
           </p>
         </motion.div>

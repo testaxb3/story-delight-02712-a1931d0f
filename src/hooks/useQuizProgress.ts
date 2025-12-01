@@ -30,19 +30,19 @@ export function useQuizProgress({ currentQuestion, quizStep }: UseQuizProgressPr
   const getButtonText = useCallback((step: QuizStep, isLast: boolean) => {
     switch (step) {
       case 'name':
-        return 'Next - Details';
+        return 'Continue';
       case 'details':
-        return 'Next - Goals';
+        return 'Continue';
       case 'goals':
-        return 'Next - Speed';
+        return 'Continue';
       case 'speed':
-        return 'Next - Challenge';
+        return 'Continue';
       case 'challenge':
         return 'Start Quiz';
       case 'questions':
-        return isLast ? 'See Results' : 'Next Question';
+        return isLast ? 'See Results' : 'Next';
       default:
-        return 'Next';
+        return 'Continue';
     }
   }, []);
 
@@ -50,25 +50,17 @@ export function useQuizProgress({ currentQuestion, quizStep }: UseQuizProgressPr
     return getButtonText(quizStep, isLastQuestion);
   }, [quizStep, isLastQuestion, getButtonText]);
 
-  // Check if should show back button - completingQuiz and showMotivationalMilestone removed
+  // Simplified back button check - no longer using complex state params
   const showBackButton = useCallback((
     step: QuizStep,
-    showPreLoading: boolean,
-    showPostSpeedMotivational: boolean,
     showCountdown: boolean,
-    completingQuiz: boolean,
     showFinalCelebration: boolean,
-    showThankYou: boolean,
     showLoading: boolean,
-    showEnhancedResults: boolean,
-    showMotivationalMilestone: boolean
+    showEnhancedResults: boolean
   ) => {
     return step !== 'name' && 
-      !showPreLoading && 
-      !showPostSpeedMotivational && 
       !showCountdown && 
       !showFinalCelebration && 
-      !showThankYou && 
       !showLoading && 
       !showEnhancedResults;
   }, []);
