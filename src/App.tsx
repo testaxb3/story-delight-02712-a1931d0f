@@ -14,17 +14,18 @@ import { initAnalytics } from "./lib/analytics";
 import { usePageTracking } from "./hooks/usePageTracking";
 import { useErrorTracking } from "./hooks/useErrorTracking";
 
-// PERFORMANCE OPTIMIZATION: Eager load critical pages
+// PERFORMANCE OPTIMIZATION: Eager load critical pages (including onboarding flow)
+// Onboarding pages MUST be eager-loaded to prevent MIME type errors from stale chunks
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardCalAI";
 import NotFound from "./pages/NotFound";
+import PWAInstall from "./pages/PWAInstall";
+import PWACheck from "./pages/PWACheck";
+import ThemeSelection from "./pages/ThemeSelection";
+import NotificationPermission from "./pages/NotificationPermission";
 
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting
 // This reduces initial bundle size and improves Time to Interactive (TTI)
-const PWAInstall = lazy(() => import("./pages/PWAInstall"));
-const PWACheck = lazy(() => import("./pages/PWACheck"));
-const ThemeSelection = lazy(() => import("./pages/ThemeSelection"));
-const NotificationPermission = lazy(() => import("./pages/NotificationPermission"));
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
 const Scripts = lazy(() => import("./pages/Scripts"));
