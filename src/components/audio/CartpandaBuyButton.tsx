@@ -9,21 +9,25 @@ export function CartpandaBuyButton({ buttonId, shopUrl }: CartpandaBuyButtonProp
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Load Cartpanda script if not already loaded
+    // Remove any existing script to force re-execution
     const existingScript = document.querySelector('script[src*="buy-button.min.js"]');
+    if (existingScript) {
+      existingScript.remove();
+    }
     
-    if (!existingScript) {
+    // Wait for DOM to be ready before loading script
+    const timeout = setTimeout(() => {
       const script = document.createElement('script');
       script.src = `${shopUrl}js/buy-button.min.js`;
       script.async = true;
       script.type = 'text/javascript';
       document.body.appendChild(script);
-    }
+    }, 100);
 
     return () => {
-      // Optional: cleanup if needed
+      clearTimeout(timeout);
     };
-  }, [shopUrl]);
+  }, [shopUrl, buttonId]);
 
   return (
     <div 
