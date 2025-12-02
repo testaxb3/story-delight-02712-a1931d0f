@@ -16,10 +16,12 @@ interface AppVersionInfo {
 const STORAGE_KEY = 'app_version_acknowledged';
 const UPDATE_ATTEMPT_KEY = 'app_update_attempt_count';
 const MAX_UPDATE_ATTEMPTS = 3;
-const CHECK_INTERVAL = 5 * 60 * 1000; // ✅ Check every 5 minutes (optimized for faster updates)
+const CHECK_INTERVAL = 5 * 60 * 1000; // Check every 5 minutes
 
 const SESSION_START_KEY = 'app_session_start';
-const MIN_SESSION_TIME = 30000; // ✅ 30 seconds before showing update (optimized)
+const MIN_SESSION_TIME = 30000; // 30 seconds before showing update
+const PWA_INSTALL_TIMESTAMP_KEY = 'pwa_install_timestamp';
+const RECENT_INSTALL_PROTECTION = 5 * 60 * 1000; // 5 minutes protection after install
 
 export function useAppVersion() {
   const [versionInfo, setVersionInfo] = useState<AppVersionInfo | null>(null);
@@ -27,12 +29,13 @@ export function useAppVersion() {
   const [checking, setChecking] = useState(false);
   const [swUpdateAvailable, setSwUpdateAvailable] = useState(false);
 
-  // Listen for Service Worker update events (automatic detection)
+  // Listen for Service Worker update events - only set flag, don't show prompt
+  // Database force_update is the single source of truth for showing prompts
   useEffect(() => {
     const handleSwUpdate = () => {
-      logger.log('🔄 Service Worker detected new version available');
+      logger.log('🔄 Service Worker detected new version available (flag set, not showing prompt)');
       setSwUpdateAvailable(true);
-      setShowUpdatePrompt(true);
+      // NOT showing prompt here - let checkVersion() decide based on database
     };
 
     window.addEventListener('sw-update-available', handleSwUpdate);
@@ -41,19 +44,24 @@ export function useAppVersion() {
 
   const checkVersion = async (): Promise<boolean> => {
     try {
-      // Skip if SW already detected update
-      if (swUpdateAvailable) {
-        return true;
+      // Protection for recent PWA installations (5 minutes)
+      const installTimestamp = localStorage.getItem(PWA_INSTALL_TIMESTAMP_KEY);
+      if (installTimestamp) {
+        const elapsed = Date.now() - parseInt(installTimestamp, 10);
+        if (elapsed < RECENT_INSTALL_PROTECTION) {
+          logger.log('⏭️ Skipping update check - PWA recently installed');
+          return false;
+        }
       }
 
-      // Não mostrar update se acabou de atualizar (iOS flag)
+      // Skip if just updated (iOS flag)
       if (sessionStorage.getItem('pwa_just_updated') === 'true') {
         sessionStorage.removeItem('pwa_just_updated');
         logger.log('⏭️ Skipping version check - app just updated');
         return false;
       }
 
-      // Não mostrar update em páginas específicas
+      // Skip on specific pages
       const currentPath = window.location.pathname;
       const excludedPaths = ['/auth', '/quiz', '/onboarding'];
 
@@ -61,7 +69,7 @@ export function useAppVersion() {
         return false;
       }
 
-      // Verificar se já passou tempo mínimo desde o início da sessão
+      // Check minimum session time
       const sessionStart = localStorage.getItem(SESSION_START_KEY);
       if (sessionStart) {
         const elapsed = Date.now() - parseInt(sessionStart, 10);
@@ -87,19 +95,20 @@ export function useAppVersion() {
 
       const backendVersion = `${versionData.version}-${versionData.build}`;
       
-      // Only show update prompt if ALL conditions are met:
-      // 1. Backend has force_update enabled
-      // 2. User hasn't acknowledged this version yet
+      // Database force_update is the SINGLE SOURCE OF TRUTH
+      // Only show update prompt if force_update is true AND user hasn't acknowledged
       if (versionData.force_update) {
         const acknowledgedVersion = localStorage.getItem(STORAGE_KEY);
         
         if (acknowledgedVersion !== backendVersion) {
-          logger.log(`Update available: ${backendVersion}`);
+          logger.log(`✅ Update available (force_update=true): ${backendVersion}`);
           setShowUpdatePrompt(true);
           return true;
         } else {
-          logger.log(`Update already acknowledged: ${backendVersion}`);
+          logger.log(`⏭️ Update already acknowledged: ${backendVersion}`);
         }
+      } else {
+        logger.log(`⏭️ No forced update (force_update=false)`);
       }
       return false;
     } catch (error) {
@@ -210,17 +219,26 @@ export function useAppVersion() {
     // Log platform info on mount for debugging
     logPlatformInfo();
 
-    // Registrar início da sessão se não existir
+    // Set PWA install timestamp on first standalone launch
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+      || (window.navigator as any).standalone === true;
+    
+    if (isStandalone && !localStorage.getItem(PWA_INSTALL_TIMESTAMP_KEY)) {
+      localStorage.setItem(PWA_INSTALL_TIMESTAMP_KEY, String(Date.now()));
+      logger.log('📱 PWA install timestamp set - 5 minute protection active');
+    }
+
+    // Register session start if not exists
     if (!localStorage.getItem(SESSION_START_KEY)) {
       localStorage.setItem(SESSION_START_KEY, String(Date.now()));
     }
 
-    // ✅ Delay inicial reduzido (30 segundos em vez de 2 minutos)
+    // Initial delay (30 seconds)
     const initialDelay = setTimeout(() => {
       checkVersion();
     }, 30 * 1000);
 
-    // ✅ Set up periodic version check (a cada 5 minutos em vez de 15)
+    // Periodic version check (every 5 minutes)
     const interval = setInterval(checkVersion, CHECK_INTERVAL);
 
     return () => {
