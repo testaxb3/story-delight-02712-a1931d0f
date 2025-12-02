@@ -71,7 +71,7 @@ export function useUserProducts() {
    * Check if user has purchased a specific product by product_id
    */
   const hasProduct = (productId: string): boolean => {
-    return products.some(p => p.id === productId);
+    return products.some(p => String(p.id) === String(productId));
   };
 
   /**
@@ -79,7 +79,7 @@ export function useUserProducts() {
    */
   const hasUnlock = (unlockKey: string): boolean => {
     // Get all product IDs user has purchased
-    const purchasedProductIds = products.map(p => p.id);
+    const purchasedProductIds = products.map(p => String(p.id));
 
     // Check if any of those products grant the requested unlock
     return productConfig.some(config => 
@@ -92,7 +92,7 @@ export function useUserProducts() {
    * Get all unlock keys the user has access to
    */
   const getAllUnlocks = (): string[] => {
-    const purchasedProductIds = products.map(p => p.id);
+    const purchasedProductIds = products.map(p => String(p.id));
     const unlocks = new Set<string>();
 
     productConfig.forEach(config => {
