@@ -57,6 +57,8 @@ export const useUpdateAudioProgress = () => {
           progress_seconds: progressSeconds,
           completed: completed ?? false,
           last_played_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,track_id'
         })
         .select()
         .single();
