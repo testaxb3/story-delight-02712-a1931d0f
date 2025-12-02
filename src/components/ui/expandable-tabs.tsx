@@ -64,11 +64,7 @@ export function ExpandableTabs({
   const isControlled = controlledSelected !== undefined;
   const selected = isControlled ? controlledSelected : internalSelected;
 
-  useOnClickOutside(outsideClickRef, () => {
-    if (!isControlled) {
-      setInternalSelected(null);
-    }
-  });
+  // Removed click-outside reset - navigation should always maintain selection based on route
 
   const handleSelect = (index: number) => {
     if (!isControlled) {
@@ -85,7 +81,7 @@ export function ExpandableTabs({
     <div
       ref={outsideClickRef}
       className={cn(
-        "flex flex-wrap items-center gap-2 rounded-2xl border bg-background p-1 shadow-sm",
+        "flex items-center gap-1 rounded-full border bg-background p-1 shadow-sm",
         className
       )}
     >
