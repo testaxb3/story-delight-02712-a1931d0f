@@ -229,6 +229,101 @@ export type Database = {
           },
         ]
       }
+      audio_series: {
+        Row: {
+          cover_image: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon_name: string | null
+          id: string
+          name: string
+          slug: string
+          total_duration: number | null
+          track_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          cover_image?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string | null
+          id?: string
+          name: string
+          slug: string
+          total_duration?: number | null
+          track_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          cover_image?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon_name?: string | null
+          id?: string
+          name?: string
+          slug?: string
+          total_duration?: number | null
+          track_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      audio_tracks: {
+        Row: {
+          audio_url: string
+          created_at: string | null
+          description: string | null
+          duration_seconds: number
+          id: string
+          is_preview: boolean | null
+          series_id: string | null
+          tags: string[] | null
+          thumbnail: string | null
+          title: string
+          track_number: number
+          updated_at: string | null
+        }
+        Insert: {
+          audio_url: string
+          created_at?: string | null
+          description?: string | null
+          duration_seconds: number
+          id?: string
+          is_preview?: boolean | null
+          series_id?: string | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title: string
+          track_number: number
+          updated_at?: string | null
+        }
+        Update: {
+          audio_url?: string
+          created_at?: string | null
+          description?: string | null
+          duration_seconds?: number
+          id?: string
+          is_preview?: boolean | null
+          series_id?: string | null
+          tags?: string[] | null
+          thumbnail?: string | null
+          title?: string
+          track_number?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audio_tracks_series_id_fkey"
+            columns: ["series_id"]
+            isOneToOne: false
+            referencedRelation: "audio_series"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       badges: {
         Row: {
           category: string | null
@@ -2494,6 +2589,75 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      user_audio_progress: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          last_played_at: string | null
+          progress_seconds: number | null
+          track_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_played_at?: string | null
+          progress_seconds?: number | null
+          track_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_played_at?: string | null
+          progress_seconds?: number | null
+          track_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_audio_progress_track_id_fkey"
+            columns: ["track_id"]
+            isOneToOne: false
+            referencedRelation: "audio_tracks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_audio_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "user_audio_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_audio_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_audio_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_badges: {
         Row: {

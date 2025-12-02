@@ -24,6 +24,7 @@ export const routes = {
   scripts: '/scripts',
   bonuses: '/bonuses',
   bonusesVideos: '/bonuses?category=video', // Videos migrated to bonuses
+  listen: '/listen',
   community: '/community',
   profile: '/profile',
   tracker: '/tracker',
