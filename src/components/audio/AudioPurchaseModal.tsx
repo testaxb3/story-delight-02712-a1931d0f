@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { Check, X } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { CartpandaBuyButton } from './CartpandaBuyButton';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 
 interface AudioPurchaseModalProps {
@@ -34,14 +33,6 @@ export function AudioPurchaseModal({ isOpen, onClose, series }: AudioPurchaseMod
           
           {/* Content */}
           <div className="relative p-6 space-y-6">
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted/80 flex items-center justify-center hover:bg-muted transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
             {/* Cover image */}
             {series.cover_image && (
               <div className="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-lg">
@@ -87,12 +78,16 @@ export function AudioPurchaseModal({ isOpen, onClose, series }: AudioPurchaseMod
               ))}
             </div>
 
-            {/* Cartpanda Buy Button */}
+            {/* Purchase Button */}
             <div className="space-y-3">
-              <CartpandaBuyButton 
-                buttonId="e9c7b179-eefa-43c7-a13a-5f5d452bdf72"
-                shopUrl="https://gtmsinop.mycartpanda.com/"
-              />
+              <a
+                href="https://gtmsinop.mycartpanda.com/checkout/e9c7b179-eefa-43c7-a13a-5f5d452bdf72"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full h-14 rounded-full bg-gradient-to-r from-[#D4A574] to-[#B8864A] text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95"
+              >
+                🔓 Unlock All Episodes
+              </a>
               
               <button
                 onClick={onClose}
