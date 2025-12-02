@@ -85,8 +85,8 @@ export default function Listen() {
               <AudioSeriesCard 
                 key={s.id}
                 series={s}
-                isLocked={isSeriesLocked(s)}
-                onClick={() => !isSeriesLocked(s) && navigate(`/listen/${s.slug}`)}
+                isLocked={false}
+                onClick={() => navigate(`/listen/${s.slug}`)}
                 onLockedClick={() => handleLockedClick(s)}
               />
             ))}
