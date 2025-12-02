@@ -15,7 +15,9 @@ export function AudioTrackList({ tracks, series, hasAccess }: AudioTrackListProp
   const [showPurchaseModal, setShowPurchaseModal] = useState(false);
 
   const handlePlayTrack = (track: AudioTrack) => {
-    play(track, series, tracks);
+    // Filter only accessible tracks for the queue
+    const accessibleTracks = tracks.filter(t => t.is_preview || hasAccess);
+    play(track, series, accessibleTracks);
   };
 
   const handleLockedClick = () => {

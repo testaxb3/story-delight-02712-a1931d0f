@@ -24,7 +24,14 @@ export default function ListenSeries() {
 
   const handlePlayAll = () => {
     if (series && tracks && tracks.length > 0) {
-      play(tracks[0], series, tracks);
+      // Filter only accessible tracks for the queue
+      const accessibleTracks = tracks.filter(t => t.is_preview || hasAccess);
+      
+      if (accessibleTracks.length > 0) {
+        play(accessibleTracks[0], series, accessibleTracks);
+      } else {
+        toast.error('Purchase required to play this series');
+      }
     }
   };
 
