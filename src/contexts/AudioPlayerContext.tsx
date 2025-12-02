@@ -2,9 +2,14 @@ import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useUpdateAudioProgress, useAudioProgress } from '@/hooks/useAudioProgress';
 
-const AudioPlayerContext = createContext<HTMLAudioElement | null>(null);
+const AudioPlayerContext = createContext<React.RefObject<HTMLAudioElement> | null>(null);
 
 export function useAudioElement() {
+  const ref = useContext(AudioPlayerContext);
+  return ref?.current ?? null;
+}
+
+export function useAudioRef() {
   return useContext(AudioPlayerContext);
 }
 
@@ -135,7 +140,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
   }, [currentTime]);
 
   return (
-    <AudioPlayerContext.Provider value={audioRef.current}>
+    <AudioPlayerContext.Provider value={audioRef}>
       <audio 
         ref={audioRef} 
         playsInline 

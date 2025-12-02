@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
+import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import { Slider } from '@/components/ui/slider';
 
 interface FullscreenPlayerProps {
@@ -15,6 +16,7 @@ function formatTime(seconds: number): string {
 }
 
 export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
+  const audioRef = useAudioRef();
   const {
     currentTrack,
     currentSeries,
@@ -116,7 +118,18 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 </button>
 
                 <button
-                  onClick={togglePlayPause}
+                  onClick={() => {
+                    // iOS: Call play/pause DIRECTLY for user gesture compliance
+                    if (audioRef?.current) {
+                      if (isPlaying) {
+                        audioRef.current.pause();
+                      } else {
+                        audioRef.current.play().catch(console.error);
+                      }
+                    }
+                    // Sync store
+                    togglePlayPause();
+                  }}
                   className="w-16 h-16 rounded-full bg-primary flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg"
                   aria-label={isPlaying ? 'Pause' : 'Play'}
                 >
