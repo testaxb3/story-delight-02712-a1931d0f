@@ -1,6 +1,5 @@
 import * as React from "react";
-import { AnimatePresence, motion, Transition } from "framer-motion";
-import { useOnClickOutside } from "usehooks-ts";
+import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 
@@ -26,26 +25,19 @@ interface ExpandableTabsProps {
   onChange?: (index: number | null) => void;
 }
 
-const buttonVariants = {
-  initial: {
-    gap: 0,
-    paddingLeft: ".5rem",
-    paddingRight: ".5rem",
-  },
-  animate: (isSelected: boolean) => ({
-    gap: isSelected ? ".5rem" : 0,
-    paddingLeft: isSelected ? "1rem" : ".5rem",
-    paddingRight: isSelected ? "1rem" : ".5rem",
-  }),
+const springTransition = {
+  type: "spring" as const,
+  stiffness: 400,
+  damping: 28,
+  mass: 0.8,
 };
 
-const spanVariants = {
-  initial: { width: 0, opacity: 0 },
-  animate: { width: "auto", opacity: 1 },
-  exit: { width: 0, opacity: 0 },
+const labelTransition = {
+  type: "spring" as const,
+  stiffness: 500,
+  damping: 30,
+  mass: 0.5,
 };
-
-const transition: Transition = { delay: 0.1, type: "spring", bounce: 0, duration: 0.6 };
 
 function isSeparator(tab: TabItem): tab is Separator {
   return tab.type === "separator";
@@ -59,12 +51,9 @@ export function ExpandableTabs({
   onChange,
 }: ExpandableTabsProps) {
   const [internalSelected, setInternalSelected] = React.useState<number | null>(null);
-  const outsideClickRef = React.useRef(null);
   
   const isControlled = controlledSelected !== undefined;
   const selected = isControlled ? controlledSelected : internalSelected;
-
-  // Removed click-outside reset - navigation should always maintain selection based on route
 
   const handleSelect = (index: number) => {
     if (!isControlled) {
@@ -79,9 +68,8 @@ export function ExpandableTabs({
 
   return (
     <div
-      ref={outsideClickRef}
       className={cn(
-        "flex items-center gap-1 rounded-full border bg-background p-1 shadow-sm",
+        "relative flex items-center gap-1 rounded-full border border-white/10 bg-card/70 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl dark:border-white/5 dark:bg-card/80 dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
         className
       )}
     >
@@ -91,32 +79,68 @@ export function ExpandableTabs({
         }
 
         const Icon = tab.icon;
+        const isSelected = selected === index;
+
         return (
           <motion.button
             key={tab.title}
-            variants={buttonVariants}
-            initial={false}
-            animate="animate"
-            custom={selected === index}
             onClick={() => handleSelect(index)}
-            transition={transition}
+            whileTap={{ scale: 0.92 }}
             className={cn(
-              "relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300",
-              selected === index
-                ? cn("bg-muted", activeColor)
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              "relative flex items-center justify-center rounded-full px-3 py-2.5 text-sm font-medium transition-colors duration-200",
+              isSelected
+                ? activeColor
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
-            <Icon size={20} />
-            <AnimatePresence initial={false}>
-              {selected === index && (
+            {/* Sliding indicator background */}
+            {isSelected && (
+              <motion.div
+                layoutId="nav-indicator"
+                className="absolute inset-0 rounded-full bg-primary/12 dark:bg-primary/20"
+                transition={springTransition}
+                style={{
+                  boxShadow: "0 0 20px hsl(var(--primary) / 0.15), inset 0 1px 0 rgba(255,255,255,0.1)",
+                }}
+              />
+            )}
+
+            {/* Glow effect for selected */}
+            {isSelected && (
+              <motion.div
+                layoutId="nav-glow"
+                className="absolute inset-0 rounded-full opacity-50"
+                transition={springTransition}
+                style={{
+                  background: "radial-gradient(ellipse at center, hsl(var(--primary) / 0.2) 0%, transparent 70%)",
+                }}
+              />
+            )}
+
+            {/* Icon with animation */}
+            <motion.div
+              className="relative z-10"
+              animate={{
+                scale: isSelected ? 1.1 : 1,
+                rotate: isSelected ? [0, -8, 0] : 0,
+              }}
+              transition={{
+                scale: springTransition,
+                rotate: { duration: 0.4, ease: "easeOut" },
+              }}
+            >
+              <Icon size={20} strokeWidth={isSelected ? 2.5 : 2} />
+            </motion.div>
+
+            {/* Expanding label */}
+            <AnimatePresence mode="popLayout">
+              {isSelected && (
                 <motion.span
-                  variants={spanVariants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                  transition={transition}
-                  className="overflow-hidden"
+                  initial={{ width: 0, opacity: 0, x: -8 }}
+                  animate={{ width: "auto", opacity: 1, x: 0 }}
+                  exit={{ width: 0, opacity: 0, x: -8 }}
+                  transition={labelTransition}
+                  className="relative z-10 ml-2 overflow-hidden whitespace-nowrap font-semibold"
                 >
                   {tab.title}
                 </motion.span>
