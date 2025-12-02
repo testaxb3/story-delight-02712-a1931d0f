@@ -49,6 +49,7 @@ const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 const Bonuses = lazy(() => import("./pages/BonusesPremium"));
 const CollectionDetail = lazy(() => import("./pages/CollectionDetail"));
 const Listen = lazy(() => import("./pages/Listen"));
+const ListenSeries = lazy(() => import("./pages/ListenSeries"));
 const EbookReader = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
@@ -276,6 +277,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <Listen />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/listen/:slug"
+          element={
+            <ProtectedRoute>
+              <ListenSeries />
             </ProtectedRoute>
           }
         />
