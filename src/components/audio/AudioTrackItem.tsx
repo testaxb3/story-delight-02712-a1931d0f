@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Play, Pause, Check, Lock } from 'lucide-react';
 import { useAudioProgress } from '@/hooks/useAudioProgress';
-import { useAudioElement } from '@/contexts/AudioPlayerContext';
+import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import type { AudioTrack } from '@/stores/audioPlayerStore';
 import { formatTime } from '@/lib/formatters';
 
@@ -17,7 +17,7 @@ interface AudioTrackItemProps {
 
 export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isLocked = false, onLockedClick }: AudioTrackItemProps) {
   const { data: progress } = useAudioProgress(track.id);
-  const audioElement = useAudioElement();
+  const audioRef = useAudioRef();
 
   const progressPercentage = progress
     ? Math.round((progress.progress_seconds / track.duration_seconds) * 100)
@@ -29,8 +29,8 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
     } else if (!isLocked) {
       onPlay();
       // iOS: Trigger play directly from user gesture for compliance
-      if (audioElement && !isCurrent) {
-        audioElement.play().catch((error) => {
+      if (audioRef?.current && !isCurrent) {
+        audioRef.current.play().catch((error) => {
           console.error('[AudioTrackItem] Direct play failed:', error.name);
         });
       }
