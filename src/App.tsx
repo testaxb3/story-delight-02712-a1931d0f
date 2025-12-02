@@ -9,6 +9,8 @@ import { AuthProvider } from "./contexts/AuthContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChildProfilesProvider } from "./contexts/ChildProfilesContext";
+import { AudioPlayerProvider } from "./contexts/AudioPlayerContext";
+import { AudioPlayer } from "./components/audio/AudioPlayer";
 import { initOneSignal } from "./lib/onesignal";
 import { initAnalytics } from "./lib/analytics";
 import { usePageTracking } from "./hooks/usePageTracking";
@@ -348,7 +350,10 @@ const App = () => (
             <Sonner />
             <UpdatePrompt />
             <ChildProfilesProvider>
-              <AppContent />
+              <AudioPlayerProvider>
+                <AppContent />
+                <AudioPlayer />
+              </AudioPlayerProvider>
             </ChildProfilesProvider>
           </TooltipProvider>
         </ThemeProvider>

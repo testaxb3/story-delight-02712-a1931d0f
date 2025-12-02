@@ -22,8 +22,31 @@ export default function Listen() {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="min-h-screen bg-background flex items-center justify-center">
-          <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div 
+          className="min-h-screen bg-background"
+          style={{
+            paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
+            paddingBottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 4rem))',
+          }}
+        >
+          <div className="max-w-2xl mx-auto px-6 space-y-8">
+            {/* Header skeleton */}
+            <div className="space-y-2">
+              <div className="h-8 w-48 bg-muted animate-pulse rounded" />
+              <div className="h-4 w-64 bg-muted animate-pulse rounded" />
+            </div>
+            
+            {/* Series card skeleton */}
+            <div className="h-48 bg-muted animate-pulse rounded-2xl" />
+            
+            {/* Track list skeleton */}
+            <div className="space-y-3">
+              <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
+              ))}
+            </div>
+          </div>
         </div>
       </MainLayout>
     );
