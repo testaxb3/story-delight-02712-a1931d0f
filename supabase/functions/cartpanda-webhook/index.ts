@@ -460,6 +460,10 @@ Deno.serve(async (req) => {
 
       console.log('🔄 Merged products:', mergedProducts);
 
+      // 🐛 FIX: Only set approved_at for NEW records, not updates
+      const isExistingUser = !!existingApprovedUser;
+      const now = new Date().toISOString();
+
       // Insert or update approved_users (now with phone AND products array)
       const { data: approvedUser, error: approvedError } = await supabase
         .from('approved_users')
@@ -474,10 +478,10 @@ Deno.serve(async (req) => {
           first_name: firstName,
           last_name: lastName,
           status: 'active',
-          approved_at: new Date().toISOString(),
+          ...(isExistingUser ? {} : { approved_at: now }), // ✅ Only set approved_at if NEW
           webhook_data: payload,
           products: mergedProducts, // ✅ Save ALL purchased products
-          updated_at: new Date().toISOString(),
+          updated_at: now,
         }, {
           onConflict: 'email',
           ignoreDuplicates: false
