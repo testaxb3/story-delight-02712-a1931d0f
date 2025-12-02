@@ -6,6 +6,7 @@ import { AudioTrackList } from '@/components/audio/AudioTrackList';
 import { useAudioSeriesBySlug } from '@/hooks/useAudioSeries';
 import { useAudioTracks } from '@/hooks/useAudioTracks';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
+import { formatDuration } from '@/lib/formatters';
 
 export default function ListenSeries() {
   const { slug } = useParams<{ slug: string }>();
@@ -13,16 +14,6 @@ export default function ListenSeries() {
   const { data: series, isLoading: isLoadingSeries } = useAudioSeriesBySlug(slug);
   const { data: tracks, isLoading: isLoadingTracks } = useAudioTracks(series?.id);
   const { play } = useAudioPlayerStore();
-
-  const formatDuration = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    
-    if (hours > 0) {
-      return `${hours}h ${minutes}m`;
-    }
-    return `${minutes}m`;
-  };
 
   const handlePlayAll = () => {
     if (series && tracks && tracks.length > 0) {
@@ -147,7 +138,7 @@ export default function ListenSeries() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="w-4 h-4" />
-                  <span>{formatDuration(series.total_duration)}</span>
+                  <span>{formatDuration(series.total_duration, 'long')}</span>
                 </div>
               </div>
 

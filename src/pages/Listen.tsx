@@ -26,14 +26,10 @@ export default function Listen() {
               <div className="h-4 w-64 bg-muted animate-pulse rounded" />
             </div>
             
-            {/* Series card skeleton */}
-            <div className="h-48 bg-muted animate-pulse rounded-2xl" />
-            
-            {/* Track list skeleton */}
-            <div className="space-y-3">
-              <div className="h-6 w-32 bg-muted animate-pulse rounded" />
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-muted animate-pulse rounded-xl" />
+            {/* Series cards skeleton */}
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-32 bg-muted animate-pulse rounded-3xl" />
               ))}
             </div>
           </div>
@@ -69,7 +65,7 @@ export default function Listen() {
 
           {/* Series Grid */}
           <div className="space-y-4">
-            {series?.map((s, index) => (
+            {series?.map((s) => (
               <AudioSeriesCard 
                 key={s.id}
                 series={s} 

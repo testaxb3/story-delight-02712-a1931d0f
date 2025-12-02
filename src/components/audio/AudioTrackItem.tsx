@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Play, Pause, Check } from 'lucide-react';
 import { useAudioProgress } from '@/hooks/useAudioProgress';
 import type { AudioTrack } from '@/stores/audioPlayerStore';
+import { formatTime } from '@/lib/formatters';
 
 interface AudioTrackItemProps {
   track: AudioTrack;
@@ -13,12 +14,6 @@ interface AudioTrackItemProps {
 
 export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index }: AudioTrackItemProps) {
   const { data: progress } = useAudioProgress(track.id);
-
-  const formatDuration = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const progressPercentage = progress
     ? Math.round((progress.progress_seconds / track.duration_seconds) * 100)
@@ -86,7 +81,7 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index }: A
 
         {/* Duration */}
         <span className="text-xs text-muted-foreground font-mono flex-shrink-0">
-          {formatDuration(track.duration_seconds)}
+          {formatTime(track.duration_seconds)}
         </span>
       </button>
     </motion.div>

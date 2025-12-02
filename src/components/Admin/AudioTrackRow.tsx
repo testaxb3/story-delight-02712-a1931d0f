@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { Edit2, Trash2, Play, Clock } from 'lucide-react';
 import { useAudioTracksAdmin } from '@/hooks/useAdminAudio';
 import type { Database } from '@/integrations/supabase/types';
+import { formatTime } from '@/lib/formatters';
 
 type AudioTrack = Database['public']['Tables']['audio_tracks']['Row'];
 
@@ -16,12 +17,6 @@ export function AudioTrackRow({ track, onEdit }: AudioTrackRowProps) {
   const handleDelete = async () => {
     if (!confirm('Delete this track?')) return;
     deleteTrack.mutate(track.id);
-  };
-
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -51,7 +46,7 @@ export function AudioTrackRow({ track, onEdit }: AudioTrackRowProps) {
       {/* Duration */}
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
         <Clock className="w-4 h-4" />
-        {formatDuration(track.duration_seconds)}
+        {formatTime(track.duration_seconds)}
       </div>
 
       {/* Actions */}
