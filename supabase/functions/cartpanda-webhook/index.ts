@@ -73,7 +73,7 @@ function formatPhoneE164(phone: string | undefined | null): string | null {
   return '+' + digits;
 }
 
-// Welcome email HTML template
+// Welcome email HTML template - Premium v2.0
 function getWelcomeEmailHTML(firstName: string): string {
   return `
 <!DOCTYPE html>
@@ -83,69 +83,152 @@ function getWelcomeEmailHTML(firstName: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to NEP System</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f5f5f5;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0a0a0a;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; margin: 0 auto; background-color: #111111;">
     
-    <!-- Header -->
+    <!-- Header with gradient -->
     <tr>
-      <td style="background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%); padding: 40px 30px; text-align: center;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 28px;">Welcome to NEP System! 🎉</h1>
-        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">Your Science-Based Parenting Guide</p>
+      <td style="background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #2563EB 100%); padding: 50px 30px; text-align: center; border-radius: 0 0 24px 24px;">
+        <p style="color: rgba(255,255,255,0.8); margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">YOUR ACCESS IS READY</p>
+        <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; line-height: 1.2;">Understanding Your Child's Brain</h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 15px 0 0 0; font-size: 16px;">Starts right now.</p>
       </td>
     </tr>
     
-    <!-- Content -->
+    <!-- Main Content -->
     <tr>
       <td style="padding: 40px 30px;">
-        <p style="font-size: 16px; color: #333; margin: 0 0 20px 0;">
+        <p style="font-size: 18px; color: #ffffff; margin: 0 0 20px 0; line-height: 1.5;">
           Hi ${firstName}! 👋
         </p>
-        <p style="font-size: 16px; color: #333; margin: 0 0 20px 0;">
-          Thank you for choosing NEP System. You've just taken a transformative step toward better understanding your child's unique brain profile.
+        <p style="font-size: 16px; color: #a1a1aa; margin: 0 0 30px 0; line-height: 1.6;">
+          You've just unlocked science-based strategies that actually work—even when nothing else has. In under 5 minutes, you'll know exactly what to say when your child melts down.
         </p>
         
-        <!-- CTA Button -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+        <!-- Primary CTA -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 25px 0;">
           <tr>
             <td align="center">
-              <a href="https://nepsystem.vercel.app/" style="display: inline-block; background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 30px; font-size: 16px; font-weight: 600;">
-                Access Your Account →
+              <a href="https://nepsystem.vercel.app/" style="display: inline-block; background: linear-gradient(135deg, #7C3AED 0%, #4F46E5 100%); color: #ffffff; text-decoration: none; padding: 18px 48px; border-radius: 50px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);">
+                Take the 5-Minute Quiz →
               </a>
             </td>
           </tr>
         </table>
         
-        <!-- Steps -->
-        <h2 style="font-size: 20px; color: #1a1a1a; margin: 30px 0 15px 0;">🚀 Getting Started</h2>
-        <ol style="font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px;">
-          <li style="margin-bottom: 10px;"><strong>Sign in</strong> with this email address</li>
-          <li style="margin-bottom: 10px;"><strong>Complete the quiz</strong> to identify your child's brain profile</li>
-          <li style="margin-bottom: 10px;"><strong>Explore Scripts</strong> for immediate, actionable strategies</li>
-          <li style="margin-bottom: 10px;"><strong>Watch videos</strong> for deeper understanding</li>
-          <li style="margin-bottom: 10px;"><strong>Track progress</strong> in the MY PLAN section</li>
-        </ol>
+        <!-- Secondary CTA -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 35px 0;">
+          <tr>
+            <td align="center">
+              <p style="color: #71717a; font-size: 13px; margin: 0 0 8px 0;">Already know your child's profile?</p>
+              <a href="https://nepsystem.vercel.app/scripts" style="color: #a78bfa; font-size: 14px; text-decoration: underline;">
+                Jump straight to Scripts
+              </a>
+            </td>
+          </tr>
+        </table>
         
-        <!-- Highlight Box -->
-        <div style="background-color: #F3F4F6; border-radius: 12px; padding: 20px; margin: 25px 0;">
-          <p style="font-size: 14px; color: #1a1a1a; margin: 0; font-style: italic;">
-            💡 <strong>Pro Tip:</strong> Start with the Scripts section when facing a challenging moment. Each script gives you exact phrases to say, step-by-step actions, and explains WHY it works.
+        <!-- Scenario Box -->
+        <div style="background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(79, 70, 229, 0.1) 100%); border: 1px solid rgba(124, 58, 237, 0.3); border-radius: 16px; padding: 24px; margin: 0 0 35px 0;">
+          <p style="font-size: 15px; color: #e4e4e7; margin: 0; line-height: 1.7;">
+            <span style="font-size: 20px;">💡</span> <strong style="color: #ffffff;">Sound familiar?</strong><br><br>
+            When your child refuses to get dressed, screams over homework, or has a meltdown in the supermarket...
+            <br><br>
+            <strong style="color: #a78bfa;">We have exact scripts for that.</strong> Word-for-word phrases that work with their specific brain type.
           </p>
         </div>
         
-        <!-- Features -->
-        <h2 style="font-size: 20px; color: #1a1a1a; margin: 30px 0 15px 0;">✨ What You Get</h2>
-        <ul style="font-size: 14px; color: #333; line-height: 1.8; padding-left: 20px;">
-          <li style="margin-bottom: 8px;">🧠 Brain profile identification (INTENSE, DISTRACTED, DEFIANT)</li>
-          <li style="margin-bottom: 8px;">📝 Hundreds of situation-specific scripts with exact phrases</li>
-          <li style="margin-bottom: 8px;">🎬 Video training on evidence-based strategies</li>
-          <li style="margin-bottom: 8px;">📚 Exclusive ebooks with deep-dive content</li>
-          <li style="margin-bottom: 8px;">📊 Daily progress tracking and insights</li>
-        </ul>
+        <!-- 3-Step Quick Start -->
+        <h2 style="font-size: 18px; color: #ffffff; margin: 0 0 20px 0; text-align: center;">⚡ Start in 3 Simple Steps</h2>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 35px 0;">
+          <tr>
+            <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="50" style="vertical-align: top; padding-right: 15px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7C3AED, #4F46E5); border-radius: 50%; text-align: center; line-height: 40px; color: #fff; font-weight: 700;">1</div>
+                  </td>
+                  <td style="vertical-align: top;">
+                    <p style="font-size: 15px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">Take the Quiz</p>
+                    <p style="font-size: 13px; color: #71717a; margin: 0;">Identify if your child is INTENSE, DISTRACTED, or DEFIANT</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr><td style="height: 12px;"></td></tr>
+          <tr>
+            <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="50" style="vertical-align: top; padding-right: 15px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7C3AED, #4F46E5); border-radius: 50%; text-align: center; line-height: 40px; color: #fff; font-weight: 700;">2</div>
+                  </td>
+                  <td style="vertical-align: top;">
+                    <p style="font-size: 15px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">Get Personalized Scripts</p>
+                    <p style="font-size: 13px; color: #71717a; margin: 0;">200+ situation-specific strategies matched to your child</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr><td style="height: 12px;"></td></tr>
+          <tr>
+            <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td width="50" style="vertical-align: top; padding-right: 15px;">
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7C3AED, #4F46E5); border-radius: 50%; text-align: center; line-height: 40px; color: #fff; font-weight: 700;">3</div>
+                  </td>
+                  <td style="vertical-align: top;">
+                    <p style="font-size: 15px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">See Results in Days</p>
+                    <p style="font-size: 13px; color: #71717a; margin: 0;">Track progress and watch your connection deepen</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        
+        <!-- Feature Cards -->
+        <h2 style="font-size: 18px; color: #ffffff; margin: 0 0 20px 0; text-align: center;">✨ What's Included</h2>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin: 0 0 30px 0;">
+          <tr>
+            <td width="48%" style="background-color: #1a1a1a; border-radius: 12px; padding: 18px; text-align: center; vertical-align: top;">
+              <p style="font-size: 28px; margin: 0 0 8px 0;">🧠</p>
+              <p style="font-size: 14px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">Brain Profiles</p>
+              <p style="font-size: 12px; color: #71717a; margin: 0;">Science-backed identification</p>
+            </td>
+            <td width="4%"></td>
+            <td width="48%" style="background-color: #1a1a1a; border-radius: 12px; padding: 18px; text-align: center; vertical-align: top;">
+              <p style="font-size: 28px; margin: 0 0 8px 0;">📝</p>
+              <p style="font-size: 14px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">200+ Scripts</p>
+              <p style="font-size: 12px; color: #71717a; margin: 0;">Exact phrases that work</p>
+            </td>
+          </tr>
+          <tr><td colspan="3" style="height: 12px;"></td></tr>
+          <tr>
+            <td width="48%" style="background-color: #1a1a1a; border-radius: 12px; padding: 18px; text-align: center; vertical-align: top;">
+              <p style="font-size: 28px; margin: 0 0 8px 0;">🎬</p>
+              <p style="font-size: 14px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">Video Training</p>
+              <p style="font-size: 12px; color: #71717a; margin: 0;">Expert-led guidance</p>
+            </td>
+            <td width="4%"></td>
+            <td width="48%" style="background-color: #1a1a1a; border-radius: 12px; padding: 18px; text-align: center; vertical-align: top;">
+              <p style="font-size: 28px; margin: 0 0 8px 0;">📚</p>
+              <p style="font-size: 14px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600;">Ebooks</p>
+              <p style="font-size: 12px; color: #71717a; margin: 0;">Deep-dive resources</p>
+            </td>
+          </tr>
+        </table>
         
         <!-- Support -->
-        <div style="border-top: 1px solid #E5E7EB; margin-top: 30px; padding-top: 20px;">
-          <p style="font-size: 14px; color: #666; margin: 0;">
-            Need help? Contact us at <a href="mailto:support@nepsystem.pro" style="color: #8B5CF6;">support@nepsystem.pro</a>
+        <div style="border-top: 1px solid #27272a; padding-top: 25px; text-align: center;">
+          <p style="font-size: 14px; color: #71717a; margin: 0;">
+            Questions? We're here to help.<br>
+            <a href="mailto:support@nepsystem.pro" style="color: #a78bfa; text-decoration: none;">support@nepsystem.pro</a>
           </p>
         </div>
       </td>
@@ -153,11 +236,22 @@ function getWelcomeEmailHTML(firstName: string): string {
     
     <!-- Footer -->
     <tr>
-      <td style="background-color: #1a1a1a; padding: 25px 30px; text-align: center;">
-        <p style="color: #999; font-size: 12px; margin: 0;">
+      <td style="background-color: #0a0a0a; padding: 30px; text-align: center; border-top: 1px solid #1a1a1a;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 15px;">
+          <tr>
+            <td align="center">
+              <a href="https://nepsystem.vercel.app/" style="color: #a78bfa; font-size: 13px; text-decoration: none; margin: 0 12px;">Quiz</a>
+              <span style="color: #3f3f46;">•</span>
+              <a href="https://nepsystem.vercel.app/scripts" style="color: #a78bfa; font-size: 13px; text-decoration: none; margin: 0 12px;">Scripts</a>
+              <span style="color: #3f3f46;">•</span>
+              <a href="mailto:support@nepsystem.pro" style="color: #a78bfa; font-size: 13px; text-decoration: none; margin: 0 12px;">Help</a>
+            </td>
+          </tr>
+        </table>
+        <p style="color: #52525b; font-size: 12px; margin: 0;">
           © 2025 NEP System. All rights reserved.
         </p>
-        <p style="color: #666; font-size: 11px; margin: 10px 0 0 0;">
+        <p style="color: #3f3f46; font-size: 11px; margin: 8px 0 0 0;">
           Science-Based Parenting Solutions
         </p>
       </td>
@@ -532,7 +626,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // 📧 Send welcome email via OneSignal
+      // 📧 Send welcome email via Resend
       await sendWelcomeEmail(email, firstName || 'there');
 
       // 📱 Send welcome SMS if phone available
