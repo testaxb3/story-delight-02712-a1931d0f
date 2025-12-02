@@ -78,30 +78,30 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     };
   }, [currentTrack, setTime, setDuration, pause, next, updateProgress]);
 
-  // Control playback
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (isPlaying) {
-      audio.play().catch(() => pause());
-    } else {
-      audio.pause();
-    }
-  }, [isPlaying, pause]);
-
-  // Load new track
+  // Load new track - ONLY when currentTrack changes
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
 
     audio.src = currentTrack.audio_url;
+    audio.load(); // Force preload
     hasResumedRef.current = false; // Reset resume flag for new track
-    
+  }, [currentTrack]);
+
+  // Control playback - when isPlaying changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentTrack) return;
+
     if (isPlaying) {
-      audio.play().catch(() => pause());
+      audio.play().catch((error) => {
+        console.error('[AudioPlayer] Play blocked:', error.name, error.message);
+        pause();
+      });
+    } else {
+      audio.pause();
     }
-  }, [currentTrack, isPlaying, pause]);
+  }, [isPlaying, pause, currentTrack]);
 
   // Resume playback from saved progress
   useEffect(() => {
@@ -136,7 +136,11 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
   return (
     <AudioPlayerContext.Provider value={audioRef.current}>
-      <audio ref={audioRef} />
+      <audio 
+        ref={audioRef} 
+        playsInline 
+        webkit-playsinline="true"
+      />
       {children}
     </AudioPlayerContext.Provider>
   );
