@@ -12,6 +12,7 @@ import { AdminSystemTab } from '@/components/Admin/AdminSystemTab';
 import { BonusesManagement } from '@/components/Admin/BonusesManagement';
 import { ModerationPanel } from '@/components/Community/ModerationPanel';
 import { ScriptRequestsPanel } from '@/components/Admin/ScriptRequestsPanel';
+import { AdminAudioTab } from '@/components/Admin/AdminAudioTab';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -26,12 +27,13 @@ import {
   Wand2,
   Shield,
   Settings,
-  MessageCircleHeart
+  MessageCircleHeart,
+  Headphones
 } from 'lucide-react';
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState('scripts');
-  const [counts, setCounts] = useState({ scripts: 0, videos: 0, refunds: 0, bonuses: 0 });
+  const [counts, setCounts] = useState({ scripts: 0, videos: 0, refunds: 0, bonuses: 0, audioTracks: 0 });
   const [loadingCounts, setLoadingCounts] = useState(false);
   const { user } = useAuth();
   const { isAdmin, checking } = useAdminStatus();
@@ -65,10 +67,15 @@ export default function Admin() {
       .from('bonuses')
       .select('*', { count: 'exact', head: true });
 
+    // Get audio tracks count
+    const { count: audioTracksCount } = await supabase
+      .from('audio_tracks')
+      .select('*', { count: 'exact', head: true });
+
     setCounts(
       results.reduce(
         (acc, result) => ({ ...acc, [result.key]: result.value }),
-        { scripts: 0, videos: 0, refunds: 0, bonuses: bonusesCount ?? 0 }
+        { scripts: 0, videos: 0, refunds: 0, bonuses: bonusesCount ?? 0, audioTracks: audioTracksCount ?? 0 }
       )
     );
     setLoadingCounts(false);
@@ -104,7 +111,7 @@ export default function Admin() {
     );
   }
 
-  const totalItems = counts.scripts + counts.videos + counts.refunds + counts.bonuses;
+  const totalItems = counts.scripts + counts.videos + counts.refunds + counts.bonuses + counts.audioTracks;
 
   return (
     <MainLayout>
@@ -179,12 +186,24 @@ export default function Admin() {
               {loadingCounts ? '—' : counts.refunds}
             </div>
           </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/40 dark:to-blue-800/40 border-blue-200 dark:border-blue-700 shadow-md hover:shadow-lg transition-shadow">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-blue-500 rounded-lg">
+                <Headphones className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-sm font-medium text-blue-900 dark:text-blue-100">Audio Tracks</div>
+            </div>
+            <div className="text-3xl font-bold text-blue-900 dark:text-blue-100">
+              {loadingCounts ? '—' : counts.audioTracks}
+            </div>
+          </Card>
         </div>
 
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-9 w-full h-auto p-2 bg-muted/50">
+            <TabsList className="grid grid-cols-10 w-full h-auto p-2 bg-muted/50 overflow-x-auto">
               <TabsTrigger
                 value="scripts"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
@@ -302,6 +321,19 @@ export default function Admin() {
                 </div>
               </TabsTrigger>
 
+              <TabsTrigger
+                value="audio"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <Headphones className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Audio</span>
+                  <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">
+                    {loadingCounts ? '—' : counts.audioTracks}
+                  </span>
+                </div>
+              </TabsTrigger>
+
             </TabsList>
 
             <div className="p-6">
@@ -339,6 +371,10 @@ export default function Admin() {
 
               <TabsContent value="requests" className="mt-0">
                 <ScriptRequestsPanel />
+              </TabsContent>
+
+              <TabsContent value="audio" className="mt-0">
+                <AdminAudioTab />
               </TabsContent>
             </div>
           </Tabs>
