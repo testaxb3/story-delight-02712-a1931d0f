@@ -1,23 +1,13 @@
 import { motion } from 'framer-motion';
 import { Headphones } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { AudioSeriesCard } from '@/components/audio/AudioSeriesCard';
-import { AudioTrackList } from '@/components/audio/AudioTrackList';
 import { useAudioSeries } from '@/hooks/useAudioSeries';
-import { useAudioTracks } from '@/hooks/useAudioTracks';
-import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 
 export default function Listen() {
   const { data: series, isLoading } = useAudioSeries();
-  const firstSeries = series?.[0];
-  const { data: tracks } = useAudioTracks(firstSeries?.id);
-  const { play } = useAudioPlayerStore();
-
-  const handlePlayAll = () => {
-    if (firstSeries && tracks && tracks.length > 0) {
-      play(tracks[0], firstSeries, tracks);
-    }
-  };
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -77,24 +67,19 @@ export default function Listen() {
             </p>
           </motion.div>
 
-          {/* Series Card */}
-          {firstSeries && (
-            <AudioSeriesCard 
-              series={firstSeries} 
-              onPlay={handlePlayAll}
-            />
-          )}
-
-          {/* Track List */}
-          {firstSeries && tracks && (
-            <AudioTrackList 
-              tracks={tracks} 
-              series={firstSeries}
-            />
-          )}
+          {/* Series Grid */}
+          <div className="space-y-4">
+            {series?.map((s, index) => (
+              <AudioSeriesCard 
+                key={s.id}
+                series={s} 
+                onClick={() => navigate(`/listen/${s.slug}`)}
+              />
+            ))}
+          </div>
 
           {/* Empty state if no series */}
-          {!firstSeries && !isLoading && (
+          {!series?.length && !isLoading && (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -111,20 +96,6 @@ export default function Listen() {
                   Audio content coming soon
                 </p>
               </div>
-            </motion.div>
-          )}
-
-          {/* Coming Soon Section */}
-          {firstSeries && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="rounded-2xl bg-muted/30 border border-border/50 p-6 text-center"
-            >
-              <p className="text-sm text-muted-foreground">
-                More audio series coming soon...
-              </p>
             </motion.div>
           )}
         </div>

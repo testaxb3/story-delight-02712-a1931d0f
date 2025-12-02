@@ -37,3 +37,23 @@ export const useAudioSeriesById = (seriesId: string | undefined) => {
     staleTime: 5 * 60 * 1000,
   });
 };
+
+export const useAudioSeriesBySlug = (slug: string | undefined) => {
+  return useQuery({
+    queryKey: ['audio-series', 'slug', slug],
+    queryFn: async () => {
+      if (!slug) return null;
+      
+      const { data, error } = await supabase
+        .from('audio_series')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+      if (error) throw error;
+      return data as AudioSeries;
+    },
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+};
