@@ -36,14 +36,14 @@ export function BottomNavExpandable() {
 
   return (
     <nav 
-      className="fixed left-4 right-4 z-[100] md:hidden pointer-events-auto"
-      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 0.5rem)` }}
+      className="fixed left-6 right-6 z-[100] md:hidden pointer-events-auto"
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 0.75rem)` }}
     >
       <ExpandableTabs
         tabs={tabs}
         selected={selectedIndex}
         onChange={handleChange}
-        className="bg-card/80 backdrop-blur-xl border-border shadow-2xl justify-center"
+        className="bg-card/95 backdrop-blur-xl border-border shadow-2xl justify-around"
         activeColor="text-primary"
       />
     </nav>
