@@ -3,8 +3,7 @@ import { Play, Pause, Check, Lock } from 'lucide-react';
 import { useAudioProgress } from '@/hooks/useAudioProgress';
 import type { AudioTrack } from '@/stores/audioPlayerStore';
 import { formatTime } from '@/lib/formatters';
-import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 interface AudioTrackItemProps {
   track: AudioTrack;
@@ -13,26 +12,20 @@ interface AudioTrackItemProps {
   onPlay: () => void;
   index: number;
   isLocked?: boolean;
+  onLockedClick?: () => void;
 }
 
-export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isLocked = false }: AudioTrackItemProps) {
+export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isLocked = false, onLockedClick }: AudioTrackItemProps) {
   const { data: progress } = useAudioProgress(track.id);
-  const navigate = useNavigate();
 
   const progressPercentage = progress
     ? Math.round((progress.progress_seconds / track.duration_seconds) * 100)
     : 0;
 
   const handleClick = () => {
-    if (isLocked) {
-      toast.error('This episode is premium only', {
-        description: 'Unlock all episodes with a premium upgrade',
-        action: {
-          label: 'Unlock',
-          onClick: () => navigate('/listen'),
-        },
-      });
-    } else {
+    if (isLocked && onLockedClick) {
+      onLockedClick();
+    } else if (!isLocked) {
       onPlay();
     }
   };
