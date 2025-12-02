@@ -19,13 +19,8 @@ export default function ListenSeries() {
   const { hasUnlock, isLoading: isLoadingProducts } = useUserProducts();
   const { play } = useAudioPlayerStore();
 
-  // Protect route: redirect if series is locked
-  useEffect(() => {
-    if (series && series.unlock_key && !isLoadingProducts && !hasUnlock(series.unlock_key)) {
-      toast.error('This content requires a premium upgrade');
-      navigate('/listen');
-    }
-  }, [series, hasUnlock, isLoadingProducts, navigate]);
+  // Check if user has access to premium tracks
+  const hasAccess = !series?.unlock_key || hasUnlock(series.unlock_key);
 
   const handlePlayAll = () => {
     if (series && tracks && tracks.length > 0) {
@@ -176,6 +171,7 @@ export default function ListenSeries() {
               <AudioTrackList 
                 tracks={tracks} 
                 series={series}
+                hasAccess={hasAccess}
               />
             )}
           </motion.div>
