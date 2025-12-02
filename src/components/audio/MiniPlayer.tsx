@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
-import { cn } from '@/lib/utils';
 
 interface MiniPlayerProps {
   onExpand: () => void;
