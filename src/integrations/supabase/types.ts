@@ -4041,6 +4041,7 @@ export type Database = {
         Returns: undefined
       }
       archive_bonus: { Args: { p_bonus_id: string }; Returns: Json }
+      auth_user_email: { Args: never; Returns: string }
       calculate_badge_progress: {
         Args: { p_requirement: string; p_stats: Json }
         Returns: Json
