@@ -169,40 +169,38 @@ function getWelcomeEmailHTML(firstName: string): string {
   `.trim();
 }
 
-// Send welcome email via OneSignal
+// Send welcome email via Resend
 async function sendWelcomeEmail(email: string, firstName: string): Promise<void> {
-  const onesignalAppId = Deno.env.get('ONESIGNAL_APP_ID');
-  const onesignalApiKey = Deno.env.get('ONESIGNAL_REST_API_KEY');
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
 
-  if (!onesignalAppId || !onesignalApiKey) {
-    console.warn('⚠️ OneSignal credentials not configured, skipping welcome email');
+  if (!resendApiKey) {
+    console.warn('⚠️ RESEND_API_KEY not configured, skipping welcome email');
     return;
   }
 
-  console.log('📧 Sending welcome email to:', email);
+  console.log('📧 Sending welcome email via Resend to:', email);
 
   try {
-    const response = await fetch('https://api.onesignal.com/notifications', {
+    const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${resendApiKey}`,
         'Content-Type': 'application/json',
-        'Authorization': `Key ${onesignalApiKey}`,
       },
       body: JSON.stringify({
-        app_id: onesignalAppId,
-        target_channel: 'email',
-        include_email_tokens: [email],
-        email_subject: 'Welcome to NEP System! 🎉 Your Access is Ready',
-        email_body: getWelcomeEmailHTML(firstName),
+        from: 'NEP System <support@nepsystem.pro>',
+        to: [email],
+        subject: 'Welcome to NEP System! 🎉 Your Access is Ready',
+        html: getWelcomeEmailHTML(firstName),
       }),
     });
 
     const result = await response.json();
     
     if (!response.ok) {
-      console.error('❌ OneSignal email error:', result);
+      console.error('❌ Resend email error:', result);
     } else {
-      console.log('✅ Welcome email sent:', result.id || 'success');
+      console.log('✅ Welcome email sent via Resend:', result.id);
     }
   } catch (error) {
     console.error('⚠️ Failed to send welcome email:', error);
