@@ -5,6 +5,7 @@ import { useAudioSeriesAdmin } from '@/hooks/useAdminAudio';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
+import { formatDuration } from '@/lib/formatters';
 
 type AudioSeries = Database['public']['Tables']['audio_series']['Row'];
 
@@ -43,13 +44,6 @@ export function AudioSeriesCard({ series, onEdit }: AudioSeriesCardProps) {
     } finally {
       setUploading(false);
     }
-  };
-
-  const formatDuration = (seconds: number | null) => {
-    if (!seconds) return '0m 0s';
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}m ${secs}s`;
   };
 
   return (
@@ -108,7 +102,7 @@ export function AudioSeriesCard({ series, onEdit }: AudioSeriesCardProps) {
             <span>{series.track_count || 0} tracks</span>
           </div>
           <div className="text-muted-foreground">
-            {formatDuration(series.total_duration)}
+            {formatDuration(series.total_duration || 0, 'short')}
           </div>
         </div>
 

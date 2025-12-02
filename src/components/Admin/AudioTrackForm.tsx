@@ -15,6 +15,7 @@ import { Upload } from 'lucide-react';
 import { useAudioTracksAdmin } from '@/hooks/useAdminAudio';
 import { toast } from 'sonner';
 import type { Database } from '@/integrations/supabase/types';
+import { formatTime } from '@/lib/formatters';
 
 type AudioTrack = Database['public']['Tables']['audio_tracks']['Row'];
 type AudioSeries = Database['public']['Tables']['audio_series']['Row'];
@@ -99,12 +100,6 @@ export function AudioTrackForm({ track, series, onClose }: AudioTrackFormProps) 
     onClose();
   };
 
-  const formatDuration = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
@@ -173,7 +168,7 @@ export function AudioTrackForm({ track, series, onClose }: AudioTrackFormProps) 
                 ✓ Audio uploaded
               </div>
               <div className="text-xs text-muted-foreground">
-                Duration: {formatDuration(formData.duration_seconds)}
+                Duration: {formatTime(formData.duration_seconds)}
               </div>
               <audio controls src={formData.audio_url} className="w-full mt-2" />
               <label className="cursor-pointer">
