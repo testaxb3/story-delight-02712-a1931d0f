@@ -1,8 +1,10 @@
 import { motion } from 'framer-motion';
-import { Play, Pause, Check } from 'lucide-react';
+import { Play, Pause, Check, Lock } from 'lucide-react';
 import { useAudioProgress } from '@/hooks/useAudioProgress';
 import type { AudioTrack } from '@/stores/audioPlayerStore';
 import { formatTime } from '@/lib/formatters';
+import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 interface AudioTrackItemProps {
   track: AudioTrack;
@@ -10,14 +12,30 @@ interface AudioTrackItemProps {
   isCurrent: boolean;
   onPlay: () => void;
   index: number;
+  isLocked?: boolean;
 }
 
-export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index }: AudioTrackItemProps) {
+export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isLocked = false }: AudioTrackItemProps) {
   const { data: progress } = useAudioProgress(track.id);
+  const navigate = useNavigate();
 
   const progressPercentage = progress
     ? Math.round((progress.progress_seconds / track.duration_seconds) * 100)
     : 0;
+
+  const handleClick = () => {
+    if (isLocked) {
+      toast.error('This episode is premium only', {
+        description: 'Unlock all episodes with a premium upgrade',
+        action: {
+          label: 'Unlock',
+          onClick: () => navigate('/listen'),
+        },
+      });
+    } else {
+      onPlay();
+    }
+  };
 
   return (
     <motion.div
@@ -27,18 +45,23 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index }: A
       className="group"
     >
       <button
-        onClick={onPlay}
+        onClick={handleClick}
         className={`
-          w-full p-4 rounded-2xl flex items-center gap-4 transition-all
+          w-full p-4 rounded-2xl flex items-center gap-4 transition-all relative
           ${isCurrent 
             ? 'bg-primary/10 border border-primary/20' 
+            : isLocked
+            ? 'bg-card/50 hover:bg-card/70 border border-[#D4A574]/30 cursor-pointer'
             : 'bg-card hover:bg-muted/50 border border-transparent'
           }
+          ${isLocked ? 'opacity-60' : ''}
         `}
       >
         {/* Play/Pause button or track number */}
-        <div className="relative flex-shrink-0 w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-          {isCurrent && isPlaying ? (
+        <div className={`relative flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center ${isLocked ? 'bg-[#D4A574]/20' : 'bg-muted'}`}>
+          {isLocked ? (
+            <Lock className="w-4 h-4 text-[#D4A574]" />
+          ) : isCurrent && isPlaying ? (
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -79,10 +102,17 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index }: A
           )}
         </div>
 
-        {/* Duration */}
-        <span className="text-xs text-muted-foreground font-mono flex-shrink-0">
-          {formatTime(track.duration_seconds)}
-        </span>
+        {/* Duration or Premium badge */}
+        {isLocked ? (
+          <span className="text-xs text-[#D4A574] font-semibold flex-shrink-0 flex items-center gap-1">
+            <span>👑</span>
+            <span>Premium</span>
+          </span>
+        ) : (
+          <span className="text-xs text-muted-foreground font-mono flex-shrink-0">
+            {formatTime(track.duration_seconds)}
+          </span>
+        )}
       </button>
     </motion.div>
   );

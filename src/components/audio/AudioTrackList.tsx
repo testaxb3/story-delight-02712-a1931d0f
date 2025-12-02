@@ -5,9 +5,10 @@ import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 interface AudioTrackListProps {
   tracks: AudioTrack[];
   series: AudioSeries;
+  hasAccess: boolean;
 }
 
-export function AudioTrackList({ tracks, series }: AudioTrackListProps) {
+export function AudioTrackList({ tracks, series, hasAccess }: AudioTrackListProps) {
   const { currentTrack, isPlaying, play } = useAudioPlayerStore();
 
   const handlePlayTrack = (track: AudioTrack) => {
@@ -29,16 +30,21 @@ export function AudioTrackList({ tracks, series }: AudioTrackListProps) {
       </h3>
       
       <div className="space-y-2">
-        {tracks.map((track, index) => (
-          <AudioTrackItem
-            key={track.id}
-            track={track}
-            isPlaying={isPlaying && currentTrack?.id === track.id}
-            isCurrent={currentTrack?.id === track.id}
-            onPlay={() => handlePlayTrack(track)}
-            index={index}
-          />
-        ))}
+        {tracks.map((track, index) => {
+          const isLocked = !track.is_preview && !hasAccess;
+          
+          return (
+            <AudioTrackItem
+              key={track.id}
+              track={track}
+              isPlaying={isPlaying && currentTrack?.id === track.id}
+              isCurrent={currentTrack?.id === track.id}
+              onPlay={() => handlePlayTrack(track)}
+              index={index}
+              isLocked={isLocked}
+            />
+          );
+        })}
       </div>
     </div>
   );
