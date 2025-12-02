@@ -2,7 +2,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { Slider } from '@/components/ui/slider';
-import { cn } from '@/lib/utils';
 
 interface FullscreenPlayerProps {
   isOpen: boolean;

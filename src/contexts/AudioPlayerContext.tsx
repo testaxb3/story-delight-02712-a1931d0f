@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, ReactNode } from 'react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
-import { useUpdateAudioProgress } from '@/hooks/useAudioProgress';
+import { useUpdateAudioProgress, useAudioProgress } from '@/hooks/useAudioProgress';
 
 const AudioPlayerContext = createContext<HTMLAudioElement | null>(null);
 
@@ -26,7 +26,9 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
   } = useAudioPlayerStore();
   
   const { mutate: updateProgress } = useUpdateAudioProgress();
+  const { data: savedProgress } = useAudioProgress(currentTrack?.id);
   const lastSaveTimeRef = useRef(0);
+  const hasResumedRef = useRef(false);
 
   // Sync store with audio element
   useEffect(() => {
@@ -94,12 +96,33 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     if (!audio || !currentTrack) return;
 
     audio.src = currentTrack.audio_url;
-    audio.playbackRate = playbackRate;
+    hasResumedRef.current = false; // Reset resume flag for new track
     
     if (isPlaying) {
       audio.play().catch(() => pause());
     }
-  }, [currentTrack, playbackRate, isPlaying, pause]);
+  }, [currentTrack, isPlaying, pause]);
+
+  // Resume playback from saved progress
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !currentTrack || !savedProgress || hasResumedRef.current) return;
+    
+    // Only resume if not completed and has meaningful progress (>5 seconds)
+    if (!savedProgress.completed && savedProgress.progress_seconds > 5) {
+      audio.currentTime = savedProgress.progress_seconds;
+      setTime(savedProgress.progress_seconds);
+      hasResumedRef.current = true;
+    }
+  }, [currentTrack, savedProgress, setTime]);
+
+  // Sync playback rate separately (prevents re-setting audio.src)
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    
+    audio.playbackRate = playbackRate;
+  }, [playbackRate]);
 
   // Seek to time
   useEffect(() => {

@@ -41,7 +41,7 @@ interface AudioPlayerState {
   isMiniPlayerVisible: boolean;
   
   // Actions
-  play: (track: AudioTrack, series: AudioSeries, queue?: AudioTrack[]) => void;
+  play: (track: AudioTrack, series: AudioSeries, queue?: AudioTrack[], startTime?: number) => void;
   pause: () => void;
   togglePlayPause: () => void;
   setTime: (time: number) => void;
@@ -68,7 +68,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
   isFullscreen: false,
   isMiniPlayerVisible: false,
 
-  play: (track, series, queue) => {
+  play: (track, series, queue, startTime) => {
     const newQueue = queue || [track];
     const queueIndex = newQueue.findIndex(t => t.id === track.id);
     
@@ -76,6 +76,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
       currentTrack: track,
       currentSeries: series,
       isPlaying: true,
+      currentTime: startTime ?? 0,
       queue: newQueue,
       currentQueueIndex: queueIndex,
       isMiniPlayerVisible: true,
