@@ -1,13 +1,29 @@
 import { motion } from 'framer-motion';
 import { Headphones } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { AudioSeriesCard } from '@/components/audio/AudioSeriesCard';
+import { PremiumAudioModal } from '@/components/audio/PremiumAudioModal';
 import { useAudioSeries } from '@/hooks/useAudioSeries';
+import { useUserProducts } from '@/hooks/useUserProducts';
+import type { AudioSeries } from '@/stores/audioPlayerStore';
 
 export default function Listen() {
   const { data: series, isLoading } = useAudioSeries();
+  const { hasUnlock, isLoading: isLoadingProducts } = useUserProducts();
   const navigate = useNavigate();
+  const [showUpsellModal, setShowUpsellModal] = useState(false);
+  const [selectedLockedSeries, setSelectedLockedSeries] = useState<AudioSeries | null>(null);
+
+  const isSeriesLocked = (s: AudioSeries) => {
+    return s.unlock_key ? !hasUnlock(s.unlock_key) : false;
+  };
+
+  const handleLockedClick = (s: AudioSeries) => {
+    setSelectedLockedSeries(s);
+    setShowUpsellModal(true);
+  };
 
   if (isLoading) {
     return (
@@ -68,11 +84,20 @@ export default function Listen() {
             {series?.map((s) => (
               <AudioSeriesCard 
                 key={s.id}
-                series={s} 
-                onClick={() => navigate(`/listen/${s.slug}`)}
+                series={s}
+                isLocked={isSeriesLocked(s)}
+                onClick={() => !isSeriesLocked(s) && navigate(`/listen/${s.slug}`)}
+                onLockedClick={() => handleLockedClick(s)}
               />
             ))}
           </div>
+
+          {/* Premium Upsell Modal */}
+          <PremiumAudioModal 
+            isOpen={showUpsellModal}
+            onClose={() => setShowUpsellModal(false)}
+            series={selectedLockedSeries}
+          />
 
           {/* Empty state if no series */}
           {!series?.length && !isLoading && (

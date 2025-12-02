@@ -241,6 +241,7 @@ export type Database = {
           slug: string
           total_duration: number | null
           track_count: number | null
+          unlock_key: string | null
           updated_at: string | null
         }
         Insert: {
@@ -254,6 +255,7 @@ export type Database = {
           slug: string
           total_duration?: number | null
           track_count?: number | null
+          unlock_key?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -267,6 +269,7 @@ export type Database = {
           slug?: string
           total_duration?: number | null
           track_count?: number | null
+          unlock_key?: string | null
           updated_at?: string | null
         }
         Relationships: []

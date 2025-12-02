@@ -23,6 +23,7 @@ export interface AudioSeries {
   display_order: number;
   total_duration: number;
   track_count: number;
+  unlock_key: string | null;
 }
 
 interface AudioPlayerState {
