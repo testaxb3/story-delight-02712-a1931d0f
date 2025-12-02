@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { X, Check, ExternalLink } from 'lucide-react';
+import { Check, ExternalLink } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 
@@ -20,8 +20,7 @@ export function PremiumAudioModal({ isOpen, onClose, series }: PremiumAudioModal
   ];
 
   const handleUpgrade = () => {
-    // Link to Cartpanda checkout - update with actual URL
-    window.open('https://app.cartpanda.com/checkout/27845678', '_blank');
+    window.open('https://gtmsinop.mycartpanda.com/checkout/203914365:1', '_blank');
   };
 
   return (
@@ -38,14 +37,6 @@ export function PremiumAudioModal({ isOpen, onClose, series }: PremiumAudioModal
           
           {/* Content */}
           <div className="relative p-6 space-y-6">
-            {/* Close button */}
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 w-8 h-8 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
             {/* Cover image */}
             {series.cover_image && (
               <div className="w-24 h-24 mx-auto rounded-2xl overflow-hidden shadow-lg">
