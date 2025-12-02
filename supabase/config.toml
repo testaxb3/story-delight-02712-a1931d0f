@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.resend-welcome-sms]
 verify_jwt = false
+
+[functions.send-batch-emails]
+verify_jwt = false
