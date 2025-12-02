@@ -83,6 +83,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "use-haptic": "^1.1.13",
+    "usehooks-ts": "^3.1.1",
     "vaul": "^0.9.9",
     "vite-plugin-pwa": "^1.1.0",
     "vitest": "^4.0.9",
