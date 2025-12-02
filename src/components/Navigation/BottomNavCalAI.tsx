@@ -13,6 +13,7 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   { icon: 'home', label: 'Home', path: '/' },
   { icon: 'scripts', label: 'Scripts', path: '/scripts' },
+  { icon: 'listen', label: 'Listen', path: '/listen' },
   { icon: 'bonuses', label: 'Bonuses', path: '/bonuses' },
   { icon: 'profile', label: 'Profile', path: '/profile' },
 ];
