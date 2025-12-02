@@ -81,7 +81,7 @@ export function AudioPurchaseModal({ isOpen, onClose, series }: AudioPurchaseMod
             {/* Purchase Button */}
             <div className="space-y-3">
               <a
-                href="https://gtmsinop.mycartpanda.com/checkout/e9c7b179-eefa-43c7-a13a-5f5d452bdf72"
+                href="https://gtmsinop.mycartpanda.com/checkout/203914365:1"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full h-14 rounded-full bg-gradient-to-r from-[#D4A574] to-[#B8864A] text-white font-semibold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity active:scale-95"
