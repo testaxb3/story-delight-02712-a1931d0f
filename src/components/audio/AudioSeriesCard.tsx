@@ -33,12 +33,12 @@ export function AudioSeriesCard({ series, onClick, isLocked, onLockedClick }: Au
           handleClick();
         }
       }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-card to-card border border-border/50 backdrop-blur-sm cursor-pointer hover:scale-[1.02] transition-transform active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50"
+      className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-card to-card border backdrop-blur-sm cursor-pointer hover:scale-[1.02] transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 ${isLocked ? 'border-[#D4A574]/40 hover:border-[#D4A574]/60' : 'border-border/50'}`}
     >
       {/* Background gradient effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50" />
       
-      <div className={`relative p-6 ${isLocked ? 'blur-sm pointer-events-none' : ''}`}>
+      <div className={`relative p-6 ${isLocked ? 'pointer-events-none' : ''}`}>
         {/* Header with icon */}
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -83,15 +83,32 @@ export function AudioSeriesCard({ series, onClick, isLocked, onLockedClick }: Au
 
       {/* Premium Badge Overlay */}
       {isLocked && (
-        <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none">
-          <div 
-            className="px-4 py-2 rounded-full shadow-lg flex items-center gap-2 pointer-events-auto"
-            style={{
-              background: 'linear-gradient(135deg, #D4A574 0%, #C9985A 50%, #B8864A 100%)',
-            }}
-          >
-            <span className="text-lg">👑</span>
-            <span className="text-sm font-semibold text-white">Premium</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Gradient overlay - não opaco */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+          
+          {/* Content */}
+          <div className="relative z-10 flex flex-col items-center gap-3 p-4 pointer-events-auto">
+            {/* Premium badge com glow */}
+            <div 
+              className="px-4 py-2 rounded-full shadow-lg flex items-center gap-2"
+              style={{
+                background: 'linear-gradient(135deg, #D4A574 0%, #B8864A 100%)',
+                boxShadow: '0 0 20px rgba(212, 165, 116, 0.4)',
+              }}
+            >
+              <span className="text-lg">👑</span>
+              <span className="text-sm font-bold text-white">Premium</span>
+            </div>
+            
+            {/* CTA com pulse */}
+            <motion.span 
+              animate={{ opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-xs text-white/90 font-medium"
+            >
+              Tap to unlock
+            </motion.span>
           </div>
         </div>
       )}
