@@ -8,7 +8,7 @@ export const useAudioSeries = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('audio_series')
-        .select('*')
+        .select('*, unlock_key')
         .order('display_order', { ascending: true });
 
       if (error) throw error;
@@ -26,7 +26,7 @@ export const useAudioSeriesById = (seriesId: string | undefined) => {
       
       const { data, error } = await supabase
         .from('audio_series')
-        .select('*')
+        .select('*, unlock_key')
         .eq('id', seriesId)
         .single();
 
@@ -46,7 +46,7 @@ export const useAudioSeriesBySlug = (slug: string | undefined) => {
       
       const { data, error } = await supabase
         .from('audio_series')
-        .select('*')
+        .select('*, unlock_key')
         .eq('slug', slug)
         .single();
 

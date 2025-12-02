@@ -1,19 +1,31 @@
 import { motion } from 'framer-motion';
 import { ChevronLeft, Play, Clock } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { AudioTrackList } from '@/components/audio/AudioTrackList';
 import { useAudioSeriesBySlug } from '@/hooks/useAudioSeries';
 import { useAudioTracks } from '@/hooks/useAudioTracks';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
+import { useUserProducts } from '@/hooks/useUserProducts';
 import { formatDuration } from '@/lib/formatters';
+import { toast } from 'sonner';
 
 export default function ListenSeries() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const { data: series, isLoading: isLoadingSeries } = useAudioSeriesBySlug(slug);
   const { data: tracks, isLoading: isLoadingTracks } = useAudioTracks(series?.id);
+  const { hasUnlock, isLoading: isLoadingProducts } = useUserProducts();
   const { play } = useAudioPlayerStore();
+
+  // Protect route: redirect if series is locked
+  useEffect(() => {
+    if (series && series.unlock_key && !isLoadingProducts && !hasUnlock(series.unlock_key)) {
+      toast.error('This content requires a premium upgrade');
+      navigate('/listen');
+    }
+  }, [series, hasUnlock, isLoadingProducts, navigate]);
 
   const handlePlayAll = () => {
     if (series && tracks && tracks.length > 0) {
