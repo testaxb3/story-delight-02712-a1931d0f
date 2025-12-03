@@ -31,12 +31,13 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
     pause,
     next,
   } = useAudioPlayerStore();
-  
+
   const { mutate: updateProgress } = useUpdateAudioProgress();
   const { data: savedProgress } = useAudioProgress(currentTrack?.id);
   const lastSaveTimeRef = useRef(0);
   const hasResumedRef = useRef(false);
   const retryCountRef = useRef(0);
+  const playPromiseRef = useRef<Promise<void> | null>(null);
   const MAX_RETRIES = 3;
 
   // Sync store with audio element - lifecycle events
@@ -137,47 +138,60 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
 
     console.log('[AudioPlayer] Loading new track:', currentTrack.title);
     console.log('[AudioPlayer] URL:', currentTrack.audio_url);
-    
-    setIsAudioReady(false); // Reset ready state for new track
-    hasResumedRef.current = false; // Reset resume flag for new track
-    retryCountRef.current = 0; // Reset retry count
-    
+
+    // Cancel any pending play promise
+    if (playPromiseRef.current) {
+      playPromiseRef.current.catch(() => {}).then(() => {
+        playPromiseRef.current = null;
+      });
+    }
+
+    // Pause and reset state before loading new track
+    audio.pause();
+    setIsAudioReady(false);
+    hasResumedRef.current = false;
+    retryCountRef.current = 0;
+
+    // Load new track
     audio.src = currentTrack.audio_url;
-    audio.load(); // Force preload
+    audio.load();
   }, [currentTrack]);
 
-  // Control playback - when isPlaying changes AND audio is ready
+  // Control playback - single source of truth
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentTrack) return;
 
-    if (isPlaying) {
-      if (isAudioReady) {
-        console.log('[AudioPlayer] Playing (audio ready)');
-        audio.play().catch((error) => {
-          console.error('[AudioPlayer] Play blocked:', error.name, error.message);
-          pause();
-        });
-      } else {
-        console.log('[AudioPlayer] Waiting for audio to be ready before playing...');
-        // Will auto-play when canplaythrough fires (handled below)
+    // Wait for any pending play promise to resolve before taking action
+    const handlePlayback = async () => {
+      if (playPromiseRef.current) {
+        try {
+          await playPromiseRef.current;
+        } catch (error) {
+          // Ignore AbortError from interrupted playback
+        }
+        playPromiseRef.current = null;
       }
-    } else {
-      audio.pause();
-    }
+
+      if (isPlaying) {
+        // Only play if audio is ready
+        if (isAudioReady) {
+          console.log('[AudioPlayer] Playing');
+          playPromiseRef.current = audio.play().catch((error) => {
+            console.error('[AudioPlayer] Play failed:', error.name, error.message);
+            pause();
+          });
+        } else {
+          console.log('[AudioPlayer] Waiting for audio ready...');
+        }
+      } else {
+        console.log('[AudioPlayer] Pausing');
+        audio.pause();
+      }
+    };
+
+    handlePlayback();
   }, [isPlaying, isAudioReady, pause, currentTrack]);
-
-  // Auto-play when audio becomes ready and isPlaying is true
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio || !currentTrack || !isAudioReady || !isPlaying) return;
-
-    console.log('[AudioPlayer] Audio ready, auto-playing...');
-    audio.play().catch((error) => {
-      console.error('[AudioPlayer] Auto-play blocked:', error.name, error.message);
-      pause();
-    });
-  }, [isAudioReady, isPlaying, currentTrack, pause]);
 
   // Resume playback from saved progress
   useEffect(() => {
