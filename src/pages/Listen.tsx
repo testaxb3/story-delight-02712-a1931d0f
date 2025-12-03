@@ -10,7 +10,7 @@ import { ListenHero } from '@/components/audio/ListenHero';
 import { PremiumAudioModal } from '@/components/audio/PremiumAudioModal';
 import { useAudioSeries } from '@/hooks/useAudioSeries';
 import { useUserProducts } from '@/hooks/useUserProducts';
-import { useContinueListening, useAllSeriesProgress } from '@/hooks/useSeriesProgress';
+import { useContinueListening, useAllSeriesProgress, useTotalListeningTime, useSeriesFreeTracksCount } from '@/hooks/useSeriesProgress';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 
 export default function Listen() {
@@ -18,6 +18,8 @@ export default function Listen() {
   const { hasUnlock } = useUserProducts();
   const { data: continueData } = useContinueListening();
   const { data: progressMap } = useAllSeriesProgress();
+  const { data: totalMinutes } = useTotalListeningTime();
+  const { data: freeTracksMap } = useSeriesFreeTracksCount();
   const navigate = useNavigate();
   const [showUpsellModal, setShowUpsellModal] = useState(false);
   const [selectedLockedSeries, setSelectedLockedSeries] = useState<AudioSeries | null>(null);
@@ -123,7 +125,10 @@ export default function Listen() {
 
             {/* Hero - Featured Series (only if no continue listening) */}
             {!continueData && featuredSeries && (
-              <ListenHero featuredSeries={featuredSeries} />
+              <ListenHero 
+                featuredSeries={featuredSeries} 
+                totalMinutesListened={totalMinutes || 0}
+              />
             )}
 
             {/* Section title */}
@@ -153,6 +158,7 @@ export default function Listen() {
                     isLocked={locked}
                     progress={progress}
                     index={index}
+                    freeTracksCount={freeTracksMap?.get(s.id) || 0}
                     onClick={() => navigate(`/listen/${s.slug}`)}
                     onLockedClick={() => handleLockedClick(s)}
                   />

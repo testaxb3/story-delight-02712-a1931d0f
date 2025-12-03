@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Headphones, CheckCircle2 } from 'lucide-react';
+import { Play, Headphones, CheckCircle2, Gift } from 'lucide-react';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 import { formatDuration } from '@/lib/formatters';
 
@@ -10,6 +10,7 @@ interface AudioSeriesCardPremiumProps {
   onLockedClick?: () => void;
   progress?: { completed: number; total: number; percent: number };
   index?: number;
+  freeTracksCount?: number;
 }
 
 export function AudioSeriesCardPremium({ 
@@ -18,7 +19,8 @@ export function AudioSeriesCardPremium({
   isLocked, 
   onLockedClick,
   progress,
-  index = 0
+  index = 0,
+  freeTracksCount = 0
 }: AudioSeriesCardPremiumProps) {
   const handleClick = () => {
     if (isLocked && onLockedClick) {
@@ -136,6 +138,14 @@ export function AudioSeriesCardPremium({
               >
                 <span>👑</span>
                 <span>Premium</span>
+              </span>
+            )}
+            
+            {/* Free episodes badge for premium series */}
+            {isLocked && freeTracksCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium flex items-center gap-1">
+                <Gift className="w-3 h-3" />
+                <span>{freeTracksCount} free</span>
               </span>
             )}
 
