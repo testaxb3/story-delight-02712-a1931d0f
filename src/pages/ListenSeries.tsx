@@ -118,18 +118,15 @@ export default function ListenSeries() {
             <div className="relative">
               {/* Header with icon and cover */}
               <div className="flex items-start justify-between gap-4 mb-4">
-                <div className="flex-1 space-y-2">
-                  <div className="flex items-center gap-2">
-                    {series.icon_name && (
-                      <span className="text-3xl">{series.icon_name}</span>
-                    )}
-                    <h1 className="text-2xl font-bold text-foreground">
-                      {series.name}
-                    </h1>
-                  </div>
-                  
+                <div className="flex-1 space-y-1">
+                  {series.icon_name && (
+                    <span className="text-2xl">{series.icon_name}</span>
+                  )}
+                  <h1 className="text-xl font-bold text-foreground leading-tight">
+                    {series.name}
+                  </h1>
                   {series.description && (
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+                    <p className="text-sm text-muted-foreground leading-relaxed mt-2">
                       {series.description}
                     </p>
                   )}
