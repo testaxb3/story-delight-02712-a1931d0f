@@ -104,15 +104,13 @@ export function AudioSeriesCardPremium({
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0 space-y-1.5">
-          <div className="flex items-center gap-2">
-            {series.icon_name && (
-              <span className="text-lg flex-shrink-0">{series.icon_name}</span>
-            )}
-            <h3 className="text-base font-semibold text-foreground truncate">
-              {series.name}
-            </h3>
-          </div>
+        <div className="flex-1 min-w-0 space-y-1">
+          {series.icon_name && (
+            <span className="text-base">{series.icon_name}</span>
+          )}
+          <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
+            {series.name}
+          </h3>
           
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <span>{series.track_count} episodes</span>

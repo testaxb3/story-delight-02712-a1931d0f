@@ -1,0 +1,1 @@
+UPDATE audio_series SET icon_name = '🧠' WHERE slug = 'understanding-profiles';
