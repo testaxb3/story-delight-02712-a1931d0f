@@ -1,12 +1,14 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
+import { useAudioRef } from '@/contexts/AudioPlayerContext';
 
 interface MiniPlayerProps {
   onExpand: () => void;
 }
 
 export function MiniPlayer({ onExpand }: MiniPlayerProps) {
+  const audioRef = useAudioRef();
   const {
     currentTrack,
     currentSeries,
@@ -79,6 +81,15 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
               <button
                 onClick={(e) => {
                   e.stopPropagation();
+                  // iOS: Call play/pause DIRECTLY for user gesture compliance
+                  if (audioRef?.current) {
+                    if (isPlaying) {
+                      audioRef.current.pause();
+                    } else {
+                      audioRef.current.play().catch(console.error);
+                    }
+                  }
+                  // Sync store
                   togglePlayPause();
                 }}
                 className="w-10 h-10 rounded-full bg-primary flex items-center justify-center hover:opacity-90 transition-opacity"
