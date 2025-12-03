@@ -127,7 +127,7 @@ export const useContinueListening = () => {
       // Get track details
       const { data: track, error: trackError } = await supabase
         .from('audio_tracks')
-        .select('id, title, track_number, duration_seconds, series_id, audio_url, thumbnail, is_preview, description, tags')
+        .select('id, title, track_number, duration_seconds, series_id, audio_url, thumbnail, is_preview, description, tags, transcript_segments')
         .eq('id', progress.track_id)
         .single();
 

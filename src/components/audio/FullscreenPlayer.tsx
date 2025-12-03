@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw } from 'lucide-react';
+import { X, Play, Pause, SkipBack, SkipForward, RotateCcw, RotateCw, Music2, ListMusic } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import { Slider } from '@/components/ui/slider';
+import { SyncedLyrics, TranscriptData } from './SyncedLyrics';
 
 interface FullscreenPlayerProps {
   isOpen: boolean;
@@ -17,6 +19,8 @@ function formatTime(seconds: number): string {
 
 export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
   const audioRef = useAudioRef();
+  const [showLyrics, setShowLyrics] = useState(false);
+  
   const {
     currentTrack,
     currentSeries,
@@ -48,6 +52,10 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
     setTime(value[0]);
   };
 
+  // Get transcript data from track
+  const transcript = (currentTrack as any).transcript_segments as TranscriptData | null;
+  const hasLyrics = transcript?.segments?.length > 0;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -67,31 +75,71 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
               >
                 <X className="w-5 h-5 text-foreground" />
               </button>
-              <p className="text-sm font-medium text-muted-foreground">Now Playing</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {showLyrics ? 'Lyrics' : 'Now Playing'}
+              </p>
               <div className="w-10" />
             </div>
 
-            {/* Content */}
-            <div className="flex-1 flex flex-col items-center justify-center px-8 space-y-8">
-              {/* Artwork */}
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="w-64 h-64 rounded-3xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-2xl"
-              >
-                <span className="text-8xl">{currentSeries.icon_name || '🎧'}</span>
-              </motion.div>
+            {/* Content - Toggle between Track Info and Lyrics */}
+            <AnimatePresence mode="wait">
+              {showLyrics ? (
+                <motion.div
+                  key="lyrics"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -50 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex-1 flex flex-col"
+                >
+                  <SyncedLyrics
+                    transcript={transcript}
+                    currentTime={currentTime}
+                    artwork={currentSeries.cover_image || undefined}
+                    seriesIcon={currentSeries.icon_name || undefined}
+                  />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="trackinfo"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 50 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex-1 flex flex-col items-center justify-center px-8 space-y-8"
+                >
+                  {/* Artwork */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="w-64 h-64 rounded-3xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-2xl overflow-hidden"
+                  >
+                    {currentSeries.cover_image ? (
+                      <img 
+                        src={currentSeries.cover_image} 
+                        alt={currentSeries.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-8xl">{currentSeries.icon_name || '🎧'}</span>
+                    )}
+                  </motion.div>
 
-              {/* Track info */}
-              <div className="text-center space-y-2 w-full">
-                <h2 className="text-2xl font-bold text-foreground">
-                  {currentTrack.title}
-                </h2>
-                <p className="text-sm text-muted-foreground">
-                  {currentSeries.name}
-                </p>
-              </div>
+                  {/* Track info */}
+                  <div className="text-center space-y-2 w-full">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      {currentTrack.title}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {currentSeries.name}
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
+            {/* Controls Section */}
+            <div className="px-6 pb-4 space-y-6">
               {/* Progress */}
               <div className="w-full space-y-2">
                 <Slider
@@ -107,7 +155,7 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 </div>
               </div>
 
-              {/* Controls */}
+              {/* Playback Controls */}
               <div className="flex items-center justify-center gap-4">
                 <button
                   onClick={skipBackward}
@@ -149,44 +197,79 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 </button>
               </div>
 
-              {/* Playback speed */}
-              <button
-                onClick={handleRateChange}
-                className="px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
-              >
-                <span className="text-sm font-medium text-foreground">
-                  {playbackRate}x
-                </span>
-              </button>
-            </div>
-
-            {/* Queue preview */}
-            <div className="px-6 pb-8 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 2rem))' }}>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                Up Next
-              </p>
-              <div className="space-y-2 max-h-32 overflow-y-auto">
-                {queue.slice(currentQueueIndex + 1, currentQueueIndex + 4).map((track) => (
-                  <button
-                    key={track.id}
-                    onClick={() => play(track, currentSeries, queue)}
-                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
-                  >
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm">🎧</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">
-                        {track.title}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        {formatTime(track.duration_seconds)}
-                      </p>
-                    </div>
-                  </button>
-                ))}
+              {/* Speed + View Toggle */}
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  onClick={handleRateChange}
+                  className="px-4 py-2 rounded-full bg-muted hover:bg-muted/80 transition-colors"
+                >
+                  <span className="text-sm font-medium text-foreground">
+                    {playbackRate}x
+                  </span>
+                </button>
+                
+                {/* Lyrics Toggle */}
+                <button
+                  onClick={() => setShowLyrics(!showLyrics)}
+                  className={`px-4 py-2 rounded-full flex items-center gap-2 transition-colors ${
+                    showLyrics 
+                      ? 'bg-primary text-primary-foreground' 
+                      : hasLyrics 
+                        ? 'bg-muted hover:bg-muted/80 text-foreground'
+                        : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
+                  }`}
+                  disabled={!hasLyrics}
+                  aria-label={showLyrics ? 'Show track info' : 'Show lyrics'}
+                >
+                  {showLyrics ? (
+                    <>
+                      <ListMusic className="w-4 h-4" />
+                      <span className="text-sm font-medium">Queue</span>
+                    </>
+                  ) : (
+                    <>
+                      <Music2 className="w-4 h-4" />
+                      <span className="text-sm font-medium">Lyrics</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
+
+            {/* Queue preview - only show when not in lyrics mode */}
+            {!showLyrics && (
+              <div className="px-6 pb-8 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 2rem))' }}>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  Up Next
+                </p>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {queue.slice(currentQueueIndex + 1, currentQueueIndex + 4).map((track) => (
+                    <button
+                      key={track.id}
+                      onClick={() => play(track, currentSeries, queue)}
+                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm">🎧</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-foreground truncate">
+                          {track.title}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {formatTime(track.duration_seconds)}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Safe area bottom padding when in lyrics mode */}
+            {showLyrics && (
+              <div style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }} />
+            )}
           </div>
         </motion.div>
       )}

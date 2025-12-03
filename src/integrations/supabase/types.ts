@@ -287,6 +287,7 @@ export type Database = {
           thumbnail: string | null
           title: string
           track_number: number
+          transcript_segments: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -301,6 +302,7 @@ export type Database = {
           thumbnail?: string | null
           title: string
           track_number: number
+          transcript_segments?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -315,6 +317,7 @@ export type Database = {
           thumbnail?: string | null
           title?: string
           track_number?: number
+          transcript_segments?: Json | null
           updated_at?: string | null
         }
         Relationships: [
