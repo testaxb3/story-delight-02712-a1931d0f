@@ -232,6 +232,7 @@ export function AudioPlayerProvider({ children }: AudioPlayerProviderProps) {
         playsInline 
         webkit-playsinline="true"
         preload="auto"
+        crossOrigin="anonymous"
       />
       {children}
     </AudioPlayerContext.Provider>

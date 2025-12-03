@@ -105,12 +105,12 @@ export default defineConfig(({ mode }) => ({
               }
             }
           },
-          // Supabase Storage - CacheFirst for images
+          // Supabase Storage - IMAGES ONLY (CacheFirst)
           {
-            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*\.(?:png|jpg|jpeg|gif|webp|svg|ico)$/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'supabase-storage',
+              cacheName: 'supabase-storage-images',
               expiration: {
                 maxEntries: 100,
                 maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
@@ -119,6 +119,11 @@ export default defineConfig(({ mode }) => ({
                 statuses: [0, 200]
               }
             }
+          },
+          // Supabase Storage - AUDIO (NetworkOnly - bypass SW cache for Range Requests)
+          {
+            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*\.(?:mp3|wav|ogg|m4a|aac|flac)$/i,
+            handler: 'NetworkOnly',
           },
           // Static Images - CacheFirst with long expiration
           {
