@@ -117,13 +117,28 @@ serve(async (req) => {
     });
   }
 
-  // 4 remaining buyers who hit rate limit
-  const recipients = [
-    { email: 'lovettsales@gmail.com', firstName: 'Patricia' },
-    { email: 'shultzlk@aol.com', firstName: 'Linda' },
-    { email: 'bbcakes53@yahoo.com', firstName: 'Gloria' },
-    { email: 'gwftlaud@hotmail.com', firstName: 'Gwenn' },
-  ];
+  // Accept recipients from request body
+  let recipients: { email: string; firstName: string }[] = [];
+  
+  try {
+    const body = await req.json();
+    if (body.recipients && Array.isArray(body.recipients)) {
+      recipients = body.recipients;
+    }
+  } catch {
+    // If no body provided, return error
+    return new Response(JSON.stringify({ error: 'No recipients provided. Send { recipients: [{ email, firstName }] }' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (recipients.length === 0) {
+    return new Response(JSON.stringify({ error: 'Recipients array is empty' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
 
   console.log(`📧 Starting batch email send to ${recipients.length} recipients...`);
 
