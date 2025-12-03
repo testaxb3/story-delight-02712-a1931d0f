@@ -160,7 +160,6 @@ export default function Listen() {
                     index={index}
                     freeTracksCount={freeTracksMap?.get(s.id) || 0}
                     onClick={() => navigate(`/listen/${s.slug}`)}
-                    onLockedClick={() => handleLockedClick(s)}
                   />
                 );
               })}
