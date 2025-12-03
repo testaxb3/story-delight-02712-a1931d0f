@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Play, Pause, RotateCcw, RotateCw, Music2, ChevronDown } from 'lucide-react';
+import { ChevronDown, Play, Pause, RotateCcw, RotateCw } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import { Slider } from '@/components/ui/slider';
 import { LyricsDisplay, TranscriptData } from './LyricsDisplay';
+import { MarqueeText } from './MarqueeText';
 
 interface FullscreenPlayerProps {
   isOpen: boolean;
@@ -19,7 +20,6 @@ function formatTime(seconds: number): string {
 
 export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
   const audioRef = useAudioRef();
-  const [showLyrics, setShowLyrics] = useState(false);
   const [showQueue, setShowQueue] = useState(false);
   
   const {
@@ -79,23 +79,23 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[200] bg-black overflow-hidden"
         >
-          {/* Blurred artwork background - always visible */}
+          {/* Blurred artwork background */}
           {currentSeries.cover_image && (
             <img 
               src={currentSeries.cover_image} 
               alt=""
-              className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-40"
+              className="absolute inset-0 w-full h-full object-cover blur-3xl scale-125 opacity-30"
             />
           )}
           
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/95" />
           
           {/* Main content container */}
           <div className="relative h-full flex flex-col">
-            {/* Header - glass morphism */}
+            {/* Header */}
             <header 
-              className="flex items-center justify-between px-4 py-3 backdrop-blur-xl bg-black/20"
+              className="flex items-center justify-between px-4 py-3"
               style={{ paddingTop: 'max(0.75rem, calc(env(safe-area-inset-top) + 0.5rem))' }}
             >
               <button
@@ -106,42 +106,20 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 <ChevronDown className="w-5 h-5 text-white" />
               </button>
               
-              <p className="text-sm font-medium text-white/70">
+              <p className="text-sm font-medium text-white/60 truncate max-w-[60%]">
                 {currentSeries.name}
               </p>
               
-              {/* Lyrics toggle indicator */}
-              <button
-                onClick={() => hasLyrics && setShowLyrics(!showLyrics)}
-                className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
-                  hasLyrics 
-                    ? showLyrics 
-                      ? 'bg-white/30' 
-                      : 'bg-white/10'
-                    : 'bg-white/5 opacity-50'
-                }`}
-                disabled={!hasLyrics}
-                aria-label={showLyrics ? 'Hide lyrics' : 'Show lyrics'}
-              >
-                <Music2 className="w-4 h-4 text-white" />
-              </button>
+              <div className="w-10" /> {/* Spacer for alignment */}
             </header>
 
-            {/* Hero Zone - Artwork with integrated lyrics overlay */}
-            <div 
-              className="flex-1 flex flex-col items-center justify-center px-6 py-4 relative min-h-0"
-              onClick={() => hasLyrics && setShowLyrics(!showLyrics)}
-            >
-              {/* Artwork container */}
+            {/* Compact artwork at top */}
+            <div className="flex justify-center py-4">
               <motion.div
                 initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ 
-                  scale: showLyrics ? 0.6 : 1, 
-                  opacity: showLyrics ? 0.3 : 1,
-                  y: showLyrics ? -40 : 0
-                }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
-                className="w-56 h-56 md:w-64 md:h-64 rounded-3xl shadow-2xl overflow-hidden flex-shrink-0"
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="w-24 h-24 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-white/10"
               >
                 {currentSeries.cover_image ? (
                   <img 
@@ -151,52 +129,53 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                    <span className="text-7xl">{currentSeries.icon_name || '🎧'}</span>
+                    <span className="text-4xl">{currentSeries.icon_name || '🎧'}</span>
                   </div>
                 )}
               </motion.div>
+            </div>
 
-              {/* Lyrics overlay - appears over/instead of artwork */}
-              <AnimatePresence>
-                {showLyrics && hasLyrics && (
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.25 }}
-                    className="absolute inset-0 flex items-center justify-center"
-                  >
-                    <LyricsDisplay 
-                      transcript={transcript} 
-                      currentTime={currentTime} 
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Tap hint when lyrics available but hidden */}
-              {hasLyrics && !showLyrics && (
-                <motion.p
+            {/* LYRICS ZONE - always visible, takes up main space */}
+            <div className="flex-1 flex items-center justify-center min-h-0 px-4">
+              {hasLyrics ? (
+                <LyricsDisplay 
+                  transcript={transcript} 
+                  currentTime={currentTime} 
+                />
+              ) : (
+                <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-white/40 text-xs mt-4"
+                  className="w-40 h-40 rounded-3xl overflow-hidden shadow-2xl"
                 >
-                  Tap for lyrics
-                </motion.p>
+                  {currentSeries.cover_image ? (
+                    <img 
+                      src={currentSeries.cover_image} 
+                      alt={currentSeries.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+                      <span className="text-6xl">{currentSeries.icon_name || '🎧'}</span>
+                    </div>
+                  )}
+                </motion.div>
               )}
             </div>
 
-            {/* Track info - always visible */}
-            <div className="text-center px-6 pb-4">
-              <h2 className="text-xl font-bold text-white truncate">
-                {currentTrack.title}
-              </h2>
-              <p className="text-sm text-white/60 mt-1">
+            {/* Track info with marquee title */}
+            <div className="text-center px-8 pb-3">
+              <MarqueeText 
+                text={currentTrack.title} 
+                className="text-xl font-bold text-white"
+                speed={10}
+              />
+              <p className="text-sm text-white/50 mt-1">
                 Track {currentTrack.track_number}
               </p>
             </div>
 
-            {/* Controls Section - fixed bottom */}
+            {/* Controls Section */}
             <div 
               className="px-6 pb-4 space-y-4"
               style={{ paddingBottom: 'max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem))' }}
@@ -273,7 +252,7 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
               </div>
             </div>
 
-            {/* Queue drawer - slides up */}
+            {/* Queue drawer */}
             <AnimatePresence>
               {showQueue && upNextTracks.length > 0 && (
                 <motion.div
@@ -284,7 +263,6 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                   className="absolute bottom-0 inset-x-0 bg-black/90 backdrop-blur-xl rounded-t-3xl max-h-[50%] overflow-hidden"
                   style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
                 >
-                  {/* Drag handle */}
                   <div className="flex justify-center py-3">
                     <div className="w-10 h-1 rounded-full bg-white/30" />
                   </div>

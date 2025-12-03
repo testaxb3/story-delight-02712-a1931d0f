@@ -20,7 +20,6 @@ interface LyricsDisplayProps {
 }
 
 export function LyricsDisplay({ transcript, currentTime }: LyricsDisplayProps) {
-  // Find the currently active segment based on playback time
   const activeSegmentIndex = useMemo(() => {
     if (!transcript?.segments?.length) return -1;
     
@@ -36,30 +35,27 @@ export function LyricsDisplay({ transcript, currentTime }: LyricsDisplayProps) {
     ? segments[activeSegmentIndex + 1] 
     : null;
 
-  // No transcript available
   if (!transcript?.segments?.length) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-white/50 text-lg font-medium">
-          No lyrics available
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
-    <div className="relative h-[240px] flex flex-col items-center justify-center px-6 overflow-hidden">
-      {/* Fixed slot: PREVIOUS line */}
-      <div className="absolute top-0 left-0 right-0 flex justify-center px-6">
+    <div className="relative w-full h-[200px] flex flex-col items-center justify-center overflow-hidden">
+      {/* Fade gradients at top and bottom */}
+      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
+
+      {/* Previous line - fixed slot */}
+      <div className="absolute top-4 left-0 right-0 flex justify-center px-6 h-12">
         <AnimatePresence mode="wait">
           {prevSegment && (
             <motion.p
-              key={prevSegment.text}
-              initial={{ opacity: 0, y: 10 }}
+              key={`prev-${prevSegment.text.slice(0, 20)}`}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 0.35 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="text-white/40 text-base md:text-lg font-medium text-center max-w-sm leading-relaxed"
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.15 }}
+              className="text-white/40 text-sm md:text-base font-medium text-center line-clamp-2"
             >
               {prevSegment.text}
             </motion.p>
@@ -67,20 +63,18 @@ export function LyricsDisplay({ transcript, currentTime }: LyricsDisplayProps) {
         </AnimatePresence>
       </div>
       
-      {/* Fixed slot: ACTIVE line - center */}
-      <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-center px-6">
+      {/* Active line - center slot */}
+      <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 flex justify-center px-4">
         <AnimatePresence mode="wait">
           {activeSegment ? (
             <motion.p
-              key={activeSegment.text}
-              initial={{ opacity: 0, scale: 0.95 }}
+              key={`active-${activeSegment.text.slice(0, 20)}`}
+              initial={{ opacity: 0, scale: 0.96 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="text-white text-xl md:text-2xl lg:text-3xl font-bold text-center max-w-md leading-relaxed"
-              style={{
-                textShadow: '0 2px 16px rgba(0,0,0,0.5)'
-              }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.15 }}
+              className="text-white text-lg md:text-xl lg:text-2xl font-bold text-center leading-snug"
+              style={{ textShadow: '0 2px 20px rgba(0,0,0,0.6)' }}
             >
               {activeSegment.text}
             </motion.p>
@@ -89,7 +83,7 @@ export function LyricsDisplay({ transcript, currentTime }: LyricsDisplayProps) {
               key="waiting"
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
-              className="text-white/50 text-lg font-medium text-center"
+              className="text-white/50 text-base font-medium text-center"
             >
               {segments[0]?.text || '♪ ♪ ♪'}
             </motion.p>
@@ -97,41 +91,22 @@ export function LyricsDisplay({ transcript, currentTime }: LyricsDisplayProps) {
         </AnimatePresence>
       </div>
       
-      {/* Fixed slot: NEXT line */}
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center px-6">
+      {/* Next line - fixed slot */}
+      <div className="absolute bottom-4 left-0 right-0 flex justify-center px-6 h-12">
         <AnimatePresence mode="wait">
           {nextSegment && (
             <motion.p
-              key={nextSegment.text}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 0.45 }}
-              exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2, ease: 'easeOut' }}
-              className="text-white/50 text-base md:text-lg font-medium text-center max-w-sm leading-relaxed"
+              key={`next-${nextSegment.text.slice(0, 20)}`}
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 0.4 }}
+              exit={{ opacity: 0, y: 8 }}
+              transition={{ duration: 0.15 }}
+              className="text-white/50 text-sm md:text-base font-medium text-center line-clamp-2"
             >
               {nextSegment.text}
             </motion.p>
           )}
         </AnimatePresence>
-      </div>
-      
-      {/* Progress dots - subtle indicator */}
-      <div className="absolute bottom-[-40px] left-0 right-0 flex justify-center gap-1 px-8">
-        {segments.slice(0, Math.min(segments.length, 20)).map((_, idx) => (
-          <div
-            key={idx}
-            className={`h-1 rounded-full transition-all duration-200 ${
-              idx === activeSegmentIndex
-                ? 'w-4 bg-white'
-                : idx < activeSegmentIndex
-                ? 'w-1.5 bg-white/40'
-                : 'w-1.5 bg-white/20'
-            }`}
-          />
-        ))}
-        {segments.length > 20 && (
-          <span className="text-white/30 text-xs ml-1">+{segments.length - 20}</span>
-        )}
       </div>
     </div>
   );

@@ -182,6 +182,10 @@ export default {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" }
         },
+        "marquee": {
+          "0%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-50%)" }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -194,6 +198,7 @@ export default {
         "shine-diagonal": "shine-diagonal 4s ease-in-out infinite",
         "pulse-glow": "pulse-glow 3s ease-in-out infinite",
         "spin-ring": "spin-ring 12s linear infinite",
+        "marquee": "marquee 8s linear infinite",
       },
     },
   },
