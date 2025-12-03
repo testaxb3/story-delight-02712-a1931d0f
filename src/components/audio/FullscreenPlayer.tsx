@@ -56,6 +56,94 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
   const transcript = (currentTrack as any).transcript_segments as TranscriptData | null;
   const hasLyrics = transcript?.segments?.length > 0;
 
+  // Immersive lyrics mode - minimal UI
+  if (showLyrics) {
+    return (
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[200] bg-black"
+          >
+            {/* Lyrics take full screen */}
+            <SyncedLyrics
+              transcript={transcript}
+              currentTime={currentTime}
+              artwork={currentSeries.cover_image || undefined}
+            />
+            
+            {/* Minimal overlay controls */}
+            <div className="absolute inset-x-0 top-0 z-10" style={{ paddingTop: 'max(1rem, calc(env(safe-area-inset-top) + 0.5rem))' }}>
+              <div className="flex items-center justify-between px-4">
+                <button
+                  onClick={onClose}
+                  className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center"
+                  aria-label="Close"
+                >
+                  <X className="w-5 h-5 text-white" />
+                </button>
+                <button
+                  onClick={() => setShowLyrics(false)}
+                  className="px-3 py-1.5 rounded-full bg-white/20 backdrop-blur-sm"
+                >
+                  <span className="text-white text-sm font-medium">Track Info</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* Bottom controls - minimal */}
+            <div 
+              className="absolute inset-x-0 bottom-0 z-10 px-6 pb-4"
+              style={{ paddingBottom: 'max(1.5rem, calc(env(safe-area-inset-bottom) + 1rem))' }}
+            >
+              {/* Progress bar - thin and minimal */}
+              <div className="mb-4">
+                <Slider
+                  value={[currentTime]}
+                  max={duration || 100}
+                  step={1}
+                  onValueChange={handleSeek}
+                  className="w-full [&_[role=slider]]:bg-white [&_[role=slider]]:border-0 [&_.bg-primary]:bg-white"
+                />
+                <div className="flex justify-between text-xs text-white/60 mt-1">
+                  <span>{formatTime(currentTime)}</span>
+                  <span>{formatTime(duration)}</span>
+                </div>
+              </div>
+              
+              {/* Single play button centered */}
+              <div className="flex justify-center">
+                <button
+                  onClick={() => {
+                    if (audioRef?.current) {
+                      if (isPlaying) {
+                        audioRef.current.pause();
+                      } else {
+                        audioRef.current.play().catch(console.error);
+                      }
+                    }
+                    togglePlayPause();
+                  }}
+                  className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center"
+                  aria-label={isPlaying ? 'Pause' : 'Play'}
+                >
+                  {isPlaying ? (
+                    <Pause className="w-7 h-7 text-white fill-current" />
+                  ) : (
+                    <Play className="w-7 h-7 text-white fill-current ml-1" />
+                  )}
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    );
+  }
+
+  // Normal player mode
   return (
     <AnimatePresence>
       {isOpen && (
@@ -75,68 +163,39 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
               >
                 <X className="w-5 h-5 text-foreground" />
               </button>
-              <p className="text-sm font-medium text-muted-foreground">
-                {showLyrics ? 'Lyrics' : 'Now Playing'}
-              </p>
+              <p className="text-sm font-medium text-muted-foreground">Now Playing</p>
               <div className="w-10" />
             </div>
 
-            {/* Content - Toggle between Track Info and Lyrics */}
-            <AnimatePresence mode="wait">
-              {showLyrics ? (
-                <motion.div
-                  key="lyrics"
-                  initial={{ opacity: 0, x: 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -50 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex-1 flex flex-col"
-                >
-                  <SyncedLyrics
-                    transcript={transcript}
-                    currentTime={currentTime}
-                    artwork={currentSeries.cover_image || undefined}
-                    seriesIcon={currentSeries.icon_name || undefined}
+            {/* Track Info */}
+            <div className="flex-1 flex flex-col items-center justify-center px-8 space-y-8">
+              {/* Artwork */}
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-64 h-64 rounded-3xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-2xl overflow-hidden"
+              >
+                {currentSeries.cover_image ? (
+                  <img 
+                    src={currentSeries.cover_image} 
+                    alt={currentSeries.name}
+                    className="w-full h-full object-cover"
                   />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="trackinfo"
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 50 }}
-                  transition={{ duration: 0.2 }}
-                  className="flex-1 flex flex-col items-center justify-center px-8 space-y-8"
-                >
-                  {/* Artwork */}
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    className="w-64 h-64 rounded-3xl bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-2xl overflow-hidden"
-                  >
-                    {currentSeries.cover_image ? (
-                      <img 
-                        src={currentSeries.cover_image} 
-                        alt={currentSeries.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-8xl">{currentSeries.icon_name || '🎧'}</span>
-                    )}
-                  </motion.div>
+                ) : (
+                  <span className="text-8xl">{currentSeries.icon_name || '🎧'}</span>
+                )}
+              </motion.div>
 
-                  {/* Track info */}
-                  <div className="text-center space-y-2 w-full">
-                    <h2 className="text-2xl font-bold text-foreground">
-                      {currentTrack.title}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      {currentSeries.name}
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+              {/* Track info */}
+              <div className="text-center space-y-2 w-full">
+                <h2 className="text-2xl font-bold text-foreground">
+                  {currentTrack.title}
+                </h2>
+                <p className="text-sm text-muted-foreground">
+                  {currentSeries.name}
+                </p>
+              </div>
+            </div>
 
             {/* Controls Section */}
             <div className="px-6 pb-4 space-y-6">
@@ -167,7 +226,6 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
 
                 <button
                   onClick={() => {
-                    // iOS: Call play/pause DIRECTLY for user gesture compliance
                     if (audioRef?.current) {
                       if (isPlaying) {
                         audioRef.current.pause();
@@ -175,7 +233,6 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                         audioRef.current.play().catch(console.error);
                       }
                     }
-                    // Sync store
                     togglePlayPause();
                   }}
                   className="w-16 h-16 rounded-full bg-primary flex items-center justify-center hover:opacity-90 transition-opacity shadow-lg"
@@ -197,7 +254,7 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 </button>
               </div>
 
-              {/* Speed + View Toggle */}
+              {/* Speed + Lyrics Toggle */}
               <div className="flex items-center justify-center gap-3">
                 <button
                   onClick={handleRateChange}
@@ -210,66 +267,48 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 
                 {/* Lyrics Toggle */}
                 <button
-                  onClick={() => setShowLyrics(!showLyrics)}
+                  onClick={() => setShowLyrics(true)}
                   className={`px-4 py-2 rounded-full flex items-center gap-2 transition-colors ${
-                    showLyrics 
-                      ? 'bg-primary text-primary-foreground' 
-                      : hasLyrics 
-                        ? 'bg-muted hover:bg-muted/80 text-foreground'
-                        : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
+                    hasLyrics 
+                      ? 'bg-muted hover:bg-muted/80 text-foreground'
+                      : 'bg-muted/50 text-muted-foreground cursor-not-allowed'
                   }`}
                   disabled={!hasLyrics}
-                  aria-label={showLyrics ? 'Show track info' : 'Show lyrics'}
+                  aria-label="Show lyrics"
                 >
-                  {showLyrics ? (
-                    <>
-                      <ListMusic className="w-4 h-4" />
-                      <span className="text-sm font-medium">Queue</span>
-                    </>
-                  ) : (
-                    <>
-                      <Music2 className="w-4 h-4" />
-                      <span className="text-sm font-medium">Lyrics</span>
-                    </>
-                  )}
+                  <Music2 className="w-4 h-4" />
+                  <span className="text-sm font-medium">Lyrics</span>
                 </button>
               </div>
             </div>
 
-            {/* Queue preview - only show when not in lyrics mode */}
-            {!showLyrics && (
-              <div className="px-6 pb-8 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 2rem))' }}>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Up Next
-                </p>
-                <div className="space-y-2 max-h-32 overflow-y-auto">
-                  {queue.slice(currentQueueIndex + 1, currentQueueIndex + 4).map((track) => (
-                    <button
-                      key={track.id}
-                      onClick={() => play(track, currentSeries, queue)}
-                      className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
-                    >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm">🎧</span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {track.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {formatTime(track.duration_seconds)}
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+            {/* Queue preview */}
+            <div className="px-6 pb-8 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 2rem))' }}>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Up Next
+              </p>
+              <div className="space-y-2 max-h-32 overflow-y-auto">
+                {queue.slice(currentQueueIndex + 1, currentQueueIndex + 4).map((track) => (
+                  <button
+                    key={track.id}
+                    onClick={() => play(track, currentSeries, queue)}
+                    className="w-full flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors text-left"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+                      <span className="text-sm">🎧</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground truncate">
+                        {track.title}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatTime(track.duration_seconds)}
+                      </p>
+                    </div>
+                  </button>
+                ))}
               </div>
-            )}
-            
-            {/* Safe area bottom padding when in lyrics mode */}
-            {showLyrics && (
-              <div style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }} />
-            )}
+            </div>
           </div>
         </motion.div>
       )}
