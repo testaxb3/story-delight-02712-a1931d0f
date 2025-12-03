@@ -158,6 +158,54 @@ export const useContinueListening = () => {
   });
 };
 
+// Hook to get total listening time in minutes
+export const useTotalListeningTime = () => {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['total-listening-time', user?.id],
+    queryFn: async (): Promise<number> => {
+      if (!user?.id) return 0;
+
+      const { data, error } = await supabase
+        .from('user_audio_progress')
+        .select('progress_seconds')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      
+      const totalSeconds = (data || []).reduce((sum, p) => sum + (p.progress_seconds || 0), 0);
+      return Math.round(totalSeconds / 60);
+    },
+    enabled: !!user?.id,
+    staleTime: 60 * 1000,
+  });
+};
+
+// Hook to get free tracks count per series
+export const useSeriesFreeTracksCount = () => {
+  return useQuery({
+    queryKey: ['series-free-tracks-count'],
+    queryFn: async (): Promise<Map<string, number>> => {
+      const { data, error } = await supabase
+        .from('audio_tracks')
+        .select('series_id')
+        .eq('is_preview', true);
+
+      if (error) throw error;
+
+      const countMap = new Map<string, number>();
+      (data || []).forEach(track => {
+        if (track.series_id) {
+          countMap.set(track.series_id, (countMap.get(track.series_id) || 0) + 1);
+        }
+      });
+      return countMap;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
 // Hook to get progress for all series at once
 export const useAllSeriesProgress = () => {
   const { user } = useAuth();
