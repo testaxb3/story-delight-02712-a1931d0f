@@ -54,6 +54,7 @@ export function ContinueListeningCard({ track, series, progressSeconds }: Contin
         thumbnail: track.thumbnail,
         is_preview: track.is_preview,
         tags: track.tags,
+        transcript_segments: null,
       },
       series,
       undefined,

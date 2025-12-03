@@ -1,5 +1,18 @@
 import { create } from 'zustand';
 
+export interface TranscriptSegment {
+  start: number;
+  end: number;
+  text: string;
+}
+
+export interface TranscriptData {
+  segments: TranscriptSegment[];
+  language?: string;
+  generated_at?: string;
+  full_text?: string;
+}
+
 export interface AudioTrack {
   id: string;
   series_id: string;
@@ -11,6 +24,7 @@ export interface AudioTrack {
   thumbnail: string | null;
   is_preview: boolean;
   tags: string[] | null;
+  transcript_segments: TranscriptData | null;
 }
 
 export interface AudioSeries {
