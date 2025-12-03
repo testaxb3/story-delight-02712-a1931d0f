@@ -7,7 +7,6 @@ interface AudioSeriesCardPremiumProps {
   series: AudioSeries;
   onClick?: () => void;
   isLocked?: boolean;
-  onLockedClick?: () => void;
   progress?: { completed: number; total: number; percent: number };
   index?: number;
   freeTracksCount?: number;
@@ -17,17 +16,13 @@ export function AudioSeriesCardPremium({
   series, 
   onClick, 
   isLocked, 
-  onLockedClick,
   progress,
   index = 0,
   freeTracksCount = 0
 }: AudioSeriesCardPremiumProps) {
+  // Always navigate - locked tracks are handled at track level (freemium model)
   const handleClick = () => {
-    if (isLocked && onLockedClick) {
-      onLockedClick();
-    } else {
-      onClick?.();
-    }
+    onClick?.();
   };
 
   const isCompleted = progress && progress.percent === 100;
