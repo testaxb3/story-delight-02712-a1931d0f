@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { motion, AnimatePresence, PanInfo, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence, PanInfo } from 'framer-motion';
 import { Play, Pause, SkipBack, SkipForward, X, ChevronLeft } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
@@ -10,7 +9,6 @@ interface MiniPlayerProps {
 
 export function MiniPlayer({ onExpand }: MiniPlayerProps) {
   const audioRef = useAudioRef();
-  const controls = useAnimation();
   
   const {
     currentTrack,
@@ -36,15 +34,12 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
     // If dragged more than 100px to the right, minimize
     if (info.offset.x > 100) {
       setMiniPlayerMinimized(true);
-      controls.start({ x: 'calc(100% - 56px)' });
-    } else {
-      controls.start({ x: 0 });
     }
+    // Framer Motion handles the animation automatically via animate prop
   };
 
   const handleExpandFromMinimized = () => {
     setMiniPlayerMinimized(false);
-    controls.start({ x: 0 });
   };
 
   const handleClose = (e: React.MouseEvent) => {
@@ -124,13 +119,18 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
     <AnimatePresence>
       <motion.div
         initial={{ y: 100, opacity: 0 }}
-        animate={controls}
+        animate={{ 
+          x: isMiniPlayerMinimized ? 'calc(100% - 56px)' : 0, 
+          y: 0, 
+          opacity: 1 
+        }}
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         drag="x"
         dragConstraints={{ left: 0, right: 200 }}
         dragElastic={0.2}
         onDragEnd={handleDragEnd}
         className="fixed left-0 right-0 z-[90] px-2"
-        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 4.5rem)`, x: 0, y: 0, opacity: 1 }}
+        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 4.5rem)` }}
       >
         {/* Glassmorphism container */}
         <div 
