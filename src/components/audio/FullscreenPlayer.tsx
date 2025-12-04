@@ -94,8 +94,8 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 />
               </>
             )}
-            {/* Dark gradient overlay for text legibility */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80" />
+            {/* Dark gradient overlay for text legibility - reduced opacity for ambient color */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
           </div>
           
           {/* Main content container */}
