@@ -9,7 +9,8 @@ import {
   Bell, Lock, Zap, Check, GraduationCap,
   RefreshCw,
   Headphones,
-  Music
+  Music,
+  FileText
 } from 'lucide-react';
 import { APP_VERSION, APP_BUILD } from '@/config/version';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -388,6 +389,12 @@ export default function ProfileCalAI() {
               iconColor="bg-orange-500" 
               label="Request Script" 
               onClick={() => navigate('/script-requests')} 
+            />
+            <SettingsRow 
+              icon={FileText} 
+              iconColor="bg-blue-500" 
+              label="Script Request Status" 
+              onClick={() => navigate('/script-request-status')} 
             />
             <SettingsRow 
               icon={CreditCard} 
