@@ -1,6 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 interface PurchasedProduct {
   id: string;
@@ -66,6 +67,33 @@ export function useUserProducts() {
   });
 
   const isLoading = isLoadingProducts || isLoadingConfig;
+  const queryClient = useQueryClient();
+
+  // Real-time subscription for instant updates when purchases are made
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const channel = supabase
+      .channel('user-products-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'approved_users',
+          filter: `email=eq.${user.email.toLowerCase()}`
+        },
+        () => {
+          // Invalidate and refetch when user's products are updated
+          queryClient.invalidateQueries({ queryKey: ['user-products', user.email] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user?.email, queryClient]);
 
   /**
    * Check if user has purchased a specific product by product_id
