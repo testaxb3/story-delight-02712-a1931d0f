@@ -90,8 +90,16 @@ export function useScriptRequestMessages(scriptRequestId: string | null) {
 
       if (msgError) throw msgError;
       return true;
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch (error: any) {
+      console.error('Error sending script request message:', {
+        error,
+        code: error?.code,
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        scriptRequestId,
+        senderType,
+      });
       return false;
     } finally {
       setSending(false);

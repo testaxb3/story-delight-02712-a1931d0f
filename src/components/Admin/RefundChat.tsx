@@ -145,7 +145,7 @@ export function RefundChat({ refundId, customerName, customerUserId }: RefundCha
           </ScrollArea>
 
           {/* Input Area */}
-          <div className="border-t pt-4 mt-auto">
+          <div className="border-t pt-4 mt-auto" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 0.5rem)' }}>
             <div className="flex gap-2">
               <Input
                 placeholder="Type a message..."
