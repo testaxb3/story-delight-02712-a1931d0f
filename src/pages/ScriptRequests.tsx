@@ -21,7 +21,8 @@ import {
   ArrowLeft,
   ExternalLink,
   Sparkles,
-  Zap
+  Zap,
+  ChevronRight
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { RequestScriptModal } from '@/components/Scripts/RequestScriptModal';
@@ -229,11 +230,39 @@ export default function ScriptRequests() {
     );
   }
 
+  // Check if user has active request (pending or in_review)
+  const hasActiveRequest = requests?.some(r => r.status === 'pending' || r.status === 'in_review');
+
   return (
     <MainLayout>
       <div className="min-h-screen bg-[#F2F2F7] dark:bg-black pb-32 selection:bg-primary/30">
         {/* Header Spacer */}
         <div className="w-full h-[calc(env(safe-area-inset-top)+20px)]" />
+
+        {/* Active Request Banner */}
+        {hasActiveRequest && (
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mx-5 mb-4"
+          >
+            <div 
+              onClick={() => navigate('/script-request-status')}
+              className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-blue-500/15 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <MessageCircleHeart className="w-5 h-5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="font-semibold text-foreground text-sm">You have an active request</p>
+                  <p className="text-xs text-muted-foreground">Tap to view status & messages</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-blue-500" />
+            </div>
+          </motion.div>
+        )}
 
         {/* Dynamic Header */}
         <header className="px-5 mb-8 sticky top-4 z-50">

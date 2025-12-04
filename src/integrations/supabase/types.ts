@@ -4441,6 +4441,8 @@ export type Database = {
         | "refund_request"
         | "new_ebook"
         | "new_video"
+        | "script_request_update"
+        | "admin_alert"
       reaction_type:
         | "like"
         | "love"
@@ -4592,6 +4594,8 @@ export const Constants = {
         "refund_request",
         "new_ebook",
         "new_video",
+        "script_request_update",
+        "admin_alert",
       ],
       reaction_type: [
         "like",
