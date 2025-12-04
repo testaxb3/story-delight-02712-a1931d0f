@@ -676,6 +676,12 @@ Deno.serve(async (req) => {
 
       // 📧 Send welcome email via Resend
       await sendWelcomeEmail(email, firstName || 'there');
+      
+      // ✅ Mark email as sent
+      await supabase
+        .from('approved_users')
+        .update({ email_sent: true })
+        .eq('email', email);
 
       // 📱 Send welcome SMS if phone available
       let smsSent = false;
