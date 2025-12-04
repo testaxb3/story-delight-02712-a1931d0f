@@ -31,15 +31,16 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 100, opacity: 0 }}
-        className="fixed left-4 right-4 z-[90] pointer-events-auto"
-        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 5rem)` }}
+        className="fixed left-0 right-0 z-[90] px-2"
+        style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 4.5rem)` }}
       >
+        {/* Glassmorphism container */}
         <div 
           onClick={onExpand}
-          className="bg-card/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-border overflow-hidden cursor-pointer"
+          className="bg-card/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-border/50 overflow-hidden cursor-pointer"
         >
-          {/* Progress bar */}
-          <div className="h-1 bg-muted relative">
+          {/* Progress bar - thin line at top */}
+          <div className="h-[2px] bg-muted/30 relative">
             <motion.div
               className="h-full bg-primary"
               initial={{ width: 0 }}
@@ -48,16 +49,24 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
             />
           </div>
 
-          {/* Player content */}
-          <div className="px-4 py-3 flex items-center gap-3">
-            {/* Artwork */}
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
-              <span className="text-2xl">{currentSeries?.icon_name || '🎧'}</span>
+          {/* Player content - compact */}
+          <div className="px-3 py-2.5 flex items-center gap-3">
+            {/* Artwork - smaller */}
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 overflow-hidden">
+              {currentSeries?.cover_image ? (
+                <img 
+                  src={currentSeries.cover_image} 
+                  alt={currentSeries.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-lg">{currentSeries?.icon_name || '🎧'}</span>
+              )}
             </div>
 
-            {/* Track info */}
+            {/* Track info - compact */}
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-foreground truncate">
+              <p className="text-sm font-medium text-foreground truncate leading-tight">
                 {currentTrack.title}
               </p>
               <p className="text-xs text-muted-foreground truncate">
@@ -65,14 +74,14 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
               </p>
             </div>
 
-            {/* Controls */}
-            <div className="flex items-center gap-1 flex-shrink-0">
+            {/* Controls - inline */}
+            <div className="flex items-center gap-0.5 flex-shrink-0">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   previous();
                 }}
-                className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors"
                 aria-label="Previous track"
               >
                 <SkipBack className="w-4 h-4 text-foreground" />
@@ -96,9 +105,9 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
                 aria-label={isPlaying ? 'Pause' : 'Play'}
               >
                 {isPlaying ? (
-                  <Pause className="w-5 h-5 text-primary-foreground fill-current" />
+                  <Pause className="w-4 h-4 text-primary-foreground fill-current" />
                 ) : (
-                  <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" />
+                  <Play className="w-4 h-4 text-primary-foreground fill-current ml-0.5" />
                 )}
               </button>
 
@@ -107,7 +116,7 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
                   e.stopPropagation();
                   next();
                 }}
-                className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-muted transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-muted/50 transition-colors"
                 aria-label="Next track"
               >
                 <SkipForward className="w-4 h-4 text-foreground" />

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Headphones, CheckCircle2, Gift } from 'lucide-react';
+import { Play, Headphones, CheckCircle2, Lock } from 'lucide-react';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 import { formatDuration } from '@/lib/formatters';
 
@@ -32,7 +32,7 @@ export function AudioSeriesCardPremium({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
+      transition={{ delay: index * 0.05 }}
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -47,55 +47,62 @@ export function AudioSeriesCardPremium({
         bg-card border transition-all duration-300
         hover:shadow-lg active:scale-[0.98]
         focus:outline-none focus:ring-2 focus:ring-primary/50
-        ${isLocked ? 'border-amber-500/30' : 'border-border/50 hover:border-primary/30'}
-        ${isCompleted ? 'border-green-500/30' : ''}
+        ${isCompleted ? 'border-green-500/30' : 'border-border/50 hover:border-primary/30'}
       `}
     >
       <div className="flex items-center gap-4 p-4">
-        {/* Cover with progress ring */}
+        {/* Cover with linear progress bar */}
         <div className="relative flex-shrink-0">
           {series.cover_image ? (
             <img
               src={series.cover_image}
               alt={series.name}
-              className="w-20 h-20 rounded-xl object-cover shadow-md"
+              className={`w-16 h-16 rounded-xl object-cover shadow-md ${isLocked ? 'opacity-90' : ''}`}
             />
           ) : (
-            <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <Headphones className="w-10 h-10 text-primary/50" />
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+              <Headphones className="w-8 h-8 text-primary/50" />
             </div>
           )}
           
-          {/* Progress ring */}
-          {progress && progress.percent > 0 && (
-            <svg className="absolute inset-0 w-20 h-20 -rotate-90">
-              <circle
-                cx="40"
-                cy="40"
-                r="38"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                className="text-muted/30"
-              />
-              <circle
-                cx="40"
-                cy="40"
-                r="38"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeDasharray={`${progress.percent * 2.39} 239`}
-                strokeLinecap="round"
-                className={isCompleted ? 'text-green-500' : 'text-primary'}
-              />
-            </svg>
+          {/* Locked overlay - subtle padlock */}
+          {isLocked && (
+            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
+              {/* Subtle gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+              
+              {/* Padlock icon */}
+              <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
+                <Lock className="w-2.5 h-2.5 text-white/90" />
+              </div>
+              
+              {/* Tap to unlock - pulsating */}
+              <motion.div 
+                animate={{ opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-white/90 font-medium whitespace-nowrap"
+              >
+                Tap to unlock
+              </motion.div>
+            </div>
           )}
 
           {/* Completed checkmark */}
           {isCompleted && (
             <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5 shadow-lg">
-              <CheckCircle2 className="w-4 h-4 text-white" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+            </div>
+          )}
+
+          {/* Linear progress bar below cover */}
+          {progress && progress.percent > 0 && (
+            <div className="absolute -bottom-0.5 left-0.5 right-0.5 h-1 bg-muted/40 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full rounded-full ${isCompleted ? 'bg-green-500' : 'bg-primary'}`}
+                initial={{ width: 0 }}
+                animate={{ width: `${progress.percent}%` }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}
+              />
             </div>
           )}
         </div>
@@ -103,7 +110,7 @@ export function AudioSeriesCardPremium({
         {/* Info */}
         <div className="flex-1 min-w-0 space-y-1">
           {series.icon_name && (
-            <span className="text-base">{series.icon_name}</span>
+            <span className="text-sm">{series.icon_name}</span>
           )}
           <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
             {series.name}
@@ -115,44 +122,39 @@ export function AudioSeriesCardPremium({
             <span>{formatDuration(series.total_duration, 'short')}</span>
           </div>
 
-          {/* Progress text or badge */}
-          <div className="flex items-center gap-2">
+          {/* Badges row */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* Free series → "Unlocked ✓" */}
             {isFree && !isLocked && (
-              <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-semibold uppercase">
-                Free
+              <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-semibold">
+                Unlocked ✓
               </span>
             )}
             
+            {/* Premium series → subtle badge, no crown emoji */}
             {isLocked && (
-              <span 
-                className="px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase flex items-center gap-1"
-                style={{
-                  background: 'linear-gradient(135deg, rgba(212,165,116,0.2) 0%, rgba(184,134,74,0.2) 100%)',
-                  color: '#D4A574',
-                }}
-              >
-                <span>👑</span>
-                <span>Premium</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold">
+                Premium
               </span>
             )}
             
-            {/* Free episodes badge for premium series */}
+            {/* Free previews badge for premium series */}
             {isLocked && freeTracksCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-medium flex items-center gap-1">
-                <Gift className="w-3 h-3" />
-                <span>{freeTracksCount} free</span>
+              <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium">
+                {freeTracksCount} previews
               </span>
             )}
 
+            {/* Progress text */}
             {progress && progress.percent > 0 && !isCompleted && (
               <span className="text-[10px] text-muted-foreground">
-                {progress.completed} of {progress.total} completed
+                {progress.completed}/{progress.total}
               </span>
             )}
 
             {isCompleted && (
               <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
-                Completed ✓
+                Completed
               </span>
             )}
           </div>
@@ -162,11 +164,11 @@ export function AudioSeriesCardPremium({
         <motion.div 
           whileTap={{ scale: 0.9 }}
           className={`
-            flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center
+            flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center
             ${isLocked 
-              ? 'bg-amber-500/20 text-amber-500' 
+              ? 'bg-amber-500/15 text-amber-500' 
               : isCompleted 
-                ? 'bg-green-500/20 text-green-500'
+                ? 'bg-green-500/15 text-green-500'
                 : 'bg-primary/10 text-primary'
             }
           `}
@@ -174,15 +176,6 @@ export function AudioSeriesCardPremium({
           <Play className="w-4 h-4 fill-current ml-0.5" />
         </motion.div>
       </div>
-
-      {/* Locked overlay */}
-      {isLocked && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500/5 to-amber-500/10 pointer-events-none"
-        />
-      )}
     </motion.div>
   );
 }
