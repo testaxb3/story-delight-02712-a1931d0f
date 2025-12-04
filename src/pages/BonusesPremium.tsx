@@ -210,6 +210,18 @@ function BonusesPremiumContent() {
             </div>
           )}
 
+          {/* Ebooks Shelf */}
+          {showEbooks && ebooks.length > 0 && (
+            <div className="mt-6">
+              <EbookShelf 
+                title="Read & Reflect" 
+                items={ebooks} 
+                onSelect={handleBonusAction}
+                onSeeAll={() => setActiveFilter('ebook')}
+              />
+            </div>
+          )}
+
           {/* Quick Bites */}
           {showVideos && quickBites.length > 0 && (
             <div className="mt-6">
@@ -236,16 +248,6 @@ function BonusesPremiumContent() {
               items={data.uncategorized}
               onSelect={handleBonusAction}
               showSeeAll={false}
-            />
-          )}
-
-          {/* Ebooks Shelf */}
-          {showEbooks && ebooks.length > 0 && (
-            <EbookShelf 
-              title="Read & Reflect" 
-              items={ebooks} 
-              onSelect={handleBonusAction}
-              onSeeAll={() => setActiveFilter('ebook')}
             />
           )}
 
