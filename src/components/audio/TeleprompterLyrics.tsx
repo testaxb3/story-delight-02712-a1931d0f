@@ -100,9 +100,8 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
               <motion.p
                 key={`${segment.start}-${index}`}
                 ref={isActive ? activeRef : null}
-                initial={{ opacity: 0 }}
+                initial={{ scale: 0.98 }}
                 animate={{ 
-                  opacity: isActive ? 1 : isPast ? 0.2 : 0.3,
                   scale: isActive ? 1 : 0.98,
                 }}
                 transition={{ duration: 0.5, ease: 'easeOut' }}
