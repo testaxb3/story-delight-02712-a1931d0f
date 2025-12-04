@@ -104,8 +104,16 @@ export function useRefundMessages(refundRequestId: string | null) {
       }
 
       return true;
-    } catch (error) {
-      console.error('Error sending message:', error);
+    } catch (error: any) {
+      console.error('Error sending refund message:', {
+        error,
+        code: error?.code,
+        message: error?.message,
+        details: error?.details,
+        hint: error?.hint,
+        refundRequestId,
+        senderType,
+      });
       return false;
     } finally {
       setSending(false);
