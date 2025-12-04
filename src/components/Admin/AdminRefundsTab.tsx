@@ -1,12 +1,26 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
-import { DollarSign, Calendar, Mail, User, MessageSquare, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { format } from 'date-fns';
+import { 
+  DollarSign, 
+  Calendar, 
+  Mail, 
+  MessageSquare, 
+  CheckCircle, 
+  XCircle, 
+  Clock,
+  Loader2,
+  RefreshCw
+} from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
 import { RefundChat } from './RefundChat';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
 interface RefundRequest {
   id: string;
@@ -22,10 +36,35 @@ interface RefundRequest {
   user_id: string | null;
 }
 
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string; icon: typeof Clock }> = {
+  pending: { label: 'Pending', bg: 'bg-yellow-500/10', text: 'text-yellow-600 dark:text-yellow-400', icon: Clock },
+  partial_accepted: { label: 'Partial', bg: 'bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', icon: DollarSign },
+  approved: { label: 'Approved', bg: 'bg-green-500/10', text: 'text-green-600 dark:text-green-400', icon: CheckCircle },
+  rejected: { label: 'Rejected', bg: 'bg-red-500/10', text: 'text-red-600 dark:text-red-400', icon: XCircle },
+  processed: { label: 'Processed', bg: 'bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', icon: CheckCircle }
+};
+
+const REASONS: Record<string, string> = {
+  'not-satisfied': 'Not satisfied with content',
+  'technical-issues': 'Technical issues',
+  'not-using': 'Not using the product',
+  'financial': 'Financial reasons',
+  'other': 'Other reason'
+};
+
+const FILTERS = [
+  { value: 'all', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'approved', label: 'Approved' },
+  { value: 'processed', label: 'Processed' },
+  { value: 'rejected', label: 'Rejected' },
+];
+
 export function AdminRefundsTab() {
   const [refunds, setRefunds] = useState<RefundRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const fetchRefunds = async () => {
     setLoading(true);
@@ -72,170 +111,225 @@ export function AdminRefundsTab() {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: 'Pending', variant: 'outline' },
-      partial_accepted: { label: 'Partial Accepted', variant: 'secondary' },
-      approved: { label: 'Approved', variant: 'default' },
-      rejected: { label: 'Rejected', variant: 'destructive' },
-      processed: { label: 'Processed', variant: 'default' }
-    };
+  const filteredRefunds = activeFilter === 'all' 
+    ? refunds 
+    : refunds.filter(r => r.status === activeFilter);
 
-    const config = statusConfig[status] || { label: status, variant: 'outline' };
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
-  const getReasonLabel = (reasonType: string) => {
-    const reasons: Record<string, string> = {
-      'not-satisfied': 'Not satisfied with content',
-      'technical-issues': 'Technical issues',
-      'not-using': 'Not using the product',
-      'financial': 'Financial reasons',
-      'other': 'Other reason'
-    };
-    return reasons[reasonType] || reasonType;
+  const counts = {
+    all: refunds.length,
+    pending: refunds.filter(r => r.status === 'pending').length,
+    approved: refunds.filter(r => r.status === 'approved').length,
+    processed: refunds.filter(r => r.status === 'processed').length,
+    rejected: refunds.filter(r => r.status === 'rejected').length,
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-6xl animate-brain-pulse">💰</div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
-    );
-  }
-
-  if (refunds.length === 0) {
-    return (
-      <Card className="p-12">
-        <div className="text-center">
-          <div className="text-6xl mb-4">💰</div>
-          <h3 className="text-xl font-semibold mb-2">No Refund Requests</h3>
-          <p className="text-muted-foreground">
-            All refund requests will appear here
-          </p>
-        </div>
-      </Card>
     );
   }
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Refund Requests</h2>
-          <p className="text-muted-foreground">Manage customer refund requests</p>
+          <h2 className="text-xl font-bold flex items-center gap-2">
+            <DollarSign className="w-5 h-5 text-primary" />
+            Refund Requests
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            {counts.pending} pending • {counts.approved} approved
+          </p>
         </div>
-        <Button onClick={fetchRefunds} variant="outline">
+        <Button onClick={fetchRefunds} variant="outline" size="sm">
+          <RefreshCw className="w-4 h-4 mr-2" />
           Refresh
         </Button>
       </div>
 
-      <div className="grid gap-4">
-        {refunds.map((refund) => (
-          <Card key={refund.id} className="p-6">
-            <div className="space-y-4">
-              {/* Header */}
-              <div className="flex items-start justify-between">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-3">
-                    <h3 className="text-lg font-semibold flex items-center gap-2">
-                      <User className="w-5 h-5 text-muted-foreground" />
-                      {refund.customer_name}
-                    </h3>
-                    {getStatusBadge(refund.status)}
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Mail className="w-4 h-4" />
-                    {refund.email}
-                  </div>
-                </div>
-                <div className="text-right text-sm text-muted-foreground">
-                  <div className="flex items-center gap-2 justify-end">
-                    <Calendar className="w-4 h-4" />
-                    {format(new Date(refund.created_at), 'MMM dd, yyyy HH:mm')}
-                  </div>
-                </div>
-              </div>
-
-              {/* Details */}
-              <div className="grid md:grid-cols-2 gap-4 p-4 bg-muted/30 rounded-lg">
-                <div>
-                  <p className="text-sm font-medium mb-1">Reason</p>
-                  <p className="text-sm text-muted-foreground">
-                    {getReasonLabel(refund.reason_type)}
-                  </p>
-                </div>
-                {refund.accepted_partial_refund && (
-                  <div>
-                    <p className="text-sm font-medium mb-1">Partial Refund</p>
-                    <p className="text-sm text-green-600 font-semibold">
-                      {refund.accepted_partial_refund}
-                    </p>
-                  </div>
+      {/* Horizontal Scroll Filters */}
+      <ScrollArea className="w-full">
+        <div className="flex gap-2 pb-2">
+          {FILTERS.map((filter) => {
+            const count = counts[filter.value as keyof typeof counts];
+            const isActive = activeFilter === filter.value;
+            return (
+              <Button
+                key={filter.value}
+                variant={isActive ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setActiveFilter(filter.value)}
+                className={cn(
+                  "whitespace-nowrap shrink-0 transition-all",
+                  isActive && "shadow-md"
                 )}
-              </div>
-
-              {refund.reason_details && (
-                <div className="p-4 bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg">
-                  <div className="flex items-start gap-2 mb-2">
-                    <MessageSquare className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5" />
-                    <p className="text-sm font-medium text-blue-900 dark:text-blue-100">Additional Details:</p>
-                  </div>
-                  <p className="text-sm text-blue-800 dark:text-blue-200 pl-6">{refund.reason_details}</p>
-                </div>
-              )}
-
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2 pt-2 border-t">
-                <RefundChat 
-                  refundId={refund.id} 
-                  customerName={refund.customer_name}
-                  customerUserId={refund.user_id || undefined}
-                />
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={() => updateStatus(refund.id, 'approved')}
-                  disabled={updating === refund.id || refund.status === 'approved'}
-                >
-                  <CheckCircle className="w-4 h-4 mr-1" />
-                  Approve
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => updateStatus(refund.id, 'rejected')}
-                  disabled={updating === refund.id || refund.status === 'rejected'}
-                >
-                  <XCircle className="w-4 h-4 mr-1" />
-                  Reject
-                </Button>
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => updateStatus(refund.id, 'processed')}
-                  disabled={updating === refund.id || refund.status === 'processed'}
-                >
-                  <DollarSign className="w-4 h-4 mr-1" />
-                  Mark as Processed
-                </Button>
-                {refund.status === 'processed' && (
-                  <div className="ml-auto flex items-center gap-2 text-sm text-green-600">
-                    <CheckCircle className="w-4 h-4" />
-                    <span>Refund Processed</span>
-                  </div>
+              >
+                {filter.label}
+                {count > 0 && (
+                  <Badge 
+                    variant="secondary" 
+                    className={cn(
+                      "ml-1.5 h-5 min-w-5 px-1.5 text-[10px]",
+                      isActive ? "bg-white/20 text-white" : "bg-muted"
+                    )}
+                  >
+                    {count}
+                  </Badge>
                 )}
-                {refund.status === 'pending' && (
-                  <div className="ml-auto flex items-center gap-2 text-sm text-orange-600">
-                    <Clock className="w-4 h-4" />
-                    <span>Awaiting Review</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+              </Button>
+            );
+          })}
+        </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
+
+      {/* Refunds List */}
+      <AnimatePresence mode="wait">
+        {filteredRefunds.length === 0 ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="text-center py-16"
+          >
+            <div className="text-5xl mb-4">💰</div>
+            <h3 className="text-lg font-semibold">No refund requests</h3>
+            <p className="text-sm text-muted-foreground">
+              {activeFilter === 'all' 
+                ? 'All refund requests will appear here'
+                : `No ${activeFilter} requests`
+              }
+            </p>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="space-y-3"
+          >
+            {filteredRefunds.map((refund, index) => {
+              const statusConfig = STATUS_CONFIG[refund.status] || STATUS_CONFIG.pending;
+              const StatusIcon = statusConfig.icon;
+              const initials = refund.customer_name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+              return (
+                <motion.div
+                  key={refund.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                >
+                  <Card className="overflow-hidden">
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        {/* User Avatar */}
+                        <Avatar className="h-10 w-10 shrink-0 border-2 border-border">
+                          <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                            {initials}
+                          </AvatarFallback>
+                        </Avatar>
+
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 space-y-2">
+                          {/* Header */}
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <p className="font-semibold text-sm truncate">{refund.customer_name}</p>
+                              <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {refund.email}
+                              </p>
+                            </div>
+                            <Badge 
+                              className={cn(
+                                "shrink-0 flex items-center gap-1 border-0",
+                                statusConfig.bg,
+                                statusConfig.text
+                              )}
+                            >
+                              <StatusIcon className="h-3 w-3" />
+                              {statusConfig.label}
+                            </Badge>
+                          </div>
+
+                          {/* Reason */}
+                          <div className="p-2.5 bg-muted/50 rounded-lg">
+                            <p className="text-xs text-muted-foreground mb-1">Reason</p>
+                            <p className="text-sm font-medium">{REASONS[refund.reason_type] || refund.reason_type}</p>
+                            {refund.reason_details && (
+                              <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                                "{refund.reason_details}"
+                              </p>
+                            )}
+                          </div>
+
+                          {/* Partial Refund */}
+                          {refund.accepted_partial_refund && (
+                            <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/30">
+                              Accepted: {refund.accepted_partial_refund}
+                            </Badge>
+                          )}
+
+                          {/* Meta */}
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              {formatDistanceToNow(new Date(refund.created_at), { addSuffix: true })}
+                            </span>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="flex flex-wrap gap-2 pt-2 border-t border-border/50">
+                            <RefundChat 
+                              refundId={refund.id} 
+                              customerName={refund.customer_name}
+                              customerUserId={refund.user_id || undefined}
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateStatus(refund.id, 'approved')}
+                              disabled={updating === refund.id || refund.status === 'approved'}
+                              className="h-8 text-xs"
+                            >
+                              <CheckCircle className="w-3.5 h-3.5 mr-1" />
+                              Approve
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => updateStatus(refund.id, 'rejected')}
+                              disabled={updating === refund.id || refund.status === 'rejected'}
+                              className="h-8 text-xs"
+                            >
+                              <XCircle className="w-3.5 h-3.5 mr-1" />
+                              Reject
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => updateStatus(refund.id, 'processed')}
+                              disabled={updating === refund.id || refund.status === 'processed'}
+                              className="h-8 text-xs"
+                            >
+                              <DollarSign className="w-3.5 h-3.5 mr-1" />
+                              Processed
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

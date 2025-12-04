@@ -1,16 +1,12 @@
 import { useState } from 'react';
 import { useAdminScriptRequests } from '@/hooks/useScriptRequests';
 import { supabase } from '@/integrations/supabase/client';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -25,43 +21,80 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { AlertCircle, Clock, CheckCircle, XCircle, Eye, Loader2 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import { 
+  AlertCircle, 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  Eye, 
+  Loader2,
+  User,
+  Mail,
+  Calendar,
+  MapPin,
+  Brain,
+  MessageSquare
+} from 'lucide-react';
+import { formatDistanceToNow, format } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 
-const STATUS_COLORS = {
-  pending: 'bg-yellow-500/10 text-yellow-500 border-yellow-500/20',
-  in_review: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  completed: 'bg-green-500/10 text-green-500 border-green-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+const STATUS_CONFIG = {
+  pending: { 
+    label: 'Pending', 
+    icon: AlertCircle, 
+    bg: 'bg-yellow-500/10',
+    text: 'text-yellow-600 dark:text-yellow-400',
+    border: 'border-yellow-500/30',
+    glow: 'shadow-yellow-500/20'
+  },
+  in_review: { 
+    label: 'In Review', 
+    icon: Clock, 
+    bg: 'bg-blue-500/10',
+    text: 'text-blue-600 dark:text-blue-400',
+    border: 'border-blue-500/30',
+    glow: 'shadow-blue-500/20'
+  },
+  completed: { 
+    label: 'Completed', 
+    icon: CheckCircle, 
+    bg: 'bg-green-500/10',
+    text: 'text-green-600 dark:text-green-400',
+    border: 'border-green-500/30',
+    glow: 'shadow-green-500/20'
+  },
+  rejected: { 
+    label: 'Rejected', 
+    icon: XCircle, 
+    bg: 'bg-red-500/10',
+    text: 'text-red-600 dark:text-red-400',
+    border: 'border-red-500/30',
+    glow: 'shadow-red-500/20'
+  },
 };
 
-const STATUS_ICONS = {
-  pending: AlertCircle,
-  in_review: Clock,
-  completed: CheckCircle,
-  rejected: XCircle,
+const URGENCY_CONFIG = {
+  low: { label: 'Low', bg: 'bg-muted', text: 'text-muted-foreground' },
+  medium: { label: 'Medium', bg: 'bg-blue-500/10', text: 'text-blue-600' },
+  high: { label: 'High', bg: 'bg-orange-500/10', text: 'text-orange-600' },
+  urgent: { label: '🔥 Urgent', bg: 'bg-red-500/10', text: 'text-red-600' },
 };
 
-const STATUS_LABELS = {
-  pending: 'Pending Review',
-  in_review: 'In Progress',
-  completed: 'Completed',
-  rejected: 'Cannot Complete',
-};
-
-const URGENCY_COLORS = {
-  low: 'bg-gray-500/10 text-gray-500',
-  medium: 'bg-blue-500/10 text-blue-500',
-  high: 'bg-orange-500/10 text-orange-500',
-  urgent: 'bg-red-500/10 text-red-500',
-};
+const FILTERS = [
+  { value: 'all', label: 'All' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'in_review', label: 'In Review' },
+  { value: 'completed', label: 'Completed' },
+  { value: 'rejected', label: 'Rejected' },
+];
 
 export function ScriptRequestsPanel() {
   const { requests, isLoading, updateRequest, isUpdating } = useAdminScriptRequests();
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [adminNotes, setAdminNotes] = useState('');
   const [newStatus, setNewStatus] = useState<string>('');
+  const [activeFilter, setActiveFilter] = useState('all');
 
   const handleUpdateStatus = () => {
     if (!selectedRequest || !newStatus) return;
@@ -76,13 +109,12 @@ export function ScriptRequestsPanel() {
       },
       {
         onSuccess: async () => {
-          // Send notification to user about status change
           const { data: { user } } = await supabase.auth.getUser();
           if (user && selectedRequest.user_id) {
             const statusMessages = {
               in_review: 'Your script request is now being reviewed by our team.',
-              completed: 'Your script request has been completed! Check the admin notes for details.',
-              rejected: 'Your script request could not be completed. See admin notes for more information.',
+              completed: 'Your script request has been completed! Check the notes for details.',
+              rejected: 'Your script request could not be completed. See notes for more info.',
               pending: 'Your script request status has been updated to pending.',
             };
 
@@ -106,8 +138,17 @@ export function ScriptRequestsPanel() {
 
   const filterRequestsByStatus = (status?: string) => {
     if (!requests) return [];
-    if (!status) return requests;
+    if (!status || status === 'all') return requests;
     return requests.filter((r: any) => r.status === status);
+  };
+
+  const filteredRequests = filterRequestsByStatus(activeFilter);
+  const counts = {
+    all: requests?.length || 0,
+    pending: filterRequestsByStatus('pending').length,
+    in_review: filterRequestsByStatus('in_review').length,
+    completed: filterRequestsByStatus('completed').length,
+    rejected: filterRequestsByStatus('rejected').length,
   };
 
   if (isLoading) {
@@ -118,158 +159,278 @@ export function ScriptRequestsPanel() {
     );
   }
 
-  const pendingCount = filterRequestsByStatus('pending').length;
-  const inReviewCount = filterRequestsByStatus('in_review').length;
-
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Script Requests</CardTitle>
-          <CardDescription>
-            Manage custom script requests from users
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="all">
-                Todos ({requests?.length || 0})
-              </TabsTrigger>
-              <TabsTrigger value="pending">
-                Pendentes ({pendingCount})
-              </TabsTrigger>
-              <TabsTrigger value="in_review">
-                Em Análise ({inReviewCount})
-              </TabsTrigger>
-              <TabsTrigger value="completed">
-                Concluídos
-              </TabsTrigger>
-              <TabsTrigger value="rejected">
-                Rejeitados
-              </TabsTrigger>
-            </TabsList>
+      <div className="space-y-4">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              Script Requests
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {counts.pending} pending • {counts.in_review} in review
+            </p>
+          </div>
+        </div>
 
-            {['all', 'pending', 'in_review', 'completed', 'rejected'].map((status) => (
-              <TabsContent key={status} value={status} className="space-y-4 mt-4">
-                {filterRequestsByStatus(status === 'all' ? undefined : status).length === 0 ? (
-                  <div className="text-center py-12 text-muted-foreground">
-                    No requests found
-                  </div>
-                ) : (
-                  filterRequestsByStatus(status === 'all' ? undefined : status).map(
-                    (request: any) => {
-                      const StatusIcon = STATUS_ICONS[request.status as keyof typeof STATUS_ICONS];
-                      return (
-                        <Card key={request.id} className="overflow-hidden">
-                          <CardHeader className="pb-3">
-                            <div className="flex items-start justify-between">
-                              <div className="space-y-1 flex-1">
-                                <div className="flex items-center gap-2 flex-wrap">
-                                  <Badge className={STATUS_COLORS[request.status as keyof typeof STATUS_COLORS]}>
-                                    <StatusIcon className="h-3 w-3 mr-1" />
-                                    {STATUS_LABELS[request.status as keyof typeof STATUS_LABELS]}
-                                  </Badge>
-                                  <Badge className={URGENCY_COLORS[request.urgency_level as keyof typeof URGENCY_COLORS]}>
-                                    {request.urgency_level === 'urgent' && '🔥 Urgente'}
-                                    {request.urgency_level === 'high' && 'Alta'}
-                                    {request.urgency_level === 'medium' && 'Média'}
-                                    {request.urgency_level === 'low' && 'Baixa'}
-                                  </Badge>
-                                  {request.child_brain_profile && (
-                                    <Badge variant="outline">{request.child_brain_profile}</Badge>
-                                  )}
-                                  {request.child_age && (
-                                    <Badge variant="outline">{request.child_age} anos</Badge>
-                                  )}
-                                </div>
-                                <div className="text-sm text-muted-foreground">
-                                  <span className="font-medium">
-                                    {request.profiles?.name || request.profiles?.email || 'Usuário'}
-                                  </span>
-                                  {' · '}
-                                  {formatDistanceToNow(new Date(request.created_at), {
-                                    addSuffix: true,
-                                  })}
-                                </div>
+        {/* Horizontal Scroll Filters */}
+        <ScrollArea className="w-full">
+          <div className="flex gap-2 pb-2">
+            {FILTERS.map((filter) => {
+              const count = counts[filter.value as keyof typeof counts];
+              const isActive = activeFilter === filter.value;
+              return (
+                <Button
+                  key={filter.value}
+                  variant={isActive ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setActiveFilter(filter.value)}
+                  className={cn(
+                    "whitespace-nowrap shrink-0 transition-all",
+                    isActive && "shadow-md"
+                  )}
+                >
+                  {filter.label}
+                  {count > 0 && (
+                    <Badge 
+                      variant="secondary" 
+                      className={cn(
+                        "ml-1.5 h-5 min-w-5 px-1.5 text-[10px]",
+                        isActive ? "bg-white/20 text-white" : "bg-muted"
+                      )}
+                    >
+                      {count}
+                    </Badge>
+                  )}
+                </Button>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
+        {/* Requests List */}
+        <AnimatePresence mode="wait">
+          {filteredRequests.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="text-center py-16"
+            >
+              <div className="text-5xl mb-4">📭</div>
+              <h3 className="text-lg font-semibold">No requests found</h3>
+              <p className="text-sm text-muted-foreground">
+                {activeFilter === 'all' 
+                  ? 'No script requests have been submitted yet'
+                  : `No ${activeFilter.replace('_', ' ')} requests`
+                }
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-3"
+            >
+              {filteredRequests.map((request: any, index: number) => {
+                const statusConfig = STATUS_CONFIG[request.status as keyof typeof STATUS_CONFIG];
+                const urgencyConfig = URGENCY_CONFIG[request.urgency_level as keyof typeof URGENCY_CONFIG];
+                const StatusIcon = statusConfig?.icon || AlertCircle;
+                const userName = request.profiles?.name || request.profiles?.email || 'Unknown User';
+                const userEmail = request.profiles?.email || '';
+                const initials = userName.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2);
+
+                return (
+                  <motion.div
+                    key={request.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card 
+                      className={cn(
+                        "overflow-hidden transition-all hover:shadow-lg cursor-pointer border-l-4",
+                        statusConfig?.border
+                      )}
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setAdminNotes(request.admin_notes || '');
+                        setNewStatus(request.status);
+                      }}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          {/* User Avatar */}
+                          <Avatar className="h-10 w-10 shrink-0 border-2 border-border">
+                            <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          {/* Content */}
+                          <div className="flex-1 min-w-0 space-y-2">
+                            {/* User Info & Status */}
+                            <div className="flex items-start justify-between gap-2">
+                              <div>
+                                <p className="font-semibold text-sm truncate">{userName}</p>
+                                {userEmail && (
+                                  <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                                )}
                               </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => {
-                                  setSelectedRequest(request);
-                                  setAdminNotes(request.admin_notes || '');
-                                  setNewStatus(request.status);
-                                }}
+                              <Badge 
+                                className={cn(
+                                  "shrink-0 flex items-center gap-1",
+                                  statusConfig?.bg,
+                                  statusConfig?.text,
+                                  "border-0"
+                                )}
                               >
-                                <Eye className="h-4 w-4 mr-2" />
-                                Ver Detalhes
-                              </Button>
+                                <StatusIcon className="h-3 w-3" />
+                                {statusConfig?.label}
+                              </Badge>
                             </div>
-                          </CardHeader>
-                          <CardContent>
-                            <p className="text-sm line-clamp-3">{request.situation_description}</p>
+
+                            {/* Situation Preview */}
+                            <p className="text-sm text-foreground line-clamp-2">
+                              {request.situation_description}
+                            </p>
+
+                            {/* Meta Info */}
+                            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Calendar className="h-3 w-3" />
+                                {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
+                              </span>
+                              {request.child_brain_profile && (
+                                <Badge variant="outline" className="text-[10px] h-5">
+                                  <Brain className="h-2.5 w-2.5 mr-1" />
+                                  {request.child_brain_profile}
+                                </Badge>
+                              )}
+                              {request.child_age && (
+                                <Badge variant="outline" className="text-[10px] h-5">
+                                  {request.child_age} yrs
+                                </Badge>
+                              )}
+                              {urgencyConfig && (
+                                <Badge className={cn("text-[10px] h-5 border-0", urgencyConfig.bg, urgencyConfig.text)}>
+                                  {urgencyConfig.label}
+                                </Badge>
+                              )}
+                            </div>
+
+                            {/* Locations */}
                             {request.location_type && request.location_type.length > 0 && (
-                              <div className="flex gap-1 mt-2">
-                                {request.location_type.map((loc: string) => (
-                                  <Badge key={loc} variant="secondary" className="text-xs">
+                              <div className="flex gap-1 flex-wrap">
+                                {request.location_type.slice(0, 3).map((loc: string) => (
+                                  <Badge key={loc} variant="secondary" className="text-[10px] h-5">
+                                    <MapPin className="h-2.5 w-2.5 mr-1" />
                                     {loc}
                                   </Badge>
                                 ))}
+                                {request.location_type.length > 3 && (
+                                  <Badge variant="secondary" className="text-[10px] h-5">
+                                    +{request.location_type.length - 3}
+                                  </Badge>
+                                )}
                               </div>
                             )}
-                          </CardContent>
-                        </Card>
-                      );
-                    }
-                  )
-                )}
-              </TabsContent>
-            ))}
-          </Tabs>
-        </CardContent>
-      </Card>
+                          </div>
 
-      {/* Modal de Detalhes */}
+                          {/* View Button */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="shrink-0 h-8 w-8"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedRequest(request);
+                              setAdminNotes(request.admin_notes || '');
+                              setNewStatus(request.status);
+                            }}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Detail Modal */}
       <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Request Details</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-primary" />
+              Request Details
+            </DialogTitle>
             <DialogDescription>
-              Review and manage script request
+              Review and manage this script request
             </DialogDescription>
           </DialogHeader>
 
           {selectedRequest && (
-            <div className="space-y-6">
-              {/* User Info */}
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">User:</span>{' '}
-                  {selectedRequest.profiles?.name || selectedRequest.profiles?.email}
+            <div className="space-y-5">
+              {/* User Card */}
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                <Avatar className="h-12 w-12 border-2 border-border">
+                  <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                    {(selectedRequest.profiles?.name || selectedRequest.profiles?.email || 'U')
+                      .split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2)}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold truncate">
+                    {selectedRequest.profiles?.name || 'Unknown User'}
+                  </p>
+                  <p className="text-sm text-muted-foreground truncate">
+                    {selectedRequest.profiles?.email || 'No email'}
+                  </p>
                 </div>
-                <div>
-                  <span className="font-medium">Created:</span>{' '}
-                  {formatDistanceToNow(new Date(selectedRequest.created_at), {
-                    addSuffix: true,
-                  })}
+              </div>
+
+              {/* Quick Info */}
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="p-3 bg-muted/30 rounded-lg">
+                  <p className="text-muted-foreground text-xs mb-1">Submitted</p>
+                  <p className="font-medium">
+                    {format(new Date(selectedRequest.created_at), 'MMM d, yyyy')}
+                  </p>
                 </div>
                 {selectedRequest.child_brain_profile && (
-                  <div>
-                    <span className="font-medium">Profile:</span> {selectedRequest.child_brain_profile}
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-muted-foreground text-xs mb-1">Brain Profile</p>
+                    <p className="font-medium">{selectedRequest.child_brain_profile}</p>
                   </div>
                 )}
                 {selectedRequest.child_age && (
-                  <div>
-                    <span className="font-medium">Age:</span> {selectedRequest.child_age} years
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-muted-foreground text-xs mb-1">Child Age</p>
+                    <p className="font-medium">{selectedRequest.child_age} years</p>
+                  </div>
+                )}
+                {selectedRequest.parent_emotional_state && (
+                  <div className="p-3 bg-muted/30 rounded-lg">
+                    <p className="text-muted-foreground text-xs mb-1">Parent State</p>
+                    <p className="font-medium capitalize">{selectedRequest.parent_emotional_state}</p>
                   </div>
                 )}
               </div>
 
               {/* Situation Description */}
               <div>
-                <h4 className="font-medium mb-2">Situation Described:</h4>
-                <p className="text-sm bg-muted p-4 rounded-lg whitespace-pre-wrap">
+                <h4 className="font-medium mb-2 text-sm">Situation Described</h4>
+                <p className="text-sm bg-muted/50 p-4 rounded-lg whitespace-pre-wrap">
                   {selectedRequest.situation_description}
                 </p>
               </div>
@@ -277,36 +438,28 @@ export function ScriptRequestsPanel() {
               {/* Locations */}
               {selectedRequest.location_type && selectedRequest.location_type.length > 0 && (
                 <div>
-                  <h4 className="font-medium mb-2">Locations where it happens:</h4>
+                  <h4 className="font-medium mb-2 text-sm">Locations</h4>
                   <div className="flex gap-2 flex-wrap">
                     {selectedRequest.location_type.map((loc: string) => (
-                      <Badge key={loc} variant="secondary">
-                        {loc}
-                      </Badge>
+                      <Badge key={loc} variant="secondary">{loc}</Badge>
                     ))}
                   </div>
-                </div>
-              )}
-
-              {/* Emotional State */}
-              {selectedRequest.parent_emotional_state && (
-                <div>
-                  <h4 className="font-medium mb-2">Parent's emotional state:</h4>
-                  <Badge variant="outline">{selectedRequest.parent_emotional_state}</Badge>
                 </div>
               )}
 
               {/* Additional Notes */}
               {selectedRequest.additional_notes && (
                 <div>
-                  <h4 className="font-medium mb-2">Additional Notes:</h4>
-                  <p className="text-sm bg-muted p-4 rounded-lg">{selectedRequest.additional_notes}</p>
+                  <h4 className="font-medium mb-2 text-sm">Additional Notes</h4>
+                  <p className="text-sm bg-muted/50 p-4 rounded-lg">
+                    {selectedRequest.additional_notes}
+                  </p>
                 </div>
               )}
 
               {/* Admin Management */}
-              <div className="border-t pt-6 space-y-4">
-                <h4 className="font-medium">Management</h4>
+              <div className="border-t pt-5 space-y-4">
+                <h4 className="font-semibold">Update Status</h4>
 
                 <div>
                   <label className="text-sm font-medium mb-2 block">Status</label>
@@ -315,8 +468,8 @@ export function ScriptRequestsPanel() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pending">Pending Review</SelectItem>
-                      <SelectItem value="in_review">In Progress</SelectItem>
+                      <SelectItem value="pending">Pending</SelectItem>
+                      <SelectItem value="in_review">In Review</SelectItem>
                       <SelectItem value="completed">Completed</SelectItem>
                       <SelectItem value="rejected">Cannot Complete</SelectItem>
                     </SelectContent>
@@ -328,8 +481,8 @@ export function ScriptRequestsPanel() {
                   <Textarea
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
-                    placeholder="Add notes about progress, next steps, or why it cannot be completed..."
-                    className="min-h-[100px]"
+                    placeholder="Add notes about progress or why it cannot be completed..."
+                    className="min-h-[80px]"
                   />
                 </div>
 
