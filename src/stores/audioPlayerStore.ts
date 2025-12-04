@@ -54,6 +54,7 @@ interface AudioPlayerState {
   // UI state
   isFullscreen: boolean;
   isMiniPlayerVisible: boolean;
+  isMiniPlayerMinimized: boolean;
   
   // Actions
   play: (track: AudioTrack, series: AudioSeries, queue?: AudioTrack[], startTime?: number) => void;
@@ -68,6 +69,7 @@ interface AudioPlayerState {
   previous: () => void;
   setFullscreen: (fullscreen: boolean) => void;
   setMiniPlayerVisible: (visible: boolean) => void;
+  setMiniPlayerMinimized: (minimized: boolean) => void;
   reset: () => void;
 }
 
@@ -82,6 +84,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
   currentQueueIndex: 0,
   isFullscreen: false,
   isMiniPlayerVisible: false,
+  isMiniPlayerMinimized: false,
 
   play: (track, series, queue, startTime) => {
     const newQueue = queue || [track];
@@ -158,6 +161,8 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
 
   setMiniPlayerVisible: (visible) => set({ isMiniPlayerVisible: visible }),
 
+  setMiniPlayerMinimized: (minimized) => set({ isMiniPlayerMinimized: minimized }),
+
   reset: () => set({
     currentTrack: null,
     currentSeries: null,
@@ -169,5 +174,6 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
     currentQueueIndex: 0,
     isFullscreen: false,
     isMiniPlayerVisible: false,
+    isMiniPlayerMinimized: false,
   }),
 }));
