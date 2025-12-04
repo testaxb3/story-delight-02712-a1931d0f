@@ -27,6 +27,9 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
   // State to pause auto-scroll when user interacts
   const [userScrolling, setUserScrolling] = useState(false);
   const userScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Flag to distinguish programmatic scroll from user scroll
+  const isAutoScrollingRef = useRef(false);
 
   const activeSegmentIndex = useMemo(() => {
     if (!transcript?.segments?.length) return -1;
@@ -40,6 +43,9 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
 
   // Handler to detect manual scroll and pause auto-scroll for 3 seconds
   const handleScroll = useCallback(() => {
+    // Ignore programmatic scrolls
+    if (isAutoScrollingRef.current) return;
+    
     setUserScrolling(true);
     
     // Clear previous timeout
@@ -56,12 +62,20 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
   // Auto-scroll to keep active segment centered
   useEffect(() => {
     if (!userScrolling && activeRef.current && scrollContainerRef.current) {
+      // Set flag before programmatic scroll
+      isAutoScrollingRef.current = true;
+      
       // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
         activeRef.current?.scrollIntoView({
           behavior: 'smooth',
           block: 'center'
         });
+        
+        // Reset flag after smooth scroll animation completes (~600ms)
+        setTimeout(() => {
+          isAutoScrollingRef.current = false;
+        }, 600);
       });
     }
   }, [activeSegmentIndex, userScrolling]);

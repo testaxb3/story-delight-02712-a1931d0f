@@ -100,15 +100,18 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
           
           {/* Main content container */}
           <div className="relative h-full flex flex-col">
-            {/* Minimalist Header */}
+            {/* Minimalist Header - PWA iOS optimized */}
             <header 
-              className="flex items-center justify-between px-4 py-3 relative z-20"
-              style={{ paddingTop: 'max(0.75rem, calc(env(safe-area-inset-top) + 0.5rem))' }}
+              className="flex items-center justify-between px-4 relative z-20"
+              style={{ 
+                paddingTop: 'max(1rem, calc(env(safe-area-inset-top) + 0.75rem))',
+                paddingBottom: '0.75rem'
+              }}
             >
               <button
                 onClick={onClose}
-                className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-95 transition-transform"
-                aria-label="Close"
+                className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center active:scale-95 active:bg-white/25 transition-all"
+                aria-label="Close player"
               >
                 <ChevronDown className="w-6 h-6 text-white" />
               </button>
