@@ -1,7 +1,9 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { notificationManager } from "@/lib/notifications";
 
 interface PurchasedProduct {
   id: string;
@@ -16,12 +18,84 @@ interface ProductUnlock {
   unlocks: string[];
 }
 
+// Product-specific notification messages
+const PRODUCT_MESSAGES: Record<string, { title: string; description: string; route: string }> = {
+  '27499673': { 
+    title: '🎉 NEP System Unlocked!', 
+    description: 'Your access to Scripts, Videos and Ebooks is now active!',
+    route: '/scripts'
+  },
+  '27577169': { 
+    title: '🎉 NEP System Unlocked!', 
+    description: 'Your access to Scripts, Videos and Ebooks is now active!',
+    route: '/scripts'
+  },
+  '27845678': { 
+    title: '🎧 NEP Listen Unlocked!', 
+    description: 'Premium audio tracks are now available!',
+    route: '/listen'
+  },
+  '27851448': { 
+    title: '🎧 NEP Listen Unlocked!', 
+    description: 'Premium audio tracks are now available!',
+    route: '/listen'
+  },
+};
+
+/**
+ * Detect new products by comparing old and new arrays
+ */
+const detectNewProducts = (
+  oldProducts: PurchasedProduct[], 
+  newProducts: PurchasedProduct[]
+): PurchasedProduct[] => {
+  const oldIds = new Set(oldProducts.map(p => String(p.id)));
+  return newProducts.filter(p => !oldIds.has(String(p.id)));
+};
+
+/**
+ * Notify user about unlocked product via toast and push
+ */
+const notifyProductUnlocked = async (product: PurchasedProduct) => {
+  const message = PRODUCT_MESSAGES[String(product.id)] || {
+    title: '🎉 Content Unlocked!',
+    description: `${product.name} is now available!`,
+    route: '/bonuses'
+  };
+  
+  // Toast notification (in-app)
+  toast.success(message.title, {
+    description: message.description,
+    duration: 6000,
+    action: {
+      label: 'View',
+      onClick: () => {
+        window.location.href = message.route;
+      }
+    }
+  });
+  
+  // Local push notification (if app in background)
+  try {
+    if (notificationManager.getPermission() === 'granted') {
+      await notificationManager.showNotification(message.title, {
+        body: message.description,
+        tag: 'product-unlocked',
+        data: { productId: product.id, route: message.route }
+      });
+    }
+  } catch (error) {
+    console.error('Failed to show push notification:', error);
+  }
+};
+
 /**
  * Hook to manage user's purchased products and unlock logic
  * Queries approved_users.products JSONB array and product_config for unlocks
  */
 export function useUserProducts() {
   const { user } = useAuth();
+  const previousProductsRef = useRef<PurchasedProduct[]>([]);
 
   // Fetch user's purchased products
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
@@ -69,6 +143,13 @@ export function useUserProducts() {
   const isLoading = isLoadingProducts || isLoadingConfig;
   const queryClient = useQueryClient();
 
+  // Keep previousProductsRef synced with initial/fetched products
+  useEffect(() => {
+    if (products.length > 0 && previousProductsRef.current.length === 0) {
+      previousProductsRef.current = products;
+    }
+  }, [products]);
+
   // Real-time subscription for instant updates when purchases are made
   useEffect(() => {
     if (!user?.email) return;
@@ -83,8 +164,22 @@ export function useUserProducts() {
           table: 'approved_users',
           filter: `email=eq.${user.email.toLowerCase()}`
         },
-        () => {
-          // Invalidate and refetch when user's products are updated
+        (payload) => {
+          const newProducts = ((payload.new as any)?.products as PurchasedProduct[]) || [];
+          const oldProducts = previousProductsRef.current;
+          
+          // Detect newly added products
+          const addedProducts = detectNewProducts(oldProducts, newProducts);
+          
+          // Notify for each new product
+          addedProducts.forEach(product => {
+            notifyProductUnlocked(product);
+          });
+          
+          // Update reference for next comparison
+          previousProductsRef.current = newProducts;
+          
+          // Invalidate cache to refetch
           queryClient.invalidateQueries({ queryKey: ['user-products', user.email] });
         }
       )
