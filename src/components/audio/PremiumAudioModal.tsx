@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Check, ExternalLink } from 'lucide-react';
+import { Check, ExternalLink, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 
@@ -10,10 +11,12 @@ interface PremiumAudioModalProps {
 }
 
 export function PremiumAudioModal({ isOpen, onClose, series }: PremiumAudioModalProps) {
+  const navigate = useNavigate();
+  
   if (!series) return null;
 
   const benefits = [
-    '11 calming audio tracks',
+    '21+ premium audio tracks',
     'Science-backed techniques',
     'Listen anywhere, anytime',
     'Lifetime access',
@@ -21,6 +24,11 @@ export function PremiumAudioModal({ isOpen, onClose, series }: PremiumAudioModal
 
   const handleUpgrade = () => {
     window.open('https://gtmsinop.mycartpanda.com/checkout/203914365:1', '_blank');
+  };
+
+  const handleLearnMore = () => {
+    onClose();
+    navigate('/listen/upgrade');
   };
 
   return (
@@ -92,10 +100,11 @@ export function PremiumAudioModal({ isOpen, onClose, series }: PremiumAudioModal
                 <ExternalLink className="w-4 h-4" />
               </button>
               <button
-                onClick={onClose}
-                className="w-full h-12 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors active:scale-95"
+                onClick={handleLearnMore}
+                className="w-full h-12 rounded-full bg-muted text-foreground font-medium hover:bg-muted/80 transition-colors active:scale-95 flex items-center justify-center gap-2"
               >
-                Maybe Later
+                <span>Learn More</span>
+                <ChevronRight className="w-4 h-4" />
               </button>
             </div>
           </div>

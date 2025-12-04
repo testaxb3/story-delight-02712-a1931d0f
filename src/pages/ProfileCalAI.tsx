@@ -255,7 +255,7 @@ export default function ProfileCalAI() {
               // User doesn't have NEP Listen - Show Upsell Banner
               <motion.div 
                 whileTap={{ scale: 0.98 }}
-                onClick={() => navigate('/listen')}
+                onClick={() => navigate('/listen/upgrade')}
                 className="mb-8 relative overflow-hidden rounded-2xl bg-black text-white p-6 shadow-xl cursor-pointer group"
               >
                 <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
