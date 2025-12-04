@@ -33,6 +33,7 @@ interface ApprovedUser {
   account_created: boolean;
   account_created_at: string | null;
   sms_sent: boolean;
+  email_sent: boolean;
   status: string;
 }
 
@@ -252,6 +253,7 @@ export function AdminSalesTab() {
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Product</th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Value</th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Purchased</th>
+                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Time to Convert</th>
                 <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
@@ -284,6 +286,19 @@ export function AdminSalesTab() {
                     <span className="text-sm text-muted-foreground">
                       {formatDistanceToNow(new Date(buyer.created_at), { addSuffix: true })}
                     </span>
+                  </td>
+                  <td className="p-4">
+                    {buyer.email_sent ? (
+                      <Badge className="bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30">
+                        <CheckCircle2 className="w-3 h-3 mr-1" />
+                        Sent
+                      </Badge>
+                    ) : (
+                      <Badge className="bg-gray-500/15 text-gray-600 dark:text-gray-400 border-gray-500/30">
+                        <AlertCircle className="w-3 h-3 mr-1" />
+                        Pending
+                      </Badge>
+                    )}
                   </td>
                   <td className="p-4">
                     {getStatusBadge(buyer)}

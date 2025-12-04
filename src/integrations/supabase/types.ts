@@ -106,6 +106,7 @@ export type Database = {
           created_at: string | null
           currency: string | null
           email: string
+          email_sent: boolean | null
           first_name: string | null
           id: string
           last_name: string | null
@@ -130,6 +131,7 @@ export type Database = {
           created_at?: string | null
           currency?: string | null
           email: string
+          email_sent?: boolean | null
           first_name?: string | null
           id?: string
           last_name?: string | null
@@ -154,6 +156,7 @@ export type Database = {
           created_at?: string | null
           currency?: string | null
           email?: string
+          email_sent?: boolean | null
           first_name?: string | null
           id?: string
           last_name?: string | null
