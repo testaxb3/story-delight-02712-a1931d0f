@@ -64,7 +64,7 @@ export function AdminNotificationsTab() {
       .from('push_notification_log')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(20);
+      .limit(5);
 
     if (!error && data) {
       setHistory(data as NotificationLog[]);
