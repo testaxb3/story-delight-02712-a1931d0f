@@ -96,7 +96,7 @@ const notifyProductUnlocked = async (product: PurchasedProduct) => {
 export function useUserProducts() {
   const { user } = useAuth();
   const previousProductsRef = useRef<PurchasedProduct[]>([]);
-
+  const isInitializedRef = useRef(false);
   // Fetch user's purchased products
   const { data: products = [], isLoading: isLoadingProducts } = useQuery({
     queryKey: ['user-products', user?.email],
@@ -145,8 +145,9 @@ export function useUserProducts() {
 
   // Keep previousProductsRef synced with initial/fetched products
   useEffect(() => {
-    if (products.length > 0 && previousProductsRef.current.length === 0) {
+    if (products.length > 0 && !isInitializedRef.current) {
       previousProductsRef.current = products;
+      isInitializedRef.current = true;
     }
   }, [products]);
 
@@ -168,13 +169,18 @@ export function useUserProducts() {
           const newProducts = ((payload.new as any)?.products as PurchasedProduct[]) || [];
           const oldProducts = previousProductsRef.current;
           
-          // Detect newly added products
-          const addedProducts = detectNewProducts(oldProducts, newProducts);
-          
-          // Notify for each new product
-          addedProducts.forEach(product => {
-            notifyProductUnlocked(product);
-          });
+          // Only notify if we have initialized state (prevents false positives on first load)
+          if (isInitializedRef.current) {
+            const addedProducts = detectNewProducts(oldProducts, newProducts);
+            
+            // Notify for each new product
+            addedProducts.forEach(product => {
+              notifyProductUnlocked(product);
+            });
+          } else {
+            // First realtime event before React Query loaded - initialize without notifications
+            isInitializedRef.current = true;
+          }
           
           // Update reference for next comparison
           previousProductsRef.current = newProducts;
