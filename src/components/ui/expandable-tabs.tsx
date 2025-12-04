@@ -69,7 +69,7 @@ export function ExpandableTabs({
   return (
     <div
       className={cn(
-        "relative flex items-center gap-1 rounded-full border border-white/10 bg-card/70 p-1.5 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl dark:border-white/5 dark:bg-card/80 dark:shadow-[0_8px_32px_rgba(0,0,0,0.4)]",
+        "relative flex items-center gap-1 rounded-full border border-border/20 bg-card/90 p-1.5 shadow-[0_12px_40px_rgba(0,0,0,0.4)] backdrop-blur-2xl dark:border-white/5 dark:bg-card/80 dark:shadow-[0_12px_40px_rgba(0,0,0,0.8)]",
         className
       )}
     >

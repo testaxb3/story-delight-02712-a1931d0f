@@ -1,5 +1,5 @@
 import { motion, AnimatePresence, PanInfo } from 'framer-motion';
-import { Play, Pause, SkipBack, SkipForward, X, ChevronLeft } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
 
@@ -50,6 +50,11 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
     }
     pause();
     setMiniPlayerVisible(false);
+  };
+
+  const handleMinimize = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setMiniPlayerMinimized(true);
   };
 
   const handlePlayPause = (e: React.MouseEvent) => {
@@ -133,10 +138,19 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
         style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 4.5rem)` }}
       >
         {/* Glassmorphism container */}
-        <div 
+        <div
           onClick={onExpand}
           className="bg-card/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-border/50 overflow-hidden cursor-pointer relative"
         >
+          {/* Minimize button - iOS style */}
+          <button
+            onClick={handleMinimize}
+            className="absolute top-1 left-1 z-10 w-6 h-6 rounded-full bg-muted/80 flex items-center justify-center hover:bg-muted transition-colors"
+            aria-label="Minimize player"
+          >
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+
           {/* Close button */}
           <button
             onClick={handleClose}
@@ -157,7 +171,7 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
           </div>
 
           {/* Player content - compact */}
-          <div className="px-3 py-2.5 flex items-center gap-3 pr-10">
+          <div className="px-3 py-2.5 flex items-center gap-3 pr-10 pl-10">
             {/* Artwork - smaller */}
             <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0 overflow-hidden">
               {currentSeries?.cover_image ? (
@@ -217,11 +231,6 @@ export function MiniPlayer({ onExpand }: MiniPlayerProps) {
                 <SkipForward className="w-4 h-4 text-foreground" />
               </button>
             </div>
-          </div>
-
-          {/* Swipe hint indicator */}
-          <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-30">
-            <ChevronLeft className="w-4 h-4 text-muted-foreground" />
           </div>
         </div>
       </motion.div>

@@ -91,17 +91,17 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="group"
+      className="group border-b border-border/40 last:border-0 relative mb-1"
     >
       <button
         onClick={handleClick}
         className={`
-          w-full py-3 px-2 rounded-xl flex items-center gap-4 transition-all relative
-          ${isCurrent 
-            ? 'bg-primary/8' 
+          w-full py-4 px-2 rounded-lg flex items-center gap-3 transition-all relative
+          ${isCurrent
+            ? 'bg-primary/8'
             : isLocked
             ? 'opacity-50 hover:opacity-60'
-            : 'hover:bg-muted/50'
+            : 'hover:bg-muted/30'
           }
         `}
       >
@@ -113,22 +113,21 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
         {/* Track info */}
         <div className="flex-1 min-w-0 text-left">
           <h3 className={`
-            text-sm font-medium truncate
-            ${isCurrent ? 'text-primary' : 'text-foreground'}
-          `}>
+            text-sm font-bold truncate leading-none
+            ${isCurrent ? 'text-primary' : 'text-black dark:text-white'}
+          `} style={{ textShadow: 'none', WebkitTextStroke: '0px' }}>
             {track.title}
           </h3>
           
-          {/* Smart Progress: Only show if progress > 0 and not completed */}
+          {/* Fixed Progress Bar - Visual Fix requested */}
           {progress && !progress.completed && progressPercentage > 0 && (
-            <div className="mt-1.5">
-              <div className="h-[3px] bg-muted rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercentage}%` }}
-                  className="h-full bg-primary rounded-full"
-                />
-              </div>
+            <div className="mt-2 w-[100px] h-[2px] bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 0.3 }}
+                className="h-full bg-black dark:bg-white rounded-full"
+              />
             </div>
           )}
         </div>

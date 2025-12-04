@@ -33,28 +33,22 @@ export function AudioTrackList({ tracks, series, hasAccess }: AudioTrackListProp
 
   return (
     <div className="space-y-2">
-      <h3 className="text-lg font-semibold text-foreground px-1 mb-4">
-        Episodes
-      </h3>
-      
-      <div className="space-y-2">
-        {tracks.map((track, index) => {
-          const isLocked = !track.is_preview && !hasAccess;
-          
-          return (
-            <AudioTrackItem
-              key={track.id}
-              track={track}
-              isPlaying={isPlaying && currentTrack?.id === track.id}
-              isCurrent={currentTrack?.id === track.id}
-              onPlay={() => handlePlayTrack(track)}
-              index={index}
-              isLocked={isLocked}
-              onLockedClick={handleLockedClick}
-            />
-          );
-        })}
-      </div>
+      {tracks.map((track, index) => {
+        const isLocked = !track.is_preview && !hasAccess;
+
+        return (
+          <AudioTrackItem
+            key={track.id}
+            track={track}
+            isPlaying={isPlaying && currentTrack?.id === track.id}
+            isCurrent={currentTrack?.id === track.id}
+            onPlay={() => handlePlayTrack(track)}
+            index={index}
+            isLocked={isLocked}
+            onLockedClick={handleLockedClick}
+          />
+        );
+      })}
     </div>
   );
 }

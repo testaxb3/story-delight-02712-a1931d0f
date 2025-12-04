@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Play, Pause, RotateCcw, RotateCw, Gauge, ListMusic } from 'lucide-react';
+import { ChevronLeft, Play, Pause, RotateCcw, RotateCw, Gauge, ListMusic, Minimize2 } from 'lucide-react';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import { Slider } from '@/components/ui/slider';
@@ -36,6 +36,8 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
     setRate,
     setTime,
     play,
+    setMiniPlayerVisible,
+    setFullscreen,
   } = useAudioPlayerStore();
 
   if (!currentTrack || !currentSeries) return null;
@@ -61,6 +63,11 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
       }
     }
     togglePlayPause();
+  };
+
+  const handleEnableMiniPlayer = () => {
+    setMiniPlayerVisible(true);
+    setFullscreen(false);
   };
 
   // Get transcript data from track
@@ -94,38 +101,48 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                 />
               </>
             )}
-            {/* Dark gradient overlay for text legibility - reduced opacity for ambient color */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+            {/* Ambient Light Gradient: Protects top/bottom text, lets cover shine through center */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/10 to-black/80" />
           </div>
           
           {/* Main content container */}
           <div className="relative h-full flex flex-col">
-            {/* Minimalist Header - PWA iOS optimized */}
-            <header 
-              className="flex items-center justify-between px-4 relative z-20"
-              style={{ 
-                paddingTop: 'max(1rem, calc(env(safe-area-inset-top) + 0.75rem))',
-                paddingBottom: '0.75rem'
+            {/* Minimalist Header - PWA iOS optimized with safe area */}
+            <div
+              className="relative z-20"
+              style={{
+                paddingTop: 'env(safe-area-inset-top, 0px)'
               }}
             >
-              <button
-                onClick={onClose}
-                className="w-11 h-11 rounded-full bg-white/15 backdrop-blur-md flex items-center justify-center active:scale-95 active:bg-white/25 transition-all"
-                aria-label="Close player"
+              <header
+                className="flex items-center justify-between px-4"
+                style={{
+                  paddingTop: '1rem',
+                  paddingBottom: '0.75rem'
+                }}
               >
-                <ChevronDown className="w-6 h-6 text-white" />
-              </button>
-              
+                <button
+                  onClick={onClose}
+                  className="w-11 h-11 rounded-full bg-black/30 backdrop-blur-xl flex items-center justify-center active:scale-95 transition-all shadow-lg border border-white/10"
+                  style={{
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.1)'
+                  }}
+                  aria-label="Back"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white drop-shadow-md" />
+                </button>
+
               {/* Series name - small and discrete */}
-              <p 
+              <p
                 className="text-xs font-medium text-white/50 uppercase tracking-wider truncate max-w-[50%]"
                 style={{ textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}
               >
                 {currentSeries.name}
               </p>
-              
-              <div className="w-10" /> {/* Spacer for alignment */}
-            </header>
+
+                <div className="w-11" /> {/* Spacer for alignment */}
+              </header>
+            </div>
 
             {/* Compact artwork + track info at top */}
             <div className="flex items-center gap-4 px-6 py-3 relative z-20">
@@ -164,11 +181,16 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
             </div>
 
             {/* TELEPROMPTER LYRICS ZONE - takes up main space */}
-            <div className="flex-1 min-h-0 relative z-10">
+            <div
+              className="flex-1 min-h-0 relative z-10 transition-all duration-300"
+              style={{
+                marginBottom: showQueue ? '50%' : '0'
+              }}
+            >
               {hasLyrics ? (
-                <TeleprompterLyrics 
-                  transcript={transcript} 
-                  currentTime={currentTime} 
+                <TeleprompterLyrics
+                  transcript={transcript}
+                  currentTime={currentTime}
                 />
               ) : (
                 <div className="h-full flex items-center justify-center">
@@ -255,7 +277,18 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                     {playbackRate}x
                   </span>
                 </button>
-                
+
+                <button
+                  onClick={handleEnableMiniPlayer}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/10 active:scale-95 transition-transform"
+                  aria-label="Enable mini player"
+                >
+                  <Minimize2 className="w-4 h-4 text-white/70" />
+                  <span className="text-xs font-medium text-white/70">
+                    Mini
+                  </span>
+                </button>
+
                 {upNextTracks.length > 0 && (
                   <button
                     onClick={() => setShowQueue(!showQueue)}
@@ -272,26 +305,40 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
               </div>
             </div>
 
-            {/* Queue drawer */}
-            <AnimatePresence>
+            {/* Queue drawer - Higher z-index to overlay properly */}
+            <AnimatePresence mode="wait">
               {showQueue && upNextTracks.length > 0 && (
-                <motion.div
-                  initial={{ y: '100%' }}
-                  animate={{ y: 0 }}
-                  exit={{ y: '100%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  className="absolute bottom-0 inset-x-0 bg-black/95 backdrop-blur-xl rounded-t-3xl max-h-[50%] overflow-hidden"
-                  style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
-                >
-                  <div className="flex justify-center py-3">
-                    <div className="w-10 h-1 rounded-full bg-white/30" />
-                  </div>
-                  
+                <>
+                  {/* Backdrop overlay - tap to close */}
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    onClick={() => setShowQueue(false)}
+                    className="absolute inset-0 bg-black/40 z-25"
+                  />
+
+                  <motion.div
+                    initial={{ y: '100%' }}
+                    animate={{ y: 0 }}
+                    exit={{ y: '100%' }}
+                    transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                    className="absolute bottom-0 inset-x-0 bg-black/95 backdrop-blur-xl rounded-t-3xl max-h-[50%] overflow-hidden z-30 border-t border-white/10"
+                    style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
+                  >
+                    {/* Drag handle */}
+                    <div
+                      onClick={() => setShowQueue(false)}
+                      className="flex justify-center w-full py-3 cursor-pointer active:opacity-50 transition-opacity"
+                    >
+                      <div className="w-10 h-1 rounded-full bg-white/30" />
+                    </div>
+
                   <div className="px-4 pb-4">
                     <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-3">
                       Up Next
                     </p>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                    <div className="space-y-2 max-h-48 overflow-y-auto scrollbar-hide">
                       {upNextTracks.map((track) => (
                         <button
                           key={track.id}
@@ -299,12 +346,12 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                             play(track, currentSeries, queue);
                             setShowQueue(false);
                           }}
-                          className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-left"
+                          className="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 active:bg-white/15 transition-colors text-left"
                         >
                           <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                             {currentSeries.cover_image ? (
-                              <img 
-                                src={currentSeries.cover_image} 
+                              <img
+                                src={currentSeries.cover_image}
                                 alt=""
                                 className="w-full h-full object-cover"
                               />
@@ -325,6 +372,7 @@ export function FullscreenPlayer({ isOpen, onClose }: FullscreenPlayerProps) {
                     </div>
                   </div>
                 </motion.div>
+                </>
               )}
             </AnimatePresence>
           </div>

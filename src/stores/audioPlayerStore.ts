@@ -89,7 +89,7 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
   play: (track, series, queue, startTime) => {
     const newQueue = queue || [track];
     const queueIndex = newQueue.findIndex(t => t.id === track.id);
-    
+
     set({
       currentTrack: track,
       currentSeries: series,
@@ -97,7 +97,8 @@ export const useAudioPlayerStore = create<AudioPlayerState>((set, get) => ({
       currentTime: startTime ?? 0,
       queue: newQueue,
       currentQueueIndex: queueIndex,
-      isMiniPlayerVisible: true,
+      isFullscreen: true, // Open fullscreen directly instead of mini player
+      isMiniPlayerVisible: false, // Hide mini player initially
     });
   },
 

@@ -102,8 +102,8 @@ const Navigation = () => {
       </nav>
 
       {/* Bottom Navigation (Mobile Only) */}
-      <nav className="md:hidden glass fixed bottom-0 left-0 right-0 z-50 border-t">
-        <div className="flex justify-around items-center h-16">
+      <nav className="md:hidden glass fixed bottom-0 left-0 right-0 z-50 border-t shadow-2xl">
+        <div className="flex justify-around items-center h-16" style={{ paddingBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
           {navItems.map(({ path, icon: Icon, label }) => (
             <Link
               key={path}

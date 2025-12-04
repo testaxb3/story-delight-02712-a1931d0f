@@ -1,16 +1,16 @@
-import { useState } from 'react';
 import { MiniPlayer } from './MiniPlayer';
 import { FullscreenPlayer } from './FullscreenPlayer';
+import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 
 export function AudioPlayer() {
-  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const { isFullscreen, setFullscreen } = useAudioPlayerStore();
 
   return (
     <>
-      <MiniPlayer onExpand={() => setIsFullscreenOpen(true)} />
-      <FullscreenPlayer 
-        isOpen={isFullscreenOpen} 
-        onClose={() => setIsFullscreenOpen(false)} 
+      <MiniPlayer onExpand={() => setFullscreen(true)} />
+      <FullscreenPlayer
+        isOpen={isFullscreen}
+        onClose={() => setFullscreen(false)}
       />
     </>
   );

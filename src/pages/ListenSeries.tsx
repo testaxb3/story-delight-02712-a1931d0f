@@ -114,7 +114,7 @@ export default function ListenSeries() {
       >
         {/* Immersive Header with Cover Blur */}
         <div className="relative overflow-hidden">
-          {/* Background: Blurred cover image */}
+          {/* Background: Blurred cover image with clean transition */}
           <div className="absolute inset-0">
             {series.cover_image ? (
               <>
@@ -122,19 +122,19 @@ export default function ListenSeries() {
                   src={series.cover_image}
                   alt=""
                   className="absolute inset-0 w-full h-full object-cover scale-125"
-                  style={{ filter: 'blur(50px)' }}
+                  style={{ filter: 'blur(50px) brightness(0.4)' }}
                 />
-                {/* Dark gradient overlay for text legibility */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-background" />
+                {/* Clean gradient - ends in pure white for light mode, pure black for dark mode */}
+                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/60 to-white dark:to-black" />
               </>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background to-background" />
+              <div className="absolute inset-0 bg-gradient-to-b from-muted/80 via-muted/60 to-background" />
             )}
           </div>
 
           {/* Header Content */}
           <div 
-            className="relative z-10 px-6 pb-6"
+            className="relative z-20 px-6 pb-6"
             style={{
               paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
             }}
@@ -144,11 +144,10 @@ export default function ListenSeries() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               onClick={() => navigate('/listen')}
-              className="flex items-center gap-2 text-white/90 hover:text-white transition-colors mb-6 -ml-2"
-              style={{ textShadow: '0 1px 3px rgba(0,0,0,0.5)' }}
+              className="flex items-center gap-2 text-white hover:text-white/80 transition-colors mb-6 -ml-2"
             >
-              <ChevronLeft className="w-5 h-5 drop-shadow-md" />
-              <span className="text-sm font-medium drop-shadow-md">Back</span>
+              <ChevronLeft className="w-5 h-5" />
+              <span className="text-sm font-semibold">Back</span>
             </motion.button>
 
             {/* Series info */}
@@ -174,18 +173,16 @@ export default function ListenSeries() {
                   <span className="text-2xl drop-shadow-md">{series.icon_name}</span>
                 )}
                 
-                {/* Title - White with shadow */}
+                {/* Title - Clean White */}
                 <h1 
                   className="text-xl font-bold text-white leading-tight mt-1"
-                  style={{ textShadow: '0 2px 4px rgba(0,0,0,0.5)' }}
                 >
                   {series.name}
                 </h1>
 
                 {/* Stats */}
                 <div 
-                  className="flex items-center gap-4 text-sm text-white/80 mt-2"
-                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.4)' }}
+                  className="flex items-center gap-4 text-sm text-white/90 mt-2 font-medium"
                 >
                   <div className="flex items-center gap-1.5">
                     <Play className="w-3.5 h-3.5" />
@@ -205,18 +202,17 @@ export default function ListenSeries() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="mt-4"
+                className="mt-4 relative z-20"
               >
                 <p 
-                  className={`text-sm text-white/70 leading-relaxed ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}
-                  style={{ textShadow: '0 1px 2px rgba(0,0,0,0.3)' }}
+                  className={`text-sm text-white/90 leading-relaxed font-medium ${!isDescriptionExpanded ? 'line-clamp-2' : ''}`}
                 >
                   {series.description}
                 </p>
                 {series.description.length > 100 && (
                   <button
                     onClick={() => setIsDescriptionExpanded(!isDescriptionExpanded)}
-                    className="flex items-center gap-1 text-xs text-white/60 hover:text-white/90 mt-1 transition-colors"
+                    className="flex items-center gap-1 text-xs text-white hover:text-white/80 mt-1 transition-colors font-semibold"
                   >
                     <span>{isDescriptionExpanded ? 'Show less' : 'Show more'}</span>
                     <ChevronDown className={`w-3 h-3 transition-transform ${isDescriptionExpanded ? 'rotate-180' : ''}`} />
@@ -233,55 +229,61 @@ export default function ListenSeries() {
               onClick={handlePlayAll}
               disabled={!tracks || tracks.length === 0}
               whileTap={{ scale: 0.98 }}
-              className="w-full h-12 rounded-full bg-primary text-primary-foreground font-semibold flex items-center justify-center gap-2 mt-5 shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-full bg-primary text-primary-foreground font-bold flex items-center justify-center gap-2 mt-8 shadow-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed relative z-20"
             >
               <Play className="w-5 h-5 fill-current" />
               <span>Play All</span>
             </motion.button>
 
-            {/* Action Bar - Secondary actions */}
+            {/* Action Bar - Adapts to theme properly */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="flex items-center justify-center gap-10 mt-5"
+              className="flex items-center justify-center gap-10 mt-6 relative z-20"
             >
-              <button className="flex flex-col items-center gap-1.5 text-white/60 hover:text-white/90 transition-colors group">
-                <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="text-[10px] font-medium">Download</span>
+              <button className="flex flex-col items-center gap-2 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white/80 transition-colors group">
+                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-gray-300 dark:group-hover:bg-white/30 transition-all shadow-md">
+                  <Download className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-xs font-semibold">Download</span>
               </button>
-              
-              <button className="flex flex-col items-center gap-1.5 text-white/60 hover:text-white/90 transition-colors group">
-                <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="text-[10px] font-medium">Save</span>
+
+              <button className="flex flex-col items-center gap-2 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white/80 transition-colors group">
+                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-gray-300 dark:group-hover:bg-white/30 transition-all shadow-md">
+                  <Heart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-xs font-semibold">Save</span>
               </button>
-              
-              <button 
+
+              <button
                 onClick={handleShare}
-                className="flex flex-col items-center gap-1.5 text-white/60 hover:text-white/90 transition-colors group"
+                className="flex flex-col items-center gap-2 text-gray-700 dark:text-white hover:text-gray-900 dark:hover:text-white/80 transition-colors group"
               >
-                <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                <span className="text-[10px] font-medium">Share</span>
+                <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-white/20 backdrop-blur-md flex items-center justify-center group-hover:bg-gray-300 dark:group-hover:bg-white/30 transition-all shadow-md">
+                  <Share2 className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                </div>
+                <span className="text-xs font-semibold">Share</span>
               </button>
             </motion.div>
           </div>
         </div>
 
-        {/* Track list */}
+        {/* Track list - Clean background with safe padding */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
-          className="px-6 pt-4"
+          className="px-6 pt-6 pb-32 bg-background"
         >
           {/* Section header */}
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-4">
             Episodes
           </h2>
-          
+
           {series && tracks && (
-            <AudioTrackList 
-              tracks={tracks} 
+            <AudioTrackList
+              tracks={tracks}
               series={series}
               hasAccess={hasAccess}
             />
