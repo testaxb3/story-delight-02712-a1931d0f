@@ -13,6 +13,7 @@ import { BonusesManagement } from '@/components/Admin/BonusesManagement';
 import { ModerationPanel } from '@/components/Community/ModerationPanel';
 import { ScriptRequestsPanel } from '@/components/Admin/ScriptRequestsPanel';
 import { AdminAudioTab } from '@/components/Admin/AdminAudioTab';
+import { AdminSalesTab } from '@/components/Admin/AdminSalesTab';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -28,11 +29,12 @@ import {
   Shield,
   Settings,
   MessageCircleHeart,
-  Headphones
+  Headphones,
+  ShoppingCart
 } from 'lucide-react';
 
 export default function Admin() {
-  const [activeTab, setActiveTab] = useState('scripts');
+  const [activeTab, setActiveTab] = useState('sales');
   const [counts, setCounts] = useState({ scripts: 0, videos: 0, refunds: 0, bonuses: 0, audioTracks: 0 });
   const [loadingCounts, setLoadingCounts] = useState(false);
   const { user } = useAuth();
@@ -203,7 +205,20 @@ export default function Admin() {
         {/* Content Management Tabs */}
         <Card className="border-none shadow-lg">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid grid-cols-10 w-full h-auto p-2 bg-muted/50 overflow-x-auto">
+            <TabsList className="grid grid-cols-11 w-full h-auto p-2 bg-muted/50 overflow-x-auto">
+              <TabsTrigger
+                value="sales"
+                className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-sm font-semibold">Sales</span>
+                  <span className="text-xs bg-emerald-500 text-white px-2 py-0.5 rounded-full">
+                    New
+                  </span>
+                </div>
+              </TabsTrigger>
+
               <TabsTrigger
                 value="scripts"
                 className="flex flex-col items-center gap-2 py-3 data-[state=active]:bg-background data-[state=active]:shadow-md"
@@ -337,6 +352,10 @@ export default function Admin() {
             </TabsList>
 
             <div className="p-6">
+              <TabsContent value="sales" className="mt-0">
+                <AdminSalesTab />
+              </TabsContent>
+
               <TabsContent value="scripts" className="mt-0">
                 <AdminScriptsTab onContentChanged={fetchCounts} />
               </TabsContent>
