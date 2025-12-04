@@ -38,6 +38,7 @@ import {
 import { formatDistanceToNow, format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { ScriptRequestChat } from './ScriptRequestChat';
 
 const STATUS_CONFIG = {
   pending: { 
@@ -341,20 +342,28 @@ export function ScriptRequestsPanel() {
                             )}
                           </div>
 
-                          {/* View Button */}
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="shrink-0 h-8 w-8"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedRequest(request);
-                              setAdminNotes(request.admin_notes || '');
-                              setNewStatus(request.status);
-                            }}
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                            <ScriptRequestChat
+                              requestId={request.id}
+                              userName={userName}
+                              userEmail={userEmail}
+                              userId={request.user_id}
+                            />
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedRequest(request);
+                                setAdminNotes(request.admin_notes || '');
+                                setNewStatus(request.status);
+                              }}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
@@ -381,7 +390,7 @@ export function ScriptRequestsPanel() {
 
           {selectedRequest && (
             <div className="space-y-5">
-              {/* User Card */}
+              {/* User Card with Chat Button */}
               <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                 <Avatar className="h-12 w-12 border-2 border-border">
                   <AvatarFallback className="bg-primary/10 text-primary font-semibold">
@@ -397,6 +406,12 @@ export function ScriptRequestsPanel() {
                     {selectedRequest.profiles?.email || 'No email'}
                   </p>
                 </div>
+                <ScriptRequestChat
+                  requestId={selectedRequest.id}
+                  userName={selectedRequest.profiles?.name || 'Unknown User'}
+                  userEmail={selectedRequest.profiles?.email || ''}
+                  userId={selectedRequest.user_id}
+                />
               </div>
 
               {/* Quick Info */}
