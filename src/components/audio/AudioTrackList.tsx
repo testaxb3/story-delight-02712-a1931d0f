@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AudioTrackItem } from './AudioTrackItem';
-import { AudioPurchaseModal } from './AudioPurchaseModal';
+import { PremiumAudioModal } from './PremiumAudioModal';
 import type { AudioTrack, AudioSeries } from '@/stores/audioPlayerStore';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 
@@ -59,7 +59,7 @@ export function AudioTrackList({ tracks, series, hasAccess }: AudioTrackListProp
         </div>
       </div>
 
-      <AudioPurchaseModal
+      <PremiumAudioModal
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         series={series}
