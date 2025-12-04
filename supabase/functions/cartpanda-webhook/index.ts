@@ -605,7 +605,7 @@ Deno.serve(async (req) => {
 
       console.log('✅ Approved user created/updated:', approvedUser.id);
 
-      // If user already exists in profiles, upgrade to premium
+      // If user already exists in profiles, upgrade to premium and assign badges
       const { data: existingProfile } = await supabase
         .from('profiles')
         .select('id, email, premium')
@@ -637,6 +637,40 @@ Deno.serve(async (req) => {
               account_created_at: new Date().toISOString()
             })
             .eq('email', email);
+        }
+
+        // 🎖️ Assign membership badges based on purchased products
+        const NEP_MEMBER_BADGE_ID = 'a1b2c3d4-5678-90ab-cdef-111111111111';
+        const NEP_LISTEN_BADGE_ID = 'a1b2c3d4-5678-90ab-cdef-222222222222';
+        const NEP_MEMBER_PRODUCTS = ['27499673', '27577169'];
+        const NEP_LISTEN_PRODUCTS = ['27845678', '27851448'];
+
+        for (const product of mergedProducts) {
+          const productIdStr = String(product.id);
+          
+          // Main product -> NEP Member badge
+          if (NEP_MEMBER_PRODUCTS.includes(productIdStr)) {
+            console.log('🎖️ Assigning NEP Member badge...');
+            await supabase
+              .from('user_badges')
+              .upsert({
+                user_id: existingProfile.id,
+                badge_id: NEP_MEMBER_BADGE_ID,
+                unlocked_at: new Date().toISOString()
+              }, { onConflict: 'user_id,badge_id' });
+          }
+          
+          // Audio upsell -> NEP Listen badge
+          if (NEP_LISTEN_PRODUCTS.includes(productIdStr)) {
+            console.log('🎧 Assigning NEP Listen badge...');
+            await supabase
+              .from('user_badges')
+              .upsert({
+                user_id: existingProfile.id,
+                badge_id: NEP_LISTEN_BADGE_ID,
+                unlocked_at: new Date().toISOString()
+              }, { onConflict: 'user_id,badge_id' });
+          }
         }
       }
 

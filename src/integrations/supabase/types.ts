@@ -4106,6 +4106,10 @@ export type Database = {
         Returns: undefined
       }
       archive_bonus: { Args: { p_bonus_id: string }; Returns: Json }
+      assign_membership_badge: {
+        Args: { p_badge_type: string; p_user_id: string }
+        Returns: undefined
+      }
       auth_user_email: { Args: never; Returns: string }
       calculate_badge_progress: {
         Args: { p_requirement: string; p_stats: Json }

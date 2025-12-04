@@ -7,7 +7,9 @@ import {
   Shield,
   ChevronRight, Moon, 
   Bell, Lock, Zap, Check, GraduationCap,
-  RefreshCw
+  RefreshCw,
+  Headphones,
+  Music
 } from 'lucide-react';
 import { APP_VERSION, APP_BUILD } from '@/config/version';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -16,6 +18,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useAppVersion } from '@/hooks/useAppVersion';
+import { useMembershipBadges } from '@/hooks/useMembershipBadges';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -24,7 +27,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
-import { Headphones } from 'lucide-react';
 import { notificationManager } from '@/lib/notifications';
 import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
 
@@ -34,6 +36,7 @@ export default function ProfileCalAI() {
   const { isAdmin } = useAdminStatus();
   const { triggerHaptic } = useHaptic();
   const { versionInfo, checking, forceAppRefresh } = useAppVersion();
+  const { isNepMember, isNepListen, isLoading: badgesLoading } = useMembershipBadges();
   const navigate = useNavigate();
   const { childProfiles, activeChild, setActiveChild } = useChildProfiles();
   
@@ -156,9 +159,19 @@ export default function ProfileCalAI() {
             <div className="flex-1 min-w-0 z-10">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white truncate">{getName()}</h2>
               <p className="text-[15px] text-gray-500 dark:text-gray-400 truncate">{getEmail()}</p>
-              <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800">
-                <Crown className="w-3 h-3 text-blue-600 dark:text-blue-400" />
-                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">NEP Member</span>
+              <div className="mt-2 flex items-center gap-2">
+                {isNepMember && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800">
+                    <Crown className="w-3 h-3 text-blue-600 dark:text-blue-400" />
+                    <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">NEP Member</span>
+                  </div>
+                )}
+                {isNepListen && (
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-50 dark:bg-purple-900/30 border border-purple-100 dark:border-purple-800">
+                    <Headphones className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                    <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">NEP Listen</span>
+                  </div>
+                )}
               </div>
             </div>
             
@@ -215,22 +228,53 @@ export default function ProfileCalAI() {
             </div>
           </div>
 
-          {/* Premium Banner */}
-          <motion.div 
-            whileTap={{ scale: 0.98 }}
-            className="mb-8 relative overflow-hidden rounded-2xl bg-black text-white p-6 shadow-xl cursor-pointer group"
-          >
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-yellow-400/20 to-purple-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-            <div className="relative z-10 flex items-center justify-between">
-              <div>
-                <h3 className="text-xl font-bold mb-1 bg-gradient-to-r from-yellow-200 to-amber-500 bg-clip-text text-transparent">NEP Premium</h3>
-                <p className="text-white/70 text-sm">Unlock unlimited scripts & insights</p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
-                <Crown className="w-5 h-5 text-yellow-400" />
-              </div>
-            </div>
-          </motion.div>
+          {/* Conditional Banner: NEP Listen Upsell or Thank You */}
+          {!badgesLoading && (
+            isNepListen ? (
+              // User has NEP Listen - Show Thank You Banner
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-6 shadow-xl"
+              >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-400/10 to-cyan-400/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl font-bold bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">NEP Listen</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">ACTIVE</span>
+                    </div>
+                    <p className="text-white/70 text-sm">All premium audio series unlocked</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center backdrop-blur-md border border-emerald-500/30">
+                    <Music className="w-5 h-5 text-emerald-400" />
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              // User doesn't have NEP Listen - Show Upsell Banner
+              <motion.div 
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate('/listen')}
+                className="mb-8 relative overflow-hidden rounded-2xl bg-black text-white p-6 shadow-xl cursor-pointer group"
+              >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-32 h-32 bg-gradient-to-tr from-blue-500/10 to-purple-500/10 rounded-full blur-2xl -ml-8 -mb-8 pointer-events-none" />
+                <div className="relative z-10 flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xl font-bold bg-gradient-to-r from-purple-300 to-pink-400 bg-clip-text text-transparent">NEP Listen</span>
+                      <span className="px-2 py-0.5 text-[10px] font-bold bg-purple-500/20 text-purple-300 rounded-full border border-purple-500/30 animate-pulse">NEW</span>
+                    </div>
+                    <p className="text-white/70 text-sm">Unlock all premium audio series</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
+                    <Headphones className="w-5 h-5 text-purple-400" />
+                  </div>
+                </div>
+              </motion.div>
+            )
+          )}
 
           {/* Settings Groups */}
           <SettingsGroup title="App Settings">
