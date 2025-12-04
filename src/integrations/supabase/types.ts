@@ -2193,6 +2193,44 @@ export type Database = {
           },
         ]
       }
+      script_request_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          script_request_id: string
+          sender_id: string | null
+          sender_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          script_request_id: string
+          sender_id?: string | null
+          sender_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          script_request_id?: string
+          sender_id?: string | null
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "script_request_messages_script_request_id_fkey"
+            columns: ["script_request_id"]
+            isOneToOne: false
+            referencedRelation: "script_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       script_requests: {
         Row: {
           additional_notes: string | null

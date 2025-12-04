@@ -55,6 +55,7 @@ const EbookReader = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Methodology = lazy(() => import("./pages/Methodology"));
 const ScriptRequests = lazy(() => import("./pages/ScriptRequests"));
+const ScriptRequestStatus = lazy(() => import("./pages/ScriptRequestStatus"));
 const GenerateWelcomePDF = lazy(() => import("./pages/GenerateWelcomePDF"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
@@ -152,6 +153,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <ScriptRequests />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/script-request-status"
+          element={
+            <ProtectedRoute>
+              <ScriptRequestStatus />
             </ProtectedRoute>
           }
         />
