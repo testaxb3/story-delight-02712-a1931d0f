@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { TopBar } from '@/components/Navigation/TopBar';
 import { BottomNavExpandable } from '@/components/Navigation/BottomNavExpandable';
 import { SideNav } from '@/components/Navigation/SideNav';
+import { cn } from '@/lib/utils';
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -16,7 +17,10 @@ export function MainLayout({ children, hideTopBar = false, noPaddingTop = false,
   return (
     <div className="min-h-screen w-full m-0 p-0">
       {!hideSideNav && <SideNav />}
-      <main className="w-full h-full m-0 p-0">
+      <main className={cn(
+        "w-full h-full m-0 p-0",
+        !hideSideNav && "md:ml-20 lg:ml-24"
+      )}>
         {children}
       </main>
       {!hideBottomNav && <BottomNavExpandable />}
