@@ -21,9 +21,10 @@ interface ScriptRequestChatProps {
   userName: string;
   userEmail: string;
   userId?: string;
+  variant?: 'default' | 'full';
 }
 
-export function ScriptRequestChat({ requestId, userName, userEmail, userId }: ScriptRequestChatProps) {
+export function ScriptRequestChat({ requestId, userName, userEmail, userId, variant = 'default' }: ScriptRequestChatProps) {
   const { user } = useAuth();
   const { messages, loading, sending, sendMessage, markAsRead, refetch } = useScriptRequestMessages(requestId);
   const [newMessage, setNewMessage] = useState('');
@@ -69,9 +70,16 @@ export function ScriptRequestChat({ requestId, userName, userEmail, userId }: Sc
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button size="sm" variant="outline" className="relative gap-1.5">
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className={cn(
+            "relative gap-1.5",
+            variant === 'full' && "flex-1 h-10"
+          )}
+        >
           <MessageCircle className="w-4 h-4" />
-          Reply
+          Chat
           {unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-pulse">
               {unreadCount}
