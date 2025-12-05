@@ -11,6 +11,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { ChildProfilesProvider } from "./contexts/ChildProfilesContext";
 import { AudioPlayerProvider } from "./contexts/AudioPlayerContext";
 import { AudioPlayer } from "./components/audio/AudioPlayer";
+import { NavigationProgress } from "./components/common/NavigationProgress";
 import { initOneSignal } from "./lib/onesignal";
 import { initAnalytics } from "./lib/analytics";
 import { usePageTracking } from "./hooks/usePageTracking";
@@ -373,6 +374,7 @@ const App = () => (
       <AuthProvider>
         <ThemeProvider>
           <TooltipProvider>
+            <NavigationProgress />
             <Toaster />
             <Sonner />
             <UpdatePrompt />
