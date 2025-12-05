@@ -183,7 +183,7 @@ serve(async (req) => {
     // Check if user already exists
     const { data: existingUser } = await supabase
       .from('approved_users')
-      .select('id, products, approved_at')
+      .select('id, products, approved_at, email_sent, account_created')
       .eq('email', email)
       .single();
 
@@ -255,7 +255,16 @@ serve(async (req) => {
     }
 
     // Send welcome email if purchase approved
-    if (shouldSendWelcomeEmail && !existingUser) {
+    // Send if: (1) never sent email before, OR (2) user hasn't created account + 7+ days since approval (reminder)
+    const daysSinceApproval = existingUser?.approved_at 
+      ? Math.floor((Date.now() - new Date(existingUser.approved_at).getTime()) / (1000 * 60 * 60 * 24))
+      : 0;
+    const shouldActuallySendEmail = shouldSendWelcomeEmail && (
+      !existingUser?.email_sent || 
+      (!existingUser?.account_created && daysSinceApproval > 7)
+    );
+
+    if (shouldActuallySendEmail) {
       console.log('Sending welcome email...');
       
       const resendApiKey = Deno.env.get('RESEND_API_KEY');
