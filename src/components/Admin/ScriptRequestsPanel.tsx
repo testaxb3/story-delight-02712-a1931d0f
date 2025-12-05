@@ -254,118 +254,95 @@ export function ScriptRequestsPanel() {
                   >
                     <Card 
                       className={cn(
-                        "overflow-hidden transition-all hover:shadow-lg cursor-pointer border-l-4",
+                        "overflow-hidden transition-all hover:shadow-md border-l-4",
                         statusConfig?.border
                       )}
-                      onClick={() => {
-                        setSelectedRequest(request);
-                        setAdminNotes(request.admin_notes || '');
-                        setNewStatus(request.status);
-                      }}
                     >
-                      <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          {/* User Avatar */}
+                      {/* Card Content */}
+                      <CardContent className="p-4 space-y-3">
+                        {/* Header Row: Avatar + Name/Email + Status */}
+                        <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 shrink-0 border-2 border-border">
                             <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
                               {initials}
                             </AvatarFallback>
                           </Avatar>
-
-                          {/* Content */}
-                          <div className="flex-1 min-w-0 space-y-2">
-                            {/* User Info & Status */}
-                            <div className="flex items-start justify-between gap-2">
-                              <div>
-                                <p className="font-semibold text-sm truncate">{userName}</p>
-                                {userEmail && (
-                                  <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
-                                )}
-                              </div>
-                              <Badge 
-                                className={cn(
-                                  "shrink-0 flex items-center gap-1",
-                                  statusConfig?.bg,
-                                  statusConfig?.text,
-                                  "border-0"
-                                )}
-                              >
-                                <StatusIcon className="h-3 w-3" />
-                                {statusConfig?.label}
-                              </Badge>
-                            </div>
-
-                            {/* Situation Preview */}
-                            <p className="text-sm text-foreground line-clamp-2">
-                              {request.situation_description}
-                            </p>
-
-                            {/* Meta Info */}
-                            <div className="flex items-center gap-3 flex-wrap text-xs text-muted-foreground">
-                              <span className="flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
-                              </span>
-                              {request.child_brain_profile && (
-                                <Badge variant="outline" className="text-[10px] h-5">
-                                  <Brain className="h-2.5 w-2.5 mr-1" />
-                                  {request.child_brain_profile}
-                                </Badge>
-                              )}
-                              {request.child_age && (
-                                <Badge variant="outline" className="text-[10px] h-5">
-                                  {request.child_age} yrs
-                                </Badge>
-                              )}
-                              {urgencyConfig && (
-                                <Badge className={cn("text-[10px] h-5 border-0", urgencyConfig.bg, urgencyConfig.text)}>
-                                  {urgencyConfig.label}
-                                </Badge>
-                              )}
-                            </div>
-
-                            {/* Locations */}
-                            {request.location_type && request.location_type.length > 0 && (
-                              <div className="flex gap-1 flex-wrap">
-                                {request.location_type.slice(0, 3).map((loc: string) => (
-                                  <Badge key={loc} variant="secondary" className="text-[10px] h-5">
-                                    <MapPin className="h-2.5 w-2.5 mr-1" />
-                                    {loc}
-                                  </Badge>
-                                ))}
-                                {request.location_type.length > 3 && (
-                                  <Badge variant="secondary" className="text-[10px] h-5">
-                                    +{request.location_type.length - 3}
-                                  </Badge>
-                                )}
-                              </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm truncate">{userName}</p>
+                            {userEmail && (
+                              <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                             )}
                           </div>
+                          <Badge 
+                            className={cn(
+                              "shrink-0 flex items-center gap-1 text-[11px]",
+                              statusConfig?.bg,
+                              statusConfig?.text,
+                              "border-0"
+                            )}
+                          >
+                            <StatusIcon className="h-3 w-3" />
+                            {statusConfig?.label}
+                          </Badge>
+                        </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                            <ScriptRequestChat
-                              requestId={request.id}
-                              userName={userName}
-                              userEmail={userEmail}
-                              userId={request.user_id}
-                            />
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedRequest(request);
-                                setAdminNotes(request.admin_notes || '');
-                                setNewStatus(request.status);
-                              }}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                          </div>
+                        {/* Content Row: Situation Description */}
+                        <p className="text-sm text-foreground line-clamp-2 leading-relaxed">
+                          {request.situation_description}
+                        </p>
+
+                        {/* Meta Row: Compact badges */}
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="text-[11px] text-muted-foreground">
+                            {formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}
+                          </span>
+                          {request.child_brain_profile && (
+                            <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                              🧠 {request.child_brain_profile}
+                            </Badge>
+                          )}
+                          {request.child_age && (
+                            <Badge variant="outline" className="text-[10px] h-5 px-1.5">
+                              👶 {request.child_age}y
+                            </Badge>
+                          )}
+                          {urgencyConfig && (
+                            <Badge className={cn("text-[10px] h-5 px-1.5 border-0", urgencyConfig.bg, urgencyConfig.text)}>
+                              {urgencyConfig.label}
+                            </Badge>
+                          )}
+                          {request.location_type && request.location_type.length > 0 && (
+                            <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                              📍 {request.location_type.slice(0, 2).join(', ')}
+                              {request.location_type.length > 2 && ` +${request.location_type.length - 2}`}
+                            </Badge>
+                          )}
                         </div>
                       </CardContent>
+
+                      {/* Action Footer */}
+                      <div className="flex items-center gap-2 px-4 py-3 border-t border-border/50 bg-muted/30">
+                        <ScriptRequestChat
+                          requestId={request.id}
+                          userName={userName}
+                          userEmail={userEmail}
+                          userId={request.user_id}
+                          variant="full"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-1 h-10"
+                          onClick={() => {
+                            setSelectedRequest(request);
+                            setAdminNotes(request.admin_notes || '');
+                            setNewStatus(request.status);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-2" />
+                          Details
+                        </Button>
+                      </div>
                     </Card>
                   </motion.div>
                 );
