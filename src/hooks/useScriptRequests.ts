@@ -107,14 +107,23 @@ export const useAdminScriptRequests = () => {
 
       if (profilesError) {
         console.warn('Could not fetch profiles:', profilesError);
-        return requestsData;
       }
 
-      // Map profiles to requests
+      // Fetch push subscription status for each user
+      const { data: pushData } = await supabase
+        .from('user_push_subscriptions')
+        .select('user_id')
+        .in('user_id', userIds)
+        .eq('is_active', true);
+
+      const pushEnabledUsers = new Set(pushData?.map(p => p.user_id) || []);
+
+      // Map profiles and push status to requests
       const profilesMap = new Map(profilesData?.map(p => [p.id, p]) || []);
       return requestsData.map(request => ({
         ...request,
         profiles: profilesMap.get(request.user_id) || null,
+        hasPushEnabled: pushEnabledUsers.has(request.user_id),
       }));
     },
   });
