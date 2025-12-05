@@ -15,7 +15,9 @@ import {
   XCircle, 
   Clock,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Bell,
+  BellOff
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { RefundChat } from './RefundChat';
@@ -62,6 +64,7 @@ const FILTERS = [
 
 export function AdminRefundsTab() {
   const [refunds, setRefunds] = useState<RefundRequest[]>([]);
+  const [pushEnabledUsers, setPushEnabledUsers] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState('all');
@@ -76,6 +79,18 @@ export function AdminRefundsTab() {
 
       if (error) throw error;
       setRefunds(data || []);
+
+      // Fetch push subscription status for users
+      const userIds = data?.filter(r => r.user_id).map(r => r.user_id) || [];
+      if (userIds.length > 0) {
+        const { data: pushData } = await supabase
+          .from('user_push_subscriptions')
+          .select('user_id')
+          .in('user_id', userIds)
+          .eq('is_active', true);
+
+        setPushEnabledUsers(new Set(pushData?.map(p => p.user_id) || []));
+      }
     } catch (error) {
       console.error('Error fetching refunds:', error);
       toast.error('Failed to load refund requests');
@@ -238,13 +253,24 @@ export function AdminRefundsTab() {
                           {/* Header */}
                           <div className="flex items-start justify-between gap-2">
                             <div>
-                              <p className="font-semibold text-sm truncate">{refund.customer_name}</p>
+                              <div className="flex items-center gap-1.5">
+                                <p className="font-semibold text-sm truncate">{refund.customer_name}</p>
+                                {refund.user_id && pushEnabledUsers.has(refund.user_id) ? (
+                                  <span title="Push enabled">
+                                    <Bell className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                  </span>
+                                ) : (
+                                  <span title="No push">
+                                    <BellOff className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+                                  </span>
+                                )}
+                              </div>
                               <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
                                 <Mail className="h-3 w-3" />
                                 {refund.email}
                               </p>
                             </div>
-                            <Badge 
+                            <Badge
                               className={cn(
                                 "shrink-0 flex items-center gap-1 border-0",
                                 statusConfig.bg,

@@ -33,7 +33,9 @@ import {
   Calendar,
   MapPin,
   Brain,
-  MessageSquare
+  MessageSquare,
+  Bell,
+  BellOff
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -260,7 +262,7 @@ export function ScriptRequestsPanel() {
                     >
                       {/* Card Content */}
                       <CardContent className="p-4 space-y-3">
-                        {/* Header Row: Avatar + Name/Email + Status */}
+                        {/* Header Row: Avatar + Name/Email + Push Status + Status */}
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 shrink-0 border-2 border-border">
                             <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
@@ -268,12 +270,23 @@ export function ScriptRequestsPanel() {
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1 min-w-0">
-                            <p className="font-semibold text-sm truncate">{userName}</p>
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-semibold text-sm truncate">{userName}</p>
+                              {request.hasPushEnabled ? (
+                                <span title="Push enabled">
+                                  <Bell className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                                </span>
+                              ) : (
+                                <span title="No push">
+                                  <BellOff className="h-3.5 w-3.5 text-muted-foreground/40 shrink-0" />
+                                </span>
+                              )}
+                            </div>
                             {userEmail && (
                               <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
                             )}
                           </div>
-                          <Badge 
+                          <Badge
                             className={cn(
                               "shrink-0 flex items-center gap-1 text-[11px]",
                               statusConfig?.bg,
