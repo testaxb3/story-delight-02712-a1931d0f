@@ -1,13 +1,17 @@
 {
-  "name": "Nep System - Obedience Language",
-  "short_name": "Nep System",
-  "description": "Obedience Language - Neuroscience-based parenting system",
+  "name": "NEP System - Parenting Scripts",
+  "short_name": "NEP System",
+  "description": "Evidence-based parenting scripts for neurodivergent children. Access 500+ strategies anytime.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#030303",
-  "theme_color": "#030303",
+  "background_color": "#121212",
+  "theme_color": "#8B5CF6",
   "orientation": "portrait",
+  "categories": ["education", "lifestyle", "health"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon-192.png",
@@ -38,6 +42,38 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Script Library",
+      "short_name": "Scripts",
+      "description": "Browse all parenting scripts",
+      "url": "/scripts",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Daily Tracker",
+      "short_name": "Tracker",
+      "description": "Log your daily progress",
+      "url": "/tracker",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Bonus Content",
+      "short_name": "Bonuses",
+      "description": "Access premium guides and ebooks",
+      "url": "/bonuses",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "NEP System Dashboard"
     }
   ]
 }

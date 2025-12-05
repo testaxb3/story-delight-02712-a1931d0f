@@ -859,4 +859,90 @@ header, main {
   .animate-pulse-glow {
     animation: pulse-glow 3s ease-in-out infinite;
   }
+
+  /* ============================================
+     PREMIUM SKELETON ANIMATIONS
+     Smooth, subtle loading states
+     ============================================ */
+
+  @keyframes skeleton-wave {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .skeleton-wave {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.1) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-wave 1.5s ease-in-out infinite;
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .skeleton-pulse {
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  /* Staggered skeleton animation for lists */
+  .skeleton-stagger > *:nth-child(1) { animation-delay: 0s; }
+  .skeleton-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+  .skeleton-stagger > *:nth-child(3) { animation-delay: 0.2s; }
+  .skeleton-stagger > *:nth-child(4) { animation-delay: 0.3s; }
+  .skeleton-stagger > *:nth-child(5) { animation-delay: 0.4s; }
+  .skeleton-stagger > *:nth-child(6) { animation-delay: 0.5s; }
+
+  /* ============================================
+     SMOOTH PAGE TRANSITIONS
+     ============================================ */
+
+  @keyframes page-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-page-in {
+    animation: page-fade-in 0.3s ease-out forwards;
+  }
+
+  /* ============================================
+     PRESS FEEDBACK FOR MOBILE
+     ============================================ */
+
+  .press-scale {
+    transition: transform 0.15s ease;
+  }
+
+  .press-scale:active {
+    transform: scale(0.97);
+  }
+
+  /* ============================================
+     CONTENT VISIBILITY FOR PERFORMANCE
+     ============================================ */
+
+  .content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 500px;
+  }
 }
