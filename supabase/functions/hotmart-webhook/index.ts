@@ -65,6 +65,327 @@ interface HotmartPayload {
   };
 }
 
+// Welcome email HTML template - Premium v4.0
+function getWelcomeEmailHTML(firstName: string): string {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Welcome to The Obedience Language</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+  <style>
+    body, table, td, p, a, li { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+    a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+    u + #body a { color: inherit; text-decoration: none; }
+    @media (prefers-color-scheme: dark) {
+      .dark-bg { background-color: #0a0a0a !important; }
+    }
+    @media only screen and (max-width: 600px) {
+      .container { width: 100% !important; }
+      .mobile-padding { padding: 30px 20px !important; }
+      .mobile-text { font-size: 16px !important; line-height: 26px !important; }
+      .mobile-headline { font-size: 26px !important; line-height: 32px !important; }
+      .mobile-btn { padding: 16px 32px !important; font-size: 16px !important; }
+      .mobile-stack { display: block !important; width: 100% !important; padding: 0 !important; }
+      .mobile-stack td { display: block !important; width: 100% !important; padding: 6px 0 !important; }
+      .resource-card { padding: 18px !important; }
+    }
+  </style>
+</head>
+<body id="body" style="margin: 0; padding: 0; background-color: #0a0a0a; -webkit-font-smoothing: antialiased;">
+
+  <div style="display: none; max-height: 0px; overflow: hidden;">
+    Your 200+ magic phrases are ready! Start transforming your child's behavior today...
+    &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
+  </div>
+
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #0a0a0a;">
+    <tr>
+      <td align="center" style="padding: 20px 10px;">
+
+        <table role="presentation" class="container" cellpadding="0" cellspacing="0" width="560" style="max-width: 560px; background-color: #111111; border-radius: 16px; overflow: hidden;">
+
+          <tr>
+            <td style="background: linear-gradient(135deg, #ec4899 0%, #a855f7 50%, #8b5cf6 100%); padding: 50px 30px; text-align: center;">
+              <div style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 24px auto; line-height: 70px;">
+                <span style="font-size: 36px; color: #ffffff;">&#10003;</span>
+              </div>
+              <h1 class="mobile-headline" style="color: #ffffff; margin: 0; font-size: 30px; font-weight: 700; line-height: 38px;">
+                You're In!
+              </h1>
+              <p style="color: rgba(255,255,255,0.95); margin: 14px 0 0 0; font-size: 17px; font-weight: 400;">
+                Welcome to The Obedience Language
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td class="mobile-padding" style="padding: 40px 30px 24px 30px;">
+              <p class="mobile-text" style="margin: 0 0 18px 0; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 17px; line-height: 28px;">
+                Hey ${firstName},
+              </p>
+              <p class="mobile-text" style="margin: 0 0 18px 0; color: #d4d4d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 16px; line-height: 26px;">
+                Congratulations on taking this step. You just joined <strong style="color: #ffffff;">11,247+ parents</strong> who decided to stop the daily battles and start being heard.
+              </p>
+              <p class="mobile-text" style="margin: 0; color: #d4d4d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 16px; line-height: 26px;">
+                Your complete system is ready. Let's get started.
+              </p>
+            </td>
+          </tr>
+
+          <tr>
+            <td align="center" style="padding: 0 30px 36px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center" style="border-radius: 12px; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);">
+                    <a href="https://nepsystem.vercel.app/" target="_blank" class="mobile-btn" style="display: inline-block; padding: 18px 48px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 0.5px;">
+                      Access My Dashboard
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <h2 style="font-size: 18px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 0 0 20px 0; font-weight: 700;">
+                Quick Start (5 minutes):
+              </h2>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 12px;">
+                <tr>
+                  <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="46" valign="top">
+                          <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #ec4899, #a855f7); border-radius: 50%; text-align: center; line-height: 36px; color: #fff; font-weight: 700; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">1</div>
+                        </td>
+                        <td valign="top">
+                          <p style="font-size: 16px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Take the Brain Profile Quiz</p>
+                          <p style="font-size: 14px; color: #a1a1aa; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Discover your child's unique emotional triggers</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 12px;">
+                <tr>
+                  <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="46" valign="top">
+                          <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #ec4899, #a855f7); border-radius: 50%; text-align: center; line-height: 36px; color: #fff; font-weight: 700; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">2</div>
+                        </td>
+                        <td valign="top">
+                          <p style="font-size: 16px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Pick Your First Script</p>
+                          <p style="font-size: 14px; color: #a1a1aa; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Start with your #1 frustration (bedtime, tantrums, etc.)</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="background-color: #1a1a1a; border-radius: 12px; padding: 20px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="46" valign="top">
+                          <div style="width: 36px; height: 36px; background: linear-gradient(135deg, #ec4899, #a855f7); border-radius: 50%; text-align: center; line-height: 36px; color: #fff; font-weight: 700; font-size: 15px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">3</div>
+                        </td>
+                        <td valign="top">
+                          <p style="font-size: 16px; color: #ffffff; margin: 0 0 4px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Use It Tonight</p>
+                          <p style="font-size: 14px; color: #a1a1aa; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Watch your child respond the first time</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <h2 style="font-size: 18px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; margin: 0 0 16px 0; font-weight: 700;">
+                Everything You Get:
+              </h2>
+
+              <a href="https://nepsystem.vercel.app/scripts" target="_blank" style="display: block; background-color: #1a1a1a; border-radius: 10px; padding: 16px 18px; text-decoration: none; margin-bottom: 10px; border-left: 3px solid #ec4899;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td width="36" valign="middle">
+                      <span style="font-size: 22px;">&#128221;</span>
+                    </td>
+                    <td valign="middle">
+                      <p style="font-size: 15px; color: #ffffff; margin: 0 0 2px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Scripts Library</p>
+                      <p style="font-size: 13px; color: #71717a; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">200+ word-for-word phrases</p>
+                    </td>
+                    <td width="24" valign="middle" align="right">
+                      <span style="color: #71717a; font-size: 18px;">&#8250;</span>
+                    </td>
+                  </tr>
+                </table>
+              </a>
+
+              <a href="https://nepsystem.vercel.app/listen" target="_blank" style="display: block; background-color: #1a1a1a; border-radius: 10px; padding: 16px 18px; text-decoration: none; margin-bottom: 10px; border-left: 3px solid #a855f7;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td width="36" valign="middle">
+                      <span style="font-size: 22px;">&#127911;</span>
+                    </td>
+                    <td valign="middle">
+                      <p style="font-size: 15px; color: #ffffff; margin: 0 0 2px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Audio Collection</p>
+                      <p style="font-size: 13px; color: #71717a; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Listen while you drive or cook</p>
+                    </td>
+                    <td width="24" valign="middle" align="right">
+                      <span style="color: #71717a; font-size: 18px;">&#8250;</span>
+                    </td>
+                  </tr>
+                </table>
+              </a>
+
+              <a href="https://nepsystem.vercel.app/bonuses" target="_blank" style="display: block; background-color: #1a1a1a; border-radius: 10px; padding: 16px 18px; text-decoration: none; margin-bottom: 10px; border-left: 3px solid #8b5cf6;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td width="36" valign="middle">
+                      <span style="font-size: 22px;">&#127916;</span>
+                    </td>
+                    <td valign="middle">
+                      <p style="font-size: 15px; color: #ffffff; margin: 0 0 2px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Video Training + Bonuses</p>
+                      <p style="font-size: 13px; color: #71717a; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">SmartKid, Siblings & more ($335 value)</p>
+                    </td>
+                    <td width="24" valign="middle" align="right">
+                      <span style="color: #71717a; font-size: 18px;">&#8250;</span>
+                    </td>
+                  </tr>
+                </table>
+              </a>
+
+              <a href="https://nepsystem.vercel.app/tracker" target="_blank" style="display: block; background-color: #1a1a1a; border-radius: 10px; padding: 16px 18px; text-decoration: none; margin-bottom: 10px; border-left: 3px solid #22c55e;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td width="36" valign="middle">
+                      <span style="font-size: 22px;">&#128200;</span>
+                    </td>
+                    <td valign="middle">
+                      <p style="font-size: 15px; color: #ffffff; margin: 0 0 2px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Progress Tracker</p>
+                      <p style="font-size: 13px; color: #71717a; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Build streaks & see your growth</p>
+                    </td>
+                    <td width="24" valign="middle" align="right">
+                      <span style="color: #71717a; font-size: 18px;">&#8250;</span>
+                    </td>
+                  </tr>
+                </table>
+              </a>
+
+              <a href="https://nepsystem.vercel.app/achievements" target="_blank" style="display: block; background-color: #1a1a1a; border-radius: 10px; padding: 16px 18px; text-decoration: none; border-left: 3px solid #f59e0b;">
+                <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                  <tr>
+                    <td width="36" valign="middle">
+                      <span style="font-size: 22px;">&#127942;</span>
+                    </td>
+                    <td valign="middle">
+                      <p style="font-size: 15px; color: #ffffff; margin: 0 0 2px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Achievements</p>
+                      <p style="font-size: 13px; color: #71717a; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">Unlock badges as you level up</p>
+                    </td>
+                    <td width="24" valign="middle" align="right">
+                      <span style="color: #71717a; font-size: 18px;">&#8250;</span>
+                    </td>
+                  </tr>
+                </table>
+              </a>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 30px 30px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="background: linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(168,85,247,0.15) 100%); border: 1px solid rgba(168,85,247,0.3); border-radius: 12px; padding: 24px; text-align: center;">
+                    <p style="font-size: 28px; margin: 0 0 12px 0;">&#128170;</p>
+                    <p style="font-size: 15px; color: #ffffff; margin: 0 0 8px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                      30-Day Money-Back Guarantee
+                    </p>
+                    <p style="font-size: 14px; color: #a1a1aa; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; line-height: 22px;">
+                      Try it risk-free. If it doesn't work for your family, get a full refund. No questions asked.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 30px 40px 30px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="background-color: #1a1a1a; border-radius: 12px; padding: 24px; text-align: center;">
+                    <p style="font-size: 16px; color: #ffffff; margin: 0 0 6px 0; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                      Questions? We've Got You.
+                    </p>
+                    <p style="font-size: 14px; color: #a1a1aa; margin: 0 0 20px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                      Real humans. Real fast.
+                    </p>
+
+                    <table role="presentation" class="mobile-stack" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td width="50%" style="padding-right: 6px;">
+                          <a href="https://wa.me/27617525578?text=Hi!%20I%20need%20help%20with%20The%20Obedience%20Language" target="_blank" style="display: block; background-color: #22c55e; color: #ffffff; text-decoration: none; padding: 14px 16px; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                            &#128172; WhatsApp
+                          </a>
+                        </td>
+                        <td width="50%" style="padding-left: 6px;">
+                          <a href="mailto:support@nepsystem.pro" target="_blank" style="display: block; background-color: #3b82f6; color: #ffffff; text-decoration: none; padding: 14px 16px; border-radius: 10px; font-size: 15px; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                            &#9993; Email Us
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background-color: #0a0a0a; padding: 28px 30px; text-align: center; border-top: 1px solid #1f1f1f;">
+              <p style="color: #52525b; font-size: 13px; margin: 0 0 12px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                Made with &#10084; for parents who refuse to give up
+              </p>
+              <p style="color: #3f3f46; font-size: 12px; margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;">
+                &copy; 2025 The Obedience Language
+              </p>
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>`;
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -279,52 +600,8 @@ serve(async (req) => {
             body: JSON.stringify({
               from: 'NEP System <support@nepsystem.pro>',
               to: [email],
-              subject: '🎉 Welcome to NEP System - Your Access is Ready!',
-              html: `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                  <meta charset="utf-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                </head>
-                <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f5f5f5;">
-                  <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 20px; border-radius: 16px 16px 0 0; text-align: center;">
-                    <h1 style="color: white; margin: 0; font-size: 28px;">Welcome to NEP System!</h1>
-                    <p style="color: rgba(255,255,255,0.9); margin-top: 10px;">Your parenting journey just got easier</p>
-                  </div>
-                  
-                  <div style="background: white; padding: 30px; border-radius: 0 0 16px 16px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <p style="font-size: 16px; color: #333;">Hi ${firstName || 'there'}! 👋</p>
-                    
-                    <p style="font-size: 16px; color: #555; line-height: 1.6;">
-                      Thank you for purchasing <strong>${productName}</strong>! Your access is now ready.
-                    </p>
-                    
-                    <div style="background: #f8f9fa; border-radius: 12px; padding: 20px; margin: 20px 0;">
-                      <h3 style="margin: 0 0 15px 0; color: #333;">🚀 Get Started Now:</h3>
-                      <ol style="margin: 0; padding-left: 20px; color: #555;">
-                        <li style="margin-bottom: 10px;">Click the button below to access the app</li>
-                        <li style="margin-bottom: 10px;">Create your account using this email: <strong>${email}</strong></li>
-                        <li style="margin-bottom: 10px;">Complete the quick quiz to personalize your experience</li>
-                        <li>Start transforming your parenting journey!</li>
-                      </ol>
-                    </div>
-                    
-                    <a href="https://nep-ai.lovable.app/auth" style="display: block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 16px 32px; border-radius: 12px; font-weight: 600; font-size: 16px; text-align: center; margin: 25px 0;">
-                      Access NEP System Now →
-                    </a>
-                    
-                    <p style="font-size: 14px; color: #888; margin-top: 20px;">
-                      Need help? Reply to this email or contact us at support@nepsystem.pro
-                    </p>
-                  </div>
-                  
-                  <p style="text-align: center; color: #999; font-size: 12px; margin-top: 20px;">
-                    © ${new Date().getFullYear()} NEP System. All rights reserved.
-                  </p>
-                </body>
-                </html>
-              `,
+              subject: `${firstName || 'Hey'}, your scripts are ready 🎯`,
+              html: getWelcomeEmailHTML(firstName || 'there'),
             }),
           });
 
