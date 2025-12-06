@@ -22,14 +22,6 @@ import {
   Loader2, Pencil, Trash2, Upload, Copy, Check, Filter, Search,
   ChevronDown, ChevronUp, Download, FileText, AlertCircle
 } from 'lucide-react';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -646,67 +638,98 @@ export function AdminScriptsTab({ onContentChanged }: AdminScriptsTabProps) {
             </div>
           )}
 
-          {/* Scripts Table */}
-          <div className="border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Title</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Profile</TableHead>
-                  <TableHead>Difficulty</TableHead>
-                  <TableHead>Age Range</TableHead>
-                  <TableHead className="w-32 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredScripts.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                      {loading ? 'Loading scripts…' : 'No scripts found. Try adjusting your filters or upload a CSV.'}
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredScripts.map((script) => (
-                    <TableRow key={script.id}>
-                      <TableCell className="font-medium max-w-xs truncate" title={script.title}>
-                        {script.title}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{script.category}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{script.profile}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={getDifficultyColor(script.difficulty)}>
-                          {script.difficulty || 'Moderate'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {script.age_min || 3}-{script.age_max || 10}y
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(script)}>
-                            <Pencil className="w-4 h-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setDeleteScriptId(script.id)}
-                            className="text-destructive"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
+          {/* Scripts Cards - Mobile First */}
+          {loading ? (
+            <div className="text-center py-8 text-muted-foreground">Loading scripts...</div>
+          ) : filteredScripts.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground border rounded-lg bg-muted/20">
+              No scripts found. Try adjusting your filters or upload a CSV.
+            </div>
+          ) : (
+            <div className="grid gap-3">
+              {filteredScripts.map((script) => {
+                const profileEmoji = script.profile === 'INTENSE' ? '🔥' : script.profile === 'DISTRACTED' ? '🦋' : '⚡';
+                const profileColor = script.profile === 'INTENSE'
+                  ? 'border-l-orange-500 bg-gradient-to-r from-orange-50/50 to-transparent dark:from-orange-950/20'
+                  : script.profile === 'DISTRACTED'
+                  ? 'border-l-blue-500 bg-gradient-to-r from-blue-50/50 to-transparent dark:from-blue-950/20'
+                  : 'border-l-purple-500 bg-gradient-to-r from-purple-50/50 to-transparent dark:from-purple-950/20';
+
+                return (
+                  <Card
+                    key={script.id}
+                    className={`p-4 border-l-4 transition-all duration-200 hover:shadow-md ${profileColor}`}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      {/* Left: Profile emoji + content */}
+                      <div className="flex items-start gap-3 min-w-0 flex-1">
+                        <div className="text-2xl flex-shrink-0">{profileEmoji}</div>
+                        <div className="min-w-0 flex-1">
+                          <h4 className="font-semibold text-sm text-foreground line-clamp-2">
+                            {script.title}
+                          </h4>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {script.category}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {script.profile}
+                            </Badge>
+                            <Badge className={`text-xs ${getDifficultyColor(script.difficulty)}`}>
+                              {script.difficulty || 'Moderate'}
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">
+                              {script.age_min || 3}-{script.age_max || 10}y
+                            </span>
+                            {script.emergency_suitable && (
+                              <Badge className="text-xs bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300">
+                                Emergency
+                              </Badge>
+                            )}
+                          </div>
+                          {/* Tags preview */}
+                          {Array.isArray(script.tags) && script.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {script.tags.slice(0, 3).map((tag, i) => (
+                                <span key={i} className="text-[10px] px-1.5 py-0.5 bg-muted rounded text-muted-foreground">
+                                  {tag}
+                                </span>
+                              ))}
+                              {script.tags.length > 3 && (
+                                <span className="text-[10px] text-muted-foreground">
+                                  +{script.tags.length - 3} more
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                      </div>
+
+                      {/* Right: Action buttons */}
+                      <div className="flex gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600"
+                          onClick={() => handleEdit(script)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600"
+                          onClick={() => setDeleteScriptId(script.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </Card>
 
