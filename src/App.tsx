@@ -19,6 +19,7 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 
 // PERFORMANCE OPTIMIZATION: Eager load critical pages (including onboarding flow)
 // Onboarding pages MUST be eager-loaded to prevent MIME type errors from stale chunks
+// ListenSeries is eager-loaded to prevent chunk failures on iOS PWA
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/DashboardCalAI";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ import PWAInstall from "./pages/PWAInstall";
 import PWACheck from "./pages/PWACheck";
 import ThemeSelection from "./pages/ThemeSelection";
 import NotificationPermission from "./pages/NotificationPermission";
+import ListenSeries from "./pages/ListenSeries";
 
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting
 // This reduces initial bundle size and improves Time to Interactive (TTI)
@@ -50,7 +52,7 @@ const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 const Bonuses = lazy(() => import("./pages/BonusesPremium"));
 const CollectionDetail = lazy(() => import("./pages/CollectionDetail"));
 const Listen = lazy(() => import("./pages/Listen"));
-const ListenSeries = lazy(() => import("./pages/ListenSeries"));
+// ListenSeries moved to eager loading above to prevent iOS PWA chunk failures
 const ListenUpgrade = lazy(() => import("./pages/ListenUpgrade"));
 const EbookReader = lazy(() => import("./pages/EbookReaderV2"));
 const Admin = lazy(() => import("./pages/Admin"));
