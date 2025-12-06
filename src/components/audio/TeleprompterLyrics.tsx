@@ -22,71 +22,35 @@ interface TeleprompterLyricsProps {
 
 export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyricsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const lastActiveIndexRef = useRef<number>(-1);
 
+  // Debounced segment calculation - only recalculates when segment actually changes
   const activeSegmentIndex = useMemo(() => {
     if (!transcript?.segments?.length) return -1;
 
     return transcript.segments.findIndex(
       (seg) => currentTime >= seg.start && currentTime < seg.end
     );
-  }, [transcript, currentTime]);
+  }, [transcript, Math.floor(currentTime * 2)]); // ~500ms granularity
 
   const segments = transcript?.segments || [];
 
-  // AUTO-SCROLL using data-attribute selector (avoids React ref conflicts)
+  // Auto-scroll only when segment changes (simplified, no double RAF)
   useEffect(() => {
-    if (activeSegmentIndex < 0) return;
+    if (activeSegmentIndex < 0 || activeSegmentIndex === lastActiveIndexRef.current) return;
+    
+    lastActiveIndexRef.current = activeSegmentIndex;
+    
+    const activeElement = containerRef.current?.querySelector(
+      `[data-lyric-index="${activeSegmentIndex}"]`
+    ) as HTMLElement;
 
-    const container = containerRef.current;
-    if (!container) return;
-
-    // Double RAF ensures DOM is fully rendered
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        try {
-          // Query by data attribute instead of ref (more stable with Framer Motion)
-          const activeElement = container.querySelector(
-            `[data-lyric-index="${activeSegmentIndex}"]`
-          ) as HTMLElement;
-
-          if (!activeElement) {
-            console.log('❌ Element not found:', activeSegmentIndex);
-            return;
-          }
-
-          // Calculate scroll position using bounding rects (mobile-safe)
-          const containerRect = container.getBoundingClientRect();
-          const elementRect = activeElement.getBoundingClientRect();
-
-          const currentScroll = container.scrollTop;
-          const elementTopRelative = elementRect.top - containerRect.top + currentScroll;
-          const targetScroll = elementTopRelative - (containerRect.height / 2) + (elementRect.height / 2);
-
-          console.log('📊', {
-            idx: activeSegmentIndex,
-            cur: Math.round(currentScroll),
-            tgt: Math.round(targetScroll)
-          });
-
-          // Attempt smooth scroll
-          container.scrollTo({
-            top: targetScroll,
-            behavior: 'smooth'
-          });
-
-          // iOS Safari fallback: force instant scroll if smooth didn't work
-          setTimeout(() => {
-            if (Math.abs(container.scrollTop - targetScroll) > 20) {
-              console.log('⚠️ Force scroll');
-              container.scrollTop = targetScroll;
-            }
-          }, 150);
-
-        } catch (err) {
-          console.error('❌ Scroll failed:', err);
-        }
+    if (activeElement) {
+      activeElement.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
       });
-    });
+    }
   }, [activeSegmentIndex]);
 
   if (!transcript?.segments?.length) {
@@ -101,7 +65,7 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
-          WebkitOverflowScrolling: 'touch' // iOS momentum scrolling
+          WebkitOverflowScrolling: 'touch'
         }}
       >
         {/* Huge padding allows last lyric to reach center */}
@@ -113,19 +77,25 @@ export function TeleprompterLyrics({ transcript, currentTime }: TeleprompterLyri
               <motion.p
                 key={`lyric-${index}`}
                 data-lyric-index={index}
-                initial={{ opacity: 0.5, scale: 0.98 }}
+                layout="position"
                 animate={{
                   opacity: isActive ? 1 : 0.5,
                   scale: isActive ? 1 : 0.98
                 }}
-                transition={{ duration: 0.3, ease: 'easeOut' }}
+                transition={{ 
+                  duration: 0.2,
+                  ease: [0.25, 0.1, 0.25, 1]
+                }}
                 className={cn(
-                  "text-center transition-all duration-300 cursor-default",
+                  "text-center cursor-default",
                   isActive
                     ? "text-3xl md:text-4xl font-black text-white drop-shadow-xl"
                     : "text-xl text-white/50 font-normal"
                 )}
-                style={{ lineHeight: '1.6' }}
+                style={{ 
+                  lineHeight: '1.6',
+                  willChange: isActive ? 'transform, opacity' : 'auto'
+                }}
               >
                 {segment.text}
               </motion.p>
