@@ -14,6 +14,7 @@ import { ModerationPanel } from '@/components/Community/ModerationPanel';
 import { ScriptRequestsPanel } from '@/components/Admin/ScriptRequestsPanel';
 import { AdminAudioTab } from '@/components/Admin/AdminAudioTab';
 import { AdminSalesTab } from '@/components/Admin/AdminSalesTab';
+import { AdminQuickActions } from '@/components/Admin/AdminQuickActions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useAdminStatus } from '@/hooks/useAdminStatus';
@@ -21,6 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import {
   LayoutDashboard,
   Video,
@@ -349,6 +351,14 @@ export default function Admin() {
             </div>
           </Tabs>
         </Card>
+
+        {/* Floating Action Button for Quick Actions */}
+        <AdminQuickActions
+          onRefresh={fetchCounts}
+          onSendNotification={() => setActiveTab('notifications')}
+          onUploadScripts={() => setActiveTab('scripts')}
+          onCreateBonus={() => setActiveTab('bonuses')}
+        />
       </div>
     </MainLayout>
   );

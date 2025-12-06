@@ -1,21 +1,28 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  Users, 
-  UserCheck, 
-  Clock, 
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
+import {
+  Users,
+  UserCheck,
+  Clock,
   TrendingUp,
   Mail,
   Copy,
   RefreshCw,
   CheckCircle2,
   AlertCircle,
-  Loader2
+  Loader2,
+  ShoppingCart,
+  DollarSign,
+  Timer
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -235,118 +242,178 @@ export function AdminSalesTab() {
         </Card>
       </div>
 
-      {/* Buyers Table */}
-      <Card className="overflow-hidden">
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <h3 className="font-semibold text-lg">Recent Buyers</h3>
+      {/* Buyers List - Mobile-First Cards */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-semibold text-lg flex items-center gap-2">
+            <ShoppingCart className="w-5 h-5 text-primary" />
+            Recent Buyers
+          </h3>
           <Button variant="outline" size="sm" onClick={() => refetch()}>
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-muted/50">
-              <tr>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Customer</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Product</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Value</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Purchased</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Email</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Status</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Time to Convert</th>
-                <th className="text-left p-4 text-sm font-medium text-muted-foreground">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {buyers?.map((buyer) => (
-                <tr key={buyer.id} className="hover:bg-muted/30 transition-colors">
-                  <td className="p-4">
-                    <div className="flex flex-col">
-                      <span className="font-medium text-sm">
-                        {buyer.first_name || ''} {buyer.last_name || ''}
-                      </span>
-                      <span className="text-xs text-muted-foreground truncate max-w-[200px]">
-                        {buyer.email}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm text-muted-foreground truncate max-w-[150px] block">
-                      {getProductNames(buyer.products)}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm font-medium">
-                      ${buyer.total_price?.toFixed(2) || '0.00'} {buyer.currency || 'USD'}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm text-muted-foreground">
-                      {formatDistanceToNow(new Date(buyer.created_at), { addSuffix: true })}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    {buyer.email_sent ? (
-                      <Badge className="bg-green-500/15 text-green-600 dark:text-green-400 border-green-500/30">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Sent
-                      </Badge>
-                    ) : (
-                      <Badge className="bg-gray-500/15 text-gray-600 dark:text-gray-400 border-gray-500/30">
-                        <AlertCircle className="w-3 h-3 mr-1" />
-                        Pending
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="p-4">
-                    {getStatusBadge(buyer)}
-                  </td>
-                  <td className="p-4">
-                    <span className="text-sm text-muted-foreground">
-                      {getTimeToCreate(buyer) || '—'}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleCopyEmail(buyer.email)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
-                      {!buyer.account_created && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleResendEmail(buyer)}
-                          disabled={resendingEmail === buyer.id}
-                          className="h-8 w-8 p-0"
-                        >
-                          {resendingEmail === buyer.id ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Mail className="w-4 h-4" />
-                          )}
-                        </Button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {(!buyers || buyers.length === 0) && (
-          <div className="p-8 text-center text-muted-foreground">
-            No buyers found
+        {/* Filter Pills */}
+        <ScrollArea className="w-full">
+          <div className="flex gap-2 pb-2">
+            {['all', 'pending', 'converted', 'at_risk'].map((filter) => {
+              const filterCounts = {
+                all: buyers?.length || 0,
+                pending: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 <= 48).length || 0,
+                converted: buyers?.filter(b => b.account_created).length || 0,
+                at_risk: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 > 48).length || 0,
+              };
+              const filterLabels = { all: 'All', pending: 'Pending', converted: 'Converted', at_risk: 'At Risk' };
+              return (
+                <Badge
+                  key={filter}
+                  variant="secondary"
+                  className="px-3 py-1.5 cursor-pointer hover:bg-primary/20 transition-colors"
+                >
+                  {filterLabels[filter as keyof typeof filterLabels]} ({filterCounts[filter as keyof typeof filterCounts]})
+                </Badge>
+              );
+            })}
           </div>
-        )}
-      </Card>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
+        {/* Buyers Cards */}
+        <AnimatePresence mode="wait">
+          {(!buyers || buyers.length === 0) ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16"
+            >
+              <div className="text-5xl mb-4">🛒</div>
+              <h3 className="text-lg font-semibold">No buyers yet</h3>
+              <p className="text-sm text-muted-foreground">New purchases will appear here</p>
+            </motion.div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="space-y-3"
+            >
+              {buyers.map((buyer, index) => {
+                const hoursSincePurchase = (Date.now() - new Date(buyer.created_at).getTime()) / 3600000;
+                const initials = `${buyer.first_name?.[0] || ''}${buyer.last_name?.[0] || buyer.email[0]}`.toUpperCase();
+
+                return (
+                  <motion.div
+                    key={buyer.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Card className={cn(
+                      "overflow-hidden transition-all border-l-4",
+                      buyer.account_created
+                        ? "border-l-green-500"
+                        : hoursSincePurchase > 48
+                          ? "border-l-red-500"
+                          : "border-l-yellow-500"
+                    )}>
+                      <CardContent className="p-4">
+                        {/* Header: Avatar + Name + Status */}
+                        <div className="flex items-start gap-3 mb-3">
+                          <Avatar className="h-10 w-10 shrink-0 border-2 border-border">
+                            <AvatarFallback className="bg-primary/10 text-primary text-sm font-semibold">
+                              {initials}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between gap-2">
+                              <p className="font-semibold text-sm truncate">
+                                {buyer.first_name || ''} {buyer.last_name || 'Customer'}
+                              </p>
+                              {getStatusBadge(buyer)}
+                            </div>
+                            <p className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                              <Mail className="h-3 w-3" />
+                              {buyer.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Info Grid */}
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          <div className="p-2 bg-muted/50 rounded-lg text-center">
+                            <p className="text-[10px] text-muted-foreground uppercase">Value</p>
+                            <p className="text-sm font-bold text-green-600">
+                              ${buyer.total_price?.toFixed(0) || '0'}
+                            </p>
+                          </div>
+                          <div className="p-2 bg-muted/50 rounded-lg text-center">
+                            <p className="text-[10px] text-muted-foreground uppercase">Purchased</p>
+                            <p className="text-xs font-medium">
+                              {formatDistanceToNow(new Date(buyer.created_at), { addSuffix: false })}
+                            </p>
+                          </div>
+                          <div className="p-2 bg-muted/50 rounded-lg text-center">
+                            <p className="text-[10px] text-muted-foreground uppercase">Convert Time</p>
+                            <p className="text-xs font-medium">
+                              {getTimeToCreate(buyer) || '—'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Email Status + Actions */}
+                        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                          <div className="flex items-center gap-2">
+                            {buyer.email_sent ? (
+                              <Badge className="bg-green-500/15 text-green-600 dark:text-green-400 border-0 text-[10px]">
+                                <CheckCircle2 className="w-3 h-3 mr-1" />
+                                Email Sent
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-gray-500/15 text-gray-600 dark:text-gray-400 border-0 text-[10px]">
+                                <Clock className="w-3 h-3 mr-1" />
+                                Email Pending
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleCopyEmail(buyer.email)}
+                              className="h-8 w-8 p-0"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </Button>
+                            {!buyer.account_created && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleResendEmail(buyer)}
+                                disabled={resendingEmail === buyer.id}
+                                className="h-8 px-3 text-xs"
+                              >
+                                {resendingEmail === buyer.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <>
+                                    <Mail className="w-3 h-3 mr-1" />
+                                    Resend
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
