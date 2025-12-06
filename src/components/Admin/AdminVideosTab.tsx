@@ -26,14 +26,6 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Edit, Trash2, Image as ImageIcon, Video, Plus, List, Sparkles, Crown, Lock } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
@@ -605,90 +597,121 @@ export function AdminVideosTab({ onContentChanged }: AdminVideosTabProps) {
         </div>
       </div>
 
-      {/* Existing Videos Table - Glass Morphism Card */}
-      <div className="group relative rounded-2xl backdrop-premium shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl">
-        <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="relative p-7">
-          <div className="flex items-center gap-3 mb-6">
+      {/* Existing Videos - Mobile-First Cards */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <div className="p-2.5 rounded-xl gradient-primary shadow-glow">
               <List className="w-5 h-5 text-primary-foreground" />
             </div>
             <h3 className="text-xl font-bold text-foreground">
               Existing Videos
             </h3>
-            <span className="ml-auto px-3 py-1.5 bg-primary/10 rounded-lg text-sm font-semibold text-primary border border-primary/20">
-              {videos.length} videos
-            </span>
           </div>
+          <span className="px-3 py-1.5 bg-primary/10 rounded-lg text-sm font-semibold text-primary border border-primary/20">
+            {videos.length} videos
+          </span>
+        </div>
 
-          <div className="rounded-xl border border-border overflow-hidden bg-card/50">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted hover:bg-muted border-b border-border">
-                  <TableHead className="font-bold text-foreground">Title</TableHead>
-                  <TableHead className="font-bold text-foreground">Section</TableHead>
-                  <TableHead className="font-bold text-foreground">Duration</TableHead>
-                  <TableHead className="font-bold text-foreground">Order</TableHead>
-                  <TableHead className="font-bold text-foreground">Status</TableHead>
-                  <TableHead className="w-24 font-bold text-foreground">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {videos.map((video) => (
-                  <TableRow
-                    key={video.id}
-                    className="border-b border-border hover:bg-accent/50 transition-all duration-200"
-                  >
-                    <TableCell className="font-semibold text-foreground">{video.title}</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-secondary/10 rounded-lg text-xs font-medium text-secondary border border-secondary/20">
-                        {getSectionDisplay(video.section)}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-muted-foreground font-medium">{video.duration}</TableCell>
-                    <TableCell>
-                      <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-sm font-bold text-primary border border-primary/20">
-                        {video.order_index ?? 0}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      {video.premium_only ? (
-                        <Badge className="gradient-primary text-primary-foreground border-0 shadow-sm hover:shadow-md transition-all duration-200">
-                          <Crown className="w-3 h-3 mr-1" />
-                          Premium
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20">
-                          Free
-                        </Badge>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
+        {videos.length === 0 ? (
+          <Card className="p-8 text-center">
+            <Video className="w-12 h-12 mx-auto mb-3 text-muted-foreground" />
+            <p className="text-muted-foreground">No videos yet. Add your first video above.</p>
+          </Card>
+        ) : (
+          <div className="grid gap-3">
+            {videos.map((video) => (
+              <Card
+                key={video.id}
+                className={`p-4 border-l-4 transition-all duration-200 hover:shadow-md ${
+                  video.premium_only
+                    ? 'border-l-purple-500 bg-gradient-to-r from-purple-50/50 to-transparent dark:from-purple-950/20'
+                    : 'border-l-green-500 bg-gradient-to-r from-green-50/50 to-transparent dark:from-green-950/20'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  {/* Thumbnail */}
+                  <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                    {video.thumbnail_url ? (
+                      <img
+                        src={video.thumbnail_url}
+                        alt={video.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Video className="w-6 h-6 text-muted-foreground" />
+                      </div>
+                    )}
+                    {/* Duration overlay */}
+                    <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 rounded text-[10px] text-white font-medium">
+                      {video.duration}
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-sm text-foreground line-clamp-2">
+                          {video.title}
+                        </h4>
+                        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-secondary/10 rounded text-xs font-medium text-secondary-foreground">
+                            {getSectionDisplay(video.section)}
+                          </span>
+                          <span className="text-xs text-muted-foreground">
+                            Order: {video.order_index ?? 0}
+                          </span>
+                          {video.premium_only ? (
+                            <Badge className="h-5 gradient-primary text-primary-foreground text-[10px] px-1.5 border-0">
+                              <Crown className="w-2.5 h-2.5 mr-0.5" />
+                              Premium
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="h-5 text-[10px] px-1.5 border-green-300 text-green-700 dark:text-green-400">
+                              Free
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Action buttons */}
+                      <div className="flex gap-1 flex-shrink-0">
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600"
                           onClick={() => handleEditClick(video)}
-                          className="hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-200 hover:scale-110"
                         >
                           <Edit className="w-4 h-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          className="h-8 w-8 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600"
                           onClick={() => setDeleteVideoId(video.id)}
-                          className="hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all duration-200 hover:scale-110"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                    </div>
+
+                    {/* Description preview */}
+                    {video.description && (
+                      <p className="text-xs text-muted-foreground mt-1.5 line-clamp-1">
+                        {video.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
           </div>
-        </div>
+        )}
       </div>
 
       {/* Edit Video Dialog */}
