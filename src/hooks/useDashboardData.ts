@@ -7,6 +7,7 @@ interface DashboardData {
   ebooks: any[];
   isLoading: boolean;
   error: Error | null;
+  refetch: () => Promise<void>;
 }
 
 /**
@@ -81,10 +82,15 @@ export function useDashboardData(
     staleTime: 5 * 60 * 1000,
   });
 
+  const refetch = async () => {
+    await Promise.all([scriptsQuery.refetch(), ebooksQuery.refetch()]);
+  };
+
   return {
     scripts: scriptsQuery.data || [],
     ebooks: ebooksQuery.data || [],
     isLoading: scriptsQuery.isLoading || ebooksQuery.isLoading,
     error: (scriptsQuery.error || ebooksQuery.error) as Error | null,
+    refetch,
   };
 }
