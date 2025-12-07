@@ -257,16 +257,16 @@ export default function Welcome() {
             transition={{ delay: 0.2 }}
             className="text-gray-900 text-2xl font-semibold text-center"
           >
-            You're in! 🎉
+            Payment Confirmed! ✓
           </motion.h1>
           
           <motion.p 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-gray-500 text-center mt-1"
+            className="text-gray-600 text-center mt-2 text-base"
           >
-            Create your account to get started
+            <span className="font-medium">One last step:</span> Create your account below to access your content.
           </motion.p>
         </motion.div>
 
