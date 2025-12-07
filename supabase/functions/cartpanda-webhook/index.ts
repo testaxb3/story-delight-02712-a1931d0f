@@ -413,10 +413,16 @@ async function sendWelcomeEmail(email: string, firstName: string): Promise<void>
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'NEP System <support@nepsystem.pro>',
+        from: 'The Obedience Language <support@nepsystem.pro>',
         to: [email],
-        subject: 'Welcome to NEP System! 🎉 Your Access is Ready',
+        reply_to: 'support@nepsystem.pro',
+        subject: `${firstName}, create your account to access your purchase`,
         html: getWelcomeEmailHTML(firstName),
+        headers: {
+          'List-Unsubscribe': '<mailto:unsubscribe@nepsystem.pro>',
+          'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
+          'X-Priority': '3',
+        },
       }),
     });
 

@@ -110,12 +110,14 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          last_reminder_at: string | null
           notes: string | null
           order_id: string | null
           phone: string | null
           product_id: string | null
           product_name: string | null
           products: Json | null
+          reminder_count: number | null
           sms_sent: boolean | null
           status: string | null
           total_price: number | null
@@ -135,12 +137,14 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          last_reminder_at?: string | null
           notes?: string | null
           order_id?: string | null
           phone?: string | null
           product_id?: string | null
           product_name?: string | null
           products?: Json | null
+          reminder_count?: number | null
           sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
@@ -160,12 +164,14 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          last_reminder_at?: string | null
           notes?: string | null
           order_id?: string | null
           phone?: string | null
           product_id?: string | null
           product_name?: string | null
           products?: Json | null
+          reminder_count?: number | null
           sms_sent?: boolean | null
           status?: string | null
           total_price?: number | null
