@@ -62,11 +62,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const savedSession = JSON.parse(savedSessionStr);
         // Validate and restore session
         if (savedSession?.access_token && savedSession?.refresh_token) {
-          console.log('[AuthContext] 🔄 Restoring saved PWA session');
-
-          // ✅ CRITICAL FIX: Limpar TODO o cache do React Query ao restaurar sessão PWA
-          // Isso garante que dados frescos sejam carregados, especialmente quiz_completed
-          console.log('[AuthContext] 🧹 Limpando cache do React Query para sessão PWA');
+          if (import.meta.env.DEV) {
+            console.log('[AuthContext] 🔄 Restoring saved PWA session');
+            console.log('[AuthContext] 🧹 Limpando cache do React Query para sessão PWA');
+          }
           queryClient.clear();
 
           supabase.auth.setSession({
@@ -83,7 +82,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('[AuthContext] Auth state change:', event, 'userId:', session?.user?.id, 'email:', session?.user?.email);
+        if (import.meta.env.DEV) {
+          console.log('[AuthContext] Auth state change:', event, 'userId:', session?.user?.id, 'email:', session?.user?.email);
+        }
 
         // Handle token refresh errors gracefully
         if (event === 'TOKEN_REFRESHED') {
@@ -92,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
 
         if (event === 'SIGNED_OUT') {
-          console.log('[AuthContext] User signed out');
+          if (import.meta.env.DEV) console.log('[AuthContext] User signed out');
           setSession(null);
           setAuthLoading(false);
           // Clear saved session on logout
@@ -103,7 +104,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Only update session if it actually changed
         setSession(prevSession => {
           const isDifferent = prevSession?.user?.id !== session?.user?.id;
-          if (isDifferent) {
+          if (isDifferent && import.meta.env.DEV) {
             console.log('[AuthContext] Session updated from', prevSession?.user?.id, 'to', session?.user?.id);
           }
           return session;
@@ -136,7 +137,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('[AuthContext] Initial session check:', session?.user?.id, session?.user?.email);
+      if (import.meta.env.DEV) console.log('[AuthContext] Initial session check:', session?.user?.id, session?.user?.email);
       setSession(session);
       setAuthLoading(false);
 
@@ -151,7 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      console.log('[AuthContext] Cleaning up subscription');
+      if (import.meta.env.DEV) console.log('[AuthContext] Cleaning up subscription');
       subscription.unsubscribe();
     };
   }, []);
@@ -180,7 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             error.status === 500) {
             lastError = error;
             if (attempt < maxRetries) {
-              console.log(`[AuthContext] Network error on attempt ${attempt + 1}, retrying...`);
+              if (import.meta.env.DEV) console.log(`[AuthContext] Network error on attempt ${attempt + 1}, retrying...`);
               await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
               continue;
             }
@@ -199,9 +200,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // ✅ FIX: Invalidate specific queries instead of clearing all cache
         // This prevents race conditions where components need cache during navigation
         if (data?.user?.id) {
-          console.log('[AuthContext] 🧹 Invalidating user profile cache after login');
+          if (import.meta.env.DEV) console.log('[AuthContext] 🧹 Invalidating user profile cache after login');
           queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-          console.log('[AuthContext] ✅ Profile cache invalidated - fresh data will be loaded');
+          if (import.meta.env.DEV) console.log('[AuthContext] ✅ Profile cache invalidated');
         }
 
         return { error: null, user: data.user };
@@ -248,7 +249,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           console.error('[AuthContext] Error checking email approval:', rpcError);
           // Continue with signup if RPC fails (fail-open for existing users)
         } else if (!isApproved) {
-          console.log('[AuthContext] Email not approved:', email);
+          if (import.meta.env.DEV) console.log('[AuthContext] Email not approved:', email);
           return { 
             error: { 
               message: 'Purchase required to create account',
@@ -258,9 +259,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           };
         }
 
-        console.log('[AuthContext] Email approved, proceeding with signup:', email);
+        if (import.meta.env.DEV) console.log('[AuthContext] Email approved, proceeding with signup:', email);
       } else {
-        console.log('[AuthContext] Skipping approval check, proceeding with signup:', email);
+        if (import.meta.env.DEV) console.log('[AuthContext] Skipping approval check, proceeding with signup:', email);
       }
 
       // Create account - profile will be created automatically by database trigger
@@ -292,9 +293,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // ✅ FIX: Invalidate specific queries instead of clearing all cache
       // This prevents race conditions where components need cache during navigation
       if (data?.user?.id) {
-        console.log('[AuthContext] 🧹 Invalidating user profile cache after sign-up');
+        if (import.meta.env.DEV) console.log('[AuthContext] 🧹 Invalidating user profile cache after sign-up');
         queryClient.invalidateQueries({ queryKey: ['user-profile'] });
-        console.log('[AuthContext] ✅ Profile cache invalidated - fresh data will be loaded');
+        if (import.meta.env.DEV) console.log('[AuthContext] ✅ Profile cache invalidated');
       }
 
       // Profile and user_progress are created automatically by the handle_new_user() trigger

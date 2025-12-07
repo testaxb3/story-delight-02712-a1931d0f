@@ -94,11 +94,13 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
   const [selectedText, setSelectedText] = useState("");
   const [selectionPosition, setSelectionPosition] = useState<{ x: number; y: number } | null>(null);
 
-  console.log('📝 ChapterContentV2:', { 
-    chapterIndex, 
-    blocksCount: blocks?.length,
-    blocks: blocks?.slice(0, 3) // Show first 3 blocks
-  });
+  if (import.meta.env.DEV) {
+    console.log('📝 ChapterContentV2:', { 
+      chapterIndex, 
+      blocksCount: blocks?.length,
+      blocks: blocks?.slice(0, 3)
+    });
+  }
 
   useEffect(() => {
     const handleSelection = () => {
@@ -145,11 +147,13 @@ export const ChapterContentV2 = ({ blocks, chapterIndex }: ChapterContentV2Props
   // Safety check: ensure blocks is an array
   const safeBlocks = Array.isArray(blocks) ? blocks : [];
 
-  console.log('📝 Rendering blocks:', {
-    blocksLength: safeBlocks.length,
-    firstBlock: safeBlocks[0],
-    allBlockTypes: safeBlocks.map(b => b.type)
-  });
+  if (import.meta.env.DEV) {
+    console.log('📝 Rendering blocks:', {
+      blocksLength: safeBlocks.length,
+      firstBlock: safeBlocks[0],
+      allBlockTypes: safeBlocks.map(b => b.type)
+    });
+  }
 
   if (safeBlocks.length === 0) {
     return (

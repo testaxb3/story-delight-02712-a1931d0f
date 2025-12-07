@@ -8,13 +8,15 @@ export const ChapterCoverV2 = ({ chapterNumber, title, subtitle }: ChapterCoverV
   const cleanTitle = title?.trim() || 'Untitled';
   const cleanSubtitle = subtitle?.trim();
   
-  console.log('🎨 ChapterCoverV2 rendering:', { 
-    chapterNumber, 
-    title, 
-    subtitle,
-    cleanTitle, 
-    cleanSubtitle 
-  });
+  if (import.meta.env.DEV) {
+    console.log('🎨 ChapterCoverV2 rendering:', { 
+      chapterNumber, 
+      title, 
+      subtitle,
+      cleanTitle, 
+      cleanSubtitle 
+    });
+  }
   
   return (
     <div className="relative mb-16 py-12 px-6 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary/20 shadow-lg">
