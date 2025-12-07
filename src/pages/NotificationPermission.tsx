@@ -7,7 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useHaptic } from "@/hooks/useHaptic";
 import { toast } from "sonner";
 import { notificationManager } from "@/lib/notifications";
-import { registerPushSubscriptionWithRetry } from "@/lib/onesignal";
+import { showPermissionPrompt, isOneSignalInitialized, initOneSignal } from "@/lib/onesignal";
 
 const NotificationPermission = () => {
   const navigate = useNavigate();
@@ -44,7 +44,15 @@ const NotificationPermission = () => {
     trackEvent("notification_permission_enable_clicked");
 
     try {
-      const granted = await notificationManager.requestPermission();
+      // Ensure OneSignal is initialized
+      if (!isOneSignalInitialized()) {
+        console.log('[NotificationPermission] Initializing OneSignal...');
+        await initOneSignal();
+      }
+
+      // Use OneSignal's showPermissionPrompt instead of browser's native
+      console.log('[NotificationPermission] Showing OneSignal permission prompt...');
+      const granted = await showPermissionPrompt(user?.id);
 
       if (!granted) {
         toast.error('Permission denied. You can enable later in settings.');
@@ -55,17 +63,6 @@ const NotificationPermission = () => {
       }
 
       setPermissionStatus('granted');
-      
-      // Register with OneSignal if available - use retry mechanism
-      if (user?.profileId) {
-        console.log('[NotificationPermission] Starting push registration with retry...');
-        // Don't await - let it run in background with retries
-        registerPushSubscriptionWithRetry(user.profileId, 5, 2000).then(result => {
-          console.log('[NotificationPermission] Push registration result:', result.success ? 'success' : result.reason);
-        });
-      } else {
-        console.log('[NotificationPermission] Skipping push registration: no profile ID');
-      }
 
       // Show success notification
       await notificationManager.showNotification(

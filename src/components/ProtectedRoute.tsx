@@ -58,7 +58,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
 
   // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
-  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection'];
+  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection', '/notification-permission'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
   console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
