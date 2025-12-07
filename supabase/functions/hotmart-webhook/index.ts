@@ -549,10 +549,10 @@ serve(async (req) => {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              from: 'NEP System <support@nepsystem.pro>',
+              from: 'The Obedience Language <support@nepsystem.pro>',
               to: [email],
               reply_to: 'support@nepsystem.pro',
-              subject: `${firstName || 'Hey'}, your account is ready`,
+              subject: `${firstName || 'Hey'}, create your account to access your purchase`,
               html: getWelcomeEmailHTML(firstName || 'there'),
               headers: {
                 'List-Unsubscribe': '<mailto:unsubscribe@nepsystem.pro>',
