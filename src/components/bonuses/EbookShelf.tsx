@@ -94,8 +94,8 @@ export const EbookShelf = memo(function EbookShelf({
       {/* Scrollable Container */}
       <div 
         ref={scrollRef}
-        className="flex gap-4 overflow-x-auto pb-4 px-5 scrollbar-hide snap-x snap-mandatory scroll-smooth"
-        style={{ contentVisibility: 'auto' }}
+        className="flex gap-4 overflow-x-auto pb-4 px-5 scrollbar-hide scroll-smooth"
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {items.map((item, idx) => (
           <EbookCard
@@ -129,7 +129,7 @@ const EbookCard = memo(function EbookCard({
       viewport={{ once: true, margin: "100px" }}
       transition={{ delay: Math.min(index * 0.05, 0.2), duration: 0.4 }}
       onClick={() => onSelect(item)}
-      className="snap-start shrink-0 w-[140px] sm:w-[160px] group cursor-pointer"
+      className="shrink-0 w-[140px] sm:w-[160px] group cursor-pointer"
     >
       {/* Book Cover */}
       <div className="relative aspect-[3/4] rounded-xl overflow-hidden bg-muted shadow-lg transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-2 group-hover:rotate-[-1deg]">
