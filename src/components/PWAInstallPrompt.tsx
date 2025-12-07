@@ -13,7 +13,7 @@ export function PWAInstallPrompt({ open, onOpenGuide, onClose }: PWAInstallPromp
 
   useEffect(() => {
     if (open) {
-      console.log('📲 PWA Install Prompt opened, sliding in...');
+      if (import.meta.env.DEV) console.log('📲 PWA Install Prompt opened, sliding in...');
       // Slide in animation after a short delay
       setTimeout(() => setIsVisible(true), 100);
     } else {
@@ -22,14 +22,14 @@ export function PWAInstallPrompt({ open, onOpenGuide, onClose }: PWAInstallPromp
   }, [open]);
 
   const handleMaybeLater = () => {
-    console.log('👋 User dismissed PWA prompt');
+    if (import.meta.env.DEV) console.log('👋 User dismissed PWA prompt');
     localStorage.setItem('pwa_install_dismissed', 'true');
     setIsVisible(false);
     setTimeout(onClose, 300);
   };
 
   const handleShowMeHow = () => {
-    console.log('📖 User wants to see PWA install guide');
+    if (import.meta.env.DEV) console.log('📖 User wants to see PWA install guide');
     setIsVisible(false);
     setTimeout(() => {
       onClose();

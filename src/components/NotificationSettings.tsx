@@ -67,21 +67,6 @@ export function NotificationSettings() {
       setPermissionStatus('granted');
       setIsEnabled(true);
 
-      // TODO: Subscribe to push notifications when VAPID keys are configured
-      // For now, we'll just save the preference
-      // const vapidKey = 'YOUR_VAPID_PUBLIC_KEY';
-      // const subscription = await notificationManager.subscribe(vapidKey);
-
-      // if (subscription) {
-      //   // Save subscription to database
-      //   await supabase.from('push_subscriptions').insert({
-      //     user_id: user.profileId,
-      //     endpoint: subscription.endpoint,
-      //     p256dh: subscription.p256dh,
-      //     auth: subscription.auth
-      //   });
-      // }
-
       // Register subscription in Supabase for targeted notifications
       if (user?.profileId) {
         // Use retry mechanism for robust registration

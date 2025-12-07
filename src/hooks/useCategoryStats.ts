@@ -36,7 +36,7 @@ export function useCategoryStats() {
     queryFn: async () => {
       if (!user?.id) return [];
 
-      console.log('🔍 Fetching category stats for user:', user.id);
+      if (import.meta.env.DEV) console.log('🔍 Fetching category stats for user:', user.id);
 
       // Fetch all script usage for the user, joining with script details
       // Note: 'script_usage' has 'script_id', we need to join 'scripts' to get 'category'
@@ -51,14 +51,14 @@ export function useCategoryStats() {
         .eq('user_id', user.id);
 
       if (error) {
-        console.error('❌ Error fetching category stats:', error);
+        if (import.meta.env.DEV) console.error('❌ Error fetching category stats:', error);
         throw error;
       }
 
-      console.log('📦 Raw script_usage data:', data);
+      if (import.meta.env.DEV) console.log('📦 Raw script_usage data:', data);
 
       if (!data || data.length === 0) {
-        console.warn('⚠️ No script usage found for user.');
+        if (import.meta.env.DEV) console.warn('⚠️ No script usage found for user.');
         return [];
       }
 
@@ -76,11 +76,11 @@ export function useCategoryStats() {
           categoryCounts[normalizedCat] = (categoryCounts[normalizedCat] || 0) + 1;
           totalCount++;
         } else {
-             console.log('⚠️ Usage found with no category (script might be deleted or null):', usage);
+             if (import.meta.env.DEV) console.log('⚠️ Usage found with no category (script might be deleted or null):', usage);
         }
       });
 
-      console.log('📊 Processed category counts:', categoryCounts);
+      if (import.meta.env.DEV) console.log('📊 Processed category counts:', categoryCounts);
 
       if (totalCount === 0) return [];
 
