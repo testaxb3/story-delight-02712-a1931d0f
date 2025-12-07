@@ -107,6 +107,16 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       localStorage.setItem('theme_selected', 'true');
       console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
     }
+    
+    // 🔔 Verificar se usuário passou pela tela de notificações
+    const notificationPrompted = localStorage.getItem('notification_prompted') === 'true';
+    const isNotificationRoute = location.pathname === '/notification-permission';
+    
+    if (!notificationPrompted && !isNotificationRoute) {
+      console.log('[ProtectedRoute] ⚠️ Notification não perguntado - redirecionando para /notification-permission');
+      return <Navigate to="/notification-permission" replace />;
+    }
+    
     return <>{children}</>;
   }
 
