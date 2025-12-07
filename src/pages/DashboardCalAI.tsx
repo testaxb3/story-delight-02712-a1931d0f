@@ -15,6 +15,7 @@ import { NotificationBell } from '@/components/Community/NotificationBell';
 import { useProfileStats } from '@/hooks/useProfileStats';
 import { Flame, Info } from 'lucide-react';
 import { PullToRefresh } from '@/components/common/PullToRefresh';
+import { useTrackerDays } from '@/hooks/useTrackerDays';
 
 // Dashboard Components
 import { containerVariants, itemVariants } from '@/components/Dashboard/animations';
@@ -23,7 +24,10 @@ import { HeroMetricsCard } from '@/components/Dashboard/HeroMetricsCard';
 import { InsightCard } from '@/components/Dashboard/InsightCard';
 import { RecentActivity } from '@/components/Dashboard/RecentActivity';
 import { BonusGuidesCarousel } from '@/components/Dashboard/BonusGuidesCarousel';
-import { FloatingActionButton } from '@/components/Dashboard/FloatingActionButton';
+import { DashboardQuickActions } from '@/components/Dashboard/DashboardQuickActions';
+import { SupportSheet } from '@/components/Dashboard/SupportSheet';
+import { TrackerLogModal } from '@/components/Tracker/TrackerLogModal';
+import { RequestScriptModal } from '@/components/Scripts/RequestScriptModal';
 
 // Zero State Components
 import { 
@@ -47,9 +51,20 @@ export default function DashboardCalAI() {
   const { data: dashboardStats, isLoading: statsLoading, error, refetch: refetchStats } = useDashboardStats(activeChild?.id);
   const { scripts: recentScripts, ebooks, isLoading: dataLoading, refetch: refetchData } = useDashboardData(activeChild, user?.id);
   const { data: profileStats, isLoading: profileStatsLoading, refetch: refetchProfileStats } = useProfileStats(activeChild?.brain_profile);
+  const { data: trackerStats, refetch: refetchTracker } = useTrackerDays(user?.id, activeChild?.id);
   const { triggerHaptic } = useHaptic();
   const [showStreakTooltip, setShowStreakTooltip] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // FAB Modal States
+  const [showLogModal, setShowLogModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showSupportSheet, setShowSupportSheet] = useState(false);
+  
+  // Tracker data
+  const nextDay = trackerStats?.nextDay ?? null;
+  const canLog = trackerStats?.canLogToday ?? false;
+  const timeUntilNextLog = trackerStats?.timeUntilNextLog ?? null;
 
   const isLoading = statsLoading || dataLoading || profileStatsLoading;
   const currentStreak = dashboardStats?.currentStreak ?? 0;
@@ -285,7 +300,34 @@ export default function DashboardCalAI() {
           </PullToRefresh>
         </motion.div>
 
-        <FloatingActionButton onPress={() => handleNavigate('/scripts')} />
+        <DashboardQuickActions
+          canLog={canLog}
+          timeUntilNextLog={timeUntilNextLog}
+          onLogPress={() => setShowLogModal(true)}
+          onRequestScriptPress={() => setShowRequestModal(true)}
+          onSupportPress={() => setShowSupportSheet(true)}
+        />
+        
+        {/* Modals */}
+        <TrackerLogModal
+          isOpen={showLogModal}
+          onClose={() => setShowLogModal(false)}
+          nextDay={nextDay}
+          onComplete={() => {
+            refetchTracker();
+            refetchStats?.();
+          }}
+        />
+        
+        <RequestScriptModal
+          open={showRequestModal}
+          onOpenChange={setShowRequestModal}
+        />
+        
+        <SupportSheet
+          isOpen={showSupportSheet}
+          onClose={() => setShowSupportSheet(false)}
+        />
       </div>
     </MainLayout>
   );
