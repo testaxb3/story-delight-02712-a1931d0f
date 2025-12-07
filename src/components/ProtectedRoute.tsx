@@ -9,17 +9,19 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const hasShownStandaloneToast = useRef(false);
 
-  // 🔍 DEBUG: Log detalhado para diagnosticar problema
-  console.log('[ProtectedRoute] Estado atual:', {
-    loading,
-    hasUser: !!user,
-    userId: user?.id,
-    email: user?.email,
-    quiz_completed: user?.quiz_completed,
-    quiz_in_progress: user?.quiz_in_progress,
-    pathname: location.pathname,
-    isStandalone: isStandaloneMode()
-  });
+  // 🔍 DEBUG: Log detalhado para diagnosticar problema (apenas em DEV)
+  if (import.meta.env.DEV) {
+    console.log('[ProtectedRoute] Estado atual:', {
+      loading,
+      hasUser: !!user,
+      userId: user?.id,
+      email: user?.email,
+      quiz_completed: user?.quiz_completed,
+      quiz_in_progress: user?.quiz_in_progress,
+      pathname: location.pathname,
+      isStandalone: isStandaloneMode()
+    });
+  }
 
   // ✅ FIX: Show informative toast when auto-completing PWA flow in standalone mode
   const isStandalone = isStandaloneMode();
@@ -32,7 +34,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, [isStandalone]);
 
   if (loading) {
-    console.log('[ProtectedRoute] LOADING - mostrando spinner');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] LOADING - mostrando spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-6xl animate-brain-pulse">🧠</div>
@@ -41,16 +43,15 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    console.log('[ProtectedRoute] NO USER - redirecionando para /auth');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] NO USER - redirecionando para /auth');
     return <Navigate to="/auth" replace />;
   }
 
   // Check if PWA flow is completed (before quiz)
   // ✅ FIX: If running in standalone mode, consider flow completed automatically
   if (isStandalone && !localStorage.getItem('pwa_flow_completed')) {
-    console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA e tema');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA e tema');
     localStorage.setItem('pwa_flow_completed', 'true');
-    // ✅ FIX: Also auto-complete theme selection in standalone mode
     localStorage.setItem('theme_selected', 'true');
   }
 
@@ -61,12 +62,14 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection', '/notification-permission'];
   const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
-  console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
-  console.log('[ProtectedRoute] PWA flow completed?', pwaFlowCompleted);
+  if (import.meta.env.DEV) {
+    console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
+    console.log('[ProtectedRoute] PWA flow completed?', pwaFlowCompleted);
+  }
 
   // 🔄 PWA Flow Check: If user hasn't completed PWA flow, redirect to installation
   if (!pwaFlowCompleted && !isPWARoute && !isQuizRoute) {
-    console.log('[ProtectedRoute] ⚠️ PWA flow não completado - redirecionando para /pwa-install');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ PWA flow não completado - redirecionando para /pwa-install');
     return <Navigate to="/pwa-install" replace />;
   }
 
@@ -75,43 +78,43 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const isThemeRoute = location.pathname === '/theme-selection';
 
   if (pwaFlowCompleted && !themeSelected && !isThemeRoute && !isQuizRoute) {
-    console.log('[ProtectedRoute] ⚠️ Tema não selecionado - redirecionando para /theme-selection');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ Tema não selecionado - redirecionando para /theme-selection');
     return <Navigate to="/theme-selection" replace />;
   }
 
   // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
   // Isso resolve loops de redirecionamento causados por cache stale
   if (user.quiz_completed === true) {
-    console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
-    console.log('[ProtectedRoute] 📊 Estado completo:', {
-      quiz_completed: user.quiz_completed,
-      quiz_in_progress: user.quiz_in_progress,
-      userId: user.id,
-      email: user.email,
-      timestamp: new Date().toISOString()
-    });
+    if (import.meta.env.DEV) {
+      console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
+      console.log('[ProtectedRoute] 📊 Estado completo:', {
+        quiz_completed: user.quiz_completed,
+        quiz_in_progress: user.quiz_in_progress,
+        userId: user.id,
+        email: user.email,
+        timestamp: new Date().toISOString()
+      });
+    }
 
     // Limpar sessionStorage se quiz confirmado completo
     if (sessionStorage.getItem('quizJustCompletedAt')) {
       sessionStorage.removeItem('quizJustCompletedAt');
-      console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
+      if (import.meta.env.DEV) console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
     }
 
     // ✅ CRITICAL FIX: Garantir que os flags PWA estejam setados para não pedir novamente
     // Isso é especialmente importante para PWAs no iPhone onde o usuário pode reinstalar o app
     if (!localStorage.getItem('pwa_flow_completed')) {
       localStorage.setItem('pwa_flow_completed', 'true');
-      console.log('[ProtectedRoute] ✅ Setou pwa_flow_completed=true');
+      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou pwa_flow_completed=true');
     }
     if (!localStorage.getItem('theme_selected')) {
       localStorage.setItem('theme_selected', 'true');
-      console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
+      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
     }
-    // ✅ CRITICAL FIX: Auto-setar notification_prompted para usuários com quiz_completed
-    // Previne loops de redirecionamento quando PWA é reinstalado
     if (!localStorage.getItem('notification_prompted')) {
       localStorage.setItem('notification_prompted', 'true');
-      console.log('[ProtectedRoute] ✅ Setou notification_prompted=true');
+      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou notification_prompted=true');
     }
     
     return <>{children}</>;
@@ -122,14 +125,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000; // ✅ 2 minutos
 
   if (withinGracePeriod) {
-    console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
     
-    // ✅ FIX: Verificar notification_prompted mesmo no grace period
     const notificationPromptedGrace = localStorage.getItem('notification_prompted') === 'true';
     const isNotificationRouteGrace = location.pathname === '/notification-permission';
     
     if (!notificationPromptedGrace && !isNotificationRouteGrace) {
-      console.log('[ProtectedRoute] ⚠️ Grace period: Notification não perguntado - redirecionando');
+      if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ Grace period: Notification não perguntado - redirecionando');
       return <Navigate to="/notification-permission" replace />;
     }
     
@@ -138,11 +140,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   // Se não completou o quiz E não está em rota de quiz E não está no grace period, redirecionar
   if (!isQuizRoute) {
-    console.log('[ProtectedRoute] ❌ Quiz NÃO completado - redirecionando para /quiz');
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ❌ Quiz NÃO completado - redirecionando para /quiz');
     return <Navigate to="/quiz" replace />;
   }
 
   // Se está na rota de quiz, permitir acesso
-  console.log('[ProtectedRoute] ✅ Rota de quiz - permitindo acesso');
+  if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Rota de quiz - permitindo acesso');
   return <>{children}</>;
 }
