@@ -29,7 +29,7 @@ interface AuthContextType {
   session: any;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any; user: any | null }>;
-  signUp: (email: string, password: string) => Promise<{ error: any; user: any | null }>;
+  signUp: (email: string, password: string, skipApprovalCheck?: boolean) => Promise<{ error: any; user: any | null }>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -231,32 +231,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, skipApprovalCheck = false) => {
     if (password.length < MIN_PASSWORD_LENGTH) {
       return { error: { message: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` }, user: null };
     }
 
     try {
       // ✅ CARTPANDA INTEGRATION: Check if email is approved (purchased)
-      const { data: isApproved, error: rpcError } = await supabase.rpc('is_email_approved', {
-        p_email: email.toLowerCase().trim()
-      });
+      // Skip check if explicitly requested (e.g., /welcome page where webhook may not have arrived yet)
+      if (!skipApprovalCheck) {
+        const { data: isApproved, error: rpcError } = await supabase.rpc('is_email_approved', {
+          p_email: email.toLowerCase().trim()
+        });
 
-      if (rpcError) {
-        console.error('[AuthContext] Error checking email approval:', rpcError);
-        // Continue with signup if RPC fails (fail-open for existing users)
-      } else if (!isApproved) {
-        console.log('[AuthContext] Email not approved:', email);
-        return { 
-          error: { 
-            message: 'Purchase required to create account',
-            code: 'EMAIL_NOT_APPROVED'
-          }, 
-          user: null 
-        };
+        if (rpcError) {
+          console.error('[AuthContext] Error checking email approval:', rpcError);
+          // Continue with signup if RPC fails (fail-open for existing users)
+        } else if (!isApproved) {
+          console.log('[AuthContext] Email not approved:', email);
+          return { 
+            error: { 
+              message: 'Purchase required to create account',
+              code: 'EMAIL_NOT_APPROVED'
+            }, 
+            user: null 
+          };
+        }
+
+        console.log('[AuthContext] Email approved, proceeding with signup:', email);
+      } else {
+        console.log('[AuthContext] Skipping approval check, proceeding with signup:', email);
       }
-
-      console.log('[AuthContext] Email approved, proceeding with signup:', email);
 
       // Create account - profile will be created automatically by database trigger
       const { error, data } = await supabase.auth.signUp({

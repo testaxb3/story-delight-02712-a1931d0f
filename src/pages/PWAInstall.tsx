@@ -95,11 +95,14 @@ const PWAInstall = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div 
-        className="flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-6 pb-8 overflow-y-auto"
-        style={{ paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))' }}
-      >
+    <div 
+      className="min-h-screen bg-background flex flex-col"
+      style={{ 
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)'
+      }}
+    >
+      <div className="flex-1 flex flex-col items-center px-4 md:px-6 py-6 overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

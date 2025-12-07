@@ -192,7 +192,8 @@ export default function Welcome() {
     setFormError(null);
 
     try {
-      const { error } = await signUp(email, password);
+      // Skip CartPanda approval check - webhook may not have arrived yet
+      const { error } = await signUp(email, password, true);
       
       if (error) {
         if (error.code === 'EMAIL_NOT_APPROVED' || 
