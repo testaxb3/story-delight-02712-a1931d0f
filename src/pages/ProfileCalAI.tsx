@@ -29,7 +29,7 @@ import { Switch } from '@/components/ui/switch';
 import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
 import { notificationManager } from '@/lib/notifications';
-import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized } from '@/lib/onesignal';
+import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized, initOneSignal, showPermissionPrompt } from '@/lib/onesignal';
 
 export default function ProfileCalAI() {
   const { user, signOut } = useAuth();
@@ -299,31 +299,23 @@ export default function ProfileCalAI() {
                 
                 try {
                   if (checked) {
-                    // Enable notifications
-                    const granted = await notificationManager.requestPermission();
+                    // Ensure OneSignal is initialized
+                    if (!isOneSignalInitialized()) {
+                      console.log('[Profile] Initializing OneSignal...');
+                      await initOneSignal();
+                    }
+
+                    // Use OneSignal's showPermissionPrompt instead of browser native
+                    console.log('[Profile] Showing OneSignal permission prompt...');
+                    const granted = await showPermissionPrompt(user?.id);
+                    
                     if (!granted) {
                       toast.error('Permission denied. Enable in browser settings.');
                       setNotificationsLoading(false);
                       return;
                     }
-                    setNotificationsEnabled(true);
                     
-                    // Register with OneSignal using retry mechanism
-                    if (user?.profileId) {
-                      if (!isOneSignalInitialized()) {
-                        console.warn('[Profile] OneSignal not initialized - push notifications may not work');
-                      }
-                      
-                      // Use retry mechanism for robust registration
-                      const result = await registerPushSubscriptionWithRetry(user.profileId, 5, 2000);
-                      
-                      if (!result.success) {
-                        console.error('[Profile] Push registration failed:', result.reason);
-                        toast.warning('Local notifications enabled, but push notifications may not work.');
-                      } else {
-                        console.log('[Profile] Push registration successful, player ID:', result.playerId);
-                      }
-                    }
+                    setNotificationsEnabled(true);
                     
                     await notificationManager.showNotification('Notifications Enabled!', {
                       body: "You'll receive reminders and updates.",
@@ -333,8 +325,8 @@ export default function ProfileCalAI() {
                   } else {
                     // Disable notifications
                     await notificationManager.unsubscribe();
-                    if (user?.profileId) {
-                      await unregisterPushSubscription(user.profileId);
+                    if (user?.id) {
+                      await unregisterPushSubscription(user.id);
                     }
                     setNotificationsEnabled(false);
                     toast.success('Notifications disabled');
