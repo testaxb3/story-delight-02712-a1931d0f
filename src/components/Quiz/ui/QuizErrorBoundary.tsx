@@ -34,7 +34,9 @@ export class QuizErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Quiz Error Boundary caught error:', error, errorInfo);
+    if (import.meta.env.DEV) {
+      console.error('Quiz Error Boundary caught error:', error, errorInfo);
+    }
     this.setState({
       error,
       errorInfo,
@@ -54,7 +56,8 @@ export class QuizErrorBoundary extends Component<Props, State> {
   };
 
   handleGoHome = () => {
-    window.location.href = '/';
+    // Use replace for clean navigation without history issues
+    window.location.replace('/');
   };
 
   render() {

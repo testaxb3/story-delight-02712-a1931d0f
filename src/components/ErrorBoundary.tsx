@@ -119,7 +119,10 @@ export class ErrorBoundary extends Component<Props, State> {
                   Try Again
                 </Button>
                 <Button
-                  onClick={() => window.location.href = '/'}
+                  onClick={() => {
+                    // Clear error state and navigate using location for clean slate
+                    window.location.replace('/');
+                  }}
                   variant="outline"
                   size="lg"
                   className="gap-2"

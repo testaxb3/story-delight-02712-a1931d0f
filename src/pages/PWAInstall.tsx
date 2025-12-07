@@ -40,6 +40,8 @@ const PWAInstall = () => {
       const success = await promptInstall();
       if (success) {
         trackEvent('pwa_install_native_accepted');
+        // ✅ FIX: Setar flag ANTES de navegar para evitar loops
+        localStorage.setItem('pwa_flow_completed', 'true');
         navigate('/pwa-check');
       } else {
         trackEvent('pwa_install_native_dismissed');
