@@ -99,7 +99,7 @@ export function DashboardQuickActions({
   };
 
   return (
-    <div className="fixed right-4 z-50" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 80px)' }}>
+    <div className="fixed right-4 z-50" style={{ bottom: 'calc(env(safe-area-inset-bottom) + 100px)' }}>
       {/* Backdrop */}
       <AnimatePresence>
         {isOpen && (
