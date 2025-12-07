@@ -36,8 +36,8 @@ export function BottomNavExpandable() {
 
   return (
     <nav 
-      className="fixed left-4 right-4 z-[100] md:hidden pointer-events-auto"
-      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 0.75rem)` }}
+      className="fixed left-3 right-3 z-[100] md:hidden pointer-events-auto"
+      style={{ bottom: `calc(env(safe-area-inset-bottom, 0px) + 1rem)` }}
     >
       <ExpandableTabs
         tabs={tabs}

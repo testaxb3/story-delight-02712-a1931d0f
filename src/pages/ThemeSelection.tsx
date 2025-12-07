@@ -74,7 +74,7 @@ const ThemeSelection = () => {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background via-background to-muted/10">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white dark:bg-black">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -121,8 +121,8 @@ const ThemeSelection = () => {
                   border-2 transition-all duration-300
                   ${theme.borderColor}
                   ${theme.hoverBg}
-                  ${isSelected ? "ring-4 ring-primary ring-offset-2 dark:ring-offset-background" : ""}
-                  bg-card/50 dark:bg-card backdrop-blur-sm
+                  ${isSelected ? "ring-4 ring-primary ring-offset-2 ring-offset-white dark:ring-offset-black" : ""}
+                  bg-gray-50 dark:bg-gray-900
                   shadow-lg hover:shadow-xl
                 `}
               >

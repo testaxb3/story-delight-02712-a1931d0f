@@ -66,18 +66,10 @@ export const PWAInstallSheet = ({ open, onOpenChange, onComplete }: PWAInstallSh
         side="bottom" 
         className="rounded-t-3xl bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 px-6 pb-8"
       >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-            Install the app
-          </h2>
-          <button 
-            onClick={() => onOpenChange(false)}
-            className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
+        {/* Header - no manual close button, SheetContent has one */}
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
+          Install the app
+        </h2>
 
         {/* App Card */}
         <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-2xl mb-6">
