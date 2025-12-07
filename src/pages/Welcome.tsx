@@ -364,22 +364,6 @@ export default function Welcome() {
           </div>
         </motion.div>
 
-        {/* Already have account */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-6 text-center"
-        >
-          <button
-            type="button"
-            onClick={() => navigate('/auth')}
-            className="text-gray-500 text-sm hover:text-gray-700 transition-colors"
-          >
-            Already have an account?{' '}
-            <span className="text-emerald-600 font-medium">Sign In</span>
-          </button>
-        </motion.div>
 
         {/* Spacer */}
         <div className="flex-1 min-h-8" />
