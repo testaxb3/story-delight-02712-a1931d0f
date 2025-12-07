@@ -12,6 +12,7 @@ export const routes = {
   // Main Navigation
   home: '/',
   auth: '/auth',
+  welcome: '/welcome', // Post-purchase onboarding
   onboarding: '/onboarding',
   
   // PWA Installation Flow

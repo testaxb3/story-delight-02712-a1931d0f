@@ -21,6 +21,7 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 // Onboarding pages MUST be eager-loaded to prevent MIME type errors from stale chunks
 // ListenSeries is eager-loaded to prevent chunk failures on iOS PWA
 import Auth from "./pages/Auth";
+import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/DashboardCalAI";
 import NotFound from "./pages/NotFound";
 import PWAInstall from "./pages/PWAInstall";
@@ -114,6 +115,7 @@ function AppContent() {
     <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/auth" element={<Auth />} />
+        <Route path="/welcome" element={<Welcome />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/pwa-install" element={<ProtectedRoute><PWAInstall /></ProtectedRoute>} />
         <Route path="/pwa-check" element={<ProtectedRoute><PWACheck /></ProtectedRoute>} />
