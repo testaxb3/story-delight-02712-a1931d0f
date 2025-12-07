@@ -58,11 +58,15 @@ const NotificationPermission = () => {
         toast.error('Permission denied. You can enable later in settings.');
         setPermissionStatus('denied');
         setIsLoading(false);
+        // Set flag even on denial - user was prompted
+        localStorage.setItem('notification_prompted', 'true');
         navigateNext();
         return;
       }
 
       setPermissionStatus('granted');
+      // Set flag on success
+      localStorage.setItem('notification_prompted', 'true');
 
       // Show success notification
       await notificationManager.showNotification(
@@ -79,6 +83,8 @@ const NotificationPermission = () => {
     } catch (error) {
       console.error('Error enabling notifications:', error);
       toast.error('Something went wrong. You can enable later in settings.');
+      // Set flag even on error - user was prompted
+      localStorage.setItem('notification_prompted', 'true');
       navigateNext();
     } finally {
       setIsLoading(false);
@@ -88,6 +94,8 @@ const NotificationPermission = () => {
   const handleSkip = () => {
     triggerHaptic('light');
     trackEvent("notification_permission_skipped");
+    // Set flag on skip
+    localStorage.setItem('notification_prompted', 'true');
     navigateNext();
   };
 
