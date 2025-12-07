@@ -89,7 +89,7 @@ export function PostReactionsSheet({
   };
 
   const handleSendComment = async () => {
-    console.log('Sending comment:', commentText);
+    if (import.meta.env.DEV) console.log('Sending comment:', commentText);
     if (commentText.trim()) {
       // Optimistically add comment or wait for reload
       await onAddComment(commentText.trim());

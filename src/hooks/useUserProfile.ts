@@ -53,19 +53,21 @@ export function useUserProfile(userId: string | undefined, email: string | undef
           .single();
 
         if (error && error.code !== 'PGRST116') {
-          console.error('Profile fetch error:', error);
+          if (import.meta.env.DEV) console.error('Profile fetch error:', error);
           // Silently fail - user will be prompted to complete profile
         }
 
         // ✅ DEBUG: Log profile data to track quiz state
-        console.log('[useUserProfile] Profile loaded:', {
-          userId,
-          email,
-          name: profile?.name,
-          quiz_completed: profile?.quiz_completed,
-          quiz_in_progress: profile?.quiz_in_progress,
-          timestamp: new Date().toISOString()
-        });
+        if (import.meta.env.DEV) {
+          console.log('[useUserProfile] Profile loaded:', {
+            userId,
+            email,
+            name: profile?.name,
+            quiz_completed: profile?.quiz_completed,
+            quiz_in_progress: profile?.quiz_in_progress,
+            timestamp: new Date().toISOString()
+          });
+        }
 
         const userData: User = {
           id: userId,
@@ -97,7 +99,7 @@ export function useUserProfile(userId: string | undefined, email: string | undef
 
         return userData;
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
+        if (import.meta.env.DEV) console.error('Failed to fetch user profile:', error);
         return null;
       }
     },
@@ -120,14 +122,14 @@ export function useRefreshProfile() {
   const queryClient = useQueryClient();
 
   return async (userId: string) => {
-    console.log('🔵 [useRefreshProfile] Iniciando refresh para userId:', userId);
+    if (import.meta.env.DEV) console.log('🔵 [useRefreshProfile] Iniciando refresh para userId:', userId);
     
     // Step 1: Invalidate cache to mark data as stale
     queryClient.invalidateQueries({
       queryKey: ['user-profile', userId],
       exact: true,
     });
-    console.log('🔵 [useRefreshProfile] Cache invalidado');
+    if (import.meta.env.DEV) console.log('🔵 [useRefreshProfile] Cache invalidado');
 
     // Step 2: Force refetch and WAIT for completion
     await queryClient.refetchQueries({
@@ -135,12 +137,12 @@ export function useRefreshProfile() {
       type: 'active',
       exact: true,
     });
-    console.log('🔵 [useRefreshProfile] Refetch completado');
+    if (import.meta.env.DEV) console.log('🔵 [useRefreshProfile] Refetch completado');
 
     // Step 3: Additional safety delay to ensure cache propagation
     // ✅ CRITICAL FIX: Aumentado de 300ms para 500ms
     // Isso garante que React Query, Supabase e componentes tenham tempo de propagar os dados
     await new Promise(resolve => setTimeout(resolve, 500));
-    console.log('✅ [useRefreshProfile] Delay de propagação completado (500ms)');
+    if (import.meta.env.DEV) console.log('✅ [useRefreshProfile] Delay de propagação completado (500ms)');
   };
 }

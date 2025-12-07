@@ -107,9 +107,9 @@ export async function ensureUserScaffolding(userId: string, email: string) {
         email: normalizedEmail,
       });
 
-      console.log(`Profile scaffolded or updated for user ${userId}.`);
+      if (import.meta.env.DEV) console.log(`Profile scaffolded or updated for user ${userId}.`);
     } else {
-      console.log(`Profile already exists with custom name for user ${userId}, skipping scaffold.`);
+      if (import.meta.env.DEV) console.log(`Profile already exists with custom name for user ${userId}, skipping scaffold.`);
     }
   } catch (error) {
     console.error(`Failed to scaffold profile information for user ${userId}`, error);

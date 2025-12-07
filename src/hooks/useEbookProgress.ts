@@ -69,12 +69,12 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: (_, chapterIndex) => {
-      console.log('✅ Chapter progress saved:', chapterIndex);
+      if (import.meta.env.DEV) console.log('✅ Chapter progress saved:', chapterIndex);
       // Don't invalidate immediately - it causes remounting
       // queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
     },
     onError: (error, chapterIndex) => {
-      console.error('❌ Failed to save chapter progress:', { chapterIndex, error });
+      if (import.meta.env.DEV) console.error('❌ Failed to save chapter progress:', { chapterIndex, error });
       toast.error('Failed to save progress. Please try again.');
     },
   });
@@ -92,13 +92,13 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: (_, chapterIndex) => {
-      console.log('✅ Chapter marked complete:', chapterIndex);
+      if (import.meta.env.DEV) console.log('✅ Chapter marked complete:', chapterIndex);
       // Don't invalidate immediately - it causes remounting
       // queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
       toast.success('Chapter marked as complete! 🎉');
     },
     onError: (error, chapterIndex) => {
-      console.error('❌ Failed to mark chapter complete:', { chapterIndex, error });
+      if (import.meta.env.DEV) console.error('❌ Failed to mark chapter complete:', { chapterIndex, error });
       toast.error('Failed to mark chapter complete.');
     },
   });
@@ -125,7 +125,7 @@ export function useEbookProgress(ebookId: string | undefined) {
       // Don't invalidate scroll position updates - too frequent and causes remounting
     },
     onError: (error) => {
-      console.error('❌ Failed to save scroll position:', error);
+      if (import.meta.env.DEV) console.error('❌ Failed to save scroll position:', error);
       // Don't show toast for scroll errors as they happen frequently
     },
   });
@@ -143,11 +143,11 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: (_, minutesDelta) => {
-      console.log('✅ Reading time updated:', minutesDelta, 'minutes');
+      if (import.meta.env.DEV) console.log('✅ Reading time updated:', minutesDelta, 'minutes');
       queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
     },
     onError: (error) => {
-      console.error('❌ Failed to update reading time:', error);
+      if (import.meta.env.DEV) console.error('❌ Failed to update reading time:', error);
     },
   });
 
@@ -184,12 +184,12 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: () => {
-      console.log('✅ Note saved');
+      if (import.meta.env.DEV) console.log('✅ Note saved');
       queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
       toast.success('Nota salva! 📝');
     },
     onError: (error) => {
-      console.error('❌ Failed to save note:', error);
+      if (import.meta.env.DEV) console.error('❌ Failed to save note:', error);
       toast.error('Failed to save note.');
     },
   });
@@ -224,12 +224,12 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: () => {
-      console.log('✅ Highlight saved');
+      if (import.meta.env.DEV) console.log('✅ Highlight saved');
       queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
       toast.success('Texto destacado! ✨');
     },
     onError: (error) => {
-      console.error('❌ Failed to save highlight:', error);
+      if (import.meta.env.DEV) console.error('❌ Failed to save highlight:', error);
       toast.error('Failed to save highlight.');
     },
   });
@@ -249,12 +249,12 @@ export function useEbookProgress(ebookId: string | undefined) {
       if (error) throw error;
     },
     onSuccess: () => {
-      console.log('✅ Bookmark added');
+      if (import.meta.env.DEV) console.log('✅ Bookmark added');
       queryClient.invalidateQueries({ queryKey: ['ebook-progress', ebookId] });
       toast.success('Marcador adicionado! 🔖');
     },
     onError: (error) => {
-      console.error('❌ Failed to add bookmark:', error);
+      if (import.meta.env.DEV) console.error('❌ Failed to add bookmark:', error);
       toast.error('Failed to add bookmark.');
     },
   });

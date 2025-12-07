@@ -14,10 +14,10 @@ export function UploadMeltdownDecoder() {
     
     if (result.success) {
       toast.success("✅ Ebook uploaded successfully!");
-      console.log("Upload result:", result.data);
+      if (import.meta.env.DEV) console.log("Upload result:", result.data);
     } else {
       toast.error("❌ Failed to upload ebook");
-      console.error("Upload error:", result.error);
+      if (import.meta.env.DEV) console.error("Upload error:", result.error);
     }
     
     setIsUploading(false);

@@ -105,7 +105,7 @@ export async function performPlatformUpdate(): Promise<void> {
  */
 async function performIOSUpdate(): Promise<void> {
   try {
-    console.log('🍎 Starting iOS update process...');
+    if (import.meta.env.DEV) console.log('🍎 Starting iOS update process...');
 
     // 1. Clear all caches
     if ('caches' in window) {
@@ -113,7 +113,7 @@ async function performIOSUpdate(): Promise<void> {
       await Promise.all(
         cacheNames.map(cacheName => caches.delete(cacheName))
       );
-      console.log('✅ All caches cleared for iOS update');
+      if (import.meta.env.DEV) console.log('✅ All caches cleared for iOS update');
     }
 
     // 2. Unregister all service workers
@@ -122,7 +122,7 @@ async function performIOSUpdate(): Promise<void> {
       await Promise.all(
         registrations.map(registration => registration.unregister())
       );
-      console.log('✅ Service workers unregistered for iOS update');
+      if (import.meta.env.DEV) console.log('✅ Service workers unregistered for iOS update');
     }
 
     // 3. Clear localStorage session markers (keep user data)
@@ -132,7 +132,7 @@ async function performIOSUpdate(): Promise<void> {
     sessionStorage.setItem('pwa_just_updated', 'true');
 
     // 5. Redirect to root to avoid 404 on deep routes
-    console.log('🔄 Redirecting to root for clean update...');
+    if (import.meta.env.DEV) console.log('🔄 Redirecting to root for clean update...');
 
     // DEFINITIVE SOLUTION:
     // Redirecting to "/" ensures we never get a 404
@@ -143,7 +143,7 @@ async function performIOSUpdate(): Promise<void> {
     }, 100);
 
   } catch (error) {
-    console.error('❌ Error during iOS update:', error);
+    if (import.meta.env.DEV) console.error('❌ Error during iOS update:', error);
     // Fallback: redirect to root (never fails)
     window.location.href = '/';
   }
@@ -159,15 +159,15 @@ async function performServiceWorkerUpdate(): Promise<void> {
     try {
       // This triggers skipWaiting and controllerchange
       await updateSW(true);
-      console.log('✅ Service Worker updated successfully');
+      if (import.meta.env.DEV) console.log('✅ Service Worker updated successfully');
     } catch (error) {
-      console.error('Error updating Service Worker:', error);
+      if (import.meta.env.DEV) console.error('Error updating Service Worker:', error);
       // Fallback: reload
       window.location.reload();
     }
   } else {
     // No updateSW available, do hard reload
-    console.warn('⚠️ __updateSW not available, falling back to reload');
+    if (import.meta.env.DEV) console.warn('⚠️ __updateSW not available, falling back to reload');
 
     // Try to clear caches first
     if ('caches' in window) {
