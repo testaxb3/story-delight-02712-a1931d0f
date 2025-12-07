@@ -99,9 +99,10 @@ const NotificationPermission = () => {
     navigateNext();
   };
 
-  // If already granted, skip this page
+  // If already granted, set flag and skip this page
   useEffect(() => {
     if (permissionStatus === 'granted') {
+      localStorage.setItem('notification_prompted', 'true');
       navigateNext();
     }
   }, [permissionStatus]);
