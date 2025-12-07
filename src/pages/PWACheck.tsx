@@ -57,7 +57,7 @@ const PWACheck = () => {
 
   return (
     <div 
-      className="min-h-screen bg-secondary/30 dark:bg-background flex flex-col"
+      className="min-h-screen bg-white dark:bg-black flex flex-col"
       style={{ 
         paddingTop: 'env(safe-area-inset-top)',
         paddingBottom: 'env(safe-area-inset-bottom)'
@@ -78,7 +78,7 @@ const PWACheck = () => {
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-100 dark:bg-emerald-500/20"
+                className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-emerald-50 dark:bg-emerald-500/20 shadow-sm"
               >
                 <CheckCircle2 className="w-10 h-10 text-emerald-500" />
               </motion.div>
@@ -89,10 +89,10 @@ const PWACheck = () => {
                 transition={{ delay: 0.3 }}
                 className="space-y-2"
               >
-                <h1 className="text-2xl font-bold text-foreground">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   You're All Set! 🎉
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-gray-500 dark:text-gray-400">
                   The app is installed. Let's continue.
                 </p>
               </motion.div>
@@ -101,14 +101,14 @@ const PWACheck = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex items-center justify-center gap-2 text-sm text-muted-foreground"
+                className="flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400"
               >
                 <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 Redirecting...
               </motion.div>
             </motion.div>
           ) : showConfirmation ? (
-            // Confirmation Screen - Light Mode Optimized
+            // Confirmation Screen - Light Mode Clean
             <motion.div
               key="confirmation"
               initial={{ opacity: 0, y: 20 }}
@@ -122,16 +122,16 @@ const PWACheck = () => {
                   initial={{ scale: 0.8 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", stiffness: 200 }}
-                  className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-500/20 border-2 border-amber-200 dark:border-amber-500/30"
+                  className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-amber-50 dark:bg-amber-500/20 border border-amber-200 dark:border-amber-500/30 shadow-sm"
                 >
                   <AlertCircle className="w-8 h-8 text-amber-500" />
                 </motion.div>
 
-                <h1 className="text-xl font-bold text-foreground">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                   Not Detected Yet
                 </h1>
 
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Installation can take a moment. Try again or go back.
                 </p>
               </div>
@@ -141,10 +141,10 @@ const PWACheck = () => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="p-4 rounded-xl bg-card border border-border shadow-sm"
+                className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 shadow-sm"
               >
-                <p className="text-center text-sm text-muted-foreground">
-                  After installing, <span className="font-medium text-foreground">close this browser</span> and <span className="font-medium text-foreground">open from home screen</span>.
+                <p className="text-center text-sm text-gray-600 dark:text-gray-300">
+                  After installing, <span className="font-medium text-gray-900 dark:text-white">close this browser</span> and <span className="font-medium text-gray-900 dark:text-white">open from home screen</span>.
                 </p>
               </motion.div>
 
@@ -167,7 +167,7 @@ const PWACheck = () => {
                   onClick={handleGoBack}
                   variant="outline"
                   size="lg"
-                  className="w-full h-12 font-medium bg-card border-border hover:bg-secondary"
+                  className="w-full h-12 font-medium bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Instructions
@@ -175,7 +175,7 @@ const PWACheck = () => {
 
                 <button
                   onClick={handleSkipAnyway}
-                  className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2 mt-1"
+                  className="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors py-2 mt-1"
                 >
                   Skip anyway
                 </button>
