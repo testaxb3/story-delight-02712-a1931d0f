@@ -116,7 +116,7 @@ function getWelcomeEmailHTML(firstName: string): string {
 <body id="body" style="margin: 0; padding: 0; background-color: #0a0a0a; -webkit-font-smoothing: antialiased;">
 
   <div style="display: none; max-height: 0px; overflow: hidden;">
-    Your 200+ magic phrases are ready! Start transforming your child's behavior today...
+    Your account is ready. Here's how to get started.
     &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;
   </div>
 
@@ -132,10 +132,10 @@ function getWelcomeEmailHTML(firstName: string): string {
                 <span style="font-size: 36px; color: #ffffff;">&#10003;</span>
               </div>
               <h1 class="mobile-headline" style="color: #ffffff; margin: 0; font-size: 30px; font-weight: 700; line-height: 38px;">
-                You're In!
+                Payment Confirmed! ✓
               </h1>
               <p style="color: rgba(255,255,255,0.95); margin: 14px 0 0 0; font-size: 17px; font-weight: 400;">
-                Welcome to The Obedience Language
+                One last step: Create your account below
               </p>
             </td>
           </tr>
@@ -146,7 +146,7 @@ function getWelcomeEmailHTML(firstName: string): string {
                 Hey ${firstName},
               </p>
               <p class="mobile-text" style="margin: 0 0 18px 0; color: #d4d4d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 16px; line-height: 26px;">
-                Congratulations on taking this step. You just joined <strong style="color: #ffffff;">11,247+ parents</strong> who decided to stop the daily battles and start being heard.
+                Congratulations on taking this step. You just joined thousands of parents who decided to stop the daily battles and start being heard.
               </p>
               <p class="mobile-text" style="margin: 0; color: #d4d4d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 16px; line-height: 26px;">
                 Your complete system is ready. Let's get started.
@@ -159,8 +159,8 @@ function getWelcomeEmailHTML(firstName: string): string {
               <table role="presentation" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center" style="border-radius: 12px; background: linear-gradient(135deg, #ec4899 0%, #a855f7 100%); box-shadow: 0 8px 24px rgba(168, 85, 247, 0.35);">
-                    <a href="https://nepsystem.vercel.app/" target="_blank" class="mobile-btn" style="display: inline-block; padding: 18px 48px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 0.5px;">
-                      Access My Dashboard
+                    <a href="https://nepsystem.vercel.app/welcome" target="_blank" class="mobile-btn" style="display: inline-block; padding: 18px 48px; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; font-size: 18px; font-weight: 700; text-decoration: none; letter-spacing: 0.5px;">
+                      Create My Account Now →
                     </a>
                   </td>
                 </tr>
