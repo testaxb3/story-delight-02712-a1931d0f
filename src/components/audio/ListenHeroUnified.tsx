@@ -19,6 +19,7 @@ interface ContinueData {
     description: string | null;
     tags: string[] | null;
     series_id: string;
+    transcript_segments: any | null;
   };
   series: AudioSeries;
   progressSeconds: number;
@@ -85,7 +86,7 @@ export function ListenHeroUnified({
           thumbnail: track.thumbnail,
           is_preview: track.is_preview,
           tags: track.tags,
-          transcript_segments: null,
+          transcript_segments: track.transcript_segments,
         },
         series,
         undefined,
