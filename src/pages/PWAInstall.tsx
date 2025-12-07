@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Bell, Download, Zap, Lock, WifiOff, Rocket } from 'lucide-react';
+import { Zap, Bell, Smartphone } from 'lucide-react';
 import { isIOSDevice } from '@/utils/platform';
 import { trackEvent } from '@/lib/analytics';
-import { useEffect, useState, Component, ReactNode } from 'react';
+import { useEffect, Component, ReactNode } from 'react';
 import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
 
-// ✅ Local Error Boundary for YouTube Player
+// Error Boundary for YouTube Player
 class YouTubeErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
     super(props);
@@ -25,7 +25,7 @@ class YouTubeErrorBoundary extends Component<{ children: ReactNode }, { hasError
   render() {
     if (this.state.hasError) {
       return (
-        <div className="w-full h-full flex items-center justify-center bg-muted/50 rounded-xl">
+        <div className="w-full h-full flex items-center justify-center bg-muted/30 rounded-xl">
           <p className="text-muted-foreground text-sm">Video unavailable</p>
         </div>
       );
@@ -37,49 +37,19 @@ class YouTubeErrorBoundary extends Component<{ children: ReactNode }, { hasError
 const PWAInstall = () => {
   const navigate = useNavigate();
   const isIOS = isIOSDevice();
-  const [trackingError, setTrackingError] = useState(false);
 
   useEffect(() => {
-    // ✅ FIX: Wrap analytics in try-catch to prevent crashes
     try {
       trackEvent('pwa_install_page_viewed');
     } catch (err) {
       console.error('[PWAInstall] Analytics tracking failed:', err);
-      setTrackingError(true);
     }
   }, []);
 
   const features = [
-    {
-      icon: Zap,
-      title: 'Instant Access',
-      description: 'Launch from your home screen like a native app'
-    },
-    {
-      icon: Bell,
-      title: 'Smart Notifications',
-      description: 'Get real-time updates on new scripts and insights'
-    },
-    {
-      icon: WifiOff,
-      title: 'Offline Mode',
-      description: 'Access all your content without internet connection'
-    },
-    {
-      icon: Rocket,
-      title: 'Blazing Fast',
-      description: '3x faster loading with advanced caching'
-    },
-    {
-      icon: Download,
-      title: 'Exclusive Features',
-      description: 'App-only tools for deeper insights'
-    },
-    {
-      icon: Lock,
-      title: 'Enhanced Privacy',
-      description: 'Your data stays secure on your device'
-    }
+    { icon: Smartphone, label: 'Home Screen' },
+    { icon: Zap, label: 'Fast Access' },
+    { icon: Bell, label: 'Notifications' },
   ];
 
   const handleInstalled = () => {
@@ -102,103 +72,90 @@ const PWAInstall = () => {
         paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
-      <div className="flex-1 flex flex-col items-center px-4 md:px-6 py-6 overflow-y-auto">
+      <div className="flex-1 flex flex-col items-center justify-center px-4 py-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-2xl space-y-4 md:space-y-6"
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-sm flex flex-col gap-4"
         >
-          {/* Header */}
-          <div className="text-center space-y-2 md:space-y-4">
-            <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground font-relative leading-tight px-2 pt-2">
-              One More Thing Before We Begin...
+          {/* Compact Header */}
+          <div className="text-center">
+            <h1 className="text-xl font-bold text-foreground">
+              Install the App
             </h1>
-
-            <p className="text-base md:text-lg lg:text-xl text-foreground/70 px-2">
-              Install <span className="font-semibold text-foreground">Nep System</span> to unlock the complete premium experience
+            <p className="text-sm text-muted-foreground mt-1">
+              Watch the quick tutorial below
             </p>
           </div>
 
-        {/* Video Tutorial - Wrapped in Error Boundary */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
-          className="relative aspect-video rounded-xl md:rounded-2xl overflow-hidden shadow-lg md:shadow-xl bg-black border border-border/50"
-        >
-          <YouTubeErrorBoundary>
-            <OptimizedYouTubePlayer
-              videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
-              videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
-            />
-          </YouTubeErrorBoundary>
-        </motion.div>
+          {/* Compact Video */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.15 }}
+            className="relative h-44 rounded-xl overflow-hidden bg-black border border-border/50 shadow-sm"
+          >
+            <YouTubeErrorBoundary>
+              <OptimizedYouTubePlayer
+                videoUrl={`https://www.youtube.com/watch?v=${isIOS ? 'dMEYRym6CGI' : 'Aibj__ZtzSE'}`}
+                videoId={`pwa-install-${isIOS ? 'ios' : 'android'}`}
+              />
+            </YouTubeErrorBoundary>
+          </motion.div>
 
-        {/* Features Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3"
-        >
-          {features.map((feature, index) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 + index * 0.05 }}
-              className="flex items-start gap-2.5 md:gap-3 p-3 md:p-4 rounded-lg md:rounded-xl bg-card border border-border shadow-sm hover:shadow-md transition-all"
+          {/* 3 Inline Features */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className="flex justify-center gap-8"
+          >
+            {features.map((feature, index) => (
+              <motion.div
+                key={feature.label}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + index * 0.05 }}
+                className="flex flex-col items-center gap-1.5"
+              >
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <feature.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {feature.label}
+                </span>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col gap-2 mt-2"
+          >
+            <Button
+              onClick={handleInstalled}
+              size="lg"
+              className="w-full h-12 text-base font-semibold bg-emerald-500 hover:bg-emerald-600 text-white shadow-md"
             >
-              <div className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/15 flex items-center justify-center">
-                <feature.icon className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-foreground mb-0.5 text-xs md:text-sm">
-                  {feature.title}
-                </h3>
-                <p className="text-[11px] md:text-xs text-foreground/60 leading-snug md:leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+              I've Installed It ✓
+            </Button>
 
-        {/* Instruction text */}
-        <p className="text-center text-sm md:text-base text-foreground/70 font-medium px-4">
-          Watch the video above, then tap the button below when done
-        </p>
+            <button
+              onClick={handleSkip}
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors py-2"
+            >
+              Skip for now
+            </button>
+          </motion.div>
 
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="flex flex-col gap-2 md:gap-3 pt-1 md:pt-2"
-        >
-          <Button
-            onClick={handleInstalled}
-            size="lg"
-            className="w-full text-sm md:text-base lg:text-lg h-11 md:h-12 lg:h-14 font-semibold shadow-md hover:shadow-lg transition-all bg-primary text-primary-foreground"
-          >
-            I've Installed It ✓
-          </Button>
-
-          <Button
-            onClick={handleSkip}
-            variant="outline"
-            size="lg"
-            className="w-full text-sm md:text-base lg:text-lg h-11 md:h-12 lg:h-14 text-foreground/80 border-border hover:bg-muted"
-          >
-            Skip for Now
-          </Button>
-        </motion.div>
-
-        {/* Platform indicator */}
-        <p className="text-center text-xs md:text-sm text-foreground/50 font-medium pb-2">
-          {isIOS ? '📱 iOS' : '🤖 Android'} instructions shown above
-        </p>
+          {/* Platform indicator */}
+          <p className="text-center text-xs text-muted-foreground/60">
+            {isIOS ? 'iOS' : 'Android'} instructions
+          </p>
         </motion.div>
       </div>
     </div>
