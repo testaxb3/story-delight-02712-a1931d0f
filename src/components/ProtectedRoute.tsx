@@ -107,14 +107,11 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       localStorage.setItem('theme_selected', 'true');
       console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
     }
-    
-    // 🔔 Verificar se usuário passou pela tela de notificações
-    const notificationPrompted = localStorage.getItem('notification_prompted') === 'true';
-    const isNotificationRoute = location.pathname === '/notification-permission';
-    
-    if (!notificationPrompted && !isNotificationRoute) {
-      console.log('[ProtectedRoute] ⚠️ Notification não perguntado - redirecionando para /notification-permission');
-      return <Navigate to="/notification-permission" replace />;
+    // ✅ CRITICAL FIX: Auto-setar notification_prompted para usuários com quiz_completed
+    // Previne loops de redirecionamento quando PWA é reinstalado
+    if (!localStorage.getItem('notification_prompted')) {
+      localStorage.setItem('notification_prompted', 'true');
+      console.log('[ProtectedRoute] ✅ Setou notification_prompted=true');
     }
     
     return <>{children}</>;
@@ -126,6 +123,16 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (withinGracePeriod) {
     console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
+    
+    // ✅ FIX: Verificar notification_prompted mesmo no grace period
+    const notificationPromptedGrace = localStorage.getItem('notification_prompted') === 'true';
+    const isNotificationRouteGrace = location.pathname === '/notification-permission';
+    
+    if (!notificationPromptedGrace && !isNotificationRouteGrace) {
+      console.log('[ProtectedRoute] ⚠️ Grace period: Notification não perguntado - redirecionando');
+      return <Navigate to="/notification-permission" replace />;
+    }
+    
     return <>{children}</>;
   }
 

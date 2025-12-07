@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Bell, BellOff, Check } from "lucide-react";
 import { motion } from "framer-motion";
@@ -28,7 +28,7 @@ const NotificationPermission = () => {
     }
   }, []);
 
-  const navigateNext = () => {
+  const navigateNext = useCallback(() => {
     setTimeout(() => {
       if (user?.quiz_completed) {
         navigate("/");
@@ -36,7 +36,7 @@ const NotificationPermission = () => {
         navigate("/quiz");
       }
     }, 500);
-  };
+  }, [user?.quiz_completed, navigate]);
 
   const handleEnableNotifications = async () => {
     triggerHaptic('medium');
@@ -105,7 +105,7 @@ const NotificationPermission = () => {
       localStorage.setItem('notification_prompted', 'true');
       navigateNext();
     }
-  }, [permissionStatus]);
+  }, [permissionStatus, navigateNext]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-b from-background via-background to-muted/10">
