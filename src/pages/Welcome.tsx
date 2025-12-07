@@ -276,7 +276,10 @@ export default function Welcome() {
       
       if (error) {
         // Handle specific errors
-        if (error.message?.includes('EMAIL_NOT_APPROVED') || error.message?.includes('not approved')) {
+      if (error.code === 'EMAIL_NOT_APPROVED' || 
+          error.message?.includes('EMAIL_NOT_APPROVED') || 
+          error.message?.includes('not approved') ||
+          error.message?.includes('Purchase required')) {
           setFormError('This email doesn\'t have a purchase. Please use the same email you used when buying.');
           return;
         }
