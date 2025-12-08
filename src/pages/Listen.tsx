@@ -130,7 +130,7 @@ export default function Listen() {
           className="relative z-10"
           style={{
             paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
-            paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 5rem))',
+            paddingBottom: 'max(9rem, calc(env(safe-area-inset-bottom) + 7rem))',
           }}
         >
           <PullToRefresh onRefresh={handleRefresh} disabled={isRefreshing}>
