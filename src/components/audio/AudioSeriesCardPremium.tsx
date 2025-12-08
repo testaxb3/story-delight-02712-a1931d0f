@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Headphones, CheckCircle2, Lock } from 'lucide-react';
+import { Play, Headphones, CheckCircle2, Lock, Clock } from 'lucide-react';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 import { formatDuration } from '@/lib/formatters';
 
@@ -20,7 +20,6 @@ export function AudioSeriesCardPremium({
   index = 0,
   freeTracksCount = 0
 }: AudioSeriesCardPremiumProps) {
-  // Always navigate - locked tracks are handled at track level (freemium model)
   const handleClick = () => {
     onClick?.();
   };
@@ -45,136 +44,136 @@ export function AudioSeriesCardPremium({
       className={`
         relative overflow-hidden rounded-2xl cursor-pointer 
         bg-card border transition-all duration-300
-        hover:shadow-lg active:scale-[0.98]
+        hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]
         focus:outline-none focus:ring-2 focus:ring-primary/50
         ${isCompleted ? 'border-green-500/30' : 'border-border/50 hover:border-primary/30'}
       `}
     >
-      <div className="flex items-center gap-4 p-4">
-        {/* Cover with linear progress bar */}
-        <div className="relative flex-shrink-0">
-          {series.cover_image ? (
-            <img
-              src={series.cover_image}
-              alt={series.name}
-              className={`w-16 h-16 rounded-xl object-cover shadow-md ${isLocked ? 'opacity-90' : ''}`}
-            />
+      {/* Large 16:9 Thumbnail */}
+      <div className="relative aspect-video w-full overflow-hidden">
+        {series.cover_image ? (
+          <img
+            src={series.cover_image}
+            alt={series.name}
+            className={`w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 ${isLocked ? 'opacity-90' : ''}`}
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+            <Headphones className="w-16 h-16 text-primary/30" />
+          </div>
+        )}
+        
+        {/* Gradient overlay for text legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+        {/* Top badges row */}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+          {/* Status badge */}
+          {isLocked ? (
+            <span className="px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-sm text-amber-400 text-xs font-semibold flex items-center gap-1.5">
+              <Lock className="w-3 h-3" />
+              Premium
+            </span>
+          ) : isFree ? (
+            <span className="px-2.5 py-1 rounded-full bg-green-500/90 text-white text-xs font-semibold">
+              Free
+            </span>
           ) : (
-            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-              <Headphones className="w-8 h-8 text-primary/50" />
-            </div>
-          )}
-          
-          {/* Locked overlay - subtle padlock */}
-          {isLocked && (
-            <div className="absolute inset-0 rounded-xl overflow-hidden pointer-events-none">
-              {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              
-              {/* Padlock icon */}
-              <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center">
-                <Lock className="w-2.5 h-2.5 text-white/90" />
-              </div>
-              
-              {/* Tap to unlock - pulsating */}
-              <motion.div 
-                animate={{ opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] text-white/90 font-medium whitespace-nowrap"
-              >
-                Tap to unlock
-              </motion.div>
-            </div>
+            <span className="px-2.5 py-1 rounded-full bg-primary/90 text-primary-foreground text-xs font-semibold">
+              Unlocked
+            </span>
           )}
 
-          {/* Completed checkmark */}
-          {isCompleted && (
-            <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-0.5 shadow-lg">
-              <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-            </div>
-          )}
-
-          {/* Linear progress bar below cover */}
-          {progress && progress.percent > 0 && (
-            <div className="absolute -bottom-0.5 left-0.5 right-0.5 h-1 bg-muted/40 rounded-full overflow-hidden">
-              <motion.div
-                className={`h-full rounded-full ${isCompleted ? 'bg-green-500' : 'bg-primary'}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${progress.percent}%` }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
-              />
-            </div>
-          )}
+          {/* Duration badge */}
+          <span className="px-2 py-1 rounded-full bg-black/50 backdrop-blur-sm text-white text-xs font-medium flex items-center gap-1">
+            <Clock className="w-3 h-3" />
+            {formatDuration(series.total_duration, 'short')}
+          </span>
         </div>
 
-        {/* Info */}
-        <div className="flex-1 min-w-0 space-y-1">
-          {series.icon_name && (
-            <span className="text-sm">{series.icon_name}</span>
-          )}
-          <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight">
-            {series.name}
-          </h3>
-          
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span>{series.track_count} episodes</span>
-            <span>•</span>
-            <span>{formatDuration(series.total_duration, 'short')}</span>
+        {/* Completed checkmark */}
+        {isCompleted && (
+          <div className="absolute top-3 right-3 bg-green-500 rounded-full p-1.5 shadow-lg">
+            <CheckCircle2 className="w-4 h-4 text-white" />
           </div>
+        )}
 
-          {/* Badges row */}
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Free series → "Unlocked ✓" */}
-            {isFree && !isLocked && (
-              <span className="px-2 py-0.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-[10px] font-semibold">
-                Unlocked ✓
-              </span>
-            )}
-            
-            {/* Premium series → subtle badge, no crown emoji */}
-            {isLocked && (
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-semibold">
-                Premium
-              </span>
-            )}
-            
-            {/* Free previews badge for premium series */}
-            {isLocked && freeTracksCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-muted text-muted-foreground text-[10px] font-medium">
-                {freeTracksCount} previews
-              </span>
-            )}
-
-            {/* Progress text */}
-            {progress && progress.percent > 0 && !isCompleted && (
-              <span className="text-[10px] text-muted-foreground">
-                {progress.completed}/{progress.total}
-              </span>
-            )}
-
-            {isCompleted && (
-              <span className="text-[10px] text-green-600 dark:text-green-400 font-medium">
-                Completed
-              </span>
-            )}
+        {/* Icon overlay */}
+        {series.icon_name && (
+          <div className="absolute bottom-3 left-3 text-2xl drop-shadow-lg">
+            {series.icon_name}
           </div>
-        </div>
+        )}
 
-        {/* Play button */}
+        {/* Play button overlay */}
         <motion.div 
+          whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className={`
-            flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center
+            absolute bottom-3 right-3 w-12 h-12 rounded-full flex items-center justify-center
+            shadow-lg backdrop-blur-sm transition-colors
             ${isLocked 
-              ? 'bg-amber-500/15 text-amber-500' 
+              ? 'bg-amber-500/90 text-white' 
               : isCompleted 
-                ? 'bg-green-500/15 text-green-500'
-                : 'bg-primary/10 text-primary'
+                ? 'bg-green-500/90 text-white'
+                : 'bg-primary/90 text-primary-foreground'
             }
           `}
         >
-          <Play className="w-4 h-4 fill-current ml-0.5" />
+          <Play className="w-5 h-5 fill-current ml-0.5" />
         </motion.div>
+
+        {/* Progress bar at bottom of thumbnail */}
+        {progress && progress.percent > 0 && (
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/30">
+            <motion.div
+              className={`h-full ${isCompleted ? 'bg-green-500' : 'bg-primary'}`}
+              initial={{ width: 0 }}
+              animate={{ width: `${progress.percent}%` }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Info section */}
+      <div className="p-4 space-y-2">
+        <h3 className="text-base font-semibold text-foreground line-clamp-2 leading-snug">
+          {series.name}
+        </h3>
+        
+        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+          <span>{series.track_count} episodes</span>
+          
+          {/* Free previews badge for premium series */}
+          {isLocked && freeTracksCount > 0 && (
+            <>
+              <span>•</span>
+              <span className="text-primary font-medium">
+                {freeTracksCount} free
+              </span>
+            </>
+          )}
+
+          {/* Progress text */}
+          {progress && progress.percent > 0 && !isCompleted && (
+            <>
+              <span>•</span>
+              <span className="text-primary font-medium">
+                {progress.completed}/{progress.total} done
+              </span>
+            </>
+          )}
+
+          {isCompleted && (
+            <>
+              <span>•</span>
+              <span className="text-green-600 dark:text-green-400 font-medium">
+                Completed
+              </span>
+            </>
+          )}
+        </div>
       </div>
     </motion.div>
   );
