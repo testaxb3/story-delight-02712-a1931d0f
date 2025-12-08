@@ -7,7 +7,7 @@ import { AmbientBackground } from '@/components/Dashboard/AmbientBackground';
 import { AudioSeriesCardPremium } from '@/components/audio/AudioSeriesCardPremium';
 import { AudioContextFilters, type AudioFilterCategory } from '@/components/audio/AudioContextFilters';
 import { ListenHeroUnified } from '@/components/audio/ListenHeroUnified';
-import { QuickReliefCarousel } from '@/components/audio/QuickReliefCarousel';
+
 import { PremiumAudioModal } from '@/components/audio/PremiumAudioModal';
 import { ListenHeader } from '@/components/audio/ListenHeader';
 import { ListenSkeleton } from '@/components/audio/ListenSkeleton';
@@ -89,10 +89,6 @@ export default function Listen() {
     });
   }, [sortedSeries, activeFilter]);
 
-  // Quick Relief: Series with total_duration < 600 seconds (10 min)
-  const quickReliefSeries = useMemo(() => {
-    return sortedSeries?.filter(s => (s.total_duration || 0) < 600) || [];
-  }, [sortedSeries]);
 
   // Get featured series (first free one with tracks, or first one)
   const featuredSeries = useMemo(() => {
@@ -134,7 +130,7 @@ export default function Listen() {
           className="relative z-10"
           style={{
             paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
-            paddingBottom: 'max(10rem, calc(env(safe-area-inset-bottom) + 8rem))',
+            paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 5rem))',
           }}
         >
           <PullToRefresh onRefresh={handleRefresh} disabled={isRefreshing}>
@@ -164,10 +160,6 @@ export default function Listen() {
                 fallbackSeries={sortedSeries?.[0]}
               />
 
-              {/* Quick Relief Carousel (< 10 min series) */}
-              {quickReliefSeries.length > 0 && activeFilter === 'all' && (
-                <QuickReliefCarousel series={quickReliefSeries} />
-              )}
 
               {/* Section title */}
               {filteredSeries.length > 0 && (
@@ -194,7 +186,7 @@ export default function Listen() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25 }}
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-5"
                 >
                   {filteredSeries.map((s, index) => {
                     const locked = isSeriesLocked(s);
