@@ -189,7 +189,7 @@ export default function ScriptRequestStatus() {
   if (!scriptRequest) {
     return (
       <MainLayout>
-        <div className="px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+        <div className="px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -231,7 +231,7 @@ export default function ScriptRequestStatus() {
 
   return (
     <MainLayout>
-      <div className="px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+2rem)]">
+      <div className="px-6 pt-[calc(env(safe-area-inset-top)+1rem)] pb-[calc(env(safe-area-inset-bottom)+7rem)]">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
