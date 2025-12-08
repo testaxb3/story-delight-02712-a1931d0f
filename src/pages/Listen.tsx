@@ -99,6 +99,14 @@ export default function Listen() {
     return sortedSeries?.find(s => !s.unlock_key && s.track_count > 0) || sortedSeries?.[0] || null;
   }, [sortedSeries]);
 
+  // Get latest series (highest display_order = most recently added)
+  const latestSeries = useMemo(() => {
+    if (!series?.length) return null;
+    return [...series].sort((a, b) => 
+      (b.display_order || 0) - (a.display_order || 0)
+    )[0];
+  }, [series]);
+
   // Calculate completed series count
   const completedSeriesCount = useMemo(() => {
     if (!progressMap) return 0;
@@ -148,9 +156,10 @@ export default function Listen() {
                 }}
               />
 
-              {/* Hero Unified (Continue/Featured/Start) */}
+              {/* Hero Unified (Continue/Latest/Featured/Start) */}
               <ListenHeroUnified
                 continueData={continueData}
+                latestSeries={latestSeries}
                 featuredSeries={featuredSeries}
                 fallbackSeries={sortedSeries?.[0]}
               />
@@ -177,7 +186,7 @@ export default function Listen() {
                 </motion.div>
               )}
 
-              {/* Series Grid - with staggered animation on filter change */}
+              {/* Series Grid - YouTube style with larger cards */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFilter}
@@ -185,7 +194,7 @@ export default function Listen() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25 }}
-                  className="space-y-3"
+                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                 >
                   {filteredSeries.map((s, index) => {
                     const locked = isSeriesLocked(s);

@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Play, Headphones, Sparkles, ArrowRight } from 'lucide-react';
+import { Play, Headphones, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAudioPlayerStore } from '@/stores/audioPlayerStore';
 import { useUserProducts } from '@/hooks/useUserProducts';
-import { formatTime } from '@/lib/formatters';
+import { formatTime, formatDuration } from '@/lib/formatters';
 import type { AudioSeries } from '@/stores/audioPlayerStore';
 
 interface ContinueData {
@@ -29,23 +29,28 @@ interface ListenHeroUnifiedProps {
   continueData?: ContinueData | null;
   featuredSeries?: AudioSeries | null;
   fallbackSeries?: AudioSeries | null;
+  latestSeries?: AudioSeries | null;
 }
 
-type HeroType = 'continue' | 'featured' | 'start';
+type HeroType = 'continue' | 'latest' | 'featured' | 'start';
 
 export function ListenHeroUnified({ 
   continueData, 
   featuredSeries, 
-  fallbackSeries 
+  fallbackSeries,
+  latestSeries 
 }: ListenHeroUnifiedProps) {
   const navigate = useNavigate();
   const { play } = useAudioPlayerStore();
   const { hasUnlock } = useUserProducts();
 
-  // Smart fallback logic: Continue > Featured > Start Here
+  // Smart fallback logic: Continue > Latest > Featured > Start Here
   const heroContent = useMemo(() => {
     if (continueData) {
       return { type: 'continue' as HeroType, data: continueData };
+    }
+    if (latestSeries) {
+      return { type: 'latest' as HeroType, data: latestSeries };
     }
     if (featuredSeries) {
       return { type: 'featured' as HeroType, data: featuredSeries };
@@ -54,7 +59,7 @@ export function ListenHeroUnified({
       return { type: 'start' as HeroType, data: fallbackSeries };
     }
     return null;
-  }, [continueData, featuredSeries, fallbackSeries]);
+  }, [continueData, latestSeries, featuredSeries, fallbackSeries]);
 
   if (!heroContent) return null;
 
@@ -99,9 +104,10 @@ export function ListenHeroUnified({
 
   // Badge config
   const badgeConfig = {
-    continue: { label: 'Continue Listening', icon: Play, color: 'bg-primary/20 text-primary' },
-    featured: { label: 'Featured', icon: Sparkles, color: 'bg-amber-500/20 text-amber-600 dark:text-amber-400' },
-    start: { label: 'Start Here', icon: ArrowRight, color: 'bg-green-500/20 text-green-600 dark:text-green-400' },
+    continue: { label: 'Continue Listening', icon: Play, color: 'bg-primary text-primary-foreground' },
+    latest: { label: 'Latest Series', icon: Sparkles, color: 'bg-amber-500 text-white' },
+    featured: { label: 'Featured', icon: Sparkles, color: 'bg-primary text-primary-foreground' },
+    start: { label: 'Start Here', icon: Play, color: 'bg-green-500 text-white' },
   };
 
   const badge = badgeConfig[type];
@@ -113,97 +119,92 @@ export function ListenHeroUnified({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       onClick={handleAction}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-card to-card border border-primary/20 cursor-pointer group"
+      className="relative overflow-hidden rounded-2xl bg-card border border-border/50 cursor-pointer group hover:border-primary/30 transition-all hover:shadow-xl"
     >
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-50 pointer-events-none" />
-      
-      <div className="relative p-4">
+      {/* Full-width 16:9 Thumbnail */}
+      <div className="relative aspect-video w-full overflow-hidden">
+        {series.cover_image ? (
+          <img
+            src={series.cover_image}
+            alt={series.name}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+            <Headphones className="w-20 h-20 text-primary/30" />
+          </div>
+        )}
+        
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
         {/* Badge */}
-        <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full ${badge.color} mb-3`}>
-          <BadgeIcon className="w-3 h-3" />
-          <span className="text-xs font-semibold">{badge.label}</span>
+        <div className={`absolute top-4 left-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full ${badge.color} shadow-lg`}>
+          <BadgeIcon className="w-3.5 h-3.5" />
+          <span className="text-xs font-bold uppercase tracking-wide">{badge.label}</span>
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Cover with progress bar */}
-          <div className="relative flex-shrink-0">
-            {series.cover_image ? (
-              <img
-                src={series.cover_image}
-                alt={series.name}
-                className="w-20 h-20 rounded-xl object-cover shadow-lg group-hover:shadow-xl transition-shadow"
-              />
-            ) : (
-              <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shadow-lg">
-                <Headphones className="w-10 h-10 text-primary/50" />
-              </div>
-            )}
-            
-            {/* Icon overlay */}
-            {series.icon_name && (
-              <div className="absolute -top-1.5 -right-1.5 text-lg drop-shadow-md">
-                {series.icon_name}
-              </div>
-            )}
-
-            {/* Linear progress bar below cover (gamification) */}
-            {type === 'continue' && progressPercent > 0 && (
-              <div className="absolute -bottom-1 left-1 right-1 h-1 bg-muted/50 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-primary rounded-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progressPercent}%` }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
-                />
-              </div>
-            )}
+        {/* Icon */}
+        {series.icon_name && (
+          <div className="absolute top-4 right-4 text-3xl drop-shadow-lg">
+            {series.icon_name}
           </div>
+        )}
 
-          {/* Info */}
-          <div className="flex-1 min-w-0 space-y-1">
-            {type === 'continue' && track ? (
-              <>
-                <h3 className="text-base font-semibold text-foreground line-clamp-1">
+        {/* Bottom content overlay */}
+        <div className="absolute bottom-0 left-0 right-0 p-5 space-y-3">
+          {type === 'continue' && track ? (
+            <>
+              <div className="space-y-1">
+                <p className="text-white/70 text-sm font-medium">{series.name}</p>
+                <h3 className="text-xl font-bold text-white line-clamp-2">
                   {track.title}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                  {series.name}
+              </div>
+              
+              {/* Progress bar */}
+              <div className="space-y-2">
+                <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                  <motion.div
+                    className="h-full bg-primary rounded-full"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progressPercent}%` }}
+                    transition={{ duration: 0.5, ease: 'easeOut' }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-xs text-white/70">
+                  <span>{formatTime(progressSeconds)} / {formatTime(track.duration_seconds)}</span>
+                  <span className="text-primary font-semibold">{progressPercent}% complete</span>
+                </div>
+              </div>
+            </>
+          ) : (
+            <>
+              <h3 className="text-xl font-bold text-white line-clamp-2">
+                {series.name}
+              </h3>
+              {series.description && (
+                <p className="text-white/70 text-sm line-clamp-2">
+                  {series.description}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{formatTime(progressSeconds)}</span>
-                  <span>/</span>
-                  <span>{formatTime(track.duration_seconds)}</span>
-                  <span className="text-primary font-medium">• {progressPercent}%</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <h3 className="text-base font-semibold text-foreground line-clamp-2">
-                  {series.name}
-                </h3>
-                {series.description && (
-                  <p className="text-sm text-muted-foreground line-clamp-1">
-                    {series.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{series.track_count} episodes</span>
-                  <span>•</span>
-                  <span>{Math.round((series.total_duration || 0) / 60)} min</span>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Play button */}
-          <motion.div 
-            whileTap={{ scale: 0.9 }}
-            className="flex-shrink-0 w-12 h-12 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/25 group-hover:shadow-xl group-hover:shadow-primary/30 transition-all"
-          >
-            <Play className="w-5 h-5 text-primary-foreground fill-current ml-0.5" />
-          </motion.div>
+              )}
+              <div className="flex items-center gap-3 text-sm text-white/60">
+                <span>{series.track_count} episodes</span>
+                <span>•</span>
+                <span>{formatDuration(series.total_duration, 'short')}</span>
+              </div>
+            </>
+          )}
         </div>
+
+        {/* Play button */}
+        <motion.div 
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="absolute right-5 bottom-5 w-14 h-14 rounded-full bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 group-hover:shadow-primary/60 transition-all"
+        >
+          <Play className="w-6 h-6 text-primary-foreground fill-current ml-0.5" />
+        </motion.div>
       </div>
     </motion.div>
   );
