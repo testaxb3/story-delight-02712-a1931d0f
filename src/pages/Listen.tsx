@@ -186,7 +186,7 @@ export default function Listen() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.25 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-5"
+                  className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
                 >
                   {filteredSeries.map((s, index) => {
                     const locked = isSeriesLocked(s);

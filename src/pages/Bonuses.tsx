@@ -44,7 +44,7 @@ const BonusesHero = memo(({ items, onPlay }: { items: BonusData[]; onPlay: (b: B
   const Icon = getActionIcon(featured.category);
 
   return (
-    <div className="relative w-full aspect-[4/5] sm:aspect-video overflow-hidden mb-0 group cursor-pointer" onClick={() => onPlay(featured)}>
+    <div className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-video overflow-hidden mb-0 group cursor-pointer" onClick={() => onPlay(featured)}>
       {/* Background Layer */}
       <div className="absolute inset-0 overflow-hidden">
         <img 
