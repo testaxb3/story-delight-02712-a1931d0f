@@ -22,7 +22,9 @@ import {
   Loader2,
   ShoppingCart,
   DollarSign,
-  Timer
+  Timer,
+  Bell,
+  BellOff
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -83,13 +85,58 @@ export function AdminSalesTab() {
     },
   });
 
-  // Calculate metrics
+  // Fetch push subscriptions to check who has push enabled
+  const { data: pushSubscriptions } = useQuery({
+    queryKey: ['admin-push-subscriptions'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('user_push_subscriptions')
+        .select('user_id')
+        .eq('is_active', true);
+
+      if (error) throw error;
+      return data?.map(p => p.user_id) ?? [];
+    },
+  });
+
+  // Fetch profiles to map emails to user_ids for push checking
+  const { data: profilesMap } = useQuery({
+    queryKey: ['admin-profiles-map'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email');
+
+      if (error) throw error;
+      const map = new Map<string, string>();
+      data?.forEach(p => {
+        if (p.email) map.set(p.email.toLowerCase(), p.id);
+      });
+      return map;
+    },
+  });
+
+  // Check if buyer has push enabled
+  const hasPushEnabled = (email: string): boolean => {
+    if (!profilesMap || !pushSubscriptions) return false;
+    const userId = profilesMap.get(email.toLowerCase());
+    return userId ? pushSubscriptions.includes(userId) : false;
+  };
+
+  // Calculate metrics including push enabled count
+  const pushEnabledCount = buyers?.filter(b => hasPushEnabled(b.email))?.length ?? 0;
+  const convertedCount = buyers?.filter(b => b.account_created)?.length ?? 0;
+  
   const metrics = {
     total: buyers?.length ?? 0,
-    accountsCreated: buyers?.filter(b => b.account_created)?.length ?? 0,
+    accountsCreated: convertedCount,
     pending: buyers?.filter(b => !b.account_created)?.length ?? 0,
     conversionRate: buyers?.length 
-      ? Math.round((buyers.filter(b => b.account_created).length / buyers.length) * 100) 
+      ? Math.round((convertedCount / buyers.length) * 100) 
+      : 0,
+    pushEnabled: pushEnabledCount,
+    pushRate: convertedCount > 0
+      ? Math.round((pushEnabledCount / convertedCount) * 100)
       : 0,
   };
 
@@ -200,7 +247,7 @@ export function AdminSalesTab() {
   return (
     <div className="space-y-6">
       {/* Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-500 rounded-lg">
@@ -240,6 +287,17 @@ export function AdminSalesTab() {
           </div>
           <div className="text-3xl font-bold text-purple-900 dark:text-purple-100">{metrics.conversionRate}%</div>
         </Card>
+
+        <Card className="p-5 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 border-orange-200 dark:border-orange-700">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-orange-500 rounded-lg">
+              <Bell className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-sm font-medium text-orange-900 dark:text-orange-100">Push Enabled</span>
+          </div>
+          <div className="text-3xl font-bold text-orange-900 dark:text-orange-100">{metrics.pushEnabled}</div>
+          <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">{metrics.pushRate}% of converted</p>
+        </Card>
       </div>
 
       {/* Buyers List - Mobile-First Cards */}
@@ -258,19 +316,28 @@ export function AdminSalesTab() {
         {/* Filter Pills */}
         <ScrollArea className="w-full">
           <div className="flex gap-2 pb-2">
-            {['all', 'pending', 'converted', 'at_risk'].map((filter) => {
+            {['all', 'pending', 'converted', 'at_risk', 'push_on', 'push_off'].map((filter) => {
               const filterCounts = {
                 all: buyers?.length || 0,
                 pending: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 <= 48).length || 0,
                 converted: buyers?.filter(b => b.account_created).length || 0,
                 at_risk: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 > 48).length || 0,
+                push_on: buyers?.filter(b => hasPushEnabled(b.email)).length || 0,
+                push_off: buyers?.filter(b => b.account_created && !hasPushEnabled(b.email)).length || 0,
               };
-              const filterLabels = { all: 'All', pending: 'Pending', converted: 'Converted', at_risk: 'At Risk' };
+              const filterLabels = { 
+                all: 'All', 
+                pending: 'Pending', 
+                converted: 'Converted', 
+                at_risk: 'At Risk',
+                push_on: '🔔 Push On',
+                push_off: '🔕 No Push'
+              };
               return (
                 <Badge
                   key={filter}
                   variant="secondary"
-                  className="px-3 py-1.5 cursor-pointer hover:bg-primary/20 transition-colors"
+                  className="px-3 py-1.5 cursor-pointer hover:bg-primary/20 transition-colors whitespace-nowrap"
                 >
                   {filterLabels[filter as keyof typeof filterLabels]} ({filterCounts[filter as keyof typeof filterCounts]})
                 </Badge>
@@ -361,9 +428,9 @@ export function AdminSalesTab() {
                           </div>
                         </div>
 
-                        {/* Email Status + Actions */}
+                        {/* Email Status + Push Status + Actions */}
                         <div className="flex items-center justify-between pt-3 border-t border-border/50">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {buyer.email_sent ? (
                               <Badge className="bg-green-500/15 text-green-600 dark:text-green-400 border-0 text-[10px]">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
@@ -374,6 +441,19 @@ export function AdminSalesTab() {
                                 <Clock className="w-3 h-3 mr-1" />
                                 Email Pending
                               </Badge>
+                            )}
+                            {buyer.account_created && (
+                              hasPushEnabled(buyer.email) ? (
+                                <Badge className="bg-orange-500/15 text-orange-600 dark:text-orange-400 border-0 text-[10px]">
+                                  <Bell className="w-3 h-3 mr-1" />
+                                  Push On
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-gray-500/15 text-gray-500 dark:text-gray-400 border-0 text-[10px]">
+                                  <BellOff className="w-3 h-3 mr-1" />
+                                  No Push
+                                </Badge>
+                              )
                             )}
                           </div>
                           <div className="flex items-center gap-1">
