@@ -116,7 +116,7 @@ function getWelcomeEmailHTML(firstName: string): string {
           <!-- CTA Button -->
           <tr>
             <td align="center" style="padding: 0 40px 32px 40px;">
-              <a href="https://nepsystem.vercel.app/welcome" target="_blank" style="display: inline-block; padding: 16px 32px; background-color: #22c55e; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 8px;">
+              <a href="https://nepsystem.vercel.app/welcome" target="_blank" style="display: inline-block; padding: 16px 32px; background-color: #f97316; color: #ffffff; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 8px;">
                 Activate My Account
               </a>
             </td>

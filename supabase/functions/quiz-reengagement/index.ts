@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Email template for quiz re-engagement
+// Clean Anti-Spam Email Template for Quiz Re-engagement
 function getQuizReengagementEmailHTML(firstName: string): string {
   return `
 <!DOCTYPE html>
@@ -14,85 +14,76 @@ function getQuizReengagementEmailHTML(firstName: string): string {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Child's Profile is Waiting</title>
+  <title>Complete Your Quiz</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f7;">
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: #f5f5f7;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" style="max-width: 600px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.08);">
+        <table role="presentation" style="max-width: 500px; width: 100%; border-collapse: collapse; background-color: #ffffff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06);">
           
           <!-- Header -->
           <tr>
-            <td style="padding: 48px 40px 24px; text-align: center; background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); border-radius: 16px 16px 0 0;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; line-height: 1.3;">
-                🧠 You're 1 Quiz Away from Understanding Your Child's Brain
+            <td style="padding: 32px 32px 24px; text-align: center; border-bottom: 1px solid #f0f0f0;">
+              <h1 style="margin: 0; font-size: 20px; font-weight: 600; color: #1a1a1a;">
+                Complete Your Profile Quiz
               </h1>
             </td>
           </tr>
           
-          <!-- Main Content -->
+          <!-- Content -->
           <tr>
-            <td style="padding: 40px;">
-              <p style="margin: 0 0 20px; font-size: 18px; color: #1a1a1a; line-height: 1.6;">
-                Hi ${firstName || "there"},
+            <td style="padding: 32px;">
+              <p style="margin: 0 0 16px; font-size: 15px; color: #1a1a1a; line-height: 1.6;">
+                Hi${firstName ? ` ${firstName}` : ''},
               </p>
               
-              <p style="margin: 0 0 24px; font-size: 16px; color: #4a4a4a; line-height: 1.7;">
-                You created your NEP account but haven't completed the quick brain profile quiz yet.
+              <p style="margin: 0 0 24px; font-size: 15px; color: #4a4a4a; line-height: 1.6;">
+                You created your NEP account but haven't completed the quick brain profile quiz yet. This 5-minute quiz personalizes all scripts and strategies for your specific child.
               </p>
               
-              <p style="margin: 0 0 24px; font-size: 16px; color: #4a4a4a; line-height: 1.7;">
-                This 5-minute quiz is how we personalize everything for <strong>your specific child</strong>—the scripts, strategies, and content you'll see are all based on their unique profile.
-              </p>
-              
-              <!-- Stats Box -->
-              <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 32px 0;">
+              <!-- Benefits -->
+              <table role="presentation" style="width: 100%; border-collapse: collapse; margin: 0 0 24px;">
                 <tr>
-                  <td style="background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 100%); border-radius: 12px; padding: 24px; text-align: center;">
-                    <p style="margin: 0 0 8px; font-size: 32px; font-weight: 700; color: #EA580C;">
-                      847+
-                    </p>
-                    <p style="margin: 0; font-size: 14px; color: #9A3412; font-weight: 500;">
-                      parents discovered their child's profile this week
+                  <td style="padding: 16px; background-color: #fafafa; border-radius: 8px;">
+                    <p style="margin: 0 0 8px; font-size: 14px; color: #1a1a1a; font-weight: 500;">After the quiz you unlock:</p>
+                    <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.8;">
+                      ✓ Personalized scripts for your child's brain profile<br>
+                      ✓ Age-appropriate strategies<br>
+                      ✓ Progress tracking
                     </p>
                   </td>
                 </tr>
               </table>
               
-              <p style="margin: 0 0 32px; font-size: 16px; color: #4a4a4a; line-height: 1.7;">
-                Once you complete the quiz, you'll unlock:
-              </p>
-              
-              <ul style="margin: 0 0 32px; padding-left: 24px; color: #4a4a4a; font-size: 16px; line-height: 2;">
-                <li><strong>Personalized scripts</strong> matched to your child's brain profile</li>
-                <li><strong>Age-appropriate strategies</strong> filtered for their developmental stage</li>
-                <li><strong>Progress tracking</strong> to see your parenting transformation</li>
-              </ul>
-              
-              <!-- CTA Button -->
+              <!-- CTA -->
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td align="center">
-                    <a href="https://nepsystem.vercel.app/quiz" style="display: inline-block; padding: 18px 48px; background: linear-gradient(135deg, #F97316 0%, #EA580C 100%); color: #ffffff; text-decoration: none; font-size: 18px; font-weight: 600; border-radius: 12px; box-shadow: 0 4px 16px rgba(249, 115, 22, 0.4);">
-                      Complete Your Quiz Now →
+                    <a href="https://nepsystem.vercel.app/quiz" style="display: inline-block; padding: 14px 32px; background-color: #f97316; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 8px;">
+                      Complete Quiz Now
                     </a>
                   </td>
                 </tr>
               </table>
               
-              <p style="margin: 32px 0 0; font-size: 14px; color: #9a9a9a; text-align: center;">
-                Takes less than 5 minutes. Your personalized scripts are waiting.
+              <p style="margin: 24px 0 0; font-size: 13px; color: #999; text-align: center;">
+                Takes less than 5 minutes
               </p>
             </td>
           </tr>
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px 40px; background-color: #fafafa; border-radius: 0 0 16px 16px; text-align: center;">
-              <p style="margin: 0; font-size: 12px; color: #9a9a9a;">
-                NEP - Obedience Language<br>
-                <a href="mailto:support@nepsystem.pro" style="color: #F97316; text-decoration: none;">support@nepsystem.pro</a>
+            <td style="padding: 24px 32px; background-color: #fafafa; border-radius: 0 0 12px 12px; text-align: center; border-top: 1px solid #f0f0f0;">
+              <p style="margin: 0; font-size: 12px; color: #999;">
+                NEP - Obedience Language
+              </p>
+              <p style="margin: 8px 0 0; font-size: 12px;">
+                <a href="mailto:support@nepsystem.pro" style="color: #f97316; text-decoration: none;">support@nepsystem.pro</a>
+              </p>
+              <p style="margin: 12px 0 0; font-size: 11px; color: #ccc;">
+                <a href="mailto:unsubscribe@nepsystem.pro?subject=Unsubscribe" style="color: #999; text-decoration: underline;">Unsubscribe</a>
               </p>
             </td>
           </tr>
