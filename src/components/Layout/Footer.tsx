@@ -56,10 +56,6 @@ export function Footer() {
             Content based on research by Dr. Ross Greene, Dr. Russell Barkley, and Dr. Daniel Siegel
           </p>
         </div>
-
-        <p className="text-[10px] text-muted-foreground/30 mt-2 text-center">
-          Verification code: OS7K3L
-        </p>
       </div>
     </footer>
   );

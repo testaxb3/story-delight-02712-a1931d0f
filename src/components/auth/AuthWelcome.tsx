@@ -271,11 +271,6 @@ export const AuthWelcome = memo(function AuthWelcome({
         <MagneticButton onClick={onSignIn} variant="secondary" delay={1}>
           Already have an account? <span className="text-white font-semibold ml-1">Sign In</span>
         </MagneticButton>
-
-        {/* OneSignal verification code - temporary */}
-        <p className="text-[10px] text-white/20 text-center mt-2">
-          Verification code: OS7K3L
-        </p>
       </div>
     </motion.div>
   );
