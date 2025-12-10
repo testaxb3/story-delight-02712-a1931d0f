@@ -107,7 +107,7 @@ export function useQuizValidation({
     }
   }, [challengeDuration]);
 
-  // Check if can proceed based on current step
+  // Check if can proceed based on current step - updated for new flow
   const canProceed = useMemo(() => {
     switch (quizStep) {
       case 'name':
@@ -116,9 +116,9 @@ export function useQuizValidation({
         return ageValidation.isValid;
       case 'goals':
         return goalsValidation.isValid;
-      case 'speed':
-        return true;
       case 'challenge':
+        return true; // Challenge level always valid (has default)
+      case 'duration':
         return durationValidation.isValid;
       case 'questions':
         return currentAnswer !== undefined;

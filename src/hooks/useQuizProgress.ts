@@ -26,7 +26,7 @@ export function useQuizProgress({ currentQuestion, quizStep }: UseQuizProgressPr
     return currentQuestion === totalQuestions - 1;
   }, [currentQuestion, totalQuestions]);
 
-  // Get button text based on current state
+  // Get button text based on current state - updated for new flow
   const getButtonText = useCallback((step: QuizStep, isLast: boolean) => {
     switch (step) {
       case 'name':
@@ -35,9 +35,9 @@ export function useQuizProgress({ currentQuestion, quizStep }: UseQuizProgressPr
         return 'Continue';
       case 'goals':
         return 'Continue';
-      case 'speed':
-        return 'Continue';
       case 'challenge':
+        return 'Continue';
+      case 'duration':
         return 'Start Quiz';
       case 'questions':
         return isLast ? 'See Results' : 'Next';
