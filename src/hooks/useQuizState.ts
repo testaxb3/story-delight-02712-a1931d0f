@@ -1,7 +1,8 @@
 import { useState, useMemo, useCallback } from 'react';
 import { quizQuestions, calculateBrainProfile, type BrainProfile } from '@/lib/quizQuestions';
 
-export type QuizStep = 'name' | 'details' | 'goals' | 'speed' | 'challenge' | 'questions';
+// Removed 'speed' step - 90% chose balanced, adding friction
+export type QuizStep = 'name' | 'details' | 'goals' | 'challenge' | 'duration' | 'questions';
 
 interface QuizState {
   // Step management
@@ -31,8 +32,11 @@ interface QuizState {
   result: { type: BrainProfile; score: number } | null;
 }
 
+// Total steps for progress calculation: name, details, goals, challenge, duration, + 7 questions = 12 screens
+const TOTAL_STEPS = 5 + quizQuestions.length; // 12 total
+
 export function useQuizState() {
-  // Main state
+  // Main state - resultSpeed defaults to 'balanced' (no longer user-selectable)
   const [state, setState] = useState<QuizState>({
     quizStep: 'name',
     currentQuestion: 0,
@@ -42,7 +46,7 @@ export function useQuizState() {
     challengeLevel: 5,
     challengeDuration: '',
     triedApproaches: [],
-    resultSpeed: 'balanced',
+    resultSpeed: 'balanced', // Default, no longer a step
     answers: {},
     hasStarted: false,
     showCountdown: false,
@@ -54,18 +58,20 @@ export function useQuizState() {
     result: null,
   });
 
-  // Memoized calculations
+  // Memoized calculations - updated for new flow
   const progressPercentage = useMemo(() => {
-    switch (state.quizStep) {
-      case 'name': return 10;
-      case 'details': return 20;
-      case 'goals': return 30;
-      case 'speed': return 40;
-      case 'challenge': return 50;
-      case 'questions':
-        return ((state.currentQuestion + 1) / quizQuestions.length) * 50 + 50;
-      default: return 0;
-    }
+    const getStepNumber = () => {
+      switch (state.quizStep) {
+        case 'name': return 1;
+        case 'details': return 2;
+        case 'goals': return 3;
+        case 'challenge': return 4;
+        case 'duration': return 5;
+        case 'questions': return 5 + state.currentQuestion + 1;
+        default: return 1;
+      }
+    };
+    return Math.round((getStepNumber() / TOTAL_STEPS) * 100);
   }, [state.quizStep, state.currentQuestion]);
 
   const pageNumber = useMemo(() => {
@@ -73,12 +79,21 @@ export function useQuizState() {
       case 'name': return 1;
       case 'details': return 2;
       case 'goals': return 3;
-      case 'speed': return 4;
-      case 'challenge': return 5;
+      case 'challenge': return 4;
+      case 'duration': return 5;
       case 'questions': return 6 + state.currentQuestion;
       default: return 1;
     }
   }, [state.quizStep, state.currentQuestion]);
+
+  // Estimated time remaining
+  const estimatedTimeRemaining = useMemo(() => {
+    const stepsRemaining = TOTAL_STEPS - pageNumber;
+    const secondsPerStep = 8; // Average time per step
+    const totalSeconds = stepsRemaining * secondsPerStep;
+    const minutes = Math.ceil(totalSeconds / 60);
+    return minutes <= 1 ? 'Less than 1 minute left' : `About ${minutes} minutes left`;
+  }, [pageNumber]);
 
   // Update functions with useCallback
   const setQuizStep = useCallback((step: QuizStep) => {
@@ -181,6 +196,7 @@ export function useQuizState() {
     ...state,
     progressPercentage,
     pageNumber,
+    estimatedTimeRemaining,
     setQuizStep,
     setCurrentQuestion,
     setChildName,

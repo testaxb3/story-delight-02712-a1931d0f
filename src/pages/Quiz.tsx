@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
 import { trackEvent } from '@/lib/analytics';
 
@@ -16,8 +16,8 @@ import { useQuizSubmission } from '@/hooks/useQuizSubmission';
 import { QuizNameStep } from '@/components/Quiz/QuizNameStep';
 import { QuizDetailsStep } from '@/components/Quiz/QuizDetailsStep';
 import { QuizGoalsStep } from '@/components/Quiz/QuizGoalsStep';
-import { QuizSpeedSlider } from '@/components/Quiz/QuizSpeedSlider';
-import { QuizChallengeStep } from '@/components/Quiz/QuizChallengeStep';
+import { QuizChallengeLevelStep } from '@/components/Quiz/QuizChallengeLevelStep';
+import { QuizDurationStep } from '@/components/Quiz/QuizDurationStep';
 import { QuizQuestionStep } from '@/components/Quiz/QuizQuestionStep';
 import { QuizLoadingScreen } from '@/components/Quiz/QuizLoadingScreen';
 import { QuizFinalCelebration } from '@/components/Quiz/QuizFinalCelebration';
@@ -120,7 +120,7 @@ export default function Quiz() {
     }
   }, [quizState.countdown, quizState.showCountdown, quizState, handleCompleteQuiz]);
 
-  // Navigation handlers
+  // Navigation handlers - updated for new flow (no speed step)
   const handleNext = useCallback(() => {
     triggerHaptic('light');
 
@@ -134,12 +134,12 @@ export default function Quiz() {
         quizState.setQuizStep('goals');
         break;
       case 'goals':
-        quizState.setQuizStep('speed');
-        break;
-      case 'speed':
         quizState.setQuizStep('challenge');
         break;
       case 'challenge':
+        quizState.setQuizStep('duration');
+        break;
+      case 'duration':
         quizState.setQuizStep('questions');
         startQuiz();
         break;
@@ -164,17 +164,17 @@ export default function Quiz() {
       case 'goals':
         quizState.setQuizStep('details');
         break;
-      case 'speed':
+      case 'challenge':
         quizState.setQuizStep('goals');
         break;
-      case 'challenge':
-        quizState.setQuizStep('speed');
+      case 'duration':
+        quizState.setQuizStep('challenge');
         break;
       case 'questions':
         if (quizState.currentQuestion > 0) {
           quizState.setCurrentQuestion(quizState.currentQuestion - 1);
         } else {
-          quizState.setQuizStep('challenge');
+          quizState.setQuizStep('duration');
         }
         break;
     }
@@ -252,41 +252,54 @@ export default function Quiz() {
         {/* Progress Bar & Header */}
         {showProgressBar && (
           <div className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-xl border-b border-border/50" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-            <div className="px-4 md:px-6 h-12 md:h-14 lg:h-16 flex items-center gap-2 md:gap-3 lg:gap-4">
+            <div className="px-4 md:px-6 h-14 md:h-16 flex items-center gap-2 md:gap-3">
               {showBackButton && (
-                <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-8 h-8 md:w-9 md:h-9 lg:w-10 lg:h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
-                  <ArrowLeft className="w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6" />
+                <motion.button onClick={handlePrevious} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-9 h-9 md:w-10 md:h-10 flex items-center justify-center text-foreground hover:bg-muted rounded-full transition-colors flex-shrink-0">
+                  <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
                 </motion.button>
               )}
               <div className="flex-1 flex flex-col gap-1">
-                <div className="h-1 bg-muted rounded-full overflow-hidden">
-                  <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
+                <div className="flex items-center justify-between">
+                  <div className="h-1.5 flex-1 bg-muted rounded-full overflow-hidden mr-3">
+                    <motion.div className="h-full bg-foreground rounded-full" initial={{ width: 0 }} animate={{ width: `${quizState.progressPercentage}%` }} transition={{ duration: 0.3, ease: "easeOut" }} />
+                  </div>
+                  <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
+                    {quizState.progressPercentage}%
+                  </span>
                 </div>
-                {getProgressText() && (
-                  <span className="text-xs text-muted-foreground">{getProgressText()}</span>
-                )}
+                <div className="flex items-center justify-between">
+                  {getProgressText() ? (
+                    <span className="text-xs text-muted-foreground">{getProgressText()}</span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground opacity-0">-</span>
+                  )}
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Clock className="w-3 h-3" />
+                    <span>{quizState.estimatedTimeRemaining}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         )}
 
         {/* Content */}
-        <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-20 md:pb-24" style={{ paddingTop: showProgressBar ? 'calc(env(safe-area-inset-top) + 4rem)' : 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
+        <div className="flex-1 flex items-center justify-center px-4 md:px-6 pb-20 md:pb-24" style={{ paddingTop: showProgressBar ? 'calc(env(safe-area-inset-top) + 5rem)' : 'calc(env(safe-area-inset-top) + 1.5rem)' }}>
           <AnimatePresence mode="wait">
             {quizState.showCountdown ? (
               <motion.div key="countdown" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.5 }} className="text-center">
                 <h1 className="text-8xl md:text-9xl font-black text-foreground font-relative">{quizState.countdown}</h1>
               </motion.div>
             ) : quizState.quizStep === 'name' ? (
-              <QuizNameStep key="name" childName={quizState.childName} nameError={!validation.nameValidation.isValid} onChange={quizState.setChildName} />
+              <QuizNameStep key="name" childName={quizState.childName} nameError={!validation.nameValidation.isValid && quizState.childName.length > 0} onChange={quizState.setChildName} />
             ) : quizState.quizStep === 'details' ? (
               <QuizDetailsStep key="details" childAge={quizState.childAge} onChange={quizState.setChildAge} />
             ) : quizState.quizStep === 'goals' ? (
               <QuizGoalsStep key="goals" selectedGoals={quizState.parentGoals} onToggle={quizState.toggleParentGoal} />
-            ) : quizState.quizStep === 'speed' ? (
-              <div key="speed" className="w-full max-w-2xl"><QuizSpeedSlider value={quizState.resultSpeed} onChange={quizState.setResultSpeed} /></div>
             ) : quizState.quizStep === 'challenge' ? (
-              <QuizChallengeStep key="challenge" challengeLevel={quizState.challengeLevel} challengeDuration={quizState.challengeDuration} onLevelChange={quizState.setChallengeLevel} onDurationChange={quizState.setChallengeDuration} />
+              <QuizChallengeLevelStep key="challenge" challengeLevel={quizState.challengeLevel} onChange={quizState.setChallengeLevel} />
+            ) : quizState.quizStep === 'duration' ? (
+              <QuizDurationStep key="duration" challengeDuration={quizState.challengeDuration} onChange={quizState.setChallengeDuration} />
             ) : quizState.quizStep === 'questions' && quizState.hasStarted ? (
               <QuizQuestionStep key={`question-${quizState.currentQuestion}`} question={quizQuestions[quizState.currentQuestion]} currentAnswer={quizState.answers[quizState.currentQuestion]} onAnswer={(answer) => quizState.setAnswer(quizState.currentQuestion, answer)} />
             ) : null}
