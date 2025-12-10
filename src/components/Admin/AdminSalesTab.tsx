@@ -24,7 +24,9 @@ import {
   DollarSign,
   Timer,
   Bell,
-  BellOff
+  BellOff,
+  ClipboardCheck,
+  ClipboardList
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -99,18 +101,18 @@ export function AdminSalesTab() {
     },
   });
 
-  // Fetch profiles to map emails to user_ids for push checking
+  // Fetch profiles to map emails to user_ids for push/quiz checking
   const { data: profilesMap } = useQuery({
     queryKey: ['admin-profiles-map'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email');
+        .select('id, email, quiz_completed');
 
       if (error) throw error;
-      const map = new Map<string, string>();
+      const map = new Map<string, { id: string; quiz_completed: boolean }>();
       data?.forEach(p => {
-        if (p.email) map.set(p.email.toLowerCase(), p.id);
+        if (p.email) map.set(p.email.toLowerCase(), { id: p.id, quiz_completed: p.quiz_completed ?? false });
       });
       return map;
     },
@@ -119,12 +121,20 @@ export function AdminSalesTab() {
   // Check if buyer has push enabled
   const hasPushEnabled = (email: string): boolean => {
     if (!profilesMap || !pushSubscriptions) return false;
-    const userId = profilesMap.get(email.toLowerCase());
-    return userId ? pushSubscriptions.includes(userId) : false;
+    const profile = profilesMap.get(email.toLowerCase());
+    return profile ? pushSubscriptions.includes(profile.id) : false;
   };
 
-  // Calculate metrics including push enabled count
+  // Check if buyer completed quiz
+  const hasQuizCompleted = (email: string): boolean => {
+    if (!profilesMap) return false;
+    const profile = profilesMap.get(email.toLowerCase());
+    return profile?.quiz_completed ?? false;
+  };
+
+  // Calculate metrics including push enabled count and quiz completed count
   const pushEnabledCount = buyers?.filter(b => hasPushEnabled(b.email))?.length ?? 0;
+  const quizCompletedCount = buyers?.filter(b => hasQuizCompleted(b.email))?.length ?? 0;
   const convertedCount = buyers?.filter(b => b.account_created)?.length ?? 0;
   
   const metrics = {
@@ -137,6 +147,10 @@ export function AdminSalesTab() {
     pushEnabled: pushEnabledCount,
     pushRate: convertedCount > 0
       ? Math.round((pushEnabledCount / convertedCount) * 100)
+      : 0,
+    quizCompleted: quizCompletedCount,
+    quizRate: convertedCount > 0
+      ? Math.round((quizCompletedCount / convertedCount) * 100)
       : 0,
   };
 
@@ -247,7 +261,7 @@ export function AdminSalesTab() {
   return (
     <div className="space-y-6">
       {/* Metrics Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-6 gap-4">
         <Card className="p-5 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 border-blue-200 dark:border-blue-700">
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 bg-blue-500 rounded-lg">
@@ -298,6 +312,17 @@ export function AdminSalesTab() {
           <div className="text-3xl font-bold text-orange-900 dark:text-orange-100">{metrics.pushEnabled}</div>
           <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">{metrics.pushRate}% of converted</p>
         </Card>
+
+        <Card className="p-5 bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/30 dark:to-cyan-800/30 border-cyan-200 dark:border-cyan-700">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 bg-cyan-500 rounded-lg">
+              <ClipboardCheck className="w-4 h-4 text-white" />
+            </div>
+            <span className="text-sm font-medium text-cyan-900 dark:text-cyan-100">Quiz Done</span>
+          </div>
+          <div className="text-3xl font-bold text-cyan-900 dark:text-cyan-100">{metrics.quizCompleted}</div>
+          <p className="text-xs text-cyan-700 dark:text-cyan-300 mt-1">{metrics.quizRate}% of converted</p>
+        </Card>
       </div>
 
       {/* Buyers List - Mobile-First Cards */}
@@ -316,7 +341,7 @@ export function AdminSalesTab() {
         {/* Filter Pills */}
         <ScrollArea className="w-full">
           <div className="flex gap-2 pb-2">
-            {['all', 'pending', 'converted', 'at_risk', 'push_on', 'push_off'].map((filter) => {
+            {['all', 'pending', 'converted', 'at_risk', 'push_on', 'push_off', 'quiz_done', 'quiz_pending'].map((filter) => {
               const filterCounts = {
                 all: buyers?.length || 0,
                 pending: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 <= 48).length || 0,
@@ -324,6 +349,8 @@ export function AdminSalesTab() {
                 at_risk: buyers?.filter(b => !b.account_created && (Date.now() - new Date(b.created_at).getTime()) / 3600000 > 48).length || 0,
                 push_on: buyers?.filter(b => hasPushEnabled(b.email)).length || 0,
                 push_off: buyers?.filter(b => b.account_created && !hasPushEnabled(b.email)).length || 0,
+                quiz_done: buyers?.filter(b => hasQuizCompleted(b.email)).length || 0,
+                quiz_pending: buyers?.filter(b => b.account_created && !hasQuizCompleted(b.email)).length || 0,
               };
               const filterLabels = { 
                 all: 'All', 
@@ -331,7 +358,9 @@ export function AdminSalesTab() {
                 converted: 'Converted', 
                 at_risk: 'At Risk',
                 push_on: '🔔 Push On',
-                push_off: '🔕 No Push'
+                push_off: '🔕 No Push',
+                quiz_done: '📋 Quiz Done',
+                quiz_pending: '📝 Quiz Pending'
               };
               return (
                 <Badge
@@ -452,6 +481,19 @@ export function AdminSalesTab() {
                                 <Badge className="bg-gray-500/15 text-gray-500 dark:text-gray-400 border-0 text-[10px]">
                                   <BellOff className="w-3 h-3 mr-1" />
                                   No Push
+                                </Badge>
+                              )
+                            )}
+                            {buyer.account_created && (
+                              hasQuizCompleted(buyer.email) ? (
+                                <Badge className="bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-0 text-[10px]">
+                                  <ClipboardCheck className="w-3 h-3 mr-1" />
+                                  Quiz ✓
+                                </Badge>
+                              ) : (
+                                <Badge className="bg-gray-500/15 text-gray-500 dark:text-gray-400 border-0 text-[10px]">
+                                  <ClipboardList className="w-3 h-3 mr-1" />
+                                  Quiz ⏳
                                 </Badge>
                               )
                             )}
