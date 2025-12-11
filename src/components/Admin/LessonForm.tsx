@@ -23,12 +23,14 @@ export function LessonForm({ lesson, open, onOpenChange }: LessonFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const prevLessonIdRef = useRef<string | null>(null);
   const updateLesson = useUpdateLesson();
   const uploadAudio = useUploadLessonAudio();
 
-  // Sync form state when lesson changes
+  // Sync form state only when opening a DIFFERENT lesson
   useEffect(() => {
-    if (lesson) {
+    if (lesson && lesson.id !== prevLessonIdRef.current) {
+      prevLessonIdRef.current = lesson.id;
       setTitle(lesson.title);
       setSummary(lesson.summary || '');
       setContent(lesson.content || '');
