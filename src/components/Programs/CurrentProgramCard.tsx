@@ -6,12 +6,16 @@ import { Button } from '@/components/ui/button';
 
 interface CurrentProgramCardProps {
   program: ProgramWithProgress;
-  nextLessonTitle?: string;
 }
 
-export function CurrentProgramCard({ program, nextLessonTitle }: CurrentProgramCardProps) {
+export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
   const navigate = useNavigate();
-  const nextLesson = program.lessons_completed.length + 1;
+  const nextLessonNumber = program.lessons_completed.length + 1;
+  const nextLesson = program.nextLesson;
+
+  const imageUrl = nextLesson?.image_url || program.cover_image_url;
+  const lessonTitle = nextLesson?.title || 'Continue Learning';
+  const lessonSummary = nextLesson?.summary || program.description || 'Continue your parenting journey with this program.';
 
   return (
     <motion.div
@@ -29,21 +33,21 @@ export function CurrentProgramCard({ program, nextLessonTitle }: CurrentProgramC
 
       {/* Lesson Title */}
       <p className="py-[9px] text-[20px] text-[#393939]">
-        Lesson {nextLesson}: <span className="font-[800]">{nextLessonTitle || 'Continue Learning'}</span>
+        Lesson {nextLessonNumber}: <span className="font-[800]">{lessonTitle}</span>
       </p>
 
       {/* Image */}
       <div className="relative mb-[12px]">
         <div className="rounded-[10px] w-full h-[160px] overflow-hidden relative">
-           {program.cover_image_url ? (
-             <img 
-               src={program.cover_image_url} 
-               alt={program.title}
-               className="w-full h-full object-cover"
-             />
-           ) : (
-             <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-amber-100" />
-           )}
+           {imageUrl ? (
+              <img 
+                src={imageUrl} 
+                alt={lessonTitle}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-amber-100" />
+            )}
            {/* Heart Icon Overlay */}
            <div className="absolute right-[12px] top-[11px] z-[1] w-[29px] h-[29px] bg-white/80 rounded-full flex items-center justify-center cursor-pointer">
               <Heart className="w-[16px] h-[16px] text-[#393939]" />
@@ -52,8 +56,8 @@ export function CurrentProgramCard({ program, nextLessonTitle }: CurrentProgramC
       </div>
 
       {/* Description */}
-      <p className="line-clamp-5 text-[16px] text-[#393939] font-[500] leading-[20.8px] mb-[18px]">
-        {program.description || 'Continue your parenting journey with this program. Learn valuable skills and strategies.'}
+      <p className="text-[16px] text-[#393939] font-[500] leading-relaxed mb-[18px]">
+        {lessonSummary}
       </p>
 
       {/* CTA Button */}

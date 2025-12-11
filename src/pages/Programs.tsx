@@ -46,7 +46,7 @@ export default function Programs() {
                 </div>
                 <div className="flex flex-col items-center gap-[20px]">
                   {data.current.map(program => (
-                    <CurrentProgramCard key={program.id} program={program} nextLessonTitle="Understanding Picky Eating" />
+                    <CurrentProgramCard key={program.id} program={program} />
                   ))}
                 </div>
               </section>
