@@ -75,9 +75,12 @@ export function LessonForm({ lesson, open, onOpenChange }: LessonFormProps) {
     setIsUploading(true);
     try {
       const url = await uploadAudio.mutateAsync({ file, lessonId: lesson.id });
-      setAudioUrl(url);
       
-      // Auto-save audio URL to database immediately
+      // Use cache-busted URL for preview (forces browser to fetch new file)
+      const cacheBustedUrl = `${url}?t=${Date.now()}`;
+      setAudioUrl(cacheBustedUrl);
+      
+      // Save CLEAN URL to database (without timestamp)
       await updateLesson.mutateAsync({
         id: lesson.id,
         updates: { audio_url: url },
