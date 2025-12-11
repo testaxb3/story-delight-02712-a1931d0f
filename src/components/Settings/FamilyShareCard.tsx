@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useFamilyShare } from '@/hooks/useFamilyShare';
 import { useAuth } from '@/contexts/AuthContext';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -28,6 +29,7 @@ export function FamilyShareCard() {
   } = useFamilyShare();
 
   const { user } = useAuth();
+  const { data: profile } = useUserProfile(user?.id, user?.email);
   const [email, setEmail] = useState('');
   const [copied, setCopied] = useState(false);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
@@ -49,7 +51,7 @@ export function FamilyShareCard() {
         body: {
           partner_email: result.partner_email,
           invite_code: result.invite_code,
-          owner_name: user?.user_metadata?.full_name || 'Your partner',
+          owner_name: profile?.user_metadata?.full_name || user?.user_metadata?.full_name || 'Your partner',
         },
       });
 
