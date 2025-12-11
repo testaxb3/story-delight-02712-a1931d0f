@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ThumbsUp, Clock } from 'lucide-react';
+import { ThumbsUp } from 'lucide-react';
 import { Program, useProgramVote } from '@/hooks/usePrograms';
 import { Button } from '@/components/ui/button';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,9 +11,12 @@ interface ComingSoonProgramCardProps {
   index?: number;
 }
 
+// Pastel gradient placeholders
 const gradients = [
-  'from-slate-400 via-slate-500 to-slate-600',
-  'from-zinc-400 via-zinc-500 to-zinc-600',
+  'from-purple-200 via-pink-200 to-rose-200',
+  'from-blue-200 via-cyan-200 to-teal-200',
+  'from-yellow-200 via-orange-200 to-amber-200',
+  'from-green-200 via-emerald-200 to-teal-200',
 ];
 
 export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramCardProps) {
@@ -47,46 +50,47 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="relative overflow-hidden rounded-xl bg-card border border-border"
+      className="bg-card rounded-xl border border-border overflow-hidden"
     >
-      {/* Gradient Thumbnail Placeholder */}
-      <div className="relative h-24 overflow-hidden">
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-60`} />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-        
-        {/* Coming Soon Badge */}
-        <div className="absolute top-2 right-2">
-          <span className="px-2 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-[10px] font-medium flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            Coming Soon
-          </span>
+      {/* Illustration Placeholder - Larger */}
+      <div className={`relative h-32 bg-gradient-to-br ${gradient}`}>
+        {/* Decorative circle placeholder */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-full bg-white/40" />
         </div>
       </div>
 
       {/* Content */}
       <div className="p-3">
-        <h3 className="text-sm font-semibold text-foreground mb-1 line-clamp-1">
+        {/* Title - Multi-line */}
+        <h3 className="text-sm font-semibold text-foreground mb-3 text-center line-clamp-2 min-h-[40px]">
           {program.title}
         </h3>
-        <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-          {program.description}
-        </p>
         
-        <div className="flex items-center justify-between">
+        {/* Buttons */}
+        <div className="flex flex-col gap-2">
           <Button
             variant={program.user_voted ? "default" : "outline"}
             size="sm"
-            className="h-8 text-xs gap-1"
+            className={`w-full text-xs gap-1.5 ${
+              program.user_voted 
+                ? 'bg-orange-500 hover:bg-orange-600 text-white' 
+                : 'border-orange-500 text-orange-600 hover:bg-orange-50'
+            }`}
             onClick={handleVote}
             disabled={isVoting}
           >
-            <ThumbsUp className={`w-3 h-3 ${program.user_voted ? 'fill-current' : ''}`} />
-            {program.user_voted ? 'Voted' : 'Vote'}
+            <ThumbsUp className={`w-3.5 h-3.5 ${program.user_voted ? 'fill-current' : ''}`} />
+            {program.user_voted ? `Voted (${program.votes_count || 0})` : 'Vote for this'}
           </Button>
           
-          <span className="text-xs text-muted-foreground">
-            {program.votes_count || 0} votes
-          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs text-muted-foreground"
+          >
+            Read more
+          </Button>
         </div>
       </div>
     </motion.div>
