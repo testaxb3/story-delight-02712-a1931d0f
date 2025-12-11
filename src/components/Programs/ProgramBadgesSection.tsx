@@ -25,9 +25,9 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
         <h2 className="text-lg font-semibold text-[#393939]">Achievements</h2>
       </div>
 
-      {/* Badges Grid 2x2 */}
-      <div className="grid grid-cols-2 gap-3">
-        {badges.slice(0, 4).map((badge, index) => {
+      {/* Badges Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {badges.map((badge, index) => {
           const progress = badge.requirement_value 
             ? Math.min((lessonsCompleted / badge.requirement_value) * 100, 100)
             : 0;
@@ -106,12 +106,6 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
         })}
       </div>
 
-      {/* Show more if there are more badges */}
-      {badges.length > 4 && (
-        <button className="w-full mt-3 py-2 text-sm text-[#FF6631] font-medium">
-          View all {badges.length} achievements
-        </button>
-      )}
     </motion.div>
   );
 }
