@@ -164,10 +164,9 @@ export default function Programs() {
         ) : (
           <div className="container px-4 pt-4">
             <section className="pt-[20px] pb-[10px]">
-              {/* Streak Card */}
+              {/* Programs Completed Card */}
               <ProgramsStreakCard 
-                lessonsCompletedCount={12} 
-                weekProgress={[true, true, true, false, false, false, false]}
+                programsCompletedCount={data?.completed?.length || 0}
               />
             </section>
 
