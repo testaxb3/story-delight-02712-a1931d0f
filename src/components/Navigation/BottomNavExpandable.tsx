@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, FileText, Headphones, Gift, GraduationCap } from 'lucide-react';
+import { Home, FileText, Headphones, Gift } from 'lucide-react';
 import { ExpandableTabs } from '@/components/ui/expandable-tabs';
 import { useHaptic } from '@/hooks/useHaptic';
 import { useMemo } from 'react';
@@ -9,7 +9,6 @@ const NAV_ITEMS = [
   { title: "Scripts", icon: FileText, path: "/scripts" },
   { title: "Listen", icon: Headphones, path: "/listen" },
   { title: "Bonuses", icon: Gift, path: "/bonuses" },
-  { title: "Lessons", icon: GraduationCap, path: "/lessons" },
 ];
 
 export function BottomNavExpandable() {

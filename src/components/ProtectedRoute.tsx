@@ -4,7 +4,12 @@ import { isStandaloneMode } from '@/utils/platform';
 import { toast } from 'sonner';
 import { useEffect, useRef } from 'react';
 
-export function ProtectedRoute({ children }: { children: React.ReactNode }) {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  requireAdmin?: boolean;
+}
+
+export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
   const hasShownStandaloneToast = useRef(false);
@@ -45,6 +50,12 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!user) {
     if (import.meta.env.DEV) console.log('[ProtectedRoute] NO USER - redirecionando para /auth');
     return <Navigate to="/auth" replace />;
+  }
+
+  // Admin-only route check
+  if (requireAdmin && !user.is_admin) {
+    if (import.meta.env.DEV) console.log('[ProtectedRoute] ADMIN REQUIRED - redirecionando para /');
+    return <Navigate to="/" replace />;
   }
 
   // Check if PWA flow is completed (before quiz)
