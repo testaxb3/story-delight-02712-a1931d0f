@@ -106,7 +106,7 @@ export default function ProgramLesson() {
   const [duration, setDuration] = useState(0);
 
   // For mock data
-  const isMock = slug === 'picky-eating';
+  const isMock = slug === 'picky-eating-challenge';
   const mockLesson = isMock ? {
     ...MOCK_LESSON_CONTENT,
     day_number: lessonNumber,
