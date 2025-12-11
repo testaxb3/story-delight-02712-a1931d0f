@@ -1,19 +1,20 @@
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Clock, Headphones } from 'lucide-react';
 import { ProgramLesson } from '@/hooks/useProgramDetail';
+import { useFavoriteLessons } from '@/hooks/useFavoriteLessons';
 
 interface NextLessonCardProps {
   lesson: ProgramLesson;
   programSlug: string;
+  programId: string;
   isFirstLesson?: boolean;
   totalLessons: number;
 }
 
-export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, totalLessons }: NextLessonCardProps) {
+export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson = false, totalLessons }: NextLessonCardProps) {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(false);
+  const { isFavorite, toggleFavorite } = useFavoriteLessons(programId);
 
   return (
     <motion.div
@@ -62,12 +63,15 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
         <button
           onClick={(e) => {
             e.stopPropagation();
-            setIsFavorite(!isFavorite);
+            if (lesson.id) {
+              toggleFavorite.mutate({ lessonId: lesson.id, programId });
+            }
           }}
-          className="w-[32px] h-[32px] absolute right-3 top-3 z-[1] bg-white/80 rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-colors"
+          disabled={toggleFavorite.isPending}
+          className="w-[32px] h-[32px] absolute right-3 top-3 z-[1] bg-white/80 rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-colors disabled:opacity-50"
         >
           <Heart 
-            className={`w-4 h-4 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`} 
+            className={`w-4 h-4 transition-colors ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`} 
           />
         </button>
       </div>

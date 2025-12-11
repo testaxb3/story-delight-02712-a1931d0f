@@ -295,6 +295,7 @@ export default function ProgramDetail() {
             <NextLessonCard
               lesson={nextLesson}
               programSlug={program.slug}
+              programId={program.id}
               isFirstLesson={isFirstLesson}
               totalLessons={program.total_lessons}
             />
