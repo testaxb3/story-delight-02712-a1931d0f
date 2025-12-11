@@ -73,11 +73,11 @@ export function DashboardQuickActions({
     },
     {
       id: 'profile',
-      label: 'Edit Profile',
+      label: 'Profile',
       icon: User,
       color: 'bg-blue-500',
       onClick: () => {
-        navigate('/profile/edit');
+        navigate('/profile');
         setIsOpen(false);
       },
     },
