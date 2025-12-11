@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Clock, Headphones, Check } from 'lucide-react';
 import { ProgramLesson } from '@/hooks/useProgramDetail';
 
 interface LessonListItemProps {
@@ -35,6 +36,21 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
           <span className="font-normal">Lesson {lesson.day_number}:</span>{' '}
           <span className="font-medium">{lesson.title}</span>
         </p>
+        {/* Meta info */}
+        <div className="flex items-center gap-3 mt-1">
+          {lesson.estimated_minutes && (
+            <span className="flex items-center gap-1 text-[11px] text-[#8D8D8D]">
+              <Clock className="w-3 h-3" />
+              {lesson.estimated_minutes} min
+            </span>
+          )}
+          {lesson.audio_url && (
+            <span className="flex items-center gap-1 text-[11px] text-[#8D8D8D]">
+              <Headphones className="w-3 h-3" />
+              Audio
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Status Circle - Right side */}
@@ -48,15 +64,7 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
         }`}
       >
         {status === 'completed' && (
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path
-              d="M1 4L3.5 6.5L9 1"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Check className="w-3 h-3 text-white" strokeWidth={3} />
         )}
       </div>
     </motion.div>
