@@ -107,7 +107,7 @@ export const OptimizedYouTubePlayer: React.FC<OptimizedYouTubePlayerProps> = ({
         disablekb: 1,
         fs: 0,
         playsinline: 1,
-        autoplay: 1,
+        autoplay: 0,
         iv_load_policy: 3,
       }
     }
