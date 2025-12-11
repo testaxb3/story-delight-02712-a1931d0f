@@ -5,6 +5,7 @@ import { Menu, Play, Pause, Heart, CheckCircle2, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProgramDetail, useCompleteLesson } from '@/hooks/useProgramDetail';
+import { useFavoriteLessons } from '@/hooks/useFavoriteLessons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
@@ -94,10 +95,10 @@ export default function ProgramLesson() {
   const lessonNumber = parseInt(number || '1');
 
   const { data: program } = useProgramDetail(slug || '');
+  const { isFavorite, toggleFavorite } = useFavoriteLessons(program?.id);
   const completeLesson = useCompleteLesson();
   const [isCompleting, setIsCompleting] = useState(false);
   const [showComplete, setShowComplete] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
 
   // Audio player state
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -279,11 +280,21 @@ export default function ProgramLesson() {
                   className="w-full h-auto object-cover"
                 />
                 <button
-                  onClick={() => setIsFavorite(!isFavorite)}
+                  onClick={() => {
+                    const lessonId = isMock ? `mock-lesson-${lessonNumber}` : serverLesson?.id;
+                    if (lessonId && program) {
+                      toggleFavorite.mutate({ lessonId, programId: program.id });
+                    }
+                  }}
+                  disabled={toggleFavorite.isPending}
                   className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center"
                 >
                   <Heart
-                    className={`w-5 h-5 ${isFavorite ? 'fill-[#FF6631] text-[#FF6631]' : 'text-[#999]'}`}
+                    className={`w-5 h-5 transition-colors ${
+                      isFavorite(isMock ? `mock-lesson-${lessonNumber}` : serverLesson?.id || '') 
+                        ? 'fill-[#FF6631] text-[#FF6631]' 
+                        : 'text-[#999]'
+                    }`}
                   />
                 </button>
               </div>
