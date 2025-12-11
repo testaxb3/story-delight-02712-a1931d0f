@@ -66,6 +66,9 @@ const UserProfile = lazy(() => import("./pages/UserProfile"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const JoinFamily = lazy(() => import("./pages/JoinFamily"));
 const Lessons = lazy(() => import("./pages/Lessons"));
+const Programs = lazy(() => import("./pages/Programs"));
+const ProgramDetail = lazy(() => import("./pages/ProgramDetail"));
+const ProgramLesson = lazy(() => import("./pages/ProgramLesson"));
 
 
 // Loading fallback component for Suspense
@@ -318,6 +321,30 @@ function AppContent() {
           element={
             <ProtectedRoute requireAdmin>
               <Lessons />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs"
+          element={
+            <ProtectedRoute requireAdmin>
+              <Programs />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs/:slug"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ProgramDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/programs/:slug/lesson-:number"
+          element={
+            <ProtectedRoute requireAdmin>
+              <ProgramLesson />
             </ProtectedRoute>
           }
         />

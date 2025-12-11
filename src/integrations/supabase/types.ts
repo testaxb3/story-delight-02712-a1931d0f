@@ -1328,6 +1328,7 @@ export type Database = {
           estimated_minutes: number | null
           id: string
           image_url: string | null
+          program_id: string | null
           summary: string | null
           title: string
           updated_at: string
@@ -1340,6 +1341,7 @@ export type Database = {
           estimated_minutes?: number | null
           id?: string
           image_url?: string | null
+          program_id?: string | null
           summary?: string | null
           title: string
           updated_at?: string
@@ -1352,11 +1354,20 @@ export type Database = {
           estimated_minutes?: number | null
           id?: string
           image_url?: string | null
+          program_id?: string | null
           summary?: string | null
           title?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "lessons_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -1857,6 +1868,121 @@ export type Database = {
           updated_at?: string | null
           username?: string | null
           welcome_modal_shown?: boolean | null
+        }
+        Relationships: []
+      }
+      program_badges: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          icon: string | null
+          id: string
+          name: string
+          program_id: string
+          requirement_type: string | null
+          requirement_value: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name: string
+          program_id: string
+          requirement_type?: string | null
+          requirement_value?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          name?: string
+          program_id?: string
+          requirement_type?: string | null
+          requirement_value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_badges_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      program_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          program_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          program_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          program_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "program_votes_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      programs: {
+        Row: {
+          age_range: string | null
+          cover_image_url: string | null
+          created_at: string | null
+          description: string | null
+          display_order: number | null
+          id: string
+          slug: string
+          status: string | null
+          title: string
+          total_lessons: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          age_range?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          slug: string
+          status?: string | null
+          title: string
+          total_lessons?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          age_range?: string | null
+          cover_image_url?: string | null
+          created_at?: string | null
+          description?: string | null
+          display_order?: number | null
+          id?: string
+          slug?: string
+          status?: string | null
+          title?: string
+          total_lessons?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -3342,6 +3468,73 @@ export type Database = {
             columns: ["lesson_id"]
             isOneToOne: false
             referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_program_badges: {
+        Row: {
+          earned_at: string | null
+          id: string
+          program_badge_id: string
+          user_id: string
+        }
+        Insert: {
+          earned_at?: string | null
+          id?: string
+          program_badge_id: string
+          user_id: string
+        }
+        Update: {
+          earned_at?: string | null
+          id?: string
+          program_badge_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_program_badges_program_badge_id_fkey"
+            columns: ["program_badge_id"]
+            isOneToOne: false
+            referencedRelation: "program_badges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_program_progress: {
+        Row: {
+          completed_at: string | null
+          id: string
+          lessons_completed: number[] | null
+          program_id: string
+          started_at: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          id?: string
+          lessons_completed?: number[] | null
+          program_id: string
+          started_at?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          id?: string
+          lessons_completed?: number[] | null
+          program_id?: string
+          started_at?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_program_progress_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "programs"
             referencedColumns: ["id"]
           },
         ]
