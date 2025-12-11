@@ -266,26 +266,16 @@ export default function ProgramDetail() {
       {/* Header */}
       <header className="bg-[#FEFBF9] pt-10 pb-5 sticky top-0 z-10 border-b border-[#E8E8E6]">
         <div className="px-4">
-          <div className="flex justify-between items-center">
-            <div className="flex flex-row items-center gap-4">
+            <div className="flex items-center gap-4">
               <button onClick={() => navigate('/programs')} className="p-1">
                 <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
                   <path d="M8 1L2 7.5L8 14" stroke="#303030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
               <p className="text-xl text-[#303030] leading-6 font-semibold">
-                Current Challenge
+                Current Program
               </p>
             </div>
-            {/* Hamburger Menu */}
-            <button className="p-2">
-              <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
-                <path d="M1 1H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M1 7H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
-                <path d="M1 13H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
         </div>
       </header>
 
