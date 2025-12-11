@@ -302,7 +302,7 @@ export default function ProgramDetail() {
         )}
 
         {/* Favorites Section */}
-        <FavoritesSection />
+        <FavoritesSection programId={program.id} programSlug={program.slug} />
 
         {/* Achievements / Badges */}
         <ProgramBadgesSection badges={program.badges} lessonsCompleted={completedLessons.length} />
