@@ -58,8 +58,8 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
         className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
           status === 'completed'
             ? 'bg-[#4CAF50]'
-            : status === 'available' && index === 0
-            ? 'bg-[#FF6631]'
+            : status === 'available'
+            ? 'bg-[#FFA500]'
             : 'border-2 border-[#E0E0E0] bg-transparent'
         }`}
       >

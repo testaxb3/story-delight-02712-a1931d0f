@@ -25,79 +25,40 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
         <h2 className="text-lg font-semibold text-[#393939]">Achievements</h2>
       </div>
 
-      {/* Badges Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {/* Badges Grid - 3 columns like reference */}
+      <div className="grid grid-cols-3 gap-3">
         {badges.map((badge, index) => {
-          const progress = badge.requirement_value 
-            ? Math.min((lessonsCompleted / badge.requirement_value) * 100, 100)
-            : 0;
-          
           return (
             <motion.div
               key={badge.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3 + index * 0.08 }}
-              className={`bg-white rounded-xl p-4 border border-[#F0F0F0] flex flex-col items-center justify-center min-h-[160px] relative ${
-                badge.earned ? '' : ''
-              }`}
+              className={`bg-white rounded-xl p-3 border border-[#F0F0F0] flex flex-col items-center justify-center min-h-[130px]`}
             >
-              {/* Badge Image with Progress Ring */}
-              <div className="relative w-16 h-16 mb-2">
-                {/* Progress Ring */}
-                {!badge.earned && badge.requirement_value && (
-                  <svg className="absolute inset-0 w-full h-full -rotate-90">
-                    <circle
-                      cx="32"
-                      cy="32"
-                      r="30"
-                      fill="none"
-                      stroke="#F0F0F0"
-                      strokeWidth="4"
-                    />
-                    <circle
-                      cx="32"
-                      cy="32"
-                      r="30"
-                      fill="none"
-                      stroke="#FF6631"
-                      strokeWidth="4"
-                      strokeLinecap="round"
-                      strokeDasharray={`${progress * 1.88} 188.4`}
-                      className="transition-all duration-500"
-                    />
-                  </svg>
+              {/* Badge Image - Larger, no progress ring */}
+              <div className={`w-16 h-16 mb-2 rounded-full overflow-hidden ${badge.earned ? '' : 'opacity-50'}`}>
+                {badge.image_url ? (
+                  <img
+                    src={badge.image_url}
+                    alt={badge.name}
+                    className={`w-full h-full object-cover ${badge.earned ? '' : 'grayscale'}`}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center">
+                    <Award className={`w-8 h-8 ${badge.earned ? 'text-amber-500' : 'text-gray-300'}`} />
+                  </div>
                 )}
-                <div className={`absolute inset-1 rounded-full flex items-center justify-center overflow-hidden ${badge.earned ? '' : 'opacity-50'}`}>
-                  {badge.image_url ? (
-                    <img
-                      src={badge.image_url}
-                      alt={badge.name}
-                      className={`w-full h-full object-cover ${badge.earned ? '' : 'grayscale'}`}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-amber-100 to-orange-100 rounded-full flex items-center justify-center">
-                      <Award className={`w-6 h-6 ${badge.earned ? 'text-amber-500' : 'text-gray-300'}`} />
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* Badge Name */}
-              <span className="text-sm font-medium text-[#393939] text-center leading-tight">
+              <span className="text-xs font-medium text-[#393939] text-center leading-tight line-clamp-2">
                 {badge.name}
               </span>
 
-              {/* Progress Text for unearned badges */}
-              {!badge.earned && badge.requirement_value && (
-                <span className="text-[11px] text-[#8D8D8D] text-center mt-1">
-                  {lessonsCompleted}/{badge.requirement_value} lessons
-                </span>
-              )}
-
               {/* Earned indicator */}
               {badge.earned && (
-                <span className="text-[11px] text-[#4CAF50] font-medium text-center mt-1">
+                <span className="text-[10px] text-[#4CAF50] font-medium text-center mt-1">
                   ✓ Earned
                 </span>
               )}
@@ -105,7 +66,6 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
           );
         })}
       </div>
-
     </motion.div>
   );
 }
