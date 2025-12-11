@@ -26,7 +26,8 @@ import {
   Bell,
   BellOff,
   ClipboardCheck,
-  ClipboardList
+  ClipboardList,
+  MessageCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { formatDistanceToNow } from 'date-fns';
@@ -36,6 +37,7 @@ interface ApprovedUser {
   email: string;
   first_name: string | null;
   last_name: string | null;
+  phone: string | null;
   products: any;
   total_price: number | null;
   currency: string | null;
@@ -499,6 +501,19 @@ export function AdminSalesTab() {
                             )}
                           </div>
                           <div className="flex items-center gap-1">
+                            {buyer.phone && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => {
+                                  const cleanPhone = buyer.phone!.replace(/\D/g, '');
+                                  window.open(`https://wa.me/${cleanPhone}`, '_blank');
+                                }}
+                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-500/10"
+                              >
+                                <MessageCircle className="w-4 h-4" />
+                              </Button>
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"
