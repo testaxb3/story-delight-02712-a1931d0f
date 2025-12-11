@@ -1,14 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { LessonWithProgress, useMarkLessonComplete } from '@/hooks/useLessons';
-import { CheckCircle2, Clock, BookOpen, ChevronLeft, Play, Pause } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { CheckCircle2, Clock, ChevronLeft, Play, Pause } from 'lucide-react';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
+import { LessonContentRenderer } from './content/LessonContentRenderer';
+import { isStructuredContent, StructuredLessonContent } from '@/types/lesson-content';
 
 interface LessonDetailSheetProps {
   lesson: LessonWithProgress | null;
@@ -22,6 +23,22 @@ export function LessonDetailSheet({ lesson, open, onOpenChange }: LessonDetailSh
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+
+  // Parse content - check if it's structured JSON or legacy HTML
+  const parsedContent = useMemo(() => {
+    if (!lesson) return null;
+    
+    try {
+      const parsed = JSON.parse(lesson.content);
+      if (isStructuredContent(parsed)) {
+        return { type: 'structured' as const, data: parsed };
+      }
+    } catch {
+      // Not JSON, treat as HTML
+    }
+    
+    return { type: 'html' as const, data: lesson.content };
+  }, [lesson?.content]);
 
   if (!lesson) return null;
 
@@ -73,11 +90,20 @@ export function LessonDetailSheet({ lesson, open, onOpenChange }: LessonDetailSh
     }
   };
 
-  // Sanitize HTML content
-  const sanitizedContent = DOMPurify.sanitize(lesson.content, {
-    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'br', 'blockquote', 'img', 'span', 'div'],
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'style', 'target'],
-  });
+  const handleCTAAction = (action: string) => {
+    if (action === 'close') {
+      onOpenChange(false);
+    }
+    // Could handle 'diary' or 'next' actions here
+  };
+
+  // Sanitize HTML content for legacy lessons
+  const sanitizedContent = parsedContent?.type === 'html' 
+    ? DOMPurify.sanitize(parsedContent.data, {
+        ALLOWED_TAGS: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'br', 'blockquote', 'img', 'span', 'div'],
+        ALLOWED_ATTR: ['href', 'src', 'alt', 'class', 'style', 'target'],
+      })
+    : null;
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -159,21 +185,27 @@ export function LessonDetailSheet({ lesson, open, onOpenChange }: LessonDetailSh
         {/* Content */}
         <ScrollArea className="h-[calc(92vh-180px)]">
           <div className="px-5 py-6">
-            {/* Lesson Content */}
-            <div 
-              className="prose prose-sm dark:prose-invert max-w-none
-                prose-headings:font-bold prose-headings:text-foreground
-                prose-h1:text-2xl prose-h1:mb-4
-                prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
-                prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
-                prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4
-                prose-li:text-muted-foreground
-                prose-strong:text-foreground prose-strong:font-semibold
-                prose-a:text-primary prose-a:no-underline hover:prose-a:underline
-                prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
-                prose-img:rounded-xl prose-img:shadow-lg"
-              dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-            />
+            {parsedContent?.type === 'structured' ? (
+              <LessonContentRenderer 
+                content={parsedContent.data} 
+                onCTAAction={handleCTAAction}
+              />
+            ) : (
+              <div 
+                className="prose prose-sm dark:prose-invert max-w-none
+                  prose-headings:font-bold prose-headings:text-foreground
+                  prose-h1:text-2xl prose-h1:mb-4
+                  prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-3
+                  prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-2
+                  prose-p:text-muted-foreground prose-p:leading-relaxed prose-p:mb-4
+                  prose-li:text-muted-foreground
+                  prose-strong:text-foreground prose-strong:font-semibold
+                  prose-a:text-primary prose-a:no-underline hover:prose-a:underline
+                  prose-blockquote:border-l-primary prose-blockquote:bg-primary/5 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic
+                  prose-img:rounded-xl prose-img:shadow-lg"
+                dangerouslySetInnerHTML={{ __html: sanitizedContent || '' }}
+              />
+            )}
           </div>
         </ScrollArea>
 
