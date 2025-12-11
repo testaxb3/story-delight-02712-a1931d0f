@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Menu, Play, Pause, Heart, CheckCircle2, Loader2 } from 'lucide-react';
@@ -10,7 +10,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
 import { LessonContentRenderer } from '@/components/Lessons/content/LessonContentRenderer';
-import { isStructuredContent } from '@/types/lesson-content';
+import { isStructuredContent, StructuredLessonContent } from '@/types/lesson-content';
 
 export default function ProgramLesson() {
   const { slug, number } = useParams<{ slug: string; number: string }>();
@@ -126,6 +126,28 @@ export default function ProgramLesson() {
       setIsCompleting(false);
     }
   };
+
+  // Parse content if it's a string (Supabase returns JSON as string)
+  const parsedContent = useMemo((): StructuredLessonContent | null => {
+    if (!lesson?.content) return null;
+    
+    // If already an object, use directly
+    if (typeof lesson.content === 'object') {
+      return isStructuredContent(lesson.content) ? lesson.content : null;
+    }
+    
+    // If string, parse it
+    if (typeof lesson.content === 'string') {
+      try {
+        const parsed = JSON.parse(lesson.content);
+        return isStructuredContent(parsed) ? parsed : null;
+      } catch {
+        return null;
+      }
+    }
+    
+    return null;
+  }, [lesson?.content]);
 
   if (isLoading || !program) {
     return <LessonSkeleton />;
@@ -253,8 +275,8 @@ export default function ProgramLesson() {
 
           {/* Content - Structured or Summary */}
           <div className="px-4 pb-4">
-            {lesson.content && isStructuredContent(lesson.content) ? (
-              <LessonContentRenderer content={lesson.content} />
+            {parsedContent ? (
+              <LessonContentRenderer content={parsedContent} />
             ) : (
               <p className="text-[15px] text-[#393939] leading-relaxed">
                 {lesson.summary}

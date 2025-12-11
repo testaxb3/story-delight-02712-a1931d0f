@@ -1,0 +1,1 @@
+UPDATE programs SET total_lessons = 3 WHERE slug = 'picky-eating-challenge';
