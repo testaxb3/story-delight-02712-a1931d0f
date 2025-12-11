@@ -147,13 +147,13 @@ export function useUploadLessonAudio() {
       const filePath = `lessons/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('audio')
+        .from('audio-tracks')
         .upload(filePath, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('audio')
+        .from('audio-tracks')
         .getPublicUrl(filePath);
 
       return publicUrl;
