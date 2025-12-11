@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { Heart, Clock, Headphones } from 'lucide-react';
 import { ProgramLesson } from '@/hooks/useProgramDetail';
 
 interface NextLessonCardProps {
@@ -24,10 +25,20 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
       {/* Header */}
       <div className="flex flex-row items-center justify-between gap-2.5 border-b border-[#DADADA] pb-2">
         <p className="font-normal text-sm text-[#393939]">Next lesson</p>
-        <p className="font-normal text-sm text-[#393939]">
-          <span className="text-[#76B9FF] font-semibold">{lesson.day_number}</span> out of{' '}
-          <span className="text-[#76B9FF] font-semibold">{totalLessons}</span>
-        </p>
+        <div className="flex items-center gap-3">
+          {lesson.estimated_minutes && (
+            <span className="flex items-center gap-1 text-xs text-[#8D8D8D]">
+              <Clock className="w-3 h-3" />
+              {lesson.estimated_minutes} min
+            </span>
+          )}
+          {lesson.audio_url && (
+            <Headphones className="w-3.5 h-3.5 text-[#8D8D8D]" />
+          )}
+          <p className="font-normal text-sm text-[#393939]">
+            <span className="text-[#76B9FF] font-semibold">{lesson.day_number}</span> / {totalLessons}
+          </p>
+        </div>
       </div>
 
       {/* Lesson Title */}
@@ -36,18 +47,16 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
       </p>
 
       {/* Image Container */}
-      <div className="relative">
-        {lesson.image_url && (
-          <div className="relative">
-            <img
-              alt="lesson thumbnail"
-              loading="lazy"
-              width={314}
-              height={160}
-              className="w-full mb-3 max-[380px]:max-h-[160px] rounded-[10px] object-cover"
-              src={lesson.image_url}
-            />
-          </div>
+      <div className="relative mb-3">
+        {lesson.image_url ? (
+          <img
+            alt="lesson thumbnail"
+            loading="lazy"
+            className="w-full h-[160px] rounded-[10px] object-cover"
+            src={lesson.image_url}
+          />
+        ) : (
+          <div className="w-full h-[160px] rounded-[10px] bg-gradient-to-br from-amber-50 to-orange-100" />
         )}
         {/* Favorite Button */}
         <button
@@ -55,16 +64,17 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
             e.stopPropagation();
             setIsFavorite(!isFavorite);
           }}
-          className="w-[29px] h-[29px] absolute right-3 top-3 z-[1] bg-contain bg-no-repeat cursor-pointer transition-[background-image] duration-300"
-          style={{
-            backgroundImage: `url('/icons/challenges/${isFavorite ? 'favorite-active' : 'favorite-inactive'}.svg')`
-          }}
-        />
+          className="w-[32px] h-[32px] absolute right-3 top-3 z-[1] bg-white/80 rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-colors"
+        >
+          <Heart 
+            className={`w-4 h-4 transition-colors ${isFavorite ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`} 
+          />
+        </button>
       </div>
 
       {/* Summary */}
       {lesson.summary && (
-        <p className="line-clamp-5 text-base text-[#393939] font-medium leading-[20.8px] mb-4 font-['Raleway']">
+        <p className="line-clamp-3 text-base text-[#393939] font-medium leading-[20.8px] mb-4">
           {lesson.summary}
         </p>
       )}

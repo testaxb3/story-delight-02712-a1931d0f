@@ -34,9 +34,16 @@ export function CurrentProgramCard({ program, nextLessonTitle }: CurrentProgramC
 
       {/* Image */}
       <div className="relative mb-[12px]">
-        <div className="rounded-[10px] w-full h-[160px] bg-slate-200 overflow-hidden relative">
-           {/* Fallback gradient or image if available */}
-           <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-amber-100" />
+        <div className="rounded-[10px] w-full h-[160px] overflow-hidden relative">
+           {program.cover_image_url ? (
+             <img 
+               src={program.cover_image_url} 
+               alt={program.title}
+               className="w-full h-full object-cover"
+             />
+           ) : (
+             <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-amber-100" />
+           )}
            {/* Heart Icon Overlay */}
            <div className="absolute right-[12px] top-[11px] z-[1] w-[29px] h-[29px] bg-white/80 rounded-full flex items-center justify-center cursor-pointer">
               <Heart className="w-[16px] h-[16px] text-[#393939]" />

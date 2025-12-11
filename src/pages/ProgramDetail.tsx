@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useProgramDetail, ProgramDetail as ProgramDetailType } from '@/hooks/useProgramDetail';
 import { CurrentChallengeProgressCard } from '@/components/Programs/CurrentChallengeProgressCard';
 import { ProgramBadgesSection } from '@/components/Programs/ProgramBadgesSection';
-import { FavoritesSection } from '@/components/Programs/FavoritesSection';
 import { NextLessonCard } from '@/components/Programs/NextLessonCard';
 import { LessonListItem } from '@/components/Programs/LessonListItem';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -304,10 +303,7 @@ export default function ProgramDetail() {
         )}
 
         {/* Achievements / Badges */}
-        <ProgramBadgesSection badges={program.badges} />
-
-        {/* Favorites Section */}
-        <FavoritesSection />
+        <ProgramBadgesSection badges={program.badges} lessonsCompleted={completedLessons.length} />
 
         {/* All Lessons */}
         <motion.section
