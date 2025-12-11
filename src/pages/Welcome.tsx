@@ -220,7 +220,7 @@ export default function Welcome() {
       toast.success('Account created!', {
         description: 'Welcome to The Obedience Language!',
       });
-      navigate('/pwa-install');
+      navigate('/quiz');
     } catch (err) {
       setFormError('An unexpected error occurred. Please try again.');
     } finally {

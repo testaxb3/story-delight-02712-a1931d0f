@@ -1,8 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isStandaloneMode } from '@/utils/platform';
-import { toast } from 'sonner';
-import { useEffect, useRef } from 'react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,34 +10,18 @@ interface ProtectedRouteProps {
 export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
-  const hasShownStandaloneToast = useRef(false);
 
-  // 🔍 DEBUG: Log detalhado para diagnosticar problema (apenas em DEV)
   if (import.meta.env.DEV) {
     console.log('[ProtectedRoute] Estado atual:', {
       loading,
       hasUser: !!user,
       userId: user?.id,
-      email: user?.email,
       quiz_completed: user?.quiz_completed,
-      quiz_in_progress: user?.quiz_in_progress,
       pathname: location.pathname,
-      isStandalone: isStandaloneMode()
     });
   }
 
-  // ✅ FIX: Show informative toast when auto-completing PWA flow in standalone mode
-  const isStandalone = isStandaloneMode();
-  
-  useEffect(() => {
-    if (isStandalone && !localStorage.getItem('pwa_flow_completed') && !hasShownStandaloneToast.current) {
-      hasShownStandaloneToast.current = true;
-      toast.success('App already installed! Continuing setup...', { duration: 2000 });
-    }
-  }, [isStandalone]);
-
   if (loading) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] LOADING - mostrando spinner');
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-6xl animate-brain-pulse">🧠</div>
@@ -54,108 +36,35 @@ export function ProtectedRoute({ children, requireAdmin = false }: ProtectedRout
 
   // Admin-only route check
   if (requireAdmin && !user.is_admin) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] ADMIN REQUIRED - redirecionando para /');
     return <Navigate to="/" replace />;
   }
 
-  // Check if PWA flow is completed (before quiz)
-  // ✅ FIX: If running in standalone mode, consider flow completed automatically
-  if (isStandalone && !localStorage.getItem('pwa_flow_completed')) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Detectado modo Standalone - Auto-completando fluxo PWA e tema');
-    localStorage.setItem('pwa_flow_completed', 'true');
-    localStorage.setItem('theme_selected', 'true');
-  }
+  // Quiz exempt routes
+  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status'];
+  const isQuizExempt = quizExemptRoutes.some(route => location.pathname.startsWith(route));
 
-  const pwaFlowCompleted = localStorage.getItem('pwa_flow_completed') === 'true';
-  const isPWARoute = ['/pwa-install', '/pwa-check'].includes(location.pathname);
-
-  // Verificar se o quiz foi completado (exceto nas rotas de quiz e refund)
-  const quizExemptRoutes = ['/quiz', '/refund', '/refund-status', '/pwa-install', '/pwa-check', '/theme-selection', '/notification-permission'];
-  const isQuizRoute = quizExemptRoutes.some(route => location.pathname.startsWith(route));
-
-  if (import.meta.env.DEV) {
-    console.log('[ProtectedRoute] É rota de quiz?', isQuizRoute);
-    console.log('[ProtectedRoute] PWA flow completed?', pwaFlowCompleted);
-  }
-
-  // 🔄 PWA Flow Check: If user hasn't completed PWA flow, redirect to installation
-  if (!pwaFlowCompleted && !isPWARoute && !isQuizRoute) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ PWA flow não completado - redirecionando para /pwa-install');
-    return <Navigate to="/pwa-install" replace />;
-  }
-
-  // 🎨 Theme Selection Check: If PWA flow completed but theme not selected, redirect to theme selection
-  const themeSelected = localStorage.getItem('theme_selected') === 'true';
-  const isThemeRoute = location.pathname === '/theme-selection';
-
-  if (pwaFlowCompleted && !themeSelected && !isThemeRoute && !isQuizRoute) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ Tema não selecionado - redirecionando para /theme-selection');
-    return <Navigate to="/theme-selection" replace />;
-  }
-
-  // ✅ CRÍTICO: Se o usuário completou o quiz no banco de dados, SEMPRE permitir acesso
-  // Isso resolve loops de redirecionamento causados por cache stale
+  // If quiz completed, allow access and ensure flags are set
   if (user.quiz_completed === true) {
-    if (import.meta.env.DEV) {
-      console.log('[ProtectedRoute] ✅ Quiz COMPLETADO no DB - permitindo acesso');
-      console.log('[ProtectedRoute] 📊 Estado completo:', {
-        quiz_completed: user.quiz_completed,
-        quiz_in_progress: user.quiz_in_progress,
-        userId: user.id,
-        email: user.email,
-        timestamp: new Date().toISOString()
-      });
+    // Ensure localStorage flags are set for existing users
+    if (!localStorage.getItem('onboarding_completed') && isStandaloneMode()) {
+      localStorage.setItem('onboarding_completed', 'true');
     }
-
-    // Limpar sessionStorage se quiz confirmado completo
-    if (sessionStorage.getItem('quizJustCompletedAt')) {
-      sessionStorage.removeItem('quizJustCompletedAt');
-      if (import.meta.env.DEV) console.log('[ProtectedRoute] 🧹 Limpou sessionStorage (quiz confirmado no DB)');
-    }
-
-    // ✅ CRITICAL FIX: Garantir que os flags PWA estejam setados para não pedir novamente
-    // Isso é especialmente importante para PWAs no iPhone onde o usuário pode reinstalar o app
-    if (!localStorage.getItem('pwa_flow_completed')) {
-      localStorage.setItem('pwa_flow_completed', 'true');
-      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou pwa_flow_completed=true');
-    }
-    if (!localStorage.getItem('theme_selected')) {
-      localStorage.setItem('theme_selected', 'true');
-      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou theme_selected=true');
-    }
-    if (!localStorage.getItem('notification_prompted')) {
-      localStorage.setItem('notification_prompted', 'true');
-      if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Setou notification_prompted=true');
-    }
-    
     return <>{children}</>;
   }
 
-  // ✅ FIX: Reduced grace period from 10 minutes to 2 minutes to rely more on DB state
+  // Grace period for just-completed quiz
   const quizCompletedAt = Number(sessionStorage.getItem('quizJustCompletedAt') || 0);
-  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000; // ✅ 2 minutos
+  const withinGracePeriod = quizCompletedAt > 0 && (Date.now() - quizCompletedAt) < 120000;
 
   if (withinGracePeriod) {
-    if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Quiz recém-completado (grace period) - permitindo acesso');
-    
-    const notificationPromptedGrace = localStorage.getItem('notification_prompted') === 'true';
-    const isNotificationRouteGrace = location.pathname === '/notification-permission';
-    
-    if (!notificationPromptedGrace && !isNotificationRouteGrace) {
-      if (import.meta.env.DEV) console.log('[ProtectedRoute] ⚠️ Grace period: Notification não perguntado - redirecionando');
-      return <Navigate to="/notification-permission" replace />;
-    }
-    
     return <>{children}</>;
   }
 
-  // Se não completou o quiz E não está em rota de quiz E não está no grace period, redirecionar
-  if (!isQuizRoute) {
+  // If not on quiz route and quiz not completed, redirect to quiz
+  if (!isQuizExempt) {
     if (import.meta.env.DEV) console.log('[ProtectedRoute] ❌ Quiz NÃO completado - redirecionando para /quiz');
     return <Navigate to="/quiz" replace />;
   }
 
-  // Se está na rota de quiz, permitir acesso
-  if (import.meta.env.DEV) console.log('[ProtectedRoute] ✅ Rota de quiz - permitindo acesso');
   return <>{children}</>;
 }
