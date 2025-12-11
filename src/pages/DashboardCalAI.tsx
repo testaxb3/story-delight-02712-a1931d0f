@@ -16,6 +16,7 @@ import { useProfileStats } from '@/hooks/useProfileStats';
 import { Flame, Info } from 'lucide-react';
 import { PullToRefresh } from '@/components/common/PullToRefresh';
 import { useTrackerDays } from '@/hooks/useTrackerDays';
+import { OnboardingModal } from '@/components/Dashboard/OnboardingModal';
 
 // Dashboard Components
 import { containerVariants, itemVariants } from '@/components/Dashboard/animations';
@@ -60,6 +61,11 @@ export default function DashboardCalAI() {
   const [showLogModal, setShowLogModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [showSupportSheet, setShowSupportSheet] = useState(false);
+  
+  // Onboarding Modal
+  const [showOnboarding, setShowOnboarding] = useState(
+    !localStorage.getItem('onboarding_completed')
+  );
   
   // Tracker data
   const nextDay = trackerStats?.nextDay ?? null;
@@ -328,6 +334,13 @@ export default function DashboardCalAI() {
           isOpen={showSupportSheet}
           onClose={() => setShowSupportSheet(false)}
         />
+
+        {/* Onboarding Modal for new users */}
+        {showOnboarding && (
+          <OnboardingModal
+            onComplete={() => setShowOnboarding(false)}
+          />
+        )}
       </div>
     </MainLayout>
   );
