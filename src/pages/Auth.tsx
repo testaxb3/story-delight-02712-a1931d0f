@@ -111,16 +111,7 @@ const Auth = memo(function Auth() {
       } else {
         if (isSignUp) {
           toast.success("Welcome! Let's get you set up", { duration: 3000 });
-          // ✅ FIX: Wrap navigation in try-catch with fallback
-          try {
-            navigate('/pwa-install', { replace: true });
-          } catch (navError) {
-            console.error('[Auth] Navigation to PWA install failed:', navError);
-            // Fallback: skip PWA flow and go to quiz
-            localStorage.setItem('pwa_flow_completed', 'true');
-            localStorage.setItem('theme_selected', 'true');
-            navigate('/quiz', { replace: true });
-          }
+          navigate('/quiz', { replace: true });
         } else {
           const { data: profile } = await supabase
             .from('profiles')
