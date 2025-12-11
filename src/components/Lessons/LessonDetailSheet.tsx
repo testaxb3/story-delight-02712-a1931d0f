@@ -1,12 +1,14 @@
+import { useState, useRef } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { LessonWithProgress, useMarkLessonComplete } from '@/hooks/useLessons';
-import { CheckCircle2, Clock, BookOpen, ChevronLeft } from 'lucide-react';
+import { CheckCircle2, Clock, BookOpen, ChevronLeft, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
+import { Slider } from '@/components/ui/slider';
 
 interface LessonDetailSheetProps {
   lesson: LessonWithProgress | null;
@@ -16,10 +18,49 @@ interface LessonDetailSheetProps {
 
 export function LessonDetailSheet({ lesson, open, onOpenChange }: LessonDetailSheetProps) {
   const markComplete = useMarkLessonComplete();
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   if (!lesson) return null;
 
   const isCompleted = lesson.progress?.completed;
+
+  const togglePlay = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = value[0];
+      setCurrentTime(value[0]);
+    }
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleMarkComplete = async () => {
     try {
@@ -72,6 +113,47 @@ export function LessonDetailSheet({ lesson, open, onOpenChange }: LessonDetailSh
               </div>
             </div>
           </SheetHeader>
+
+          {/* Audio Player */}
+          {lesson.audio_url && (
+            <div className="px-4 pb-4">
+              <div className="p-3 bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={togglePlay}
+                    className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shrink-0 shadow-lg shadow-primary/30"
+                  >
+                    {isPlaying ? (
+                      <Pause className="w-5 h-5 text-primary-foreground" fill="currentColor" />
+                    ) : (
+                      <Play className="w-5 h-5 text-primary-foreground ml-0.5" fill="currentColor" />
+                    )}
+                  </button>
+                  <div className="flex-1 space-y-1">
+                    <Slider
+                      value={[currentTime]}
+                      max={duration || 100}
+                      step={1}
+                      onValueChange={handleSeek}
+                      className="w-full"
+                    />
+                    <div className="flex justify-between text-[10px] text-muted-foreground">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(duration)}</span>
+                    </div>
+                  </div>
+                </div>
+                <audio
+                  ref={audioRef}
+                  src={lesson.audio_url}
+                  onTimeUpdate={handleTimeUpdate}
+                  onLoadedMetadata={handleLoadedMetadata}
+                  onEnded={() => setIsPlaying(false)}
+                  preload="metadata"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Content */}

@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.send-family-invite]
 verify_jwt = false
+
+[functions.process-lessons]
+verify_jwt = false
