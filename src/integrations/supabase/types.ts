@@ -4343,6 +4343,7 @@ export type Database = {
         }[]
       }
       get_family_owner_id: { Args: { p_user_id: string }; Returns: string }
+      get_invite_info: { Args: { p_code: string }; Returns: Json }
       get_orphaned_ebooks: {
         Args: never
         Returns: {
