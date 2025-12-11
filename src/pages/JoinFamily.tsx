@@ -39,7 +39,10 @@ export default function JoinFamily() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div 
+        className="min-h-screen bg-background flex items-center justify-center p-4"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
         <Card className="w-full max-w-md">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
@@ -60,7 +63,10 @@ export default function JoinFamily() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div 
+        className="min-h-screen bg-background flex items-center justify-center p-4"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -86,13 +92,16 @@ export default function JoinFamily() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <div 
+        className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50"
+        style={{ paddingTop: 'env(safe-area-inset-top)' }}
+      >
         <div className="flex items-center gap-4 px-4 py-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="rounded-full"
+            className="rounded-full w-11 h-11"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>

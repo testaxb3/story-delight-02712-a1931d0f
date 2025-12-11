@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Copy, Check, Trash2, UserMinus, Mail, UserPlus } from 'lucide-react';
+import { Users, Copy, Check, Trash2, UserMinus, Mail, UserPlus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useFamilyShare } from '@/hooks/useFamilyShare';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 export function FamilyShareCard() {
@@ -25,16 +27,45 @@ export function FamilyShareCard() {
     deleteInvite,
   } = useFamilyShare();
 
+  const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
 
-  const handleCreateInvite = () => {
+  const handleCreateInvite = async () => {
     if (!email.trim()) {
       toast.error('Please enter an email address');
       return;
     }
-    createInvite.mutate(email);
-    setEmail('');
+
+    try {
+      setIsSendingEmail(true);
+      
+      // 1. Create invite in database
+      const result = await createInvite.mutateAsync(email);
+      
+      // 2. Send email with invite code
+      const { error } = await supabase.functions.invoke('send-family-invite', {
+        body: {
+          partner_email: result.partner_email,
+          invite_code: result.invite_code,
+          owner_name: user?.user_metadata?.full_name || 'Your partner',
+        },
+      });
+
+      if (error) {
+        console.error('Failed to send invite email:', error);
+        toast.success('Invite created! Share the code manually.');
+      } else {
+        toast.success(`Invite sent to ${email}!`);
+      }
+      
+      setEmail('');
+    } catch (error) {
+      // Error already handled by mutation
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   const handleCopyCode = () => {
@@ -268,11 +299,20 @@ export function FamilyShareCard() {
           </div>
           <Button
             onClick={handleCreateInvite}
-            disabled={createInvite.isPending || !email.trim()}
+            disabled={createInvite.isPending || isSendingEmail || !email.trim()}
             className="w-full"
           >
-            <UserPlus className="w-4 h-4 mr-2" />
-            {createInvite.isPending ? 'Creating...' : 'Create Invite'}
+            {(createInvite.isPending || isSendingEmail) ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Sending invite...
+              </>
+            ) : (
+              <>
+                <UserPlus className="w-4 h-4 mr-2" />
+                Send Invite
+              </>
+            )}
           </Button>
         </div>
         <p className="text-xs text-muted-foreground text-center">
