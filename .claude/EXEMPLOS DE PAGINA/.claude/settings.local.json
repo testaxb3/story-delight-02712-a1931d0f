@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /b \"C:\\Users\\gabri\\OneDrive\\Área de Trabalho\\APP OFICIAL\\story-delight-02712-a1931d0f\\.claude\\EXEMPLOS DE PAGINA\")",
+      "Bash(powershell -Command:*)"
+    ]
+  }
+}

@@ -17,40 +17,40 @@ export function ProgramsStreakCard({ lessonsCompletedCount, weekProgress = [] }:
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-card rounded-2xl border border-border p-4"
+      className="bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] py-[12px] px-[10px] space-y-[16px]"
     >
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center">
-          <Flame className="w-4 h-4 text-orange-500" />
-        </div>
-        <span className="text-base font-semibold text-foreground">
-          My streak is {lessonsCompletedCount} {lessonsCompletedCount === 1 ? 'lesson' : 'lessons'}
-        </span>
+      <div className="flex justify-center items-center gap-[5px] text-[16px] font-[400] text-[#393939]">
+        <Flame className="w-[17px] h-[17px] text-[#FF5C16] fill-current" />
+        <span>My streak is</span>
+        <span className="font-[800] text-[#FF5C16]">{lessonsCompletedCount}</span>
+        <span>{lessonsCompletedCount === 1 ? 'day' : 'days'}</span>
       </div>
 
+      <div className="border-t border-[#F7F2F0]"></div>
+
       {/* Week Progress */}
-      <div className="flex items-center justify-between">
+      <div className="grid grid-cols-7 justify-between items-center">
         {days.map((day, index) => {
           const isToday = index === today;
           const isCompleted = progress[index];
           const isPast = index < today;
 
           return (
-            <div key={index} className="flex flex-col items-center gap-1.5">
-              <span className="text-xs text-muted-foreground font-medium">{day}</span>
+            <div key={index} className="flex flex-col items-center">
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                className={`w-[18px] h-[18px] rounded-full flex items-center justify-center transition-all ${
                   isCompleted
-                    ? 'bg-orange-500 text-white'
+                    ? 'bg-[#FF5C16] text-white'
                     : isToday
-                    ? 'ring-2 ring-orange-500 bg-transparent'
-                    : isPast
-                    ? 'bg-muted'
-                    : 'border border-border bg-transparent'
+                    ? 'border border-[#FF5C16] bg-transparent text-[#FF5C16]'
+                    : 'border border-[#D1D1D5] bg-transparent text-[#D1D1D5]'
                 }`}
               >
-                {isCompleted && <Check className="w-4 h-4" strokeWidth={3} />}
+                {isCompleted && <Check className="w-3 h-3" strokeWidth={3} />}
+              </div>
+              <div className="text-center font-[500] text-[11px] leading-[100%] pt-[5px] text-[#393939]">
+                {day}
               </div>
             </div>
           );

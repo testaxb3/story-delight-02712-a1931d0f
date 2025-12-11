@@ -17,6 +17,7 @@ export interface ProgramBadge {
   name: string;
   description: string | null;
   icon: string | null;
+  image_url: string | null;
   requirement_type: string;
   requirement_value: number;
   earned: boolean;
@@ -84,7 +85,7 @@ export function useProgramDetail(slug: string) {
       };
 
       // Fetch user earned badges
-      let earnedBadges: Record<string, string> = {};
+      const earnedBadges: Record<string, string> = {};
 
       if (user?.id) {
         const { data: userProgress } = await supabase
@@ -120,6 +121,7 @@ export function useProgramDetail(slug: string) {
         name: b.name,
         description: b.description,
         icon: b.icon,
+        image_url: b.image_url || null,
         requirement_type: b.requirement_type || 'lessons_completed',
         requirement_value: b.requirement_value || 1,
         earned: !!earnedBadges[b.id],

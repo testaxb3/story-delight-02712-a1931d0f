@@ -1,0 +1,129 @@
+{
+  "image_type": "Album cover art for premium parenting audio series",
+  "dimensions": "1400x1400 pixels",
+  "aspect_ratio": "1:1 square (album cover format)",
+  
+  "concept": {
+    "series_name": "Morning Chaos To Calm",
+    "theme": "Transformation from chaotic mornings to peaceful, connected moments",
+    "feel": "Premium, warm, hopeful - like sunrise after a storm",
+    "reference": "Calm app album covers, Headspace course art, Spotify playlist covers"
+  },
+  
+  "visual_concept": {
+    "main_scene": "Silhouette of parent and child in peaceful morning moment",
+    "transformation_element": "Visual transition from chaos (left/bottom) to calm (right/top)",
+    "time_of_day": "Golden hour sunrise, early morning light",
+    "emotional_arc": "From overwhelm to peace, from rushing to presence"
+  },
+  
+  "background": {
+    "style": "Warm sunrise gradient with subtle atmospheric depth",
+    "colors": "Deep navy (#0f172a) transitioning to warm sunrise orange (#f97316) and soft gold (#fbbf24)",
+    "texture": "Soft clouds or atmospheric haze, gentle light rays",
+    "mood": "Hopeful, peaceful, new beginning"
+  },
+  
+  "main_visual": {
+    "subject": "Parent and child silhouette",
+    "pose": "Parent kneeling at child's level, connected and present",
+    "position": "Center-right, slightly lower third",
+    "style": "Clean silhouette with warm backlight glow",
+    "details": {
+      "parent": "Calm posture, not rushed or stressed",
+      "child": "Engaged, looking at parent, not resistant",
+      "connection": "Visible emotional bond, peaceful interaction"
+    }
+  },
+  
+  "symbolic_elements": {
+    "sunrise": {
+      "position": "Upper right quadrant",
+      "style": "Soft, warm glow radiating outward",
+      "meaning": "New beginning, hope, fresh start each morning"
+    },
+    "clock_absence": {
+      "note": "NO visible clocks - represents freedom from time pressure"
+    },
+    "subtle_elements": [
+      "Soft light particles or bokeh",
+      "Gentle morning mist",
+      "Warm light rays"
+    ]
+  },
+  
+  "text_overlay": {
+    "title": {
+      "text": "Morning Chaos To Calm",
+      "position": "Top center or top-left",
+      "font": "Bold elegant sans-serif (Montserrat, Poppins style)",
+      "color": "White with subtle warm shadow",
+      "size": "Prominent but not overwhelming"
+    },
+    "subtitle": {
+      "text": "10 Audio Tracks",
+      "position": "Below title",
+      "font": "Light weight, elegant",
+      "color": "Soft gold (#fbbf24) or warm white",
+      "size": "Small, subtle"
+    },
+    "branding": {
+      "text": "NEP Listen",
+      "position": "Bottom corner, subtle",
+      "style": "Small, elegant, white with low opacity"
+    }
+  },
+  
+  "color_palette": {
+    "background_dark": "#0f172a (deep navy - representing chaos/night)",
+    "background_warm": "#1e1b4b (deep purple transition)",
+    "sunrise_orange": "#f97316 (warm sunrise)",
+    "sunrise_gold": "#fbbf24 (golden hour)",
+    "sunrise_pink": "#fb923c (soft peach)",
+    "text_white": "#ffffff",
+    "text_gold": "#fcd34d (soft gold for accents)"
+  },
+  
+  "gradient_direction": {
+    "flow": "Bottom-left (dark/chaos) to top-right (light/calm)",
+    "meaning": "Visual journey from chaos to calm"
+  },
+  
+  "typography": {
+    "title_font": "Bold elegant sans-serif, warm and approachable",
+    "subtitle_font": "Light weight, clean",
+    "style": "Premium, warm, not clinical or cold"
+  },
+  
+  "design_style": {
+    "overall": "Premium, warm, hopeful",
+    "inspiration": "Calm app, Headspace, premium meditation album art",
+    "mood": "The relief of a peaceful morning, parent finally feeling capable",
+    "quality": "High-end wellness product, sophisticated illustration"
+  },
+  
+  "critical_requirements": {
+    "must_convey": "Transformation from chaos to calm",
+    "must_feel": "Warm, hopeful, premium - not clinical",
+    "silhouette_quality": "Clean, recognizable, emotionally resonant",
+    "sunrise_authenticity": "Natural warm colors, not artificial",
+    "text_readable": "Title clearly visible against background",
+    "balanced_composition": "Not cluttered, breathing room"
+  },
+  
+  "avoid": {
+    "no_literal_chaos": "No messy rooms, scattered toys, or stressed faces",
+    "no_clocks": "No visible clocks or time pressure symbols",
+    "no_cold_colors": "Avoid blues that feel cold or clinical",
+    "no_generic_stock": "Must feel unique, not generic stock imagery",
+    "no_text_overload": "Only title, subtitle, and small branding",
+    "no_cartoonish": "Premium illustration, not childish cartoon"
+  },
+  
+  "art_style": {
+    "technique": "Modern digital illustration with soft gradients",
+    "silhouette_treatment": "Clean edges with warm backlight glow effect",
+    "atmosphere": "Dreamy, soft focus on background, sharp silhouette",
+    "lighting": "Dramatic but warm backlighting from sunrise"
+  }
+}

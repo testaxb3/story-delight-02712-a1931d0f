@@ -11,19 +11,10 @@ interface ComingSoonProgramCardProps {
   index?: number;
 }
 
-// Pastel gradient placeholders
-const gradients = [
-  'from-purple-200 via-pink-200 to-rose-200',
-  'from-blue-200 via-cyan-200 to-teal-200',
-  'from-yellow-200 via-orange-200 to-amber-200',
-  'from-green-200 via-emerald-200 to-teal-200',
-];
-
 export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramCardProps) {
   const { vote, unvote } = useProgramVote();
   const queryClient = useQueryClient();
   const [isVoting, setIsVoting] = useState(false);
-  const gradient = gradients[index % gradients.length];
 
   const handleVote = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,48 +41,40 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
-      className="bg-card rounded-xl border border-border overflow-hidden"
+      className="h-full flex flex-col gap-[10px] p-[10px] bg-[#F9F5F2] rounded-[10px] border border-[#F0E6DF]"
     >
-      {/* Illustration Placeholder - Larger */}
-      <div className={`relative h-32 bg-gradient-to-br ${gradient}`}>
-        {/* Decorative circle placeholder */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-16 h-16 rounded-full bg-white/40" />
-        </div>
+      {/* Image Placeholder */}
+      <div className="relative w-full aspect-square rounded-[10px] overflow-hidden bg-slate-200">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-100 to-indigo-100" />
       </div>
 
-      {/* Content */}
-      <div className="p-3">
-        {/* Title - Multi-line */}
-        <h3 className="text-sm font-semibold text-foreground mb-3 text-center line-clamp-2 min-h-[40px]">
-          {program.title}
-        </h3>
+      {/* Title */}
+      <p className="text-center text-[14px] font-[800] leading-[1.12] mt-auto text-[#393939] line-clamp-2">
+        {program.title}
+      </p>
+      
+      {/* Buttons */}
+      <div className="w-full flex flex-col items-center gap-[6px] mt-auto">
+        <Button
+          variant="outline"
+          className={`w-full rounded-[29px] h-[29px] flex items-center justify-center gap-[3px] text-[12px] font-[400] border px-0 ${
+            program.user_voted 
+              ? 'bg-[#FF6631] text-white border-[#FF6631] hover:bg-[#FF6631]/90' 
+              : 'border-[#FF6631] text-[#FF6631] bg-transparent hover:bg-[#FF6631]/10'
+          }`}
+          onClick={handleVote}
+          disabled={isVoting}
+        >
+          <ThumbsUp className={`w-3 h-3 ${program.user_voted ? 'fill-current' : ''}`} />
+          {program.user_voted ? `Voted (${program.votes_count || 0})` : 'Vote for this'}
+        </Button>
         
-        {/* Buttons */}
-        <div className="flex flex-col gap-2">
-          <Button
-            variant={program.user_voted ? "default" : "outline"}
-            size="sm"
-            className={`w-full text-xs gap-1.5 ${
-              program.user_voted 
-                ? 'bg-orange-500 hover:bg-orange-600 text-white' 
-                : 'border-orange-500 text-orange-600 hover:bg-orange-50'
-            }`}
-            onClick={handleVote}
-            disabled={isVoting}
-          >
-            <ThumbsUp className={`w-3.5 h-3.5 ${program.user_voted ? 'fill-current' : ''}`} />
-            {program.user_voted ? `Voted (${program.votes_count || 0})` : 'Vote for this'}
-          </Button>
-          
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-xs text-muted-foreground"
-          >
-            Read more
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          className="w-full rounded-[29px] h-[29px] flex items-center justify-center gap-[2px] text-[12px] font-[400] border border-[#393939] text-[#393939] bg-transparent hover:bg-[#393939]/10 px-0"
+        >
+          Read more
+        </Button>
       </div>
     </motion.div>
   );

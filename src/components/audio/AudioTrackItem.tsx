@@ -123,10 +123,11 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
           {progress && !progress.completed && progressPercentage > 0 && (
             <div className="mt-2 w-[100px] h-[2px] bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
               <motion.div
-                initial={{ width: 0 }}
+                key={`progress-${track.id}`}
                 animate={{ width: `${progressPercentage}%` }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
                 className="h-full bg-black dark:bg-white rounded-full"
+                style={{ width: `${progressPercentage}%` }}
               />
             </div>
           )}

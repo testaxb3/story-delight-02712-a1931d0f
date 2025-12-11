@@ -341,9 +341,9 @@ function AppContent() {
           }
         />
         <Route
-          path="/programs/:slug/lesson-:number"
+          path="/programs/:slug/lesson/:number"
           element={
-            <ProtectedRoute requireAdmin>
+            <ProtectedRoute>
               <ProgramLesson />
             </ProtectedRoute>
           }
