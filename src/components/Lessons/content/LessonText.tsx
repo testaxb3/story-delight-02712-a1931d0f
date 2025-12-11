@@ -7,13 +7,13 @@ interface Props {
 
 export function LessonText({ data }: Props) {
   const variants = {
-    default: 'text-muted-foreground leading-relaxed',
-    lead: 'text-lg text-foreground/90 leading-relaxed font-medium',
-    highlight: 'text-foreground bg-primary/5 p-4 rounded-xl border-l-4 border-primary',
+    default: 'text-[#393939] dark:text-foreground/90',
+    lead: 'text-[#393939] dark:text-foreground/90 font-medium',
+    highlight: 'text-[#393939] dark:text-foreground/90',
   };
 
   return (
-    <p className={cn('mb-4', variants[data.variant || 'default'])}>
+    <p className={cn('mb-4 text-[15px] leading-[1.7]', variants[data.variant || 'default'])}>
       {data.content}
     </p>
   );

@@ -17,6 +17,14 @@ export interface LessonTextSection {
   };
 }
 
+export interface LessonHeadingSection {
+  type: 'heading';
+  data: {
+    text: string;
+    level?: 2 | 3;
+  };
+}
+
 export interface LessonNumberedListSection {
   type: 'numbered-list';
   data: {
@@ -98,6 +106,7 @@ export interface LessonDividerSection {
 export type LessonSection = 
   | LessonHeroSection
   | LessonTextSection
+  | LessonHeadingSection
   | LessonNumberedListSection
   | LessonVisualDiagramSection
   | LessonReflectionFormSection
