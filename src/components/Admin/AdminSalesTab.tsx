@@ -507,7 +507,17 @@ export function AdminSalesTab() {
                                 size="sm"
                                 onClick={() => {
                                   const cleanPhone = buyer.phone!.replace(/\D/g, '');
-                                  window.open(`https://wa.me/${cleanPhone}`, '_blank');
+                                  const firstName = buyer.first_name || 'there';
+                                  const message = `Hi ${firstName}! 👋
+
+I'm from The Obedience Language support team. I noticed you recently purchased our program and wanted to check in:
+
+✅ Were you able to create your account successfully?
+✅ Is everything working well for you?
+✅ Do you have any questions or need help with anything?
+
+I'm here to help! 🙂`;
+                                  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
                                 }}
                                 className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-500/10"
                               >
