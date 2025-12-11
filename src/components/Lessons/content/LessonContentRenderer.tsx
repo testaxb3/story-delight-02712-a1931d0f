@@ -1,6 +1,7 @@
 import { StructuredLessonContent, LessonSection } from '@/types/lesson-content';
 import { LessonHeroCard } from './LessonHeroCard';
 import { LessonText } from './LessonText';
+import { LessonHeading } from './LessonHeading';
 import { LessonNumberedList } from './LessonNumberedList';
 import { LessonVisualDiagram } from './LessonVisualDiagram';
 import { LessonReflectionForm } from './LessonReflectionForm';
@@ -23,6 +24,8 @@ export function LessonContentRenderer({ content, onCTAAction }: Props) {
         return <LessonHeroCard key={key} data={section.data} />;
       case 'text':
         return <LessonText key={key} data={section.data} />;
+      case 'heading':
+        return <LessonHeading key={key} data={section.data} />;
       case 'numbered-list':
         return <LessonNumberedList key={key} data={section.data} />;
       case 'visual-diagram':
