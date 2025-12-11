@@ -1,11 +1,11 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Lesson, useUpdateLesson, useUploadLessonAudio } from '@/hooks/useAdminLessons';
-import { Loader2, Upload, Music, X, ExternalLink } from 'lucide-react';
+import { Loader2, Upload, Music, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface LessonFormProps {
@@ -15,27 +15,27 @@ interface LessonFormProps {
 }
 
 export function LessonForm({ lesson, open, onOpenChange }: LessonFormProps) {
-  const [title, setTitle] = useState(lesson?.title || '');
-  const [summary, setSummary] = useState(lesson?.summary || '');
-  const [content, setContent] = useState(lesson?.content || '');
-  const [estimatedMinutes, setEstimatedMinutes] = useState(lesson?.estimated_minutes || 5);
-  const [audioUrl, setAudioUrl] = useState(lesson?.audio_url || '');
+  const [title, setTitle] = useState('');
+  const [summary, setSummary] = useState('');
+  const [content, setContent] = useState('');
+  const [estimatedMinutes, setEstimatedMinutes] = useState(5);
+  const [audioUrl, setAudioUrl] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const updateLesson = useUpdateLesson();
   const uploadAudio = useUploadLessonAudio();
 
-  // Reset form when lesson changes
-  useState(() => {
+  // Sync form state when lesson changes
+  useEffect(() => {
     if (lesson) {
       setTitle(lesson.title);
       setSummary(lesson.summary || '');
-      setContent(lesson.content);
+      setContent(lesson.content || '');
       setEstimatedMinutes(lesson.estimated_minutes || 5);
       setAudioUrl(lesson.audio_url || '');
     }
-  });
+  }, [lesson]);
 
   const handleSave = async () => {
     if (!lesson) return;
@@ -74,7 +74,14 @@ export function LessonForm({ lesson, open, onOpenChange }: LessonFormProps) {
     try {
       const url = await uploadAudio.mutateAsync({ file, lessonId: lesson.id });
       setAudioUrl(url);
-      toast.success('Audio uploaded successfully!');
+      
+      // Auto-save audio URL to database immediately
+      await updateLesson.mutateAsync({
+        id: lesson.id,
+        updates: { audio_url: url },
+      });
+      
+      toast.success('Audio uploaded and saved!');
     } catch (error) {
       toast.error('Failed to upload audio');
     } finally {
