@@ -9,7 +9,8 @@ import { useFavoriteLessons } from '@/hooks/useFavoriteLessons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
+import { LessonContentRenderer } from '@/components/Lessons/content/LessonContentRenderer';
+import { isStructuredContent } from '@/types/lesson-content';
 
 export default function ProgramLesson() {
   const { slug, number } = useParams<{ slug: string; number: string }>();
@@ -250,11 +251,15 @@ export default function ProgramLesson() {
             </div>
           )}
 
-          {/* Summary Text */}
+          {/* Content - Structured or Summary */}
           <div className="px-4 pb-4">
-            <p className="text-[15px] text-[#393939] leading-relaxed">
-              {lesson.summary}
-            </p>
+            {lesson.content && isStructuredContent(lesson.content) ? (
+              <LessonContentRenderer content={lesson.content} />
+            ) : (
+              <p className="text-[15px] text-[#393939] leading-relaxed">
+                {lesson.summary}
+              </p>
+            )}
           </div>
         </motion.div>
 
