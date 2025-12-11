@@ -19,7 +19,7 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 
 // PERFORMANCE OPTIMIZATION: Eager load critical pages (including onboarding flow)
 // Onboarding pages MUST be eager-loaded to prevent MIME type errors from stale chunks
-// ListenSeries is eager-loaded to prevent chunk failures on iOS PWA
+// ListenSeries and Scripts are eager-loaded to prevent chunk failures on iOS PWA
 import Auth from "./pages/Auth";
 import Welcome from "./pages/Welcome";
 import Dashboard from "./pages/DashboardCalAI";
@@ -29,12 +29,12 @@ import PWACheck from "./pages/PWACheck";
 import ThemeSelection from "./pages/ThemeSelection";
 import NotificationPermission from "./pages/NotificationPermission";
 import ListenSeries from "./pages/ListenSeries";
+import Scripts from "./pages/Scripts";
 
 // PERFORMANCE OPTIMIZATION: Lazy load non-critical pages for code splitting
 // This reduces initial bundle size and improves Time to Interactive (TTI)
 const RefundRequest = lazy(() => import("./pages/RefundRequest"));
 const RefundStatus = lazy(() => import("./pages/RefundStatus"));
-const Scripts = lazy(() => import("./pages/Scripts"));
 const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
@@ -65,6 +65,7 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const JoinFamily = lazy(() => import("./pages/JoinFamily"));
+const Lessons = lazy(() => import("./pages/Lessons"));
 
 
 // Loading fallback component for Suspense
@@ -309,6 +310,14 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <ListenSeries />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/lessons"
+          element={
+            <ProtectedRoute>
+              <Lessons />
             </ProtectedRoute>
           }
         />

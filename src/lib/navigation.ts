@@ -27,6 +27,8 @@ export const routes = {
   bonusesVideos: '/bonuses?category=video', // Videos migrated to bonuses
   listen: '/listen',
   listenUpgrade: '/listen/upgrade',
+  lessons: '/lessons',
+  lessonDetail: (dayNumber: number) => `/lessons/${dayNumber}`,
   community: '/community',
   profile: '/profile',
   tracker: '/tracker',
