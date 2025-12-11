@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, CheckCircle, Sparkles, User, MessageCircle } from 'lucide-react';
+import { Plus, X, CheckCircle, Sparkles, User, MessageCircle, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
 import { toast } from 'sonner';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface QuickAction {
   id: string;
@@ -40,6 +41,7 @@ export function DashboardQuickActions({
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { triggerHaptic } = useHaptic();
+  const { user } = useAuth();
 
   const handleLogClick = () => {
     if (!canLog) {
@@ -91,6 +93,17 @@ export function DashboardQuickActions({
         setIsOpen(false);
       },
     },
+    // Programs - only visible for admins
+    ...(user?.is_admin ? [{
+      id: 'programs',
+      label: 'Programs',
+      icon: GraduationCap,
+      color: 'bg-cyan-500',
+      onClick: () => {
+        navigate('/programs');
+        setIsOpen(false);
+      },
+    }] : []),
   ];
 
   const toggleMenu = () => {
