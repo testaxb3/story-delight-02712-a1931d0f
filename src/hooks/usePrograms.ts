@@ -17,11 +17,19 @@ export interface Program {
   user_voted?: boolean;
 }
 
+export interface NextLesson {
+  day_number: number;
+  title: string;
+  summary: string | null;
+  image_url: string | null;
+}
+
 export interface ProgramWithProgress extends Program {
   lessons_completed: number[];
   started_at: string | null;
   completed_at: string | null;
   progress_percentage: number;
+  nextLesson?: NextLesson;
 }
 
 export function usePrograms() {
@@ -99,6 +107,26 @@ export function usePrograms() {
       );
       const comingSoon = programsWithData.filter(p => p.status === 'coming_soon');
       const completed = programsWithData.filter(p => p.completed_at !== null);
+
+      // Fetch next lesson for current programs
+      for (const program of current) {
+        const nextLessonNumber = program.lessons_completed.length + 1;
+        const { data: lessonData } = await supabase
+          .from('lessons')
+          .select('day_number, title, summary, image_url')
+          .eq('program_id', program.id)
+          .eq('day_number', nextLessonNumber)
+          .single();
+        
+        if (lessonData) {
+          program.nextLesson = {
+            day_number: lessonData.day_number,
+            title: lessonData.title,
+            summary: lessonData.summary,
+            image_url: lessonData.image_url
+          };
+        }
+      }
 
       return {
         all: programsWithData,
