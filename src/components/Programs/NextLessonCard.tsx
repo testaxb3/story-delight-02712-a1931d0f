@@ -36,7 +36,7 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
             <Headphones className="w-3.5 h-3.5 text-[#8D8D8D]" />
           )}
           <p className="font-normal text-sm text-[#393939]">
-            <span className="text-[#76B9FF] font-semibold">{lesson.day_number}</span> / {totalLessons}
+            <span className="text-[#76B9FF] font-semibold">{lesson.day_number}</span> out of {totalLessons}
           </p>
         </div>
       </div>
@@ -52,11 +52,11 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
           <img
             alt="lesson thumbnail"
             loading="lazy"
-            className="w-full h-[160px] rounded-[10px] object-cover"
+            className="w-full h-[200px] rounded-[10px] object-cover"
             src={lesson.image_url}
           />
         ) : (
-          <div className="w-full h-[160px] rounded-[10px] bg-gradient-to-br from-amber-50 to-orange-100" />
+          <div className="w-full h-[200px] rounded-[10px] bg-gradient-to-br from-amber-50 to-orange-100" />
         )}
         {/* Favorite Button */}
         <button
@@ -82,9 +82,9 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
       {/* Start Button */}
       <button
         onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
-        className="w-full py-4 bg-[#FF6631] text-white rounded-[10px] font-semibold text-lg hover:bg-[#e55a2a] transition-colors"
+        className="w-full py-4 bg-[#FFA500] text-white rounded-[29px] font-semibold text-lg hover:bg-[#e69500] transition-colors"
       >
-        {isFirstLesson ? 'Start' : 'Continue'}
+        {isFirstLesson ? 'Start Lesson' : 'Continue Lesson'}
       </button>
     </motion.div>
   );

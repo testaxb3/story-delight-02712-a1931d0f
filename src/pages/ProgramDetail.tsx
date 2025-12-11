@@ -5,6 +5,7 @@ import { CurrentChallengeProgressCard } from '@/components/Programs/CurrentChall
 import { ProgramBadgesSection } from '@/components/Programs/ProgramBadgesSection';
 import { NextLessonCard } from '@/components/Programs/NextLessonCard';
 import { LessonListItem } from '@/components/Programs/LessonListItem';
+import { FavoritesSection } from '@/components/Programs/FavoritesSection';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const MOCK_PROGRAM_DETAIL: ProgramDetailType = {
@@ -264,23 +265,31 @@ export default function ProgramDetail() {
     <div className="min-h-screen bg-[#FEFBF9] pb-24">
       {/* Header */}
       <header className="bg-[#FEFBF9] pt-10 pb-5 sticky top-0 z-10 border-b border-[#E8E8E6]">
-        <div className="px-5">
+        <div className="px-4">
           <div className="flex justify-between items-center">
-            <div className="flex flex-row items-center gap-5">
+            <div className="flex flex-row items-center gap-4">
               <button onClick={() => navigate('/programs')} className="p-1">
                 <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
                   <path d="M8 1L2 7.5L8 14" stroke="#303030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </button>
               <p className="text-xl text-[#303030] leading-6 font-semibold">
-                Current Program
+                Current Challenge
               </p>
             </div>
+            {/* Hamburger Menu */}
+            <button className="p-2">
+              <svg width="20" height="14" viewBox="0 0 20 14" fill="none">
+                <path d="M1 1H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M1 7H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
+                <path d="M1 13H19" stroke="#303030" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </button>
           </div>
         </div>
       </header>
 
-      <main className="px-5">
+      <main className="px-4">
         {/* Progress Card */}
         <CurrentChallengeProgressCard
           title={program.title}
@@ -301,6 +310,9 @@ export default function ProgramDetail() {
             />
           </section>
         )}
+
+        {/* Favorites Section */}
+        <FavoritesSection />
 
         {/* Achievements / Badges */}
         <ProgramBadgesSection badges={program.badges} lessonsCompleted={completedLessons.length} />
