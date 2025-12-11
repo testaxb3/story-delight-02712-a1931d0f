@@ -1,72 +1,83 @@
 import { motion } from 'framer-motion';
-import { ChevronRight, BookOpen } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramWithProgress } from '@/hooks/usePrograms';
+import { Button } from '@/components/ui/button';
 
 interface CurrentProgramCardProps {
   program: ProgramWithProgress;
+  nextLessonTitle?: string;
 }
 
-export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
+// Gradient placeholders for program illustrations
+const gradients = [
+  'from-orange-300 via-rose-300 to-pink-300',
+  'from-blue-300 via-purple-300 to-pink-300',
+  'from-teal-300 via-cyan-300 to-blue-300',
+  'from-yellow-300 via-orange-300 to-red-300',
+];
+
+export function CurrentProgramCard({ program, nextLessonTitle }: CurrentProgramCardProps) {
   const navigate = useNavigate();
   const nextLesson = program.lessons_completed.length + 1;
+  const gradientIndex = program.title.length % gradients.length;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/20 via-primary/10 to-background border border-primary/20 p-4"
-      onClick={() => navigate(`/programs/${program.slug}`)}
+      className="bg-card rounded-2xl border border-border overflow-hidden"
     >
-      {/* Gradient Background Placeholder */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-400 via-rose-400 to-purple-500" />
+      {/* Header */}
+      <div className="px-4 pt-4 pb-3 border-b border-border">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-medium text-foreground">{program.title}</span>
+          <span className="text-sm text-muted-foreground">
+            {program.lessons_completed.length} of {program.total_lessons}
+          </span>
+        </div>
       </div>
 
-      <div className="relative z-10">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-medium">
-                In Progress
-              </span>
-              <span className="text-xs text-muted-foreground">{program.age_range}</span>
-            </div>
-            <h3 className="text-lg font-semibold text-foreground line-clamp-1">
-              {program.title}
-            </h3>
-          </div>
-          <ChevronRight className="w-5 h-5 text-muted-foreground" />
-        </div>
+      {/* Lesson Title */}
+      <div className="px-4 py-3 border-b border-border">
+        <p className="text-sm text-muted-foreground">
+          Lesson {nextLesson}: <span className="font-semibold text-foreground">{nextLessonTitle || 'Continue Learning'}</span>
+        </p>
+      </div>
 
-        {/* Progress Bar */}
-        <div className="mb-3">
-          <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
-            <span>{program.lessons_completed.length} of {program.total_lessons} lessons</span>
-            <span>{program.progress_percentage}%</span>
-          </div>
-          <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
-            <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: `${program.progress_percentage}%` }}
-              transition={{ duration: 0.8, ease: 'easeOut' }}
-              className="h-full bg-gradient-to-r from-primary to-primary/80 rounded-full"
-            />
-          </div>
-        </div>
+      {/* Illustration Placeholder */}
+      <div className="relative mx-4 my-4 h-40 rounded-xl overflow-hidden">
+        <div className={`absolute inset-0 bg-gradient-to-br ${gradients[gradientIndex]}`} />
+        
+        {/* Heart button overlay */}
+        <button 
+          className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center shadow-sm"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Heart className="w-4 h-4 text-muted-foreground" />
+        </button>
 
-        {/* Continue Button */}
-        <div className="flex items-center gap-3 p-3 bg-background/80 backdrop-blur-sm rounded-xl border border-border/50">
-          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-            <BookOpen className="w-5 h-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="text-sm font-medium text-foreground">Continue Lesson {nextLesson}</p>
-            <p className="text-xs text-muted-foreground">Pick up where you left off</p>
-          </div>
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+        {/* Decorative elements for placeholder */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-full bg-white/30" />
         </div>
+      </div>
+
+      {/* Description */}
+      <div className="px-4 pb-3">
+        <p className="text-sm text-muted-foreground line-clamp-2">
+          {program.description || 'Continue your parenting journey with this program.'}
+        </p>
+      </div>
+
+      {/* CTA Button */}
+      <div className="px-4 pb-4">
+        <Button 
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium"
+          onClick={() => navigate(`/programs/${program.slug}`)}
+        >
+          Continue Learning
+        </Button>
       </div>
     </motion.div>
   );
