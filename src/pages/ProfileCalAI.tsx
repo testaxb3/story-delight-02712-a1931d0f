@@ -10,7 +10,8 @@ import {
   RefreshCw,
   Headphones,
   Music,
-  FileText
+  FileText,
+  UserPlus
 } from 'lucide-react';
 import { APP_VERSION, APP_BUILD } from '@/config/version';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -28,6 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Switch } from '@/components/ui/switch';
 import { ChildProfilesModal } from '@/components/Profile/ChildProfilesModal';
 import { LiveSupportModal } from '@/components/Profile/LiveSupportModal';
+import { FamilyShareCard } from '@/components/Settings/FamilyShareCard';
 import { notificationManager } from '@/lib/notifications';
 import { registerPushSubscriptionWithRetry, unregisterPushSubscription, isOneSignalInitialized, initOneSignal, showPermissionPrompt } from '@/lib/onesignal';
 
@@ -229,7 +231,18 @@ export default function ProfileCalAI() {
             </div>
           </div>
 
-          {/* Conditional Banner: NEP Listen Upsell or Thank You */}
+          {/* Family Sharing Card */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between px-1 mb-3">
+              <h3 className="text-[13px] font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Shared Access</h3>
+              <button onClick={() => navigate('/join-family')} className="text-blue-500 text-[15px] font-medium flex items-center gap-1">
+                <UserPlus className="w-4 h-4" />
+                Join
+              </button>
+            </div>
+            <FamilyShareCard />
+          </div>
+
           {!badgesLoading && (
             isNepListen ? (
               // User has NEP Listen - Show Thank You Banner
