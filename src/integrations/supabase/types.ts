@@ -1878,6 +1878,7 @@ export type Database = {
           display_order: number | null
           icon: string | null
           id: string
+          image_url: string | null
           name: string
           program_id: string
           requirement_type: string | null
@@ -1889,6 +1890,7 @@ export type Database = {
           display_order?: number | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name: string
           program_id: string
           requirement_type?: string | null
@@ -1900,6 +1902,7 @@ export type Database = {
           display_order?: number | null
           icon?: string | null
           id?: string
+          image_url?: string | null
           name?: string
           program_id?: string
           requirement_type?: string | null
