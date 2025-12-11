@@ -74,7 +74,7 @@ export function NextLessonCard({ lesson, programSlug, isFirstLesson = false, tot
 
       {/* Summary */}
       {lesson.summary && (
-        <p className="line-clamp-3 text-base text-[#393939] font-medium leading-[20.8px] mb-4">
+        <p className="text-base text-[#393939] font-medium leading-relaxed mb-4">
           {lesson.summary}
         </p>
       )}
