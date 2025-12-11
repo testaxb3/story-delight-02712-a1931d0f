@@ -22,6 +22,7 @@ interface User {
   photo_url?: string | null;
   quiz_completed?: boolean;
   quiz_in_progress?: boolean;
+  is_admin?: boolean;
 }
 
 interface AuthContextType {

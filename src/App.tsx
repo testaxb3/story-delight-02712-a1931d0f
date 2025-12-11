@@ -316,7 +316,7 @@ function AppContent() {
         <Route
           path="/lessons"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute requireAdmin>
               <Lessons />
             </ProtectedRoute>
           }

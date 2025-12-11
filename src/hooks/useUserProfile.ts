@@ -24,6 +24,7 @@ interface User {
   photo_url?: string | null;
   quiz_completed?: boolean;
   quiz_in_progress?: boolean;
+  is_admin?: boolean;
 }
 
 /**
@@ -48,7 +49,7 @@ export function useUserProfile(userId: string | undefined, email: string | undef
         // ✅ PERFORMANCE: Only select needed columns (was selecting all ~22 fields)
         const { data: profile, error } = await supabase
           .from('profiles')
-          .select('id, name, email, premium, photo_url, quiz_completed, quiz_in_progress')
+          .select('id, name, email, premium, photo_url, quiz_completed, quiz_in_progress, is_admin')
           .eq('id', userId)
           .single();
 
@@ -79,7 +80,8 @@ export function useUserProfile(userId: string | undefined, email: string | undef
           profileId: profile?.id || userId,
           photo_url: profile?.photo_url || null,
           quiz_completed: profile?.quiz_completed ?? false,
-          quiz_in_progress: profile?.quiz_in_progress ?? false
+          quiz_in_progress: profile?.quiz_in_progress ?? false,
+          is_admin: profile?.is_admin ?? false
         };
 
         // Set Sentry user context for error tracking
