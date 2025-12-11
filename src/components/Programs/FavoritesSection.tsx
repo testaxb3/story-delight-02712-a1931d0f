@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
+import clickFavoriteImg from '@/assets/click-favorite.svg';
 
 export function FavoritesSection() {
   return (
@@ -21,16 +22,11 @@ export function FavoritesSection() {
       <div className="bg-white rounded-xl border border-[#F0F0F0] p-6 flex flex-col items-center justify-center">
         {/* Illustration */}
         <div className="mb-4">
-          <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Hand */}
-            <path d="M25 55C25 55 30 45 35 40C40 35 45 35 45 35" stroke="#E0E0E0" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="48" cy="32" r="8" fill="#FFE4E4" stroke="#FF6B6B" strokeWidth="2"/>
-            {/* Heart in circle */}
-            <path d="M48 29C46.5 27.5 44 28 44 30C44 31 45 32 48 35C51 32 52 31 52 30C52 28 49.5 27.5 48 29Z" fill="#FF6B6B"/>
-            {/* Finger pointing */}
-            <path d="M20 60L30 50" stroke="#E0E0E0" strokeWidth="3" strokeLinecap="round"/>
-            <circle cx="18" cy="62" r="4" fill="#F5F5F5" stroke="#E0E0E0" strokeWidth="2"/>
-          </svg>
+          <img 
+            src={clickFavoriteImg} 
+            alt="Click to favorite" 
+            className="w-[180px] h-auto"
+          />
         </div>
         
         <p className="text-[#FFA500] font-semibold text-base mb-1">No favorites yet</p>
