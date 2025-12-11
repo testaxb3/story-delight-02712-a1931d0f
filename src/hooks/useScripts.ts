@@ -6,36 +6,25 @@ type ScriptRow = Database['public']['Tables']['scripts']['Row'];
 
 interface UseScriptsOptions {
   brainProfile?: string | null;
-  childAge?: number | null;
   enabled?: boolean;
 }
 
-export function useScripts({ brainProfile, childAge, enabled = true }: UseScriptsOptions = {}) {
+export function useScripts({ brainProfile, enabled = true }: UseScriptsOptions = {}) {
   const queryClient = useQueryClient();
 
   const query = useQuery({
-    queryKey: ['scripts', brainProfile, childAge],
+    queryKey: ['scripts', brainProfile],
     queryFn: async () => {
       if (!brainProfile) {
         return [];
       }
 
-      // Build query with profile filter
-      let queryBuilder = supabase
+      const { data, error } = await supabase
         .from('scripts')
         .select('*')
         .eq('profile', brainProfile.toUpperCase())
         .order('created_at', { ascending: false })
         .limit(100);
-
-      // Add age filtering if childAge is provided
-      if (childAge !== null && childAge !== undefined) {
-        queryBuilder = queryBuilder
-          .lte('age_min', childAge)  // age_min <= childAge
-          .gte('age_max', childAge); // age_max >= childAge
-      }
-
-      const { data, error } = await queryBuilder;
 
       if (error) {
         console.error('Failed to load scripts:', error);
@@ -52,27 +41,20 @@ export function useScripts({ brainProfile, childAge, enabled = true }: UseScript
   });
 
   const invalidate = () => {
-    queryClient.invalidateQueries({ queryKey: ['scripts', brainProfile, childAge] });
+    queryClient.invalidateQueries({ queryKey: ['scripts', brainProfile] });
   };
 
-  const prefetch = async (profile: string, age?: number | null) => {
+  const prefetch = async (profile: string) => {
     await queryClient.prefetchQuery({
-      queryKey: ['scripts', profile, age],
+      queryKey: ['scripts', profile],
       queryFn: async () => {
-        let queryBuilder = supabase
+        const { data } = await supabase
           .from('scripts')
           .select('*')
           .eq('profile', profile.toUpperCase())
           .order('created_at', { ascending: false })
           .limit(100);
 
-        if (age !== null && age !== undefined) {
-          queryBuilder = queryBuilder
-            .lte('age_min', age)
-            .gte('age_max', age);
-        }
-
-        const { data } = await queryBuilder;
         return data ?? [];
       },
     });
