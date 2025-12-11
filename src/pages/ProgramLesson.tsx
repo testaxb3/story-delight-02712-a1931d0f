@@ -419,42 +419,42 @@ export default function ProgramLesson() {
             )}
           </motion.div>
         ))}
+
+        {/* Mark as Completed - After all content */}
+        <div className="mt-8 pt-6 border-t border-[#E8E8E6]">
+          <p className="text-sm text-[#666] text-center mb-3">
+            After completing the lesson, click the button below and let us know you're ready to go to the next one.
+          </p>
+
+          <button
+            onClick={handleComplete}
+            disabled={isCompleting || isCompleted}
+            className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${
+              isCompleted
+                ? 'bg-green-500 text-white'
+                : 'bg-[#FF6631] text-white hover:bg-[#e55a2a]'
+            }`}
+          >
+            {isCompleting ? (
+              <span className="flex items-center justify-center gap-2">
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Saving...
+              </span>
+            ) : isCompleted ? (
+              <span className="flex items-center justify-center gap-2">
+                <CheckCircle2 className="w-5 h-5" />
+                Completed
+              </span>
+            ) : (
+              'Mark as Completed'
+            )}
+          </button>
+
+          <button className="w-full py-3 mt-2 rounded-xl border border-[#393939] text-[#393939] font-medium">
+            Add note to this lesson
+          </button>
+        </div>
       </main>
-
-      {/* Fixed Bottom Actions */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[#FEFBF9] border-t border-[#E8E8E6] px-5 py-4 pb-[calc(env(safe-area-inset-bottom)+16px)]">
-        <p className="text-sm text-[#666] text-center mb-3">
-          After completing the lesson, click the button below and let us know you're ready to go to the next one.
-        </p>
-
-        <button
-          onClick={handleComplete}
-          disabled={isCompleting || isCompleted}
-          className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${
-            isCompleted
-              ? 'bg-green-500 text-white'
-              : 'bg-[#FF6631] text-white hover:bg-[#e55a2a]'
-          }`}
-        >
-          {isCompleting ? (
-            <span className="flex items-center justify-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              Saving...
-            </span>
-          ) : isCompleted ? (
-            <span className="flex items-center justify-center gap-2">
-              <CheckCircle2 className="w-5 h-5" />
-              Completed
-            </span>
-          ) : (
-            'Mark as Completed'
-          )}
-        </button>
-
-        <button className="w-full py-3 mt-2 rounded-xl border border-[#393939] text-[#393939] font-medium">
-          Add note to this lesson
-        </button>
-      </div>
 
       {/* Completion Celebration */}
       <AnimatePresence>
