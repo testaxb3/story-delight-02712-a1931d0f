@@ -8,6 +8,7 @@ import { useProgramDetail, useCompleteLesson } from '@/hooks/useProgramDetail';
 import { Skeleton } from '@/components/ui/skeleton';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
+import { OptimizedYouTubePlayer } from '@/components/VideoPlayer/OptimizedYouTubePlayer';
 
 // Mock lesson content for picky-eating program
 const MOCK_LESSON_CONTENT = {
@@ -16,6 +17,8 @@ const MOCK_LESSON_CONTENT = {
   audio_url: null,
   audio_duration: '04:21',
   summary: `Have you ever found yourself frustrated because your toddler refuses to eat anything but chicken nuggets or apple slices? If so, you're not alone. Picky eating is a common concern among parents, especially during the toddler years.`,
+  video_url: 'https://www.youtube.com/watch?v=oecQiEkzgm4',
+  video_id: 'oecQiEkzgm4',
   sections: [
     {
       type: 'heading',
@@ -27,7 +30,7 @@ const MOCK_LESSON_CONTENT = {
     },
     {
       type: 'paragraph',
-      content: `During this stage, children are learning to assert their independence and are developing their sense of self. One of the ways they do this is by making choices about what they eat – or more often, what they won't eat!`
+      content: `During this stage, children are learning to assert their independence and are developing their sense of self. One of the ways they do this is by making choices about what they eat – or more often, what they *won't* eat!`
     },
     {
       type: 'heading',
@@ -59,13 +62,28 @@ const MOCK_LESSON_CONTENT = {
       ]
     },
     {
+      type: 'paragraph',
+      content: `To better understand your child's eating habits and identify patterns, we recommend keeping a **FOOD DIARY** for a week. Here's how you can do it:`
+    },
+    {
+      type: 'bullets',
+      items: [
+        'Each day, write down everything your child eats and drinks, including portion sizes.',
+        'Record the time of day, the type of food, and the amount eaten.',
+        "Note your child's mood (e.g., happy, tired, cranky) and the mealtime environment (e.g., quiet, rushed, lots of distractions)."
+      ]
+    },
+    {
       type: 'callout',
-      label: 'Why it Helps:',
+      label: 'Why It Helps:',
       content: `A food diary can help you see if there are specific foods your child tends to accept or reject, and if there are patterns related to time of day, mood, or environment. This information can be incredibly useful in identifying triggers for picky eating and planning strategies to address them.`
     },
     {
       type: 'paragraph',
-      content: `To better understand why toddlers become picky eaters and how you can support them through this stage, take a few minutes to watch the insightful TEDx Talk by Katie Kimball. It's a great presentation that offers valuable tips and perspectives on navigating this phase with patience and understanding:`
+      content: `To better understand why toddlers become picky eaters and how you can support them through this stage, take a few minutes to watch the insightful **TEDx Talk by Katie Kimball**. It's a great presentation that offers valuable tips and perspectives on navigating this phase with **patience** and **understanding**:`
+    },
+    {
+      type: 'video'
     }
   ]
 };
@@ -332,9 +350,14 @@ export default function ProgramLesson() {
             )}
 
             {section.type === 'paragraph' && (
-              <p className="text-[15px] text-[#393939] leading-relaxed mb-4">
-                {section.content}
-              </p>
+              <p 
+                className="text-[15px] text-[#393939] leading-relaxed mb-4"
+                dangerouslySetInnerHTML={{
+                  __html: (section.content || '')
+                    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                }}
+              />
             )}
 
             {section.type === 'timeline' && (
@@ -358,30 +381,44 @@ export default function ProgramLesson() {
               </div>
             )}
 
+            {section.type === 'bullets' && (
+              <div className="space-y-0 mb-4">
+                {section.items?.map((item, i) => (
+                  <div key={i} className="flex gap-3">
+                    {/* Timeline Line */}
+                    <div className="flex flex-col items-center">
+                      <div className="w-3 h-3 rounded-full bg-[#FFA500] flex-shrink-0 mt-1.5" />
+                      {i < (section.items?.length || 0) - 1 && (
+                        <div className="w-0.5 flex-1 bg-[#FFA500] min-h-[40px]" />
+                      )}
+                    </div>
+                    {/* Content */}
+                    <div className="pb-3 flex-1">
+                      <p className="text-[14px] text-[#393939] leading-relaxed">{item}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {section.type === 'callout' && (
               <div className="bg-[#FFF8E7] rounded-xl p-4 border-l-4 border-[#FFA500]">
                 <p className="text-[15px] text-[#393939] leading-relaxed">
-                  <span className="font-bold">{section.label}</span> {section.content}
+                  <span className="font-bold italic">{section.label}</span> {section.content}
                 </p>
+              </div>
+            )}
+
+            {section.type === 'video' && MOCK_LESSON_CONTENT.video_url && (
+              <div className="rounded-xl overflow-hidden aspect-video">
+                <OptimizedYouTubePlayer
+                  videoUrl={MOCK_LESSON_CONTENT.video_url}
+                  videoId={MOCK_LESSON_CONTENT.video_id}
+                />
               </div>
             )}
           </motion.div>
         ))}
-
-        {/* Video Embed Placeholder */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-5 bg-[#1a1a1a] rounded-xl aspect-video flex items-center justify-center"
-        >
-          <div className="text-center text-white/60">
-            <div className="w-12 h-12 rounded-full border-2 border-white/40 flex items-center justify-center mx-auto mb-2">
-              <Play className="w-5 h-5 text-white/60" />
-            </div>
-            <p className="text-sm">Video content</p>
-          </div>
-        </motion.div>
       </main>
 
       {/* Fixed Bottom Actions */}
