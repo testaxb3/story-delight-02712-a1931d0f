@@ -450,9 +450,6 @@ export default function ProgramLesson() {
             )}
           </button>
 
-          <button className="w-full py-3 mt-2 rounded-xl border border-[#393939] text-[#393939] font-medium">
-            Add note to this lesson
-          </button>
         </div>
       </main>
 
