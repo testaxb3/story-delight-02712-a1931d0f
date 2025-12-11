@@ -64,6 +64,7 @@ const GenerateWelcomePDF = lazy(() => import("./pages/GenerateWelcomePDF"));
 const Achievements = lazy(() => import("./pages/Achievements"));
 const UserProfile = lazy(() => import("./pages/UserProfile"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const JoinFamily = lazy(() => import("./pages/JoinFamily"));
 
 
 // Loading fallback component for Suspense
@@ -356,6 +357,16 @@ function AppContent() {
           element={
             <ProtectedRoute>
               <UserProfile />
+            </ProtectedRoute>
+          }
+        />
+        
+        {/* Join Family - Public route for accepting invites */}
+        <Route
+          path="/join-family"
+          element={
+            <ProtectedRoute>
+              <JoinFamily />
             </ProtectedRoute>
           }
         />

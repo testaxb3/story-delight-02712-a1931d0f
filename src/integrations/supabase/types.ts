@@ -1056,6 +1056,102 @@ export type Database = {
           },
         ]
       }
+      family_shares: {
+        Row: {
+          accepted_at: string | null
+          created_at: string
+          id: string
+          invite_code: string
+          owner_id: string
+          partner_email: string
+          partner_id: string | null
+          revoked_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invite_code: string
+          owner_id: string
+          partner_email: string
+          partner_id?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          accepted_at?: string | null
+          created_at?: string
+          id?: string
+          invite_code?: string
+          owner_id?: string
+          partner_email?: string
+          partner_id?: string | null
+          revoked_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_shares_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: true
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "family_shares_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: true
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_shares_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_shares_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: true
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_shares_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "dashboard_stats"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "family_shares_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "leaderboard_cache"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_shares_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_shares_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "public_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       favorite_scripts: {
         Row: {
           created_at: string | null
@@ -4168,6 +4264,7 @@ export type Database = {
       }
     }
     Functions: {
+      accept_family_invite: { Args: { p_invite_code: string }; Returns: Json }
       acknowledge_app_update: { Args: never; Returns: Json }
       add_bookmark: {
         Args: {
@@ -4222,6 +4319,7 @@ export type Database = {
         Returns: undefined
       }
       force_app_update: { Args: { update_message?: string }; Returns: Json }
+      generate_family_invite_code: { Args: never; Returns: string }
       generate_invite_code: { Args: never; Returns: string }
       get_admin_player_ids: {
         Args: never
@@ -4244,6 +4342,7 @@ export type Database = {
           username: string
         }[]
       }
+      get_family_owner_id: { Args: { p_user_id: string }; Returns: string }
       get_orphaned_ebooks: {
         Args: never
         Returns: {
