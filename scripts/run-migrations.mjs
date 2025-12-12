@@ -31,6 +31,7 @@ async function runMigrations() {
   const migrations = [
     '20251021000000_add_tracker_metrics.sql',
     '20251021000100_normalize_child_profiles.sql',
+    '20251212001000_fix_lesson_4_content.sql',
   ];
 
   for (const migration of migrations) {

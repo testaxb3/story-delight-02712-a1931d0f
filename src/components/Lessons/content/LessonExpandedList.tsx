@@ -6,7 +6,7 @@ interface Props {
 
 export function LessonExpandedList({ data }: Props) {
   return (
-    <div className="mb-6">
+    <div className="mb-6 px-5">
       {data.title && (
         <h3 className="text-lg font-bold text-[#393939] dark:text-foreground mb-4">{data.title}</h3>
       )}

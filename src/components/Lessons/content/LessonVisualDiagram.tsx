@@ -7,7 +7,7 @@ interface Props {
 
 export function LessonVisualDiagram({ data }: Props) {
   return (
-    <div className="mb-8">
+    <div className="mb-8 px-5">
       <h3 className="text-lg font-bold text-[#393939] dark:text-foreground mb-4">
         {data.title}
       </h3>

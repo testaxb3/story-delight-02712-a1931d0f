@@ -1,8 +1,9 @@
-import { motion } from 'framer-motion';
-import { CheckCircle2, Clock, CalendarDays, Zap, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { CheckCircle2, Clock, CalendarDays, Zap, BookOpen, WifiOff } from 'lucide-react';
 import { MainLayout } from '@/components/Layout/MainLayout';
 import { usePrograms } from '@/hooks/usePrograms';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { ProgramsStreakCard } from '@/components/Programs/ProgramsStreakCard';
 import { CurrentProgramCard } from '@/components/Programs/CurrentProgramCard';
 import { AvailableProgramCard } from '@/components/Programs/AvailableProgramCard';
@@ -15,19 +16,56 @@ import { useNavigate } from 'react-router-dom';
 export default function Programs() {
   const { data, isLoading } = usePrograms();
   const navigate = useNavigate();
-  
+  const isOnline = useOnlineStatus();
+
   const { data: stats } = useDashboardStats();
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-[#FEFBF9] pb-[60px]">
+      <div className="min-h-screen bg-[#FEFBF9] pb-[120px]">
         {/* Safe area spacing */}
         <div className="h-[env(safe-area-inset-top)]" />
 
-        {isLoading ? (
-          <ProgramsSkeleton />
-        ) : (
-          <div className="container px-4 pt-4">
+        {/* Offline Indicator */}
+        <AnimatePresence>
+          {!isOnline && (
+            <motion.div
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -50, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 shadow-lg"
+            >
+              <div className="flex items-center justify-center gap-2">
+                <WifiOff className="w-4 h-4 animate-pulse" />
+                <span className="text-sm font-medium">
+                  You're offline. Showing cached content.
+                </span>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ProgramsSkeleton />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+              className="container px-4 pt-4"
+            >
             <section className="pt-[20px] pb-[10px]">
               {/* Programs Completed Card */}
               <ProgramsStreakCard 
@@ -107,22 +145,64 @@ export default function Programs() {
 
             {/* Empty State */}
             {!data?.current?.length && !data?.available?.length && !data?.comingSoon?.length && !data?.completed?.length && (
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="py-12 text-center"
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="py-16 px-4 text-center"
               >
-                <div className="w-16 h-16 rounded-full bg-[#F9F5F2] mx-auto mb-4 flex items-center justify-center border border-[#F0E6DF]">
-                  <span className="text-2xl">📚</span>
+                <div className="max-w-md mx-auto">
+                  {/* Animated Icon */}
+                  <motion.div
+                    className="relative w-24 h-24 mx-auto mb-6"
+                    animate={{
+                      rotate: [0, 5, -5, 0],
+                      scale: [1, 1.05, 1]
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "easeInOut"
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-100 to-amber-100 rounded-full opacity-50 blur-xl" />
+                    <div className="relative w-full h-full rounded-full bg-gradient-to-br from-orange-50 to-amber-50 flex items-center justify-center border-2 border-orange-200 shadow-lg">
+                      <BookOpen className="w-12 h-12 text-[#FF6631]" />
+                    </div>
+                  </motion.div>
+
+                  {/* Text Content */}
+                  <h3 className="text-2xl font-bold text-[#393939] mb-3 bg-gradient-to-r from-[#FF6631] to-[#FFA300] bg-clip-text text-transparent">
+                    No Programs Yet
+                  </h3>
+                  <p className="text-base text-[#8D8D8D] leading-relaxed mb-6">
+                    Your parenting journey awaits! New programs will appear here soon to help you become the best parent you can be.
+                  </p>
+
+                  {/* Decorative Elements */}
+                  <div className="flex justify-center gap-2">
+                    {[0, 1, 2].map((i) => (
+                      <motion.div
+                        key={i}
+                        className="w-2 h-2 rounded-full bg-gradient-to-r from-[#FF6631] to-[#FFA300]"
+                        animate={{
+                          scale: [1, 1.5, 1],
+                          opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: i * 0.2
+                        }}
+                      />
+                    ))}
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-[#393939] mb-2">No Programs Yet</h3>
-                <p className="text-sm text-[#8D8D8D]">
-                  New programs will appear here soon!
-                </p>
               </motion.div>
             )}
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </MainLayout>
   );
@@ -132,29 +212,76 @@ function ProgramsSkeleton() {
   return (
     <div className="px-4 pt-4 space-y-6">
       {/* Streak Card Skeleton */}
-      <Skeleton className="h-24 w-full rounded-2xl" />
-      
-      {/* Current Challenge Skeleton */}
-      <div>
-        <Skeleton className="h-4 w-32 mb-3" />
-        <Skeleton className="h-72 w-full rounded-2xl" />
+      <div className="relative h-24 w-full rounded-2xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
       </div>
-      
-      {/* Available Programs Skeleton */}
-      <div>
-        <Skeleton className="h-4 w-48 mb-3" />
-        <div className="space-y-3">
-          <Skeleton className="h-24 w-full rounded-xl" />
-          <Skeleton className="h-24 w-full rounded-xl" />
+
+      {/* Current Challenge Skeleton */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="relative h-5 w-5 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="relative h-5 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl p-4 border border-gray-100 space-y-3">
+          <div className="relative h-4 w-3/4 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="relative h-40 w-full rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="space-y-2">
+            <div className="relative h-4 w-full rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+            <div className="relative h-4 w-2/3 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          </div>
+          <div className="relative h-12 w-full rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
         </div>
       </div>
-      
+
+      {/* Available Programs Skeleton */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="relative h-5 w-5 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="relative h-5 w-48 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          {[1, 2].map((i) => (
+            <div key={i} className="relative h-24 w-full rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Coming Soon Skeleton */}
-      <div>
-        <Skeleton className="h-4 w-32 mb-3" />
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="relative h-5 w-5 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="relative h-5 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+        </div>
         <div className="grid grid-cols-2 gap-3">
-          <Skeleton className="h-48 rounded-xl" />
-          <Skeleton className="h-48 rounded-xl" />
+          {[1, 2].map((i) => (
+            <div key={i} className="relative h-48 rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          ))}
         </div>
       </div>
     </div>

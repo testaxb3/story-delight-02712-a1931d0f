@@ -37,7 +37,7 @@ export function LessonCallout({ data }: Props) {
   const style = variants[variant];
 
   return (
-    <div className="mb-6">
+    <div className="mb-6 px-5">
       <div className="relative flex">
         {/* Yellow dot on the line */}
         <div className={cn(

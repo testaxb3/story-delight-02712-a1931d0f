@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Play, Pause, Heart, CheckCircle2, Loader2, ChevronLeft } from 'lucide-react';
+import { Play, Pause, Heart, CheckCircle2, Loader2, ChevronLeft, BookOpen } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProgramDetail, useCompleteLesson } from '@/hooks/useProgramDetail';
@@ -155,89 +155,126 @@ export default function ProgramLesson() {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-foreground mb-2">Lesson Not Found</h2>
-          <p className="text-sm text-muted-foreground mb-4">This lesson doesn't exist yet.</p>
-          <button
+      <div className="min-h-screen bg-[#F8F8F8] dark:bg-background flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center max-w-sm"
+        >
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-950 dark:to-amber-950 flex items-center justify-center">
+            <BookOpen className="w-10 h-10 text-[#FF6631]" />
+          </div>
+          <h2 className="text-2xl font-bold text-foreground mb-3">Lesson Not Found</h2>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+            This lesson doesn't exist yet. It will be available soon as part of this program.
+          </p>
+          <motion.button
             onClick={() => navigate(`/programs/${slug}`)}
-            className="text-primary text-sm font-medium"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="px-6 py-3 bg-gradient-to-r from-[#FF6631] to-[#FF8551] text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow"
           >
             Back to Program
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-[#F8F8F8] dark:bg-background pb-32">
-      {/* Simple Header */}
-      <header className="px-4 pt-12 pb-4">
-        <div className="flex items-center justify-between">
-          <button 
-            onClick={() => navigate(`/programs/${slug}`)} 
-            className="flex items-center gap-2 text-foreground"
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span className="text-lg font-semibold">Lesson {lessonNumber}</span>
-          </button>
+      {/* Header with safe area - sticky covers entire top including status bar */}
+      <header className="sticky top-0 z-10 bg-[#F8F8F8] dark:bg-background shadow-sm">
+        {/* Safe area spacing inside sticky header */}
+        <div className="h-[env(safe-area-inset-top)]" />
+        {/* Header content */}
+        <div className="px-5 pt-4 pb-4">
+          <div className="flex items-center justify-between">
+            <motion.button
+              onClick={() => navigate(`/programs/${slug}`)}
+              className="flex items-center gap-2 text-foreground"
+              whileHover={{ x: -4 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ChevronLeft className="w-5 h-5" />
+              <span className="text-lg font-semibold">Lesson {lessonNumber}</span>
+            </motion.button>
+          </div>
         </div>
       </header>
 
-      <main className="px-4">
+      <motion.main
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="px-5"
+      >
         {/* Hero Card Container */}
-        <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-border/30 overflow-hidden mb-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="bg-white dark:bg-card rounded-2xl shadow-md border border-border/30 overflow-hidden mb-6"
+        >
           {/* Title inside card */}
-          <div className="px-4 pt-4">
-            <h1 className="text-lg font-bold text-[#393939] dark:text-foreground leading-tight">
+          <div className="px-5 pt-5">
+            <h1 className="text-xl font-bold text-[#393939] dark:text-foreground leading-tight">
               Lesson {lessonNumber}. {lesson.title}
             </h1>
           </div>
-          
+
           {/* Cover Image with Heart overlay */}
           {lesson.image_url && (
-            <div className="relative mt-3 mx-4">
+            <div className="relative mt-4 mx-5">
               <img
                 src={lesson.image_url}
                 alt={lesson.title}
-                className="w-full h-44 object-cover rounded-xl"
+                className="w-full h-48 object-cover rounded-xl"
               />
               {lesson?.id && program && (
-                <button
+                <motion.button
                   onClick={() => toggleFavorite.mutate({ lessonId: lesson.id, programId: program.id })}
                   disabled={toggleFavorite.isPending}
-                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 dark:bg-black/50 flex items-center justify-center shadow-sm"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/95 dark:bg-black/60 backdrop-blur-sm flex items-center justify-center shadow-lg transition-all"
                 >
                   <Heart
-                    className={`w-5 h-5 transition-colors ${
-                      isFavorite(lesson.id) 
-                        ? 'fill-red-500 text-red-500' 
+                    className={`w-5 h-5 transition-all ${
+                      isFavorite(lesson.id)
+                        ? 'fill-red-500 text-red-500 scale-110'
                         : 'text-[#393939] dark:text-white'
                     }`}
                   />
-                </button>
+                </motion.button>
               )}
             </div>
           )}
           
           {/* Audio Player - Inline Simple */}
           {lesson.audio_url && (
-            <div className="px-4 py-3">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.2 }}
+              className="px-5 py-4 bg-gradient-to-r from-orange-50/50 to-amber-50/50 dark:from-orange-950/20 dark:to-amber-950/20"
+            >
               <audio ref={audioRef} src={lesson.audio_url} preload="metadata" />
               <div className="flex items-center gap-3">
-                <button
+                <motion.button
                   onClick={togglePlay}
-                  className="w-11 h-11 rounded-full bg-[#FF6631] flex items-center justify-center flex-shrink-0 shadow-sm"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="w-12 h-12 rounded-full bg-gradient-to-br from-[#FF6631] to-[#FF8551] flex items-center justify-center flex-shrink-0 shadow-lg hover:shadow-xl transition-shadow"
                 >
                   {isPlaying ? (
                     <Pause className="w-5 h-5 text-white" />
                   ) : (
                     <Play className="w-5 h-5 text-white ml-0.5" />
                   )}
-                </button>
+                </motion.button>
                 <div className="flex-1">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
+                  <div className="flex justify-between text-xs font-medium text-muted-foreground mb-2">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                   </div>
@@ -247,48 +284,60 @@ export default function ProgramLesson() {
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="w-full h-1.5 bg-[#E5E5E5] dark:bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:bg-[#FF6631] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-sm"
+                    className="w-full h-2 bg-[#E5E5E5] dark:bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-[#FF6631] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-md [&::-webkit-slider-thumb]:hover:shadow-lg [&::-webkit-slider-thumb]:transition-shadow"
                   />
                 </div>
               </div>
-            </div>
+            </motion.div>
           )}
-          
+
           {/* Summary/Description */}
           {lesson.summary && (
-            <div className="px-4 pb-4">
+            <div className="px-5 pb-5">
               <p className="text-[15px] text-[#393939]/80 dark:text-muted-foreground leading-relaxed">
                 {lesson.summary}
               </p>
             </div>
           )}
-        </div>
+        </motion.div>
 
         {/* Content */}
         {parsedContent ? (
-          <div className="lesson-content">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+            className="lesson-content"
+          >
             <LessonContentRenderer content={parsedContent} skipHero />
-          </div>
+          </motion.div>
         ) : (
-          <div className="text-[15px] text-foreground leading-relaxed whitespace-pre-line">
+          <div className="text-[15px] text-foreground leading-relaxed whitespace-pre-line px-5">
             {lesson.summary}
           </div>
         )}
 
         {/* Mark as Completed */}
-        <div className="mt-8 pt-6 border-t border-border">
-          <p className="text-sm text-muted-foreground text-center mb-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-8 pt-6 border-t border-border"
+        >
+          <p className="text-sm text-muted-foreground text-center mb-4 px-2">
             After completing the lesson, click the button below and let us know you're ready to go to the next one.
           </p>
 
-          <button
+          <motion.button
             onClick={handleComplete}
             disabled={isCompleting || isCompleted}
-            className={`w-full py-4 rounded-xl font-semibold text-lg transition-colors ${
+            whileHover={!isCompleted && !isCompleting ? { scale: 1.02 } : {}}
+            whileTap={!isCompleted && !isCompleting ? { scale: 0.98 } : {}}
+            className={`w-full py-4 rounded-xl font-semibold text-lg transition-all shadow-md ${
               isCompleted
-                ? 'bg-green-500 text-white'
-                : 'bg-primary text-primary-foreground hover:bg-primary/90'
-            }`}
+                ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-green-500/30'
+                : 'bg-gradient-to-r from-[#FF6631] to-[#FF8551] text-white hover:shadow-lg hover:shadow-orange-500/40'
+            } ${isCompleting || isCompleted ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {isCompleting ? (
               <span className="flex items-center justify-center gap-2">
@@ -303,9 +352,9 @@ export default function ProgramLesson() {
             ) : (
               'Mark as Completed'
             )}
-          </button>
-        </div>
-      </main>
+          </motion.button>
+        </motion.div>
+      </motion.main>
 
       {/* Completion Celebration */}
       <AnimatePresence>
@@ -343,18 +392,71 @@ export default function ProgramLesson() {
 
 function LessonSkeleton() {
   return (
-    <div className="min-h-screen bg-background px-5 pt-12">
-      <Skeleton className="h-6 w-32 mb-6" />
-      <Skeleton className="h-48 w-full rounded-2xl mb-4" />
-      <Skeleton className="h-11 w-full rounded-full mb-4" />
-      <Skeleton className="h-7 w-3/4 mb-2" />
-      <Skeleton className="h-4 w-full mb-1" />
-      <Skeleton className="h-4 w-2/3 mb-6" />
-      <Skeleton className="h-px w-full mb-6" />
-      <Skeleton className="h-5 w-48 mb-3" />
-      <Skeleton className="h-4 w-full mb-2" />
-      <Skeleton className="h-4 w-full mb-2" />
-      <Skeleton className="h-4 w-3/4" />
+    <div className="min-h-screen bg-[#F8F8F8] dark:bg-background pb-32">
+      {/* Header Skeleton */}
+      <header className="sticky top-0 z-10 bg-[#F8F8F8] dark:bg-background shadow-sm">
+        <div className="h-[env(safe-area-inset-top)]" />
+        <div className="px-5 pt-4 pb-4">
+          <div className="relative h-6 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+        </div>
+      </header>
+
+      <div className="px-5">
+        {/* Hero Card Skeleton */}
+        <div className="bg-white dark:bg-card rounded-2xl shadow-md border border-border/30 overflow-hidden mb-6 p-5">
+          {/* Title */}
+          <div className="relative h-7 w-3/4 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden mb-4">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+
+          {/* Image */}
+          <div className="relative h-48 w-full rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden mb-4">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+
+          {/* Audio Player */}
+          <div className="bg-orange-50/50 dark:bg-orange-950/20 rounded-xl p-4 mb-4">
+            <div className="flex items-center gap-3">
+              <div className="relative w-12 h-12 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="relative h-2 w-full rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary */}
+          <div className="space-y-2">
+            <div className="relative h-4 w-full rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+            <div className="relative h-4 w-5/6 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          </div>
+        </div>
+
+        {/* Content Skeleton */}
+        <div className="space-y-3 mb-8">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="relative h-4 w-full rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          ))}
+        </div>
+
+        {/* Button Skeleton */}
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="relative h-14 w-full rounded-xl bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

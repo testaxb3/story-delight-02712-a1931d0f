@@ -8,13 +8,13 @@ interface Props {
 export function LessonNumberedList({ data }: Props) {
   if (data.variant === 'timeline') {
     return (
-      <div className="mb-6">
+      <div className="mb-6 px-5">
         {data.title && (
           <h3 className="text-lg font-bold text-[#393939] dark:text-foreground mb-4">
             {data.title}
           </h3>
         )}
-        
+
         <div className="space-y-3">
           {data.items.map((item) => (
             <div key={item.number} className="relative flex">
@@ -43,7 +43,7 @@ export function LessonNumberedList({ data }: Props) {
 
   // Default / Circled Number style
   return (
-    <div className="mb-6">
+    <div className="mb-6 px-5">
       {data.title && (
         <h3 className="text-lg font-bold text-[#393939] dark:text-foreground mb-4">
           {data.title}

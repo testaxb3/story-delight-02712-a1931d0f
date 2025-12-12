@@ -13,7 +13,7 @@ export function LessonText({ data }: Props) {
   };
 
   return (
-    <p className={cn('mb-4 text-[15px] leading-[1.7]', variants[data.variant || 'default'])}>
+    <p className={cn('mb-4 px-5 text-[15px] leading-[1.7]', variants[data.variant || 'default'])}>
       {data.content}
     </p>
   );

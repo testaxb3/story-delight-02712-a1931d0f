@@ -16,7 +16,8 @@ export function AvailableProgramCard({ program, index = 0 }: AvailableProgramCar
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
       whileTap={{ scale: 0.98 }}
-      className="flex flex-col gap-[10px] bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] px-[10px] py-[20px] cursor-pointer"
+      whileHover={{ y: -2, boxShadow: "0 8px 16px -4px rgba(39, 145, 224, 0.12)" }}
+      className="flex flex-col gap-[10px] bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] px-[16px] py-[20px] cursor-pointer shadow-sm hover:shadow-md transition-shadow"
       onClick={() => navigate(`/programs/${program.slug}`)}
     >
       <div className="flex flex-row items-center gap-[10px]">

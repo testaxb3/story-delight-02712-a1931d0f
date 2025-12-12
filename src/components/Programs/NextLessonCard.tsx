@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Heart, Clock, Headphones } from 'lucide-react';
@@ -15,13 +16,19 @@ interface NextLessonCardProps {
 export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson = false, totalLessons }: NextLessonCardProps) {
   const navigate = useNavigate();
   const { isFavorite, toggleFavorite } = useFavoriteLessons(programId);
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+
+  // Check if summary is long enough to need truncation (more than ~150 characters)
+  const needsTruncation = (lesson.summary?.length || 0) > 150;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="w-full flex flex-col bg-white rounded-[10px] border border-[#F7F2F0] py-3.5 px-2.5"
+      whileHover={{ y: -4, boxShadow: "0 12px 24px -8px rgba(255, 165, 0, 0.15)" }}
+      className="w-full flex flex-col bg-white rounded-[10px] border border-[#F7F2F0] py-4 px-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
     >
       {/* Header */}
       <div className="flex flex-row items-center justify-between gap-2.5 border-b border-[#DADADA] pb-2">
@@ -60,7 +67,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
           <div className="w-full h-[200px] rounded-[10px] bg-gradient-to-br from-amber-50 to-orange-100" />
         )}
         {/* Favorite Button */}
-        <button
+        <motion.button
           onClick={(e) => {
             e.stopPropagation();
             if (lesson.id) {
@@ -68,28 +75,49 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
             }
           }}
           disabled={toggleFavorite.isPending}
-          className="w-[32px] h-[32px] absolute right-3 top-3 z-[1] bg-white/80 rounded-full flex items-center justify-center cursor-pointer hover:bg-white transition-colors disabled:opacity-50"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-[34px] h-[34px] absolute right-3 top-3 z-[1] bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all disabled:opacity-50"
         >
-          <Heart 
-            className={`w-4 h-4 transition-colors ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`} 
+          <Heart
+            className={`w-4 h-4 transition-all ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500 scale-110' : 'text-[#393939]'}`}
           />
-        </button>
+        </motion.button>
       </div>
 
       {/* Summary */}
       {lesson.summary && (
-        <p className="text-base text-[#393939] font-medium leading-relaxed mb-4">
-          {lesson.summary}
-        </p>
+        <div className="mb-4">
+          <p className={`text-base text-[#393939] font-medium leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-3' : ''}`}>
+            {lesson.summary}
+          </p>
+          {needsTruncation && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDescriptionExpanded(!isDescriptionExpanded);
+              }}
+              className="text-sm text-[#FFA500] font-semibold mt-1 hover:underline focus:outline-none focus:ring-2 focus:ring-[#FFA500] focus:ring-offset-2 rounded"
+              aria-expanded={isDescriptionExpanded}
+            >
+              {isDescriptionExpanded ? 'Show less' : 'Learn more'}
+            </button>
+          )}
+        </div>
       )}
 
       {/* Start Button */}
-      <button
-        onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
-        className="w-full py-4 bg-[#FFA500] text-white rounded-[29px] font-semibold text-lg hover:bg-[#e69500] transition-colors"
+      <motion.button
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`);
+        }}
+        whileHover={{ scale: 1.02 }}
+        whileTap={{ scale: 0.98 }}
+        className="w-full py-4 bg-gradient-to-r from-[#FFA500] to-[#FFB84D] text-white rounded-[29px] font-semibold text-lg shadow-md hover:shadow-lg hover:shadow-orange-500/40 transition-all"
       >
         {isFirstLesson ? 'Start Lesson' : 'Continue Lesson'}
-      </button>
+      </motion.button>
     </motion.div>
   );
 }

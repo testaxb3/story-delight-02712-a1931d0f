@@ -18,8 +18,8 @@ export function LessonCTA({ data, onAction }: Props) {
   const Icon = icons[data.buttonAction || 'next'];
 
   return (
-    <motion.div 
-      className="mb-6 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-primary/20"
+    <motion.div
+      className="mb-6 mx-5 p-6 bg-gradient-to-br from-primary/10 via-primary/5 to-transparent rounded-2xl border border-primary/20"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
     >

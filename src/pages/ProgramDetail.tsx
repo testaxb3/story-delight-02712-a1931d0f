@@ -52,23 +52,36 @@ export default function ProgramDetail() {
 
   return (
     <div className="min-h-screen bg-[#FEFBF9] pb-24">
-      {/* Header */}
-      <header className="bg-[#FEFBF9] pt-10 pb-5 sticky top-0 z-10 border-b border-[#E8E8E6]">
-        <div className="px-4">
+      {/* Header with safe area - sticky covers entire top including status bar */}
+      <header className="bg-[#FEFBF9] sticky top-0 z-10 border-b border-[#E8E8E6] shadow-sm">
+        {/* Safe area spacing inside sticky header */}
+        <div className="h-[env(safe-area-inset-top)]" />
+        {/* Header content */}
+        <div className="px-5 pt-4 pb-5">
             <div className="flex items-center gap-4">
-              <button onClick={() => navigate('/programs')} className="p-1">
+              <motion.button
+                onClick={() => navigate('/programs')}
+                className="p-1"
+                whileHover={{ x: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
                   <path d="M8 1L2 7.5L8 14" stroke="#303030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
-              </button>
+              </motion.button>
               <p className="text-xl text-[#303030] leading-6 font-semibold">
-                Current Program
+                Program Details
               </p>
             </div>
         </div>
       </header>
 
-      <main className="px-4">
+      <motion.main
+        className="px-5"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         {/* Progress Card */}
         <CurrentChallengeProgressCard
           title={program.title}
@@ -137,7 +150,7 @@ export default function ProgramDetail() {
             </div>
           )}
         </motion.section>
-      </main>
+      </motion.main>
     </div>
   );
 }

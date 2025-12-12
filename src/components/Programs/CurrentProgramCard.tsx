@@ -3,6 +3,7 @@ import { Heart } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramWithProgress } from '@/hooks/usePrograms';
 import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 interface CurrentProgramCardProps {
   program: ProgramWithProgress;
@@ -10,6 +11,7 @@ interface CurrentProgramCardProps {
 
 export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
   const navigate = useNavigate();
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const nextLessonNumber = program.lessons_completed.length + 1;
   const nextLesson = program.nextLesson;
 
@@ -17,11 +19,17 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
   const lessonTitle = nextLesson?.title || 'Continue Learning';
   const lessonSummary = nextLesson?.summary || program.description || 'Continue your parenting journey with this program.';
 
+  // Check if summary is long enough to need truncation (more than ~150 characters)
+  const needsTruncation = lessonSummary.length > 150;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full flex flex-col bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] py-[14px] px-[10px]"
+      whileHover={{ y: -4, boxShadow: "0 12px 24px -8px rgba(255, 102, 49, 0.15)" }}
+      transition={{ duration: 0.2 }}
+      className="w-full flex flex-col bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] py-[14px] px-[16px] shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+      onClick={() => navigate(`/programs/${program.slug}`)}
     >
       {/* Header */}
       <div className="flex flex-row items-center justify-between gap-[10px] border-b border-b-[#DADADA] pb-[9px]">
@@ -56,9 +64,22 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
       </div>
 
       {/* Description */}
-      <p className="text-[16px] text-[#393939] font-[500] leading-relaxed mb-[18px]">
-        {lessonSummary}
-      </p>
+      <div className="mb-[18px]">
+        <p className={`text-[16px] text-[#393939] font-[500] leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-3' : ''}`}>
+          {lessonSummary}
+        </p>
+        {needsTruncation && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDescriptionExpanded(!isDescriptionExpanded);
+            }}
+            className="text-[14px] text-[#FF6631] font-[600] mt-1 hover:underline"
+          >
+            {isDescriptionExpanded ? 'Show less' : 'Learn more'}
+          </button>
+        )}
+      </div>
 
       {/* CTA Button */}
       <Button 
