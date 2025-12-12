@@ -36,6 +36,7 @@ export interface LessonNumberedListSection {
       description?: string;
     }>;
     colorScheme?: 'blue' | 'orange' | 'green' | 'purple';
+    variant?: 'default' | 'timeline';
   };
 }
 
