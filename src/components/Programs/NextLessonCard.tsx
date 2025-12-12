@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Heart, Clock, Headphones } from 'lucide-react';
+import { Heart, Clock, Headphones, Play, Sparkles, BookOpen } from 'lucide-react';
 import { ProgramLesson } from '@/hooks/useProgramDetail';
 import { useFavoriteLessons } from '@/hooks/useFavoriteLessons';
 
@@ -26,98 +26,162 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      whileHover={{ y: -4, boxShadow: "0 12px 24px -8px rgba(255, 165, 0, 0.15)" }}
-      className="w-full flex flex-col bg-white rounded-[10px] border border-[#F7F2F0] py-4 px-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-      onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
+      className="relative"
     >
-      {/* Header */}
-      <div className="flex flex-row items-center justify-between gap-2.5 border-b border-[#DADADA] pb-2">
-        <p className="font-normal text-sm text-[#393939]">Next lesson</p>
-        <div className="flex items-center gap-3">
-          {lesson.estimated_minutes && (
-            <span className="flex items-center gap-1 text-xs text-[#8D8D8D]">
-              <Clock className="w-3 h-3" />
-              {lesson.estimated_minutes} min
-            </span>
-          )}
-          {lesson.audio_url && (
-            <Headphones className="w-3.5 h-3.5 text-[#8D8D8D]" />
-          )}
-          <p className="font-normal text-sm text-[#393939]">
-            <span className="text-[#76B9FF] font-semibold">{lesson.day_number}</span> out of {totalLessons}
-          </p>
-        </div>
-      </div>
+      {/* Glow effect behind card */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#FF6631]/10 to-[#FFA300]/10 rounded-[20px] blur-xl" />
 
-      {/* Lesson Title */}
-      <p className="py-2 text-xl text-[#393939]">
-        Lesson {lesson.day_number}: <span className="font-extrabold">{lesson.title}</span>
-      </p>
-
-      {/* Image Container */}
-      <div className="relative mb-3">
-        {lesson.image_url ? (
-          <img
-            alt="lesson thumbnail"
-            loading="lazy"
-            className="w-full h-[200px] rounded-[10px] object-cover"
-            src={lesson.image_url}
-          />
-        ) : (
-          <div className="w-full h-[200px] rounded-[10px] bg-gradient-to-br from-amber-50 to-orange-100" />
-        )}
-        {/* Favorite Button */}
-        <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            if (lesson.id) {
-              toggleFavorite.mutate({ lessonId: lesson.id, programId });
-            }
-          }}
-          disabled={toggleFavorite.isPending}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-[34px] h-[34px] absolute right-3 top-3 z-[1] bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all disabled:opacity-50"
-        >
-          <Heart
-            className={`w-4 h-4 transition-all ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500 scale-110' : 'text-[#393939]'}`}
-          />
-        </motion.button>
-      </div>
-
-      {/* Summary */}
-      {lesson.summary && (
-        <div className="mb-4">
-          <p className={`text-base text-[#393939] font-medium leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-3' : ''}`}>
-            {lesson.summary}
-          </p>
-          {needsTruncation && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsDescriptionExpanded(!isDescriptionExpanded);
-              }}
-              className="text-sm text-[#FFA500] font-semibold mt-1 hover:underline focus:outline-none focus:ring-2 focus:ring-[#FFA500] focus:ring-offset-2 rounded"
-              aria-expanded={isDescriptionExpanded}
-            >
-              {isDescriptionExpanded ? 'Show less' : 'Learn more'}
-            </button>
-          )}
-        </div>
-      )}
-
-      {/* Start Button */}
-      <motion.button
-        onClick={(e) => {
-          e.stopPropagation();
-          navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`);
-        }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full py-4 bg-gradient-to-r from-[#FFA500] to-[#FFB84D] text-white rounded-[29px] font-semibold text-lg shadow-md hover:shadow-lg hover:shadow-orange-500/40 transition-all"
+      {/* Main card */}
+      <motion.div
+        whileHover={{ y: -4 }}
+        className="relative w-full flex flex-col bg-white rounded-[20px] border border-[#F0E6DF] shadow-lg shadow-orange-500/5 overflow-hidden cursor-pointer"
+        onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
       >
-        {isFirstLesson ? 'Start Lesson' : 'Continue Lesson'}
-      </motion.button>
+        {/* Header accent bar */}
+        <div className="h-1 w-full bg-gradient-to-r from-[#FF6631] via-[#FFA300] to-[#FFB84D]" />
+
+        {/* Header */}
+        <div className="flex flex-row items-center justify-between gap-2.5 px-5 pt-4 pb-3 border-b border-[#F0F0F0]">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-[#FF6631] to-[#FFA300]">
+              <BookOpen className="w-3.5 h-3.5 text-white" />
+            </div>
+            <span className="font-semibold text-sm text-[#393939]">Next Lesson</span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {lesson.estimated_minutes && (
+              <span className="flex items-center gap-1.5 text-xs text-[#8D8D8D] bg-[#F5F5F5] px-2 py-1 rounded-full">
+                <Clock className="w-3 h-3" />
+                {lesson.estimated_minutes} min
+              </span>
+            )}
+            {lesson.audio_url && (
+              <span className="flex items-center gap-1.5 text-xs text-[#8D8D8D] bg-[#F5F5F5] px-2 py-1 rounded-full">
+                <Headphones className="w-3 h-3" />
+                Audio
+              </span>
+            )}
+            <span className="font-medium text-sm text-[#8D8D8D]">
+              <span className="text-[#FF6631] font-bold">{lesson.day_number}</span>/{totalLessons}
+            </span>
+          </div>
+        </div>
+
+        {/* Lesson Title */}
+        <div className="px-5 py-3">
+          <h3 className="text-xl text-[#393939] leading-tight">
+            <span className="text-[#FF6631] font-semibold">Lesson {lesson.day_number}:</span>{' '}
+            <span className="font-extrabold">{lesson.title}</span>
+          </h3>
+        </div>
+
+        {/* Image Container */}
+        <div className="relative mx-4 mb-4">
+          <div className="rounded-[16px] overflow-hidden shadow-md">
+            {lesson.image_url ? (
+              <img
+                alt="lesson thumbnail"
+                loading="lazy"
+                className="w-full h-[200px] object-cover transition-transform duration-500 hover:scale-105"
+                src={lesson.image_url}
+              />
+            ) : (
+              <div className="w-full h-[200px] bg-gradient-to-br from-[#FF6631]/20 via-[#FFA300]/20 to-[#FFB84D]/10 flex items-center justify-center">
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  <BookOpen className="w-16 h-16 text-[#FF6631]/40" />
+                </motion.div>
+              </div>
+            )}
+
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-[16px]" />
+          </div>
+
+          {/* Favorite Button */}
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (lesson.id) {
+                toggleFavorite.mutate({ lessonId: lesson.id, programId });
+              }
+            }}
+            disabled={toggleFavorite.isPending}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            className="absolute right-3 top-3 z-[1] w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all disabled:opacity-50"
+          >
+            <Heart
+              className={`w-5 h-5 transition-all ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`}
+            />
+          </motion.button>
+
+          {/* Play indicator */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="absolute left-3 bottom-3 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <Play className="w-3.5 h-3.5 text-[#FF6631] fill-[#FF6631]" />
+            </motion.div>
+            <span className="text-xs font-semibold text-[#393939]">Ready to play</span>
+          </motion.div>
+        </div>
+
+        {/* Summary */}
+        {lesson.summary && (
+          <div className="px-5 mb-4">
+            <p className={`text-[15px] text-[#666] font-normal leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-2' : ''}`}>
+              {lesson.summary}
+            </p>
+            {needsTruncation && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsDescriptionExpanded(!isDescriptionExpanded);
+                }}
+                className="text-sm text-[#FF6631] font-semibold mt-1 hover:underline focus:outline-none"
+                aria-expanded={isDescriptionExpanded}
+              >
+                {isDescriptionExpanded ? 'Show less' : 'Read more'}
+              </button>
+            )}
+          </div>
+        )}
+
+        {/* Start Button */}
+        <div className="px-4 pb-5">
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`);
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="relative w-full py-4 bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white rounded-full font-bold text-lg shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all overflow-hidden flex items-center justify-center gap-2"
+          >
+            {/* Shine effect */}
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '200%' }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
+            />
+
+            <Play className="w-5 h-5 fill-white" />
+            <span>{isFirstLesson ? 'Start Lesson' : 'Continue Lesson'}</span>
+            <Sparkles className="w-4 h-4 opacity-80" />
+          </motion.button>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }

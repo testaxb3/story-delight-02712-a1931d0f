@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { Headphones } from 'lucide-react';
+import { Headphones, Sparkles, Music } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useState, useMemo, useCallback } from 'react';
 import { MainLayout } from '@/components/Layout/MainLayout';
@@ -98,7 +98,7 @@ export default function Listen() {
   // Get latest series (highest display_order = most recently added)
   const latestSeries = useMemo(() => {
     if (!series?.length) return null;
-    return [...series].sort((a, b) => 
+    return [...series].sort((a, b) =>
       (b.display_order || 0) - (a.display_order || 0)
     )[0];
   }, [series]);
@@ -123,7 +123,7 @@ export default function Listen() {
 
   return (
     <MainLayout>
-      <div className="relative min-h-screen bg-background overflow-hidden">
+      <div className="relative min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] overflow-hidden">
         <AmbientBackground />
 
         <div
@@ -134,7 +134,7 @@ export default function Listen() {
           }}
         >
           <PullToRefresh onRefresh={handleRefresh} disabled={isRefreshing}>
-            <div className="max-w-2xl mx-auto px-4 space-y-5">
+            <div className="max-w-2xl mx-auto px-5 space-y-6">
               {/* Enhanced Header with Stats */}
               <ListenHeader
                 totalMinutes={totalMinutes || 0}
@@ -167,18 +167,25 @@ export default function Listen() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
-                  className="pt-1 flex items-center justify-between"
+                  className="pt-2 flex items-center justify-between"
                 >
-                  <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-                    {activeFilter === 'all' ? 'All Series' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Series`}
-                  </h2>
-                  <span className="text-xs text-muted-foreground">
-                    {filteredSeries.length} {filteredSeries.length === 1 ? 'series' : 'series'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#FF6631]/10 to-[#FFA300]/10 flex items-center justify-center">
+                      <Music className="w-4 h-4 text-[#FF6631]" />
+                    </div>
+                    <div>
+                      <h2 className="text-base font-bold text-[#393939]">
+                        {activeFilter === 'all' ? 'All Series' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Series`}
+                      </h2>
+                      <p className="text-xs text-[#8D8D8D]">
+                        {filteredSeries.length} {filteredSeries.length === 1 ? 'series' : 'series'} available
+                      </p>
+                    </div>
+                  </div>
                 </motion.div>
               )}
 
-              {/* Series Grid - YouTube style with larger cards */}
+              {/* Series Grid */}
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeFilter}
@@ -219,21 +226,34 @@ export default function Listen() {
               {/* Empty state for filtered results */}
               {filteredSeries.length === 0 && activeFilter !== 'all' && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-12 space-y-3"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-16 space-y-4"
                 >
-                  <div className="w-16 h-16 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Headphones className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <div className="space-y-1">
-                    <h3 className="text-base font-semibold text-foreground">
+                  <motion.div
+                    animate={{ y: [-4, 4, -4], rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                    className="w-20 h-20 rounded-[20px] bg-gradient-to-br from-[#FF6631]/20 to-[#FFA300]/10 mx-auto flex items-center justify-center"
+                  >
+                    <Headphones className="w-10 h-10 text-[#FF6631]/50" />
+                  </motion.div>
+                  <div className="space-y-2">
+                    <h3 className="text-lg font-bold text-[#393939]">
                       No series found
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-[#8D8D8D]">
                       Try selecting a different category
                     </p>
                   </div>
+                  <motion.div
+                    className="flex justify-center gap-2"
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <span className="w-2 h-2 rounded-full bg-[#FF6631]" />
+                    <span className="w-2 h-2 rounded-full bg-[#FFA300]" />
+                    <span className="w-2 h-2 rounded-full bg-[#FFB84D]" />
+                  </motion.div>
                 </motion.div>
               )}
 
@@ -244,22 +264,36 @@ export default function Listen() {
                 series={selectedLockedSeries}
               />
 
-              {/* Empty state */}
+              {/* Empty state - no series at all */}
               {!series?.length && !isLoading && (
                 <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-center py-16 space-y-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="text-center py-20 space-y-4"
                 >
-                  <div className="w-20 h-20 rounded-full bg-muted mx-auto flex items-center justify-center">
-                    <Headphones className="w-10 h-10 text-muted-foreground" />
-                  </div>
+                  <motion.div
+                    animate={{ y: [-8, 8, -8], rotate: [0, 5, -5, 0] }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                    className="relative w-28 h-28 mx-auto"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#FF6631]/30 to-[#FFA300]/30 rounded-[24px] blur-xl" />
+                    <div className="relative w-full h-full rounded-[24px] bg-gradient-to-br from-[#FF6631] to-[#FFA300] flex items-center justify-center shadow-xl shadow-orange-500/30">
+                      <Headphones className="w-14 h-14 text-white" />
+                    </div>
+                    <motion.div
+                      animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute -top-2 -right-2"
+                    >
+                      <Sparkles className="w-6 h-6 text-[#FFA300]" />
+                    </motion.div>
+                  </motion.div>
                   <div className="space-y-2">
-                    <h3 className="text-lg font-semibold text-foreground">
+                    <h3 className="text-xl font-bold text-[#393939]">
                       No audio series yet
                     </h3>
-                    <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                      Audio content is coming soon. Check back later!
+                    <p className="text-sm text-[#8D8D8D] max-w-xs mx-auto">
+                      Audio content is coming soon. Check back later for amazing guided sessions!
                     </p>
                   </div>
                 </motion.div>

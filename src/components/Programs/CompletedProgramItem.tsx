@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { ProgramWithProgress } from '@/hooks/usePrograms';
 import { format } from 'date-fns';
+import { CheckCircle2, BookOpen, Calendar, Trophy, ChevronRight } from 'lucide-react';
 
 interface CompletedProgramItemProps {
   program: ProgramWithProgress;
@@ -13,48 +14,84 @@ export function CompletedProgramItem({ program, index = 0 }: CompletedProgramIte
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: index * 0.08, type: "spring", stiffness: 100 }}
       whileTap={{ scale: 0.98 }}
-      whileHover={{ y: -2, boxShadow: "0 8px 16px -4px rgba(17, 194, 34, 0.12)" }}
-      className="flex flex-col gap-[10px] bg-[#FFFFFF] rounded-[10px] border border-[#F7F2F0] px-[16px] py-[20px] cursor-pointer shadow-sm hover:shadow-md transition-shadow"
+      whileHover={{ x: 4 }}
+      className="group relative flex flex-row gap-[14px] bg-gradient-to-r from-white to-[#F0FDF4] rounded-[16px] border border-[#11C222]/20 p-[14px] cursor-pointer shadow-sm hover:shadow-md hover:border-[#11C222]/40 transition-all duration-300"
       onClick={() => navigate(`/programs/${program.slug}`)}
     >
-      <div className="flex flex-row items-center gap-[10px]">
-        {/* Thumbnail Placeholder */}
-        <div className="min-w-[90px] h-[90px] rounded-[10px] bg-slate-200 flex-shrink-0 overflow-hidden relative">
-           <div className="absolute inset-0 bg-gradient-to-br from-green-100 to-emerald-100" />
-        </div>
+      {/* Completed badge indicator on left */}
+      <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[4px] h-[70%] bg-gradient-to-b from-[#11C222] to-[#22D933] rounded-r-full" />
 
-        {/* Content */}
-        <div className="flex flex-col gap-[10px] flex-1">
-          {/* Badges */}
-          <div className="flex flex-row items-center gap-[5px]">
-            <div className="flex justify-center items-center py-[2px] px-[5px] border border-[#FF5C16] rounded-[3px]">
-              <p className="text-[14px] text-[#FF5C16] leading-[15px]">
-                {program.total_lessons} Lessons
-              </p>
-            </div>
-            {program.age_range && (
-              <div className="flex justify-center items-center py-[2px] px-[5px] border border-[#2791E0] rounded-[3px]">
-                <p className="text-[14px] text-[#2791E0] leading-[15px]">
-                  {program.age_range}
-                </p>
-              </div>
-            )}
+      {/* Thumbnail with completion overlay */}
+      <div className="relative min-w-[90px] h-[90px] rounded-[12px] overflow-hidden flex-shrink-0 ml-1">
+        {program.cover_image_url ? (
+          <img
+            src={program.cover_image_url}
+            alt={program.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+            <BookOpen className="w-8 h-8 text-[#11C222]/50" />
+          </div>
+        )}
+
+        {/* Completion overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#11C222]/60 to-transparent flex items-end justify-center pb-2">
+          <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1">
+            <CheckCircle2 className="w-3 h-3 text-[#11C222]" />
+            <span className="text-[9px] font-[700] text-[#11C222]">COMPLETED</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex flex-col justify-between flex-1 min-w-0 py-[2px]">
+        {/* Badges row */}
+        <div className="flex flex-wrap items-center gap-[6px]">
+          {/* Lessons badge */}
+          <div className="flex items-center gap-[4px] py-[4px] px-[8px] bg-[#11C222]/10 rounded-full">
+            <Trophy className="w-[12px] h-[12px] text-[#11C222]" />
+            <span className="text-[11px] font-[600] text-[#11C222]">
+              {program.total_lessons} Lessons Done
+            </span>
           </div>
 
-          {/* Title */}
-          <h3 className="text-[#393939] text-[20px] leading-[26px] font-[800]">
-            {program.title}
-          </h3>
+          {/* Age range badge */}
+          {program.age_range && (
+            <div className="flex items-center gap-[4px] py-[4px] px-[8px] bg-[#2791E0]/10 rounded-full">
+              <span className="text-[11px] font-[600] text-[#2791E0]">
+                {program.age_range}
+              </span>
+            </div>
+          )}
+        </div>
 
-          {/* Completion date */}
+        {/* Title */}
+        <h3 className="text-[#393939] text-[17px] leading-[1.25] font-[700] line-clamp-2 group-hover:text-[#11C222] transition-colors">
+          {program.title}
+        </h3>
+
+        {/* Completion date */}
+        <div className="flex items-center gap-[6px]">
+          <Calendar className="w-[12px] h-[12px] text-[#8D8D8D]" />
           <p className="text-[12px] text-[#8D8D8D] leading-[14px]">
             Finished on {program.completed_at ? format(new Date(program.completed_at), 'MMM d, yyyy') : 'N/A'}
           </p>
         </div>
+      </div>
+
+      {/* Right side decoration */}
+      <div className="flex items-center">
+        <motion.div
+          whileHover={{ scale: 1.1 }}
+          className="flex items-center justify-center w-[36px] h-[36px] rounded-full bg-[#11C222]/10 group-hover:bg-[#11C222] transition-colors"
+        >
+          <ChevronRight className="w-[18px] h-[18px] text-[#11C222] group-hover:text-white transition-colors" />
+        </motion.div>
       </div>
     </motion.div>
   );

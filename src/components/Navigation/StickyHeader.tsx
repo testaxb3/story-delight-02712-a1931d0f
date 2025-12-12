@@ -40,21 +40,17 @@ export function StickyHeader({
     <motion.header
       className={cn(
         isStatic ? 'relative' : 'sticky top-0',
-        'z-50 w-full transition-all duration-200',
+        'z-50 w-full transition-all duration-300',
         !isStatic && isScrolled && !transparent
-          ? 'bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
-          : 'bg-transparent'
+          ? 'bg-white/95 dark:bg-background/95 backdrop-blur-xl border-b border-[#F0E6DF] dark:border-border/40 shadow-sm'
+          : 'bg-gradient-to-b from-white via-white/95 to-transparent dark:from-background dark:via-background/95 dark:to-transparent'
       )}
-      initial={false}
-      animate={{
-        backgroundColor: !isStatic && isScrolled && !transparent ? 'rgba(0,0,0,0.8)' : 'rgba(0,0,0,0)',
-      }}
     >
       {/* Progress Bar */}
       {showProgress && (
         <div className="absolute top-0 left-0 right-0 h-1 bg-muted/20">
           <motion.div
-            className="h-full bg-primary"
+            className="h-full bg-gradient-to-r from-[#FF6631] to-[#FFA300]"
             initial={{ width: 0 }}
             animate={{ width: `${progressValue}%` }}
             transition={{ duration: 0.3 }}
@@ -63,7 +59,12 @@ export function StickyHeader({
       )}
 
       {/* Header Content */}
-      <div className="px-5 py-4" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
+      <div
+        className="px-5 pb-4"
+        style={{
+          paddingTop: 'calc(env(safe-area-inset-top) + 16px)'
+        }}
+      >
         {children ? (
           children
         ) : (
@@ -79,17 +80,22 @@ export function StickyHeader({
             {/* Title Section */}
             {title && (
               <div className="space-y-1">
-                <h1 className="text-4xl font-bold tracking-tight text-foreground">
+                <h1 className="text-4xl font-bold tracking-tight text-[#393939] dark:text-foreground">
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className="text-base text-muted-foreground">{subtitle}</p>
+                  <p className="text-base text-[#8D8D8D] dark:text-muted-foreground">{subtitle}</p>
                 )}
               </div>
             )}
           </>
         )}
       </div>
+
+      {/* Bottom fade when not scrolled to blend content */}
+      {!isScrolled && !isStatic && (
+        <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-b from-transparent to-white/50 dark:to-background/50 pointer-events-none" />
+      )}
     </motion.header>
   );
 }

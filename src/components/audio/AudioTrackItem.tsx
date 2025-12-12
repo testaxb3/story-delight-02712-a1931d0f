@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Play, Check, Lock } from 'lucide-react';
+import { Play, Check, Lock, Pause, Clock, Crown } from 'lucide-react';
 import { useAudioProgress } from '@/hooks/useAudioProgress';
 import { useAudioRef } from '@/contexts/AudioPlayerContext';
 import type { AudioTrack } from '@/stores/audioPlayerStore';
@@ -15,21 +15,21 @@ interface AudioTrackItemProps {
   onLockedClick?: () => void;
 }
 
-// Animated playing bars component
+// Animated playing bars component - Premium version
 function PlayingBars() {
   return (
-    <div className="flex items-end gap-[3px] h-4">
+    <div className="flex items-end gap-[2px] h-4">
       {[0, 1, 2].map((i) => (
         <motion.div
           key={i}
-          className="w-[3px] bg-primary rounded-full"
+          className="w-[3px] bg-gradient-to-t from-[#FF6631] to-[#FFA300] rounded-full"
           animate={{
-            height: ['6px', '14px', '8px', '12px', '6px'],
+            height: ['5px', '14px', '7px', '12px', '5px'],
           }}
           transition={{
-            duration: 0.9,
+            duration: 0.8,
             repeat: Infinity,
-            delay: i * 0.12,
+            delay: i * 0.1,
             ease: 'easeInOut',
           }}
         />
@@ -45,6 +45,8 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
   const progressPercentage = progress
     ? Math.round((progress.progress_seconds / track.duration_seconds) * 100)
     : 0;
+
+  const isCompleted = progress?.completed;
 
   const handleClick = () => {
     if (isLocked && onLockedClick) {
@@ -63,26 +65,44 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
   // Determine what to show in the number/indicator area
   const renderIndicator = () => {
     if (isLocked) {
-      return <Lock className="w-4 h-4 text-[#D4A574]" />;
+      return (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-amber-500/20 to-orange-500/20 flex items-center justify-center">
+          <Lock className="w-4 h-4 text-amber-600" />
+        </div>
+      );
     }
-    
+
     if (isCurrent && isPlaying) {
-      return <PlayingBars />;
+      return (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FF6631]/15 to-[#FFA300]/15 flex items-center justify-center">
+          <PlayingBars />
+        </div>
+      );
     }
-    
+
     if (isCurrent) {
-      return <Play className="w-4 h-4 text-primary fill-primary" />;
+      return (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#FF6631] to-[#FFA300] flex items-center justify-center shadow-lg shadow-orange-500/30">
+          <Pause className="w-4 h-4 text-white" />
+        </div>
+      );
     }
-    
-    if (progress?.completed) {
-      return <Check className="w-4 h-4 text-green-500" />;
+
+    if (isCompleted) {
+      return (
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-green-500/15 to-emerald-500/15 flex items-center justify-center">
+          <Check className="w-4 h-4 text-green-600" />
+        </div>
+      );
     }
-    
-    // Minimalist number - no circle background
+
+    // Default: Track number with subtle styling
     return (
-      <span className="text-sm text-muted-foreground font-medium tabular-nums">
-        {track.track_number}
-      </span>
+      <div className="w-9 h-9 rounded-full bg-[#F5F0ED] flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-[#FF6631]/10 group-hover:to-[#FFA300]/10 transition-all">
+        <span className="text-sm text-[#8D8D8D] font-semibold group-hover:text-[#FF6631] transition-colors">
+          {track.track_number}
+        </span>
+      </div>
     );
   };
 
@@ -91,61 +111,103 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.04 }}
-      className="group border-b border-border/40 last:border-0 relative mb-1"
+      whileHover={{ x: 4 }}
+      className="group"
     >
       <button
         onClick={handleClick}
         className={`
-          w-full py-4 px-2 rounded-lg flex items-center gap-3 transition-all relative
+          w-full p-3 rounded-[14px] flex items-center gap-3 transition-all relative overflow-hidden
           ${isCurrent
-            ? 'bg-primary/8'
+            ? 'bg-gradient-to-r from-[#FFF5ED] to-white border-2 border-[#FF6631]/30 shadow-md'
             : isLocked
-            ? 'opacity-50 hover:opacity-60'
-            : 'hover:bg-muted/30'
+              ? 'bg-white/60 border border-[#F0E6DF] hover:bg-white hover:border-amber-300/50'
+              : isCompleted
+                ? 'bg-gradient-to-r from-green-50 to-white border border-green-200/50 hover:border-green-300'
+                : 'bg-white border border-[#F0E6DF] hover:border-[#FF6631]/30 hover:shadow-md'
           }
         `}
       >
-        {/* Indicator area - fixed width, no background */}
-        <div className="w-8 flex items-center justify-center flex-shrink-0">
+        {/* Progress background for current track */}
+        {isCurrent && progressPercentage > 0 && (
+          <div
+            className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-[#FF6631]/5 to-transparent transition-all"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        )}
+
+        {/* Indicator area */}
+        <div className="relative z-10 flex-shrink-0">
           {renderIndicator()}
         </div>
 
         {/* Track info */}
-        <div className="flex-1 min-w-0 text-left">
+        <div className="relative z-10 flex-1 min-w-0 text-left">
           <h3 className={`
-            text-sm font-bold truncate leading-none
-            ${isCurrent ? 'text-primary' : 'text-black dark:text-white'}
-          `} style={{ textShadow: 'none', WebkitTextStroke: '0px' }}>
+            text-[15px] font-semibold truncate leading-tight
+            ${isCurrent
+              ? 'text-[#FF6631]'
+              : isCompleted
+                ? 'text-green-700'
+                : 'text-[#393939] group-hover:text-[#FF6631]'
+            } transition-colors
+          `}>
             {track.title}
           </h3>
-          
-          {/* Fixed Progress Bar - Visual Fix requested */}
-          {progress && !progress.completed && progressPercentage > 0 && (
-            <div className="mt-2 w-[100px] h-[2px] bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+
+          {/* Progress bar for tracks with progress */}
+          {progress && !isCompleted && progressPercentage > 0 && !isCurrent && (
+            <div className="mt-2 w-24 h-1.5 bg-[#F0E6DF] rounded-full overflow-hidden">
               <motion.div
-                key={`progress-${track.id}`}
                 animate={{ width: `${progressPercentage}%` }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="h-full bg-black dark:bg-white rounded-full"
-                style={{ width: `${progressPercentage}%` }}
+                className="h-full bg-gradient-to-r from-[#FF6631] to-[#FFA300] rounded-full"
               />
+            </div>
+          )}
+
+          {/* Duration for non-current tracks */}
+          {!isCurrent && !isLocked && (
+            <div className="flex items-center gap-1 mt-1 text-xs text-[#8D8D8D]">
+              <Clock className="w-3 h-3" />
+              <span>{formatTime(track.duration_seconds)}</span>
+              {isCompleted && (
+                <span className="ml-1 text-green-600 font-medium">• Completed</span>
+              )}
             </div>
           )}
         </div>
 
-        {/* Duration or Premium badge - right aligned */}
-        <div className="flex-shrink-0 ml-auto">
+        {/* Right side: Duration/Premium badge */}
+        <div className="relative z-10 flex-shrink-0 ml-auto">
           {isLocked ? (
-            <span className="text-[11px] text-[#D4A574] font-medium flex items-center gap-1">
-              <span>👑</span>
-              <span>Premium</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-amber-500/10 to-orange-500/10 text-amber-700 text-xs font-semibold">
+              <Crown className="w-3.5 h-3.5" />
+              Premium
             </span>
+          ) : isCurrent ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[#FF6631] font-semibold">
+                {formatTime(progress?.progress_seconds || 0)}
+              </span>
+              <span className="text-xs text-[#8D8D8D]">/</span>
+              <span className="text-xs text-[#8D8D8D]">
+                {formatTime(track.duration_seconds)}
+              </span>
+            </div>
           ) : (
-            <span className="text-[11px] text-muted-foreground/70 font-mono">
-              {formatTime(track.duration_seconds)}
-            </span>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileHover={{ opacity: 1, scale: 1 }}
+              className="w-8 h-8 rounded-full bg-gradient-to-br from-[#FF6631] to-[#FFA300] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md"
+            >
+              <Play className="w-4 h-4 text-white fill-white ml-0.5" />
+            </motion.div>
           )}
         </div>
+
+        {/* Hover accent line */}
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 rounded-r-full bg-gradient-to-b from-[#FF6631] to-[#FFA300] transition-all duration-300 group-hover:h-[60%]" />
       </button>
     </motion.div>
   );

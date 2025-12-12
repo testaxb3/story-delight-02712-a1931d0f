@@ -7,6 +7,7 @@ import { NextLessonCard } from '@/components/Programs/NextLessonCard';
 import { LessonListItem } from '@/components/Programs/LessonListItem';
 import { FavoritesSection } from '@/components/Programs/FavoritesSection';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ArrowLeft, BookOpen, ListChecks, Sparkles, AlertCircle } from 'lucide-react';
 
 export default function ProgramDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -19,25 +20,34 @@ export default function ProgramDetail() {
 
   if (error || !program) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
-        <div className="text-center">
-          <h2 className="text-lg font-semibold text-foreground mb-2">Program Not Found</h2>
-          <p className="text-sm text-muted-foreground mb-4">This program doesn't exist or has been removed.</p>
-          <button 
+      <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center max-w-sm"
+        >
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 flex items-center justify-center">
+            <AlertCircle className="w-10 h-10 text-red-500" />
+          </div>
+          <h2 className="text-xl font-bold text-[#393939] mb-2">Program Not Found</h2>
+          <p className="text-sm text-[#8D8D8D] mb-6">This program doesn't exist or has been removed.</p>
+          <motion.button
             onClick={() => navigate('/programs')}
-            className="text-primary text-sm font-medium"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-6 py-3 bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white rounded-full font-semibold shadow-lg shadow-orange-500/30"
           >
             Back to Programs
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
 
   // Find next lesson to continue
   const completedLessons = program.progress.lessons_completed;
-  const nextLessonNumber = completedLessons.length > 0 
-    ? Math.max(...completedLessons) + 1 
+  const nextLessonNumber = completedLessons.length > 0
+    ? Math.max(...completedLessons) + 1
     : 1;
   const nextLesson = program.lessons.find(l => l.day_number === nextLessonNumber) || program.lessons[0];
   const isFirstLesson = completedLessons.length === 0;
@@ -46,34 +56,50 @@ export default function ProgramDetail() {
   const getLessonStatus = (lessonNumber: number): 'completed' | 'available' | 'locked' => {
     if (completedLessons.includes(lessonNumber)) return 'completed';
     // For now, all lessons are available (no locking logic)
-    // You can add sequential unlocking here if needed
     return 'available';
   };
 
   return (
-    <div className="min-h-screen bg-[#FEFBF9] pb-24">
-      {/* Header with safe area - sticky covers entire top including status bar */}
-      <header className="bg-[#FEFBF9] sticky top-0 z-10 border-b border-[#E8E8E6] shadow-sm">
-        {/* Safe area spacing inside sticky header */}
+    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] pb-24">
+      {/* Header with safe area */}
+      <header className="bg-gradient-to-b from-[#FEFBF9] to-transparent sticky top-0 z-10">
+        {/* Safe area spacing */}
         <div className="h-[env(safe-area-inset-top)]" />
+
         {/* Header content */}
         <div className="px-5 pt-4 pb-5">
-            <div className="flex items-center gap-4">
-              <motion.button
-                onClick={() => navigate('/programs')}
-                className="p-1"
-                whileHover={{ x: -4 }}
-                whileTap={{ scale: 0.95 }}
+          <div className="flex items-center gap-4">
+            <motion.button
+              onClick={() => navigate('/programs')}
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-[#F0F0F0] transition-all hover:shadow-lg"
+              whileHover={{ x: -2, scale: 1.02 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ArrowLeft className="w-5 h-5 text-[#393939]" />
+            </motion.button>
+
+            <div className="flex-1">
+              <motion.h1
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xl text-[#393939] leading-6 font-bold"
               >
-                <svg width="9" height="15" viewBox="0 0 9 15" fill="none">
-                  <path d="M8 1L2 7.5L8 14" stroke="#303030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </motion.button>
-              <p className="text-xl text-[#303030] leading-6 font-semibold">
                 Program Details
-              </p>
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="text-xs text-[#8D8D8D] mt-0.5"
+              >
+                {program.lessons.length} lessons • {completedLessons.length} completed
+              </motion.p>
             </div>
+          </div>
         </div>
+
+        {/* Subtle divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-[#E8E8E6] to-transparent" />
       </header>
 
       <motion.main
@@ -93,7 +119,7 @@ export default function ProgramDetail() {
 
         {/* Next Lesson Card */}
         {nextLesson && (
-          <section className="py-2.5">
+          <section className="py-3">
             <NextLessonCard
               lesson={nextLesson}
               programSlug={program.slug}
@@ -110,27 +136,47 @@ export default function ProgramDetail() {
         {/* Achievements / Badges */}
         <ProgramBadgesSection badges={program.badges} lessonsCompleted={completedLessons.length} />
 
-        {/* All Lessons */}
+        {/* All Lessons Section */}
         <motion.section
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4 }}
           className="py-5"
         >
-          {/* Header */}
-          <div className="flex flex-row items-center gap-2 mb-4">
-            <div className="w-6 h-6 rounded-full bg-[#2791E0] flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="4" width="18" height="18" rx="2" stroke="white" strokeWidth="2"/>
-                <line x1="8" y1="9" x2="16" y2="9" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="8" y1="13" x2="16" y2="13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                <line x1="8" y1="17" x2="12" y2="17" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              </svg>
+          {/* Section Header */}
+          <div className="flex flex-row items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center justify-center w-10 h-10 rounded-[12px] bg-gradient-to-br from-[#2791E0] to-[#5BA8E8] shadow-lg shadow-blue-500/20">
+                <ListChecks className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-[#393939]">All Lessons</h2>
+                <p className="text-xs text-[#8D8D8D]">{completedLessons.length} of {program.lessons.length} completed</p>
+              </div>
             </div>
-            <h2 className="text-lg font-semibold text-[#393939]">Lessons</h2>
+
+            {/* Quick stats */}
+            <div className="flex items-center gap-1">
+              {program.lessons.slice(0, 5).map((_, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.5 + i * 0.05 }}
+                  className={`w-1.5 h-6 rounded-full ${i < completedLessons.length
+                      ? 'bg-gradient-to-b from-green-500 to-emerald-400'
+                      : 'bg-gray-200'
+                    }`}
+                />
+              ))}
+              {program.lessons.length > 5 && (
+                <span className="text-[10px] text-[#8D8D8D] ml-1">+{program.lessons.length - 5}</span>
+              )}
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl border border-[#F0F0F0] overflow-hidden">
+          {/* Lessons List */}
+          <div className="bg-white rounded-[20px] border border-[#F0F0F0] overflow-hidden shadow-sm">
             {program.lessons.map((lesson, index) => (
               <LessonListItem
                 key={lesson.id}
@@ -142,12 +188,36 @@ export default function ProgramDetail() {
             ))}
           </div>
 
+          {/* Empty state */}
           {program.lessons.length === 0 && (
-            <div className="py-8 text-center">
-              <p className="text-sm text-[#999]">
-                Lessons are being prepared. Check back soon!
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="py-12 text-center bg-white rounded-[20px] border border-[#F0F0F0]"
+            >
+              <motion.div
+                animate={{ y: [-4, 4, -4] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center"
+              >
+                <BookOpen className="w-8 h-8 text-[#FF6631]/60" />
+              </motion.div>
+              <p className="text-base font-semibold text-[#393939] mb-1">
+                Lessons Coming Soon
               </p>
-            </div>
+              <p className="text-sm text-[#8D8D8D]">
+                We're preparing amazing content for you!
+              </p>
+              <motion.div
+                className="flex justify-center gap-2 mt-4"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Sparkles className="w-4 h-4 text-[#FFA300]" />
+                <Sparkles className="w-4 h-4 text-[#FF6631]" />
+                <Sparkles className="w-4 h-4 text-[#FFA300]" />
+              </motion.div>
+            </motion.div>
           )}
         </motion.section>
       </motion.main>
@@ -157,19 +227,66 @@ export default function ProgramDetail() {
 
 function ProgramDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-background">
-      <Skeleton className="h-64 w-full" />
-      <div className="px-4 py-4 space-y-4">
-        <Skeleton className="h-12 w-full rounded-xl" />
-        <div className="flex gap-3">
-          {[1, 2, 3, 4, 5].map(i => (
-            <Skeleton key={i} className="w-14 h-14 rounded-full flex-shrink-0" />
-          ))}
+    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5]">
+      {/* Header skeleton */}
+      <div className="px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-5">
+        <div className="flex items-center gap-4">
+          <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="space-y-2">
+            <div className="relative h-5 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+            <div className="relative h-3 w-24 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          </div>
         </div>
-        <Skeleton className="h-32 w-full rounded-2xl" />
-        <div className="space-y-2">
+      </div>
+
+      <div className="px-5 space-y-6">
+        {/* Progress card skeleton */}
+        <div className="relative h-40 w-full rounded-[20px] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+        </div>
+
+        {/* Next lesson skeleton */}
+        <div className="relative h-[380px] w-full rounded-[20px] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+          <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+        </div>
+
+        {/* Section header skeleton */}
+        <div className="flex items-center gap-3">
+          <div className="relative h-10 w-10 rounded-[12px] bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+          </div>
+          <div className="space-y-2">
+            <div className="relative h-5 w-28 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+            <div className="relative h-3 w-20 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+            </div>
+          </div>
+        </div>
+
+        {/* Lessons list skeleton */}
+        <div className="bg-white rounded-[20px] border border-gray-100 overflow-hidden">
           {[1, 2, 3, 4, 5].map(i => (
-            <Skeleton key={i} className="h-16 w-full rounded-xl" />
+            <div key={i} className="flex items-center gap-3 p-4 border-b border-gray-100 last:border-b-0">
+              <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+                <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="relative h-4 w-3/4 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                </div>
+                <div className="relative h-3 w-1/2 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+                  <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
