@@ -64,7 +64,7 @@ export default function DashboardCalAI() {
   // Show skeleton while loading
   if (isLoading) {
     return (
-      <MainLayout hideSideNav>
+      <MainLayout>
         <DashboardSkeletonPremium />
       </MainLayout>
     );
@@ -72,7 +72,7 @@ export default function DashboardCalAI() {
 
   if (error) {
     return (
-      <MainLayout hideSideNav>
+      <MainLayout>
         <div className="min-h-screen bg-background flex items-center justify-center px-6">
           <div className="text-center">
             <div className="text-4xl mb-4">⚠️</div>
@@ -85,7 +85,7 @@ export default function DashboardCalAI() {
   }
 
   return (
-    <MainLayout hideSideNav>
+    <MainLayout>
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

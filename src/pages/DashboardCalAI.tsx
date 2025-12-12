@@ -102,7 +102,7 @@ export default function DashboardCalAI() {
 
   if (isLoading) {
     return (
-      <MainLayout hideSideNav>
+      <MainLayout>
         <DashboardSkeletonPremium />
       </MainLayout>
     );
@@ -110,7 +110,7 @@ export default function DashboardCalAI() {
 
   if (error) {
     return (
-      <MainLayout hideSideNav>
+      <MainLayout>
         <div className="min-h-screen bg-background flex items-center justify-center px-6">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -135,7 +135,7 @@ export default function DashboardCalAI() {
   }
 
   return (
-    <MainLayout hideSideNav>
+    <MainLayout>
       <div className="min-h-screen bg-background relative overflow-hidden">
         <AmbientBackground />
 
