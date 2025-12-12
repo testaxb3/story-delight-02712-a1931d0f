@@ -21,7 +21,7 @@ export function SideNav() {
   const location = useLocation();
 
   return (
-    <div className="hidden lg:flex fixed left-0 top-0 bottom-0 z-40 w-20 xl:w-24 flex-col items-center py-8 bg-background border-r border-border">
+    <div className="hidden md:flex fixed left-0 top-0 bottom-0 z-40 w-20 lg:w-24 flex-col items-center py-8 bg-background border-r border-border">
       {/* Logo */}
       <div className="mb-8 text-2xl font-bold text-foreground">
         NEP
