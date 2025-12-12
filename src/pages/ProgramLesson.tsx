@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Menu, Play, Pause, Heart, CheckCircle2, Loader2 } from 'lucide-react';
+import { Play, Pause, Heart, CheckCircle2, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useProgramDetail, useCompleteLesson } from '@/hooks/useProgramDetail';
@@ -186,9 +186,21 @@ export default function ProgramLesson() {
                 Lesson {lessonNumber}
               </p>
             </div>
-            <button className="p-2">
-              <Menu className="w-6 h-6 text-[#303030]" />
-            </button>
+            {lesson?.id && program && (
+              <button
+                onClick={() => toggleFavorite.mutate({ lessonId: lesson.id, programId: program.id })}
+                disabled={toggleFavorite.isPending}
+                className="p-2"
+              >
+                <Heart
+                  className={`w-6 h-6 transition-colors ${
+                    isFavorite(lesson.id) 
+                      ? 'fill-[#FF6631] text-[#FF6631]' 
+                      : 'text-[#303030]'
+                  }`}
+                />
+              </button>
+            )}
           </div>
         </div>
       </header>
@@ -276,7 +288,7 @@ export default function ProgramLesson() {
               
               {/* Content Sections */}
               <div className="px-4">
-                <LessonContentRenderer content={parsedContent} />
+                <LessonContentRenderer content={parsedContent} skipHero />
               </div>
             </div>
           ) : (

@@ -13,14 +13,16 @@ import { LessonDivider } from './LessonDivider';
 interface Props {
   content: StructuredLessonContent;
   onCTAAction?: (action: string) => void;
+  skipHero?: boolean;
 }
 
-export function LessonContentRenderer({ content, onCTAAction }: Props) {
+export function LessonContentRenderer({ content, onCTAAction, skipHero = false }: Props) {
   const renderSection = (section: LessonSection, index: number) => {
     const key = `section-${index}`;
     
     switch (section.type) {
       case 'hero':
+        if (skipHero) return null;
         return <LessonHeroCard key={key} data={section.data} />;
       case 'text':
         return <LessonText key={key} data={section.data} />;
