@@ -1,5 +1,4 @@
 import { LessonCalloutSection } from '@/types/lesson-content';
-import { AlertCircle, Lightbulb, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Props {
@@ -8,57 +7,56 @@ interface Props {
 
 const variants = {
   info: {
-    bg: 'bg-blue-500/10',
-    border: 'border-blue-500/30',
-    icon: AlertCircle,
-    iconColor: 'text-blue-500',
+    borderColor: 'border-blue-500',
+    dotColor: 'bg-blue-500',
+    bgColor: 'bg-blue-50 dark:bg-blue-900/20',
     titleColor: 'text-blue-600 dark:text-blue-400',
   },
   warning: {
-    bg: 'bg-amber-500/10',
-    border: 'border-amber-500/30',
-    icon: AlertTriangle,
-    iconColor: 'text-amber-500',
-    titleColor: 'text-amber-600 dark:text-amber-400',
+    borderColor: 'border-[#FFB800]',
+    dotColor: 'bg-[#FFB800]',
+    bgColor: 'bg-[#FFF9F0] dark:bg-amber-900/20',
+    titleColor: 'text-[#D4A800] dark:text-amber-400',
   },
   success: {
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
-    icon: CheckCircle2,
-    iconColor: 'text-emerald-500',
+    borderColor: 'border-emerald-500',
+    dotColor: 'bg-emerald-500',
+    bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
     titleColor: 'text-emerald-600 dark:text-emerald-400',
   },
   tip: {
-    bg: 'bg-primary/10',
-    border: 'border-primary/30',
-    icon: Lightbulb,
-    iconColor: 'text-primary',
-    titleColor: 'text-primary',
+    borderColor: 'border-[#FFB800]',
+    dotColor: 'bg-[#FFB800]',
+    bgColor: 'bg-[#FFF9F0] dark:bg-amber-900/20',
+    titleColor: 'text-[#D4A800] dark:text-amber-400',
   },
 };
 
 export function LessonCallout({ data }: Props) {
-  const variant = data.variant && variants[data.variant] ? data.variant : 'info';
+  const variant = data.variant && variants[data.variant] ? data.variant : 'tip';
   const style = variants[variant];
-  const Icon = style.icon;
 
   return (
-    <div className={cn(
-      'mb-6 p-4 rounded-xl border',
-      style.bg,
-      style.border
-    )}>
-      <div className="flex gap-3">
-        <Icon className={cn('w-5 h-5 shrink-0 mt-0.5', style.iconColor)} />
-        <div>
-          {data.title && (
-            <h4 className={cn('font-semibold mb-1', style.titleColor)}>
-              {data.title}
-            </h4>
-          )}
-          <p className="text-sm text-foreground/80 leading-relaxed">
-            {data.content}
-          </p>
+    <div className="mb-6">
+      <div className="relative flex">
+        {/* Yellow dot on the line */}
+        <div className={cn(
+          "absolute -left-[5px] top-6 w-2.5 h-2.5 rounded-full z-10",
+          style.dotColor
+        )} />
+        
+        {/* Left border + Card */}
+        <div className={cn("border-l-[3px] ml-1 pl-4 flex-1", style.borderColor)}>
+          <div className={cn("p-4 rounded-xl", style.bgColor)}>
+            {data.title && (
+              <h4 className={cn("font-bold text-[15px] mb-1", style.titleColor)}>
+                {data.title}
+              </h4>
+            )}
+            <p className="text-[15px] text-[#393939] dark:text-foreground/90 leading-relaxed">
+              {data.content}
+            </p>
+          </div>
         </div>
       </div>
     </div>
