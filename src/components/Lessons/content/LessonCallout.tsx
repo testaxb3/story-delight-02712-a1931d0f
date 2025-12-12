@@ -38,7 +38,8 @@ const variants = {
 };
 
 export function LessonCallout({ data }: Props) {
-  const style = variants[data.variant];
+  const variant = data.variant && variants[data.variant] ? data.variant : 'info';
+  const style = variants[variant];
   const Icon = style.icon;
 
   return (
