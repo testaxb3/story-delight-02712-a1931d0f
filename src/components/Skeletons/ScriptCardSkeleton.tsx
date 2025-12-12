@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -28,12 +29,15 @@ export function ScriptCardSkeleton() {
   );
 }
 
-export function ScriptCardSkeletonList({ count = 6 }: { count?: number }) {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <ScriptCardSkeleton key={i} />
-      ))}
-    </div>
-  );
-}
+// Using forwardRef to fix AnimatePresence warning
+export const ScriptCardSkeletonList = forwardRef<HTMLDivElement, { count?: number }>(
+  function ScriptCardSkeletonList({ count = 6 }, ref) {
+    return (
+      <div ref={ref} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: count }).map((_, i) => (
+          <ScriptCardSkeleton key={i} />
+        ))}
+      </div>
+    );
+  }
+);

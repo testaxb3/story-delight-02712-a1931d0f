@@ -13,7 +13,10 @@ import { useChildRecommendations } from '@/hooks/useChildRecommendations';
 import { useTranslation } from '@/hooks/useTranslation';
 import { useFavoriteScripts } from '@/hooks/useFavoriteScripts';
 import { useScripts } from '@/hooks/useScripts';
+import { useRecentScripts } from '@/hooks/useRecentScripts';
 import { ScriptCardSkeletonList } from '@/components/Skeletons/ScriptCardSkeleton';
+import { RecentlyUsedSection } from '@/components/Scripts/RecentlyUsedSection';
+import { FavoritesQuickAccess } from '@/components/Scripts/FavoritesQuickAccess';
 import { ScriptModal } from '@/components/scripts/ScriptModal';
 import { CelebrationModal } from '@/components/scripts/CelebrationModal';
 import { AlternativesModal } from '@/components/scripts/AlternativesModal';
@@ -50,11 +53,11 @@ const CATEGORY_STYLES: Record<string, { bg: string; text: string; border: string
 };
 
 const SEARCH_PLACEHOLDERS = [
-  'Bedtime refusal...', 
-  'Hitting siblings...', 
-  'Won\'t eat veggies...', 
-  'Screen time limits...', 
-  'Public meltdown...', 
+  'Bedtime refusal...',
+  'Hitting siblings...',
+  'Won\'t eat veggies...',
+  'Screen time limits...',
+  'Public meltdown...',
   'Morning chaos...'
 ];
 
@@ -62,7 +65,7 @@ function ScriptsContent() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Initialize category from URL param
   const [selectedCategory, setSelectedCategory] = useState<string | null>(() => {
     const urlCategory = searchParams.get('category');
@@ -82,12 +85,13 @@ function ScriptsContent() {
     brainProfile: currentBrain,
     enabled: !!activeChild,
   });
-  
+
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { favorites: favoriteScriptIds, toggleFavorite, isFavorite } = useFavoriteScripts();
+  const { recentScripts: recentScriptsData, isLoading: loadingRecent } = useRecentScripts();
   const [requestScriptModalOpen, setRequestScriptModalOpen] = useState(false);
   const [showAlternatives, setShowAlternatives] = useState(false);
 
@@ -145,7 +149,7 @@ function ScriptsContent() {
 
   const filteredScripts = useMemo(() => {
     if (!Array.isArray(scripts)) return [];
-    
+
     let filtered = scripts;
 
     // Category Filter
@@ -210,9 +214,9 @@ function ScriptsContent() {
             {/* Apple Style Header Title */}
             <div className="flex justify-between items-center">
               <h1 className="text-4xl font-bold tracking-tight text-foreground">Library</h1>
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="rounded-full hover:bg-secondary/50"
                 onClick={() => setRequestScriptModalOpen(true)}
                 aria-label="Request a new script"
@@ -220,7 +224,7 @@ function ScriptsContent() {
                 <MessageCircleHeart className="w-6 h-6 text-primary" />
               </Button>
             </div>
-            
+
             {/* Search Bar (Spotlight Style) */}
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground/70 group-focus-within:text-primary w-5 h-5 transition-colors z-10" />
@@ -233,7 +237,7 @@ function ScriptsContent() {
                 aria-label="Search scripts"
               />
               {searchQuery && (
-                <button 
+                <button
                   onClick={() => setSearchQuery('')}
                   className="absolute right-4 top-1/2 transform -translate-y-1/2 p-1 bg-muted-foreground/20 rounded-full hover:bg-muted-foreground/30 transition-colors"
                   aria-label="Clear search"
@@ -244,7 +248,7 @@ function ScriptsContent() {
             </div>
 
             {/* Horizontal Categories (Pills) */}
-            <div 
+            <div
               className="flex gap-2 overflow-x-auto pb-1 -mx-5 px-5 scrollbar-hide snap-x"
               role="tablist"
               aria-label="Script categories"
@@ -275,7 +279,42 @@ function ScriptsContent() {
         </StickyHeader>
 
         {/* Scrollable Content */}
-        <div className="px-5 pt-4 space-y-6 relative z-10">
+        <div className="px-5 pt-4 space-y-5 relative z-10">
+
+          {/* Favorites Quick Access - Only shows if user has favorites and not searching */}
+          {!searchQuery && favoriteScriptIds.length > 0 && scripts && (
+            <FavoritesQuickAccess
+              favorites={scripts
+                .filter(s => favoriteScriptIds.includes(s.id))
+                .slice(0, 6)
+                .map(s => ({
+                  script: s,
+                  emoji: CATEGORY_STYLES[s.category.toLowerCase()]?.icon || '📝'
+                }))}
+              onSelectScript={(script) => {
+                setSelectedScriptRow(script);
+                setSelectedScript(convertToScriptItem(script));
+              }}
+            />
+          )}
+
+          {/* Recently Used Section - Only shows if user has recent scripts and not searching */}
+          {!searchQuery && recentScriptsData && recentScriptsData.length > 0 && (
+            <RecentlyUsedSection
+              recentScripts={recentScriptsData.map(s => ({
+                script: s,
+                usedAt: s.used_at,
+                emoji: CATEGORY_STYLES[s.category.toLowerCase()]?.icon || '📝',
+                displayCategory: s.category
+              }))}
+              onSelectScript={(script) => {
+                setSelectedScriptRow(script);
+                setSelectedScript(convertToScriptItem(script));
+              }}
+              loading={loadingRecent}
+            />
+          )}
+
           {/* Results Count */}
           <div className="flex items-center justify-between text-sm text-muted-foreground px-1">
             <span>{filteredScripts.length} scripts found</span>
@@ -344,7 +383,7 @@ function ScriptsContent() {
                           </span>
                         )}
                       </div>
-                      
+
                       {/* Hover Arrow */}
                       <div className="absolute bottom-5 right-5 opacity-0 group-hover:opacity-100 transition-opacity transform group-hover:translate-x-1">
                         <ArrowRight className="w-5 h-5 text-primary" />
@@ -361,8 +400,8 @@ function ScriptsContent() {
                   <p className="text-muted-foreground text-sm max-w-xs mt-2">
                     Try adjusting your search or filters. We can't find a match for "{searchQuery}".
                   </p>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="mt-6 rounded-xl"
                     onClick={() => {
                       setSearchQuery('');
@@ -386,7 +425,7 @@ function ScriptsContent() {
         isFavorite={selectedScript ? isFavorite(selectedScript.id) : false}
         onToggleFavorite={() => selectedScript && toggleFavorite(selectedScript.id)}
         onMarkUsed={() => selectedScript && markAsUsed(selectedScript)}
-        onNavigateToScript={() => {}}
+        onNavigateToScript={() => { }}
       />
 
       <CelebrationModal
@@ -399,7 +438,7 @@ function ScriptsContent() {
         open={showAlternatives}
         onOpenChange={setShowAlternatives}
         relatedScripts={[]}
-        onNavigateToScript={() => {}}
+        onNavigateToScript={() => { }}
         onOpenSOS={() => navigate('/sos')}
         onClose={() => setShowAlternatives(false)}
       />

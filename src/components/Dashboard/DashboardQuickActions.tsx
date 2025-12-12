@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, CheckCircle, Sparkles, User, MessageCircle, GraduationCap } from 'lucide-react';
+import { Plus, X, CheckCircle, Sparkles, User, MessageCircle, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHaptic } from '@/hooks/useHaptic';
 import { toast } from 'sonner';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAdminStatus } from '@/hooks/useAdminStatus';
 
 interface QuickAction {
   id: string;
@@ -41,7 +41,7 @@ export function DashboardQuickActions({
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { triggerHaptic } = useHaptic();
-  const { user } = useAuth();
+  const { isAdmin } = useAdminStatus();
 
   const handleLogClick = () => {
     if (!canLog) {
@@ -93,14 +93,15 @@ export function DashboardQuickActions({
         setIsOpen(false);
       },
     },
-    // Programs - only visible for admins
-    ...(user?.is_admin ? [{
-      id: 'programs',
-      label: 'Programs',
-      icon: GraduationCap,
-      color: 'bg-cyan-500',
+    // Admin Panel - only visible for admin users
+    ...(isAdmin ? [{
+      id: 'admin',
+      label: 'Admin Panel',
+      icon: Shield,
+      color: 'bg-gradient-to-r from-purple-600 to-pink-500',
       onClick: () => {
-        navigate('/programs');
+        triggerHaptic('medium');
+        navigate('/admin');
         setIsOpen(false);
       },
     }] : []),
@@ -146,7 +147,8 @@ export function DashboardQuickActions({
                   transition={{ delay: index * 0.05 + 0.1 }}
                   className={cn(
                     "px-3 py-1.5 bg-card border border-border rounded-lg text-sm font-medium shadow-lg whitespace-nowrap",
-                    action.disabled && "text-muted-foreground"
+                    action.disabled && "text-muted-foreground",
+                    action.id === 'admin' && "font-bold text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800"
                   )}
                 >
                   {action.label}

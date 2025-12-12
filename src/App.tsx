@@ -50,7 +50,7 @@ const Tracker = lazy(() => import("./pages/TrackerCalAI"));
 const Profile = lazy(() => import("./pages/ProfileCalAI"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
-const Bonuses = lazy(() => import("./pages/BonusesPremium"));
+const Bonuses = lazy(() => import("./pages/Bonuses"));
 const CollectionDetail = lazy(() => import("./pages/CollectionDetail"));
 const Listen = lazy(() => import("./pages/Listen"));
 // ListenSeries moved to eager loading above to prevent iOS PWA chunk failures
@@ -102,11 +102,11 @@ const queryClient = new QueryClient({
 function AppContent() {
   usePageTracking();
   useErrorTracking();
-  
+
   useEffect(() => {
     // Initialize analytics immediately on app load
     initAnalytics();
-    
+
     // Delay OneSignal initialization to prevent it from overlapping with modals
     // This gives the WelcomeGiftModal and other onboarding modals time to appear first
     const timer = setTimeout(() => {
@@ -396,7 +396,7 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Join Family - Public route for accepting invites */}
         <Route
           path="/join-family"
@@ -406,12 +406,12 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        
+
         {/* Legal Pages - Public */}
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
-        
+
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<NotFound />} />
       </Routes>

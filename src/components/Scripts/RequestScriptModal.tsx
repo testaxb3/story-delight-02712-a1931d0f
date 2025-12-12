@@ -13,18 +13,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useScriptRequests, CreateScriptRequestData } from '@/hooks/useScriptRequests';
-import { 
-  ArrowRight, 
-  ArrowLeft, 
-  Loader2, 
-  Check, 
-  Home, 
-  School, 
-  Car, 
-  Users, 
-  X, 
-  Mic, 
-  MicOff, 
+import {
+  ArrowRight,
+  ArrowLeft,
+  Loader2,
+  Check,
+  Home,
+  School,
+  Car,
+  Users,
+  X,
+  Mic,
+  MicOff,
   Sparkles,
   Save
 } from 'lucide-react';
@@ -107,7 +107,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
   const { triggerHaptic } = useHaptic();
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 3;
-  
+
   // Voice Input
   const { isListening, startListening, stopListening, transcript, setTranscript } = useSpeechRecognition();
 
@@ -192,7 +192,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
     createRequest(requestData, {
       onSuccess: () => {
         triggerHaptic('success');
-        
+
         // Trigger Confetti
         confetti({
           particleCount: 100,
@@ -240,7 +240,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
               {...form.register('situation_description')}
               autoFocus
             />
-            
+
             {/* Voice Button */}
             <button
               type="button"
@@ -250,8 +250,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
               }}
               className={cn(
                 "absolute bottom-4 right-4 p-3 rounded-full transition-all duration-300 flex items-center justify-center shadow-sm",
-                isListening 
-                  ? "bg-red-500 text-white animate-pulse shadow-red-500/40" 
+                isListening
+                  ? "bg-red-500 text-white animate-pulse shadow-red-500/40"
                   : "bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground"
               )}
               title="Toggle Voice Input"
@@ -261,7 +261,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
           </div>
         </div>
         {errors.situation_description && (
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-sm text-red-500 text-center font-medium"
@@ -276,7 +276,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
   const renderStep2 = () => {
     const locationTypes = watch('location_type');
     const parentState = watch('parent_emotional_state');
-    
+
     return (
       <motion.div
         initial={{ opacity: 0, x: 20 }}
@@ -312,8 +312,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                   }}
                   className={cn(
                     "flex items-center gap-3 p-4 rounded-2xl border transition-all duration-200 relative overflow-hidden",
-                    isSelected 
-                      ? "bg-primary/10 border-primary text-primary shadow-inner" 
+                    isSelected
+                      ? "bg-primary/10 border-primary text-primary shadow-inner"
                       : "bg-card/50 border-border/50 hover:bg-card hover:border-border"
                   )}
                 >
@@ -359,7 +359,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
 
   const renderStep3 = () => {
     const urgencyLevel = watch('urgency_level');
-    
+
     return (
       <motion.div
         initial={{ opacity: 0, x: 20 }}
@@ -392,8 +392,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
                 }}
                 className={cn(
                   "w-full flex items-center p-4 rounded-2xl border transition-all relative overflow-hidden",
-                  isSelected 
-                    ? "border-primary ring-1 ring-primary bg-primary/5" 
+                  isSelected
+                    ? "border-primary ring-1 ring-primary bg-primary/5"
                     : "border-border/50 hover:bg-accent/50"
                 )}
               >
@@ -424,8 +424,8 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
 
         {/* Additional Notes */}
         <div className="pt-2">
-          <Input 
-            placeholder="Any extra notes? (Optional)" 
+          <Input
+            placeholder="Any extra notes? (Optional)"
             className="h-12 bg-card/50 border-border/50 focus:bg-card rounded-xl"
             {...form.register('additional_notes')}
           />
@@ -439,7 +439,7 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
       <DialogContent className="sm:max-w-[500px] max-h-[90vh] p-0 gap-0 bg-background/95 backdrop-blur-xl border-none shadow-2xl overflow-hidden flex flex-col rounded-[32px]">
         {/* Progress Bar */}
         <div className="h-1.5 w-full bg-secondary/30">
-          <motion.div 
+          <motion.div
             className="h-full bg-primary shadow-[0_0_10px_rgba(0,0,0,0.2)] shadow-primary/50"
             initial={{ width: 0 }}
             animate={{ width: `${(currentStep / totalSteps) * 100}%` }}
@@ -449,18 +449,11 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
 
         {/* Header */}
         <DialogHeader className="p-6 pb-2 relative">
+          <DialogTitle className="sr-only">Request a Script</DialogTitle>
           <div className="flex items-center justify-between">
-             <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground uppercase tracking-widest">
-               Step {currentStep} <span className="text-muted-foreground/40">/</span> {totalSteps}
-             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-              className="rounded-full h-8 w-8 hover:bg-secondary text-muted-foreground"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground uppercase tracking-widest">
+              Step {currentStep} <span className="text-muted-foreground/40">/</span> {totalSteps}
+            </div>
           </div>
         </DialogHeader>
 
@@ -479,16 +472,16 @@ export function RequestScriptModal({ open, onOpenChange }: { open: boolean; onOp
         <div className="p-6 border-t border-border/50 bg-background/80 backdrop-blur-xl">
           <div className="flex gap-3">
             {currentStep > 1 && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={handleBack}
                 className="h-14 px-6 rounded-2xl border-2 border-border/50 hover:bg-secondary font-bold text-muted-foreground"
               >
                 Back
               </Button>
             )}
-            
-            <Button 
+
+            <Button
               onClick={currentStep === totalSteps ? handleSubmit(onSubmit) : handleNext}
               disabled={isCreating || (currentStep === 1 && !watch('situation_description'))}
               className={cn(

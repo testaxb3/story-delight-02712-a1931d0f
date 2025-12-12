@@ -32,18 +32,18 @@ export function FavoritesQuickAccess({
           {favorites.length}
         </Badge>
       </div>
-      <div className="flex flex-wrap gap-2">
-        {favorites.slice(0, 8).map((item, index) => (
+      <div className="space-y-2">
+        {favorites.slice(0, 6).map((item, index) => (
           <button
             key={item.script.id}
             onClick={() => onSelectScript(item.script)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-slate-800 rounded-full border border-pink-200 dark:border-pink-800 hover:border-pink-400 hover:shadow-md transition-all group animate-in fade-in zoom-in duration-200"
-            style={{ animationDelay: `${index * 30}ms` }}
+            className="w-full flex items-center gap-3 px-3 py-2.5 bg-white dark:bg-slate-800 rounded-xl border border-pink-200 dark:border-pink-800 hover:border-pink-400 hover:shadow-md transition-all group animate-in fade-in slide-in-from-left duration-200 text-left"
+            style={{ animationDelay: `${index * 40}ms` }}
           >
-            <span className="text-sm group-hover:scale-110 transition-transform">
+            <span className="text-lg group-hover:scale-110 transition-transform flex-shrink-0">
               {item.emoji}
             </span>
-            <span className="text-xs font-medium text-pink-900 dark:text-pink-100 max-w-[120px] truncate">
+            <span className="text-sm font-medium text-pink-900 dark:text-pink-100 truncate">
               {item.script.title}
             </span>
           </button>
