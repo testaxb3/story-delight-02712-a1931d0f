@@ -35,7 +35,7 @@ export function BottomNavExpandable() {
 
   return (
     <nav 
-      className="fixed left-3 right-3 z-[100] lg:hidden pointer-events-auto"
+      className="fixed left-3 right-3 z-[100] pointer-events-auto"
       style={{ bottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <ExpandableTabs
