@@ -198,15 +198,51 @@ export default function ProgramLesson() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-5 bg-white rounded-xl border border-[#F0F0F0] overflow-hidden"
+          className="mt-5 bg-white dark:bg-card rounded-xl border border-[#F0F0F0] dark:border-border overflow-hidden"
         >
           {/* Structured Content (New Format) */}
           {parsedContent ? (
-            <div className="pt-5 px-4 pb-4">
-               {lesson.audio_url && (
-                <div className="mb-6">
+            <div className="pb-4">
+              {/* Cover Image from lesson.image_url */}
+              {lesson.image_url && (
+                <div className="relative mb-4">
+                  <img
+                    src={lesson.image_url}
+                    alt={lesson.title}
+                    className="w-full h-48 object-cover"
+                  />
+                  <button
+                    onClick={() => {
+                      if (lesson?.id && program) {
+                        toggleFavorite.mutate({ lessonId: lesson.id, programId: program.id });
+                      }
+                    }}
+                    disabled={toggleFavorite.isPending}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center"
+                  >
+                    <Heart
+                      className={`w-5 h-5 transition-colors ${
+                        isFavorite(lesson?.id || '') 
+                          ? 'fill-[#FF6631] text-[#FF6631]' 
+                          : 'text-[#999]'
+                      }`}
+                    />
+                  </button>
+                </div>
+              )}
+              
+              {/* Title */}
+              <div className="px-4 mb-4">
+                <h1 className="text-xl font-bold text-[#393939] dark:text-foreground">
+                  {lesson.title}
+                </h1>
+              </div>
+              
+              {/* Audio Player */}
+              {lesson.audio_url && (
+                <div className="px-4 mb-6">
                   <audio ref={audioRef} src={lesson.audio_url} preload="metadata" />
-                  <div className="flex items-center gap-3 bg-[#F9F9F9] rounded-xl p-3">
+                  <div className="flex items-center gap-3 bg-[#F9F9F9] dark:bg-muted rounded-xl p-3">
                     <button
                       onClick={togglePlay}
                       className="w-12 h-12 rounded-full bg-[#FF6631] flex items-center justify-center flex-shrink-0"
@@ -218,27 +254,30 @@ export default function ProgramLesson() {
                       )}
                     </button>
                     <div className="flex-1">
-                      <p className="text-sm font-medium text-[#393939] mb-1">
+                      <p className="text-sm font-medium text-[#393939] dark:text-foreground mb-1">
                         Lesson {lessonNumber}: {lesson.title}
                       </p>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-[#999]">{formatTime(currentTime)}</span>
+                        <span className="text-xs text-[#999] dark:text-muted-foreground">{formatTime(currentTime)}</span>
                         <input
                           type="range"
                           min={0}
                           max={duration || 100}
                           value={currentTime}
                           onChange={handleSeek}
-                          className="flex-1 h-1 bg-[#E0E0E0] rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-[#FF6631] [&::-webkit-slider-thumb]:rounded-full"
+                          className="flex-1 h-1 bg-[#E0E0E0] dark:bg-muted-foreground/20 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-[#FF6631] [&::-webkit-slider-thumb]:rounded-full"
                         />
-                        <span className="text-xs text-[#999]">{formatTime(duration)}</span>
+                        <span className="text-xs text-[#999] dark:text-muted-foreground">{formatTime(duration)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
               
-              <LessonContentRenderer content={parsedContent} />
+              {/* Content Sections */}
+              <div className="px-4">
+                <LessonContentRenderer content={parsedContent} />
+              </div>
             </div>
           ) : (
             /* Legacy Content (Old Format) */
