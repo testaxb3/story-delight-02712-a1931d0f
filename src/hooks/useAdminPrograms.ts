@@ -151,10 +151,25 @@ export function useCreateLesson() {
         .single();
 
       if (error) throw error;
+
+      // Auto-update total_lessons in program
+      if (result.program_id) {
+        const { count } = await supabase
+          .from('lessons')
+          .select('*', { count: 'exact', head: true })
+          .eq('program_id', result.program_id);
+
+        await supabase
+          .from('programs')
+          .update({ total_lessons: count })
+          .eq('id', result.program_id);
+      }
+
       return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['program-detail'] });
       toast.success('Lesson created successfully');
     },
     onError: (error: Error) => {
@@ -195,11 +210,32 @@ export function useDeleteLesson() {
 
   return useMutation({
     mutationFn: async (id: string) => {
+      // Get program_id before deleting
+      const { data: lesson } = await supabase
+        .from('lessons')
+        .select('program_id')
+        .eq('id', id)
+        .single();
+
       const { error } = await supabase.from('lessons').delete().eq('id', id);
       if (error) throw error;
+
+      // Recalculate total_lessons
+      if (lesson?.program_id) {
+        const { count } = await supabase
+          .from('lessons')
+          .select('*', { count: 'exact', head: true })
+          .eq('program_id', lesson.program_id);
+
+        await supabase
+          .from('programs')
+          .update({ total_lessons: count })
+          .eq('id', lesson.program_id);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['program-detail'] });
       toast.success('Lesson deleted');
     },
     onError: (error: Error) => {
