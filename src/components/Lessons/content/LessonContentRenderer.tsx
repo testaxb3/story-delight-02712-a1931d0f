@@ -5,7 +5,7 @@ import { LessonHeading } from './LessonHeading';
 import { LessonNumberedList } from './LessonNumberedList';
 import { LessonVisualDiagram } from './LessonVisualDiagram';
 import { LessonReflectionForm } from './LessonReflectionForm';
-import { LessonAccordion } from './LessonAccordion';
+import { LessonExpandedList } from './LessonExpandedList';
 import { LessonCallout } from './LessonCallout';
 import { LessonCTA } from './LessonCTA';
 import { LessonDivider } from './LessonDivider';
@@ -35,7 +35,7 @@ export function LessonContentRenderer({ content, onCTAAction, skipHero = false }
       case 'reflection-form':
         return <LessonReflectionForm key={key} data={section.data} />;
       case 'accordion':
-        return <LessonAccordion key={key} data={section.data} />;
+        return <LessonExpandedList key={key} data={section.data} />;
       case 'callout':
         return <LessonCallout key={key} data={section.data} />;
       case 'cta':
