@@ -18,7 +18,7 @@ export function MainLayout({ children, hideTopBar = false, noPaddingTop = false,
     <div className="min-h-screen w-full m-0 p-0">
       {!hideSideNav && <SideNav />}
       <main className={cn(
-        "w-full h-full m-0 p-0",
+        "w-full min-h-screen",
         !hideSideNav && "md:ml-20 lg:ml-24"
       )}>
         {children}
