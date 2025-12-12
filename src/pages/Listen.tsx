@@ -123,7 +123,7 @@ export default function Listen() {
 
   return (
     <MainLayout>
-      <div className="relative min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] overflow-hidden">
+      <div className="relative min-h-screen bg-background overflow-hidden">
         <AmbientBackground />
 
         <div
@@ -174,10 +174,10 @@ export default function Listen() {
                       <Music className="w-4 h-4 text-[#FF6631]" />
                     </div>
                     <div>
-                      <h2 className="text-base font-bold text-[#393939]">
+                      <h2 className="text-base font-bold text-foreground">
                         {activeFilter === 'all' ? 'All Series' : `${activeFilter.charAt(0).toUpperCase() + activeFilter.slice(1)} Series`}
                       </h2>
-                      <p className="text-xs text-[#8D8D8D]">
+                      <p className="text-xs text-muted-foreground">
                         {filteredSeries.length} {filteredSeries.length === 1 ? 'series' : 'series'} available
                       </p>
                     </div>
@@ -238,10 +238,10 @@ export default function Listen() {
                     <Headphones className="w-10 h-10 text-[#FF6631]/50" />
                   </motion.div>
                   <div className="space-y-2">
-                    <h3 className="text-lg font-bold text-[#393939]">
+                    <h3 className="text-lg font-bold text-foreground">
                       No series found
                     </h3>
-                    <p className="text-sm text-[#8D8D8D]">
+                    <p className="text-sm text-muted-foreground">
                       Try selecting a different category
                     </p>
                   </div>
@@ -289,10 +289,10 @@ export default function Listen() {
                     </motion.div>
                   </motion.div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-bold text-[#393939]">
+                    <h3 className="text-xl font-bold text-foreground">
                       No audio series yet
                     </h3>
-                    <p className="text-sm text-[#8D8D8D] max-w-xs mx-auto">
+                    <p className="text-sm text-muted-foreground max-w-xs mx-auto">
                       Audio content is coming soon. Check back later for amazing guided sessions!
                     </p>
                   </div>

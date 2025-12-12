@@ -12,7 +12,7 @@ export function LessonExpandedList({ data }: Props) {
         <motion.h3
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-lg font-bold text-[#393939] mb-4 flex items-center gap-2"
+          className="text-lg font-bold text-foreground mb-4 flex items-center gap-2"
         >
           <span className="w-1 h-5 bg-gradient-to-b from-[#FF6631] to-[#FFA300] rounded-full" />
           {data.title}
@@ -43,12 +43,12 @@ export function LessonExpandedList({ data }: Props) {
               {/* Card */}
               <motion.div
                 whileHover={{ x: 4 }}
-                className="bg-gradient-to-r from-[#FFF9F5] to-white p-4 rounded-[14px] border border-[#FFE4D1] shadow-sm hover:shadow-md transition-all"
+                className="bg-gradient-to-r from-amber-50 to-white dark:from-amber-900/20 dark:to-card p-4 rounded-[14px] border border-amber-200 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all"
               >
-                <h4 className="font-bold text-[#393939] text-[15px] mb-2">
+                <h4 className="font-bold text-foreground text-[15px] mb-2">
                   {item.title}
                 </h4>
-                <p className="text-[14px] text-[#666] leading-relaxed">
+                <p className="text-[14px] text-muted-foreground leading-relaxed">
                   {item.content}
                 </p>
               </motion.div>

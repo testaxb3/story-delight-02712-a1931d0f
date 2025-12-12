@@ -51,13 +51,13 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
             <div className="flex items-center justify-center w-[32px] h-[32px] rounded-full bg-gradient-to-br from-[#FF6631]/10 to-[#FFA300]/10">
               <BookOpen className="w-[16px] h-[16px] text-[#FF6631]" />
             </div>
-            <p className="font-[600] text-[16px] text-[#393939] truncate">{program.title}</p>
+            <p className="font-[600] text-[16px] text-foreground truncate">{program.title}</p>
           </div>
 
           {/* Progress indicator */}
           <div className="flex items-center gap-[8px]">
             <div className="flex flex-col items-end">
-              <span className="text-[12px] text-[#8D8D8D]">Progress</span>
+              <span className="text-[12px] text-muted-foreground">Progress</span>
               <span className="text-[14px] font-[700] text-[#FF6631]">{progressPercentage}%</span>
             </div>
             {/* Circular progress */}
@@ -87,7 +87,7 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
                 </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[10px] font-[700] text-[#393939]">
+                <span className="text-[10px] font-[700] text-foreground">
                   {program.lessons_completed.length}/{program.total_lessons}
                 </span>
               </div>
@@ -97,8 +97,8 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
 
         {/* Lesson Title */}
         <div className="px-[20px] pb-[12px]">
-          <p className="text-[14px] text-[#8D8D8D] mb-[4px]">Next Lesson</p>
-          <p className="text-[22px] text-[#393939] leading-[1.2]">
+          <p className="text-[14px] text-muted-foreground mb-[4px]">Next Lesson</p>
+          <p className="text-[22px] text-foreground leading-[1.2]">
             <span className="text-[#FF6631] font-[600]">#{nextLessonNumber}</span>{' '}
             <span className="font-[800]">{lessonTitle}</span>
           </p>
@@ -138,7 +138,7 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
               className="absolute right-[12px] top-[12px] z-[1] w-[36px] h-[36px] bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg transition-all"
             >
               <Heart
-                className={`w-[18px] h-[18px] transition-all ${isFavorited ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`}
+                className={`w-[18px] h-[18px] transition-all ${isFavorited ? 'text-red-500 fill-red-500' : 'text-foreground'}`}
               />
             </motion.button>
 
@@ -150,14 +150,14 @@ export function CurrentProgramCard({ program }: CurrentProgramCardProps) {
               className="absolute left-[12px] bottom-[12px] flex items-center gap-[8px] bg-white/90 backdrop-blur-sm rounded-full px-[12px] py-[6px] shadow-lg"
             >
               <Play className="w-[14px] h-[14px] text-[#FF6631] fill-[#FF6631]" />
-              <span className="text-[12px] font-[600] text-[#393939]">Ready to play</span>
+              <span className="text-[12px] font-[600] text-foreground">Ready to play</span>
             </motion.div>
           </div>
         </div>
 
         {/* Description */}
         <div className="px-[20px] mb-[16px]">
-          <p className={`text-[15px] text-[#666] font-[400] leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-2' : ''}`}>
+          <p className={`text-[15px] text-muted-foreground font-[400] leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-2' : ''}`}>
             {lessonSummary}
           </p>
           {needsTruncation && (

@@ -40,8 +40,8 @@ export function AudioTrackList({ tracks, series, hasAccess }: AudioTrackListProp
           <Headphones className="w-10 h-10 text-[#FF6631]/40" />
         </motion.div>
         <div className="space-y-1">
-          <h3 className="text-base font-semibold text-[#393939]">No tracks yet</h3>
-          <p className="text-sm text-[#8D8D8D]">Episodes will appear here once available.</p>
+          <h3 className="text-base font-semibold text-foreground">No tracks yet</h3>
+          <p className="text-sm text-muted-foreground">Episodes will appear here once available.</p>
         </div>
         <div className="flex justify-center gap-2">
           {[0, 1, 2].map((i) => (

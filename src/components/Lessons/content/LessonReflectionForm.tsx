@@ -20,10 +20,10 @@ export function LessonReflectionForm({ data }: Props) {
         </div>
         <div>
           {data.title && (
-            <h3 className="text-lg font-bold text-[#393939]">{data.title}</h3>
+            <h3 className="text-lg font-bold text-foreground">{data.title}</h3>
           )}
           {data.description && (
-            <p className="text-sm text-[#8D8D8D]">{data.description}</p>
+            <p className="text-sm text-muted-foreground">{data.description}</p>
           )}
         </div>
       </motion.div>

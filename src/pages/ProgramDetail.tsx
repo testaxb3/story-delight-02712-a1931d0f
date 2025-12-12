@@ -20,17 +20,17 @@ export default function ProgramDetail() {
 
   if (error || !program) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center max-w-sm"
         >
-          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 flex items-center justify-center">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
             <AlertCircle className="w-10 h-10 text-red-500" />
           </div>
-          <h2 className="text-xl font-bold text-[#393939] mb-2">Program Not Found</h2>
-          <p className="text-sm text-[#8D8D8D] mb-6">This program doesn't exist or has been removed.</p>
+          <h2 className="text-xl font-bold text-foreground mb-2">Program Not Found</h2>
+          <p className="text-sm text-muted-foreground mb-6">This program doesn't exist or has been removed.</p>
           <motion.button
             onClick={() => navigate('/programs')}
             whileHover={{ scale: 1.02 }}
@@ -60,9 +60,9 @@ export default function ProgramDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] pb-24">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header with safe area */}
-      <header className="bg-gradient-to-b from-[#FEFBF9] to-transparent sticky top-0 z-10">
+      <header className="bg-background sticky top-0 z-10">
         {/* Safe area spacing */}
         <div className="h-[env(safe-area-inset-top)]" />
 
@@ -71,18 +71,18 @@ export default function ProgramDetail() {
           <div className="flex items-center gap-4">
             <motion.button
               onClick={() => navigate('/programs')}
-              className="flex items-center justify-center w-10 h-10 rounded-full bg-white shadow-md border border-[#F0F0F0] transition-all hover:shadow-lg"
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-white dark:bg-card shadow-md border border-border transition-all hover:shadow-lg"
               whileHover={{ x: -2, scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
             >
-              <ArrowLeft className="w-5 h-5 text-[#393939]" />
+              <ArrowLeft className="w-5 h-5 text-foreground" />
             </motion.button>
 
             <div className="flex-1">
               <motion.h1
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-xl text-[#393939] leading-6 font-bold"
+                className="text-xl text-foreground leading-6 font-bold"
               >
                 Program Details
               </motion.h1>
@@ -90,7 +90,7 @@ export default function ProgramDetail() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="text-xs text-[#8D8D8D] mt-0.5"
+                className="text-xs text-muted-foreground mt-0.5"
               >
                 {program.lessons.length} lessons • {completedLessons.length} completed
               </motion.p>
@@ -99,7 +99,7 @@ export default function ProgramDetail() {
         </div>
 
         {/* Subtle divider */}
-        <div className="h-px bg-gradient-to-r from-transparent via-[#E8E8E6] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       </header>
 
       <motion.main
@@ -150,8 +150,8 @@ export default function ProgramDetail() {
                 <ListChecks className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-[#393939]">All Lessons</h2>
-                <p className="text-xs text-[#8D8D8D]">{completedLessons.length} of {program.lessons.length} completed</p>
+                <h2 className="text-lg font-bold text-foreground">All Lessons</h2>
+                <p className="text-xs text-muted-foreground">{completedLessons.length} of {program.lessons.length} completed</p>
               </div>
             </div>
 
@@ -164,19 +164,19 @@ export default function ProgramDetail() {
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.5 + i * 0.05 }}
                   className={`w-1.5 h-6 rounded-full ${i < completedLessons.length
-                      ? 'bg-gradient-to-b from-green-500 to-emerald-400'
-                      : 'bg-gray-200'
+                    ? 'bg-gradient-to-b from-green-500 to-emerald-400'
+                    : 'bg-gray-200'
                     }`}
                 />
               ))}
               {program.lessons.length > 5 && (
-                <span className="text-[10px] text-[#8D8D8D] ml-1">+{program.lessons.length - 5}</span>
+                <span className="text-[10px] text-muted-foreground ml-1">+{program.lessons.length - 5}</span>
               )}
             </div>
           </div>
 
           {/* Lessons List */}
-          <div className="bg-white rounded-[20px] border border-[#F0F0F0] overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-card rounded-[20px] border border-border overflow-hidden shadow-sm">
             {program.lessons.map((lesson, index) => (
               <LessonListItem
                 key={lesson.id}
@@ -193,19 +193,19 @@ export default function ProgramDetail() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="py-12 text-center bg-white rounded-[20px] border border-[#F0F0F0]"
+              className="py-12 text-center bg-white dark:bg-card rounded-[20px] border border-border"
             >
               <motion.div
                 animate={{ y: [-4, 4, -4] }}
                 transition={{ duration: 3, repeat: Infinity }}
-                className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center"
+                className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 flex items-center justify-center"
               >
                 <BookOpen className="w-8 h-8 text-[#FF6631]/60" />
               </motion.div>
-              <p className="text-base font-semibold text-[#393939] mb-1">
+              <p className="text-base font-semibold text-foreground mb-1">
                 Lessons Coming Soon
               </p>
-              <p className="text-sm text-[#8D8D8D]">
+              <p className="text-sm text-muted-foreground">
                 We're preparing amazing content for you!
               </p>
               <motion.div
@@ -227,7 +227,7 @@ export default function ProgramDetail() {
 
 function ProgramDetailSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5]">
+    <div className="min-h-screen bg-background">
       {/* Header skeleton */}
       <div className="px-5 pt-[calc(env(safe-area-inset-top)+16px)] pb-5">
         <div className="flex items-center gap-4">

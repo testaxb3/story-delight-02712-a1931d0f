@@ -35,8 +35,8 @@ export const ContinueLearning = memo(function ContinueLearning({
             <RotateCcw className="w-5 h-5 text-white" />
           </motion.div>
           <div>
-            <h3 className="text-lg font-bold text-[#393939]">Continue Learning</h3>
-            <p className="text-xs text-[#8D8D8D]">{items.length} in progress</p>
+            <h3 className="text-lg font-bold text-foreground">Continue Learning</h3>
+            <p className="text-xs text-muted-foreground">{items.length} in progress</p>
           </div>
         </div>
 

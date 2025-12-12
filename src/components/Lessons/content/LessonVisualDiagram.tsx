@@ -11,7 +11,7 @@ export function LessonVisualDiagram({ data }: Props) {
       <motion.h3
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
-        className="text-lg font-bold text-[#393939] mb-4 flex items-center gap-2"
+        className="text-lg font-bold text-foreground mb-4 flex items-center gap-2"
       >
         <span className="w-1 h-5 bg-gradient-to-b from-[#FF6631] to-[#FFA300] rounded-full" />
         {data.title}
@@ -26,7 +26,7 @@ export function LessonVisualDiagram({ data }: Props) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1, type: 'spring' }}
             whileHover={{ x: 4 }}
-            className="flex items-start gap-4 p-4 rounded-[14px] bg-gradient-to-r from-[#FFF5ED] to-white border border-[#FFE4D1] shadow-sm hover:shadow-md transition-all"
+            className="flex items-start gap-4 p-4 rounded-[14px] bg-gradient-to-r from-amber-50 to-white dark:from-amber-900/20 dark:to-card border border-amber-200 dark:border-amber-800/30 shadow-sm hover:shadow-md transition-all"
           >
             {/* Number badge */}
             <motion.div
@@ -36,7 +36,7 @@ export function LessonVisualDiagram({ data }: Props) {
               {label.number}
             </motion.div>
 
-            <p className="text-[15px] text-[#4A4A4A] leading-relaxed pt-2">
+            <p className="text-[15px] text-foreground/90 leading-relaxed pt-2">
               {label.text}
             </p>
           </motion.div>

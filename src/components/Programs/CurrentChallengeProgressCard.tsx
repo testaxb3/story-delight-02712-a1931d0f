@@ -109,8 +109,8 @@ export function CurrentChallengeProgressCard({
                 transition={{ duration: 1, repeat: isComplete ? Infinity : 0 }}
               >
                 <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full ${isComplete
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-500'
-                    : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-500'
+                  : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
                   }`}>
                   {isComplete ? (
                     <Sparkles className="w-3 h-3 text-white" />
@@ -128,7 +128,7 @@ export function CurrentChallengeProgressCard({
               </motion.div>
 
               {/* Title */}
-              <h2 className="text-[#393939] text-lg leading-tight font-bold line-clamp-2">
+              <h2 className="text-foreground text-lg leading-tight font-bold line-clamp-2">
                 {title}
               </h2>
 
@@ -157,12 +157,12 @@ export function CurrentChallengeProgressCard({
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-[#FF6631]" />
-                <span className="text-sm text-[#393939] font-medium">Progress</span>
+                <span className="text-sm text-foreground font-medium">Progress</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-[#FF6631]">{completedLessons}</span>
-                <span className="text-sm text-[#8D8D8D]">of</span>
-                <span className="text-sm font-bold text-[#393939]">{totalLessons}</span>
+                <span className="text-sm text-muted-foreground">of</span>
+                <span className="text-sm font-bold text-foreground">{totalLessons}</span>
               </div>
             </div>
 
@@ -172,8 +172,8 @@ export function CurrentChallengeProgressCard({
                 animate={{ width: `${percentage}%` }}
                 transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
                 className={`h-full rounded-full relative ${isComplete
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-400'
-                    : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+                  : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
                   }`}
               >
                 {/* Shine effect */}

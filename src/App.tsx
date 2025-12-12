@@ -22,7 +22,7 @@ import { useErrorTracking } from "./hooks/useErrorTracking";
 // ListenSeries and Scripts are eager-loaded to prevent chunk failures on iOS PWA
 import Auth from "./pages/Auth";
 import Welcome from "./pages/Welcome";
-import Dashboard from "./pages/DashboardCalAI";
+import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import PWAInstall from "./pages/PWAInstall";
 import PWACheck from "./pages/PWACheck";
@@ -39,15 +39,15 @@ const Terms = lazy(() => import("./pages/Terms"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
 const Quiz = lazy(() => import("./pages/Quiz"));
-const Community = lazy(() => import("./pages/CommunityCalAI"));
+const Community = lazy(() => import("./pages/Community"));
 const CreateGroupName = lazy(() => import("./pages/Community/CreateGroupName"));
 const AddGroupLogo = lazy(() => import("./pages/Community/AddGroupLogo"));
 const CommunityFeed = lazy(() => import("./pages/Community/CommunityFeed"));
 const CreatePost = lazy(() => import("./pages/Community/CreatePost"));
 const MembersList = lazy(() => import("./pages/Community/MembersList"));
 const JoinCommunity = lazy(() => import("./pages/Community/JoinCommunity"));
-const Tracker = lazy(() => import("./pages/TrackerCalAI"));
-const Profile = lazy(() => import("./pages/ProfileCalAI"));
+const Tracker = lazy(() => import("./pages/Tracker"));
+const Profile = lazy(() => import("./pages/Profile"));
 const ProfileEdit = lazy(() => import("./pages/Profile/Edit"));
 
 const Bonuses = lazy(() => import("./pages/Bonuses"));

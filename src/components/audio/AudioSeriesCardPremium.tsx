@@ -45,23 +45,23 @@ export function AudioSeriesCardPremium({
       }}
       className={`
         relative overflow-hidden rounded-[18px] cursor-pointer 
-        bg-white border transition-all duration-300 shadow-sm
+        bg-white dark:bg-card border transition-all duration-300 shadow-sm
         hover:shadow-xl hover:shadow-orange-500/10 active:scale-[0.98]
         focus:outline-none focus:ring-2 focus:ring-[#FF6631]/50
         ${isCompleted
           ? 'border-green-400/50'
           : hasProgress
             ? 'border-[#FF6631]/30'
-            : 'border-[#F0E6DF] hover:border-[#FF6631]/30'
+            : 'border-border hover:border-[#FF6631]/30'
         }
       `}
     >
       {/* Top accent bar */}
       <div className={`h-1 w-full ${isCompleted
-          ? 'bg-gradient-to-r from-green-500 to-emerald-400'
-          : isLocked
-            ? 'bg-gradient-to-r from-amber-500 to-orange-400'
-            : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
+        ? 'bg-gradient-to-r from-green-500 to-emerald-400'
+        : isLocked
+          ? 'bg-gradient-to-r from-amber-500 to-orange-400'
+          : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300]'
         }`} />
 
       {/* 16:9 Thumbnail */}
@@ -159,17 +159,17 @@ export function AudioSeriesCardPremium({
 
       {/* Info section */}
       <div className="p-4 space-y-2">
-        <h3 className="text-[15px] font-bold text-[#393939] line-clamp-2 leading-snug">
+        <h3 className="text-[15px] font-bold text-foreground line-clamp-2 leading-snug">
           {series.name}
         </h3>
 
-        <div className="flex items-center gap-2 text-xs text-[#8D8D8D] flex-wrap">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-wrap">
           <span className="font-medium">{series.track_count} episodes</span>
 
           {/* Free previews badge for premium series */}
           {isLocked && freeTracksCount > 0 && (
             <>
-              <span className="text-[#E8E8E6]">•</span>
+              <span className="text-border">•</span>
               <span className="text-[#FF6631] font-semibold">
                 {freeTracksCount} free
               </span>
@@ -179,7 +179,7 @@ export function AudioSeriesCardPremium({
           {/* Progress text */}
           {hasProgress && (
             <>
-              <span className="text-[#E8E8E6]">•</span>
+              <span className="text-border">•</span>
               <span className="text-[#FF6631] font-semibold">
                 {progress.completed}/{progress.total} done
               </span>
@@ -188,8 +188,8 @@ export function AudioSeriesCardPremium({
 
           {isCompleted && (
             <>
-              <span className="text-[#E8E8E6]">•</span>
-              <span className="text-green-600 font-semibold flex items-center gap-1">
+              <span className="text-border">•</span>
+              <span className="text-green-600 dark:text-green-400 font-semibold flex items-center gap-1">
                 <CheckCircle2 className="w-3 h-3" />
                 Completed
               </span>

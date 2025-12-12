@@ -34,35 +34,35 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
       {/* Main card */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="relative w-full flex flex-col bg-white rounded-[20px] border border-[#F0E6DF] shadow-lg shadow-orange-500/5 overflow-hidden cursor-pointer"
+        className="relative w-full flex flex-col bg-white dark:bg-card rounded-[20px] border border-border shadow-lg shadow-orange-500/5 overflow-hidden cursor-pointer"
         onClick={() => navigate(`/programs/${programSlug}/lesson/${lesson.day_number}`)}
       >
         {/* Header accent bar */}
         <div className="h-1 w-full bg-gradient-to-r from-[#FF6631] via-[#FFA300] to-[#FFB84D]" />
 
         {/* Header */}
-        <div className="flex flex-row items-center justify-between gap-2.5 px-5 pt-4 pb-3 border-b border-[#F0F0F0]">
+        <div className="flex flex-row items-center justify-between gap-2.5 px-5 pt-4 pb-3 border-b border-border">
           <div className="flex items-center gap-2">
             <div className="flex items-center justify-center w-7 h-7 rounded-full bg-gradient-to-br from-[#FF6631] to-[#FFA300]">
               <BookOpen className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-semibold text-sm text-[#393939]">Next Lesson</span>
+            <span className="font-semibold text-sm text-foreground">Next Lesson</span>
           </div>
 
           <div className="flex items-center gap-3">
             {lesson.estimated_minutes && (
-              <span className="flex items-center gap-1.5 text-xs text-[#8D8D8D] bg-[#F5F5F5] px-2 py-1 rounded-full">
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 <Clock className="w-3 h-3" />
                 {lesson.estimated_minutes} min
               </span>
             )}
             {lesson.audio_url && (
-              <span className="flex items-center gap-1.5 text-xs text-[#8D8D8D] bg-[#F5F5F5] px-2 py-1 rounded-full">
+              <span className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 <Headphones className="w-3 h-3" />
                 Audio
               </span>
             )}
-            <span className="font-medium text-sm text-[#8D8D8D]">
+            <span className="font-medium text-sm text-muted-foreground">
               <span className="text-[#FF6631] font-bold">{lesson.day_number}</span>/{totalLessons}
             </span>
           </div>
@@ -70,7 +70,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
 
         {/* Lesson Title */}
         <div className="px-5 py-3">
-          <h3 className="text-xl text-[#393939] leading-tight">
+          <h3 className="text-xl text-foreground leading-tight">
             <span className="text-[#FF6631] font-semibold">Lesson {lesson.day_number}:</span>{' '}
             <span className="font-extrabold">{lesson.title}</span>
           </h3>
@@ -115,7 +115,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
             className="absolute right-3 top-3 z-[1] w-10 h-10 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all disabled:opacity-50"
           >
             <Heart
-              className={`w-5 h-5 transition-all ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500' : 'text-[#393939]'}`}
+              className={`w-5 h-5 transition-all ${isFavorite(lesson.id) ? 'text-red-500 fill-red-500' : 'text-foreground'}`}
             />
           </motion.button>
 
@@ -124,7 +124,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="absolute left-3 bottom-3 flex items-center gap-2 bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
+            className="absolute left-3 bottom-3 flex items-center gap-2 bg-white/95 dark:bg-card/95 backdrop-blur-sm rounded-full px-3 py-1.5 shadow-lg"
           >
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
@@ -132,7 +132,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
             >
               <Play className="w-3.5 h-3.5 text-[#FF6631] fill-[#FF6631]" />
             </motion.div>
-            <span className="text-xs font-semibold text-[#393939]">Ready to play</span>
+            <span className="text-xs font-semibold text-foreground">Ready to play</span>
           </motion.div>
         </div>
 

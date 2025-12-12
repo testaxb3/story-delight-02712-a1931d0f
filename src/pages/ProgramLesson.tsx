@@ -156,7 +156,7 @@ export default function ProgramLesson() {
 
   if (!lesson) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] flex items-center justify-center p-6">
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -169,8 +169,8 @@ export default function ProgramLesson() {
           >
             <BookOpen className="w-12 h-12 text-white" />
           </motion.div>
-          <h2 className="text-2xl font-bold text-[#393939] mb-3">Lesson Not Found</h2>
-          <p className="text-sm text-[#8D8D8D] mb-6 leading-relaxed">
+          <h2 className="text-2xl font-bold text-foreground mb-3">Lesson Not Found</h2>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
             This lesson doesn't exist yet. It will be available soon as part of this program.
           </p>
           <motion.button
@@ -190,9 +190,9 @@ export default function ProgramLesson() {
   const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] pb-32">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header with safe area */}
-      <header className="sticky top-0 z-10 bg-gradient-to-b from-[#FEFBF9] to-[#FEFBF9]/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
         <div className="h-[env(safe-area-inset-top)]" />
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center justify-between">
@@ -202,21 +202,21 @@ export default function ProgramLesson() {
               whileHover={{ x: -4 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 rounded-full bg-white shadow-md border border-[#F0F0F0] flex items-center justify-center">
-                <ChevronLeft className="w-5 h-5 text-[#393939]" />
+              <div className="w-10 h-10 rounded-full bg-white dark:bg-card shadow-md border border-border flex items-center justify-center">
+                <ChevronLeft className="w-5 h-5 text-foreground" />
               </div>
               <div>
-                <span className="text-lg font-bold text-[#393939]">Lesson {lessonNumber}</span>
-                <p className="text-xs text-[#8D8D8D]">{program.title}</p>
+                <span className="text-lg font-bold text-foreground">Lesson {lessonNumber}</span>
+                <p className="text-xs text-muted-foreground">{program.title}</p>
               </div>
             </motion.button>
 
             {/* Lesson progress indicator */}
             <div className="flex items-center gap-2">
-              <span className="text-xs font-medium text-[#8D8D8D]">
+              <span className="text-xs font-medium text-muted-foreground">
                 {lessonNumber}/{program.total_lessons}
               </span>
-              <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div className="w-16 h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: `${(lessonNumber / program.total_lessons) * 100}%` }}
@@ -226,7 +226,7 @@ export default function ProgramLesson() {
             </div>
           </div>
         </div>
-        <div className="h-px bg-gradient-to-r from-transparent via-[#E8E8E6] to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
       </header>
 
       <motion.main
@@ -240,7 +240,7 @@ export default function ProgramLesson() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="relative mt-4 bg-white rounded-[24px] shadow-lg shadow-black/5 border border-[#F0E6DF] overflow-hidden mb-6"
+          className="relative mt-4 bg-white dark:bg-card rounded-[24px] shadow-lg shadow-black/5 border border-border overflow-hidden mb-6"
         >
           {/* Accent gradient at top */}
           <div className="h-1 w-full bg-gradient-to-r from-[#FF6631] via-[#FFA300] to-[#FFB84D]" />
@@ -254,19 +254,19 @@ export default function ProgramLesson() {
                     Day {lessonNumber}
                   </span>
                   {lesson.estimated_minutes && (
-                    <span className="flex items-center gap-1 text-xs text-[#8D8D8D]">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
                       {lesson.estimated_minutes} min
                     </span>
                   )}
                   {lesson.audio_url && (
-                    <span className="flex items-center gap-1 text-xs text-[#8D8D8D]">
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
                       <Headphones className="w-3 h-3" />
                       Audio
                     </span>
                   )}
                 </div>
-                <h1 className="text-xl font-bold text-[#393939] leading-tight">
+                <h1 className="text-xl font-bold text-foreground leading-tight">
                   {lesson.title}
                 </h1>
               </div>
@@ -309,8 +309,8 @@ export default function ProgramLesson() {
                 >
                   <Heart
                     className={`w-5 h-5 transition-all ${isFavorite(lesson.id)
-                        ? 'fill-red-500 text-red-500 scale-110'
-                        : 'text-[#393939]'
+                      ? 'fill-red-500 text-red-500 scale-110'
+                      : 'text-[#393939]'
                       }`}
                   />
                 </motion.button>
@@ -443,8 +443,8 @@ export default function ProgramLesson() {
             whileHover={!isCompleted && !isCompleting ? { scale: 1.02, y: -2 } : {}}
             whileTap={!isCompleted && !isCompleting ? { scale: 0.98 } : {}}
             className={`relative w-full py-4 rounded-full font-bold text-lg transition-all overflow-hidden flex items-center justify-center gap-2 ${isCompleted
-                ? 'bg-gradient-to-r from-green-500 to-emerald-400 text-white shadow-lg shadow-green-500/30'
-                : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40'
+              ? 'bg-gradient-to-r from-green-500 to-emerald-400 text-white shadow-lg shadow-green-500/30'
+              : 'bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40'
               } ${isCompleting || isCompleted ? 'cursor-not-allowed' : 'cursor-pointer'}`}
           >
             {/* Shine effect */}
@@ -555,20 +555,20 @@ export default function ProgramLesson() {
 
 function LessonSkeleton() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5] pb-32">
+    <div className="min-h-screen bg-background pb-32">
       {/* Header Skeleton */}
-      <header className="sticky top-0 z-10 bg-[#FEFBF9]">
+      <header className="sticky top-0 z-10 bg-background">
         <div className="h-[env(safe-area-inset-top)]" />
         <div className="px-5 pt-4 pb-4">
           <div className="flex items-center gap-3">
-            <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+            <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 overflow-hidden">
               <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
             </div>
             <div className="space-y-2">
-              <div className="relative h-5 w-24 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="relative h-5 w-24 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 overflow-hidden">
                 <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
               </div>
-              <div className="relative h-3 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
+              <div className="relative h-3 w-32 rounded bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 overflow-hidden">
                 <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
               </div>
             </div>
@@ -578,7 +578,7 @@ function LessonSkeleton() {
 
       <div className="px-5 mt-4">
         {/* Hero Card Skeleton */}
-        <div className="bg-white rounded-[24px] shadow-lg border border-[#F0E6DF] overflow-hidden mb-6 p-5">
+        <div className="bg-white dark:bg-card rounded-[24px] shadow-lg border border-border overflow-hidden mb-6 p-5">
           {/* Title */}
           <div className="flex gap-2 mb-3">
             <div className="relative h-6 w-16 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">

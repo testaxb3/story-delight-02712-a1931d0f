@@ -98,8 +98,8 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
 
     // Default: Track number with subtle styling
     return (
-      <div className="w-9 h-9 rounded-full bg-[#F5F0ED] flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-[#FF6631]/10 group-hover:to-[#FFA300]/10 transition-all">
-        <span className="text-sm text-[#8D8D8D] font-semibold group-hover:text-[#FF6631] transition-colors">
+      <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center group-hover:bg-gradient-to-br group-hover:from-[#FF6631]/10 group-hover:to-[#FFA300]/10 transition-all">
+        <span className="text-sm text-muted-foreground font-semibold group-hover:text-[#FF6631] transition-colors">
           {track.track_number}
         </span>
       </div>
@@ -119,12 +119,12 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
         className={`
           w-full p-3 rounded-[14px] flex items-center gap-3 transition-all relative overflow-hidden
           ${isCurrent
-            ? 'bg-gradient-to-r from-[#FFF5ED] to-white border-2 border-[#FF6631]/30 shadow-md'
+            ? 'bg-gradient-to-r from-amber-50 to-white dark:from-amber-900/20 dark:to-card border-2 border-[#FF6631]/30 shadow-md'
             : isLocked
-              ? 'bg-white/60 border border-[#F0E6DF] hover:bg-white hover:border-amber-300/50'
+              ? 'bg-white/60 dark:bg-gray-800/60 border border-border hover:bg-white dark:hover:bg-gray-800 hover:border-amber-300/50'
               : isCompleted
-                ? 'bg-gradient-to-r from-green-50 to-white border border-green-200/50 hover:border-green-300'
-                : 'bg-white border border-[#F0E6DF] hover:border-[#FF6631]/30 hover:shadow-md'
+                ? 'bg-gradient-to-r from-green-50 to-white dark:from-green-900/20 dark:to-card border border-green-200/50 dark:border-green-800/50 hover:border-green-300'
+                : 'bg-white dark:bg-card border border-border hover:border-[#FF6631]/30 hover:shadow-md'
           }
         `}
       >
@@ -148,8 +148,8 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
             ${isCurrent
               ? 'text-[#FF6631]'
               : isCompleted
-                ? 'text-green-700'
-                : 'text-[#393939] group-hover:text-[#FF6631]'
+                ? 'text-green-700 dark:text-green-400'
+                : 'text-foreground group-hover:text-[#FF6631]'
             } transition-colors
           `}>
             {track.title}
@@ -168,11 +168,11 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
 
           {/* Duration for non-current tracks */}
           {!isCurrent && !isLocked && (
-            <div className="flex items-center gap-1 mt-1 text-xs text-[#8D8D8D]">
+            <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
               <Clock className="w-3 h-3" />
               <span>{formatTime(track.duration_seconds)}</span>
               {isCompleted && (
-                <span className="ml-1 text-green-600 font-medium">• Completed</span>
+                <span className="ml-1 text-green-600 dark:text-green-400 font-medium">• Completed</span>
               )}
             </div>
           )}
@@ -190,8 +190,8 @@ export function AudioTrackItem({ track, isPlaying, isCurrent, onPlay, index, isL
               <span className="text-xs text-[#FF6631] font-semibold">
                 {formatTime(progress?.progress_seconds || 0)}
               </span>
-              <span className="text-xs text-[#8D8D8D]">/</span>
-              <span className="text-xs text-[#8D8D8D]">
+              <span className="text-xs text-muted-foreground">/</span>
+              <span className="text-xs text-muted-foreground">
                 {formatTime(track.duration_seconds)}
               </span>
             </div>

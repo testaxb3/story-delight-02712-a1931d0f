@@ -83,7 +83,7 @@ export function AudioContextFilters({ activeFilter, onFilterChange }: AudioConte
                 transition-all duration-300 border
                 ${isActive
                   ? 'bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white border-transparent shadow-lg shadow-orange-500/25'
-                  : 'bg-white text-[#666] border-[#E8E8E6] hover:border-[#FF6631]/30 hover:bg-[#FFF5ED]'
+                  : 'bg-white dark:bg-gray-800 text-muted-foreground border-border hover:border-[#FF6631]/30 hover:bg-[#FFF5ED] dark:hover:bg-gray-700'
                 }
               `}
             >

@@ -80,11 +80,11 @@ export function StickyHeader({
             {/* Title Section */}
             {title && (
               <div className="space-y-1">
-                <h1 className="text-4xl font-bold tracking-tight text-[#393939] dark:text-foreground">
+                <h1 className="text-4xl font-bold tracking-tight text-foreground">
                   {title}
                 </h1>
                 {subtitle && (
-                  <p className="text-base text-[#8D8D8D] dark:text-muted-foreground">{subtitle}</p>
+                  <p className="text-base text-muted-foreground">{subtitle}</p>
                 )}
               </div>
             )}

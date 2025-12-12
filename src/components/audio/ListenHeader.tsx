@@ -67,7 +67,7 @@ export const ListenHeader = memo(function ListenHeader({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-sm text-[#8D8D8D]"
+              className="text-sm text-muted-foreground"
             >
               {greeting} ✨
             </motion.p>
@@ -75,7 +75,7 @@ export const ListenHeader = memo(function ListenHeader({
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.25 }}
-              className="text-2xl font-bold text-[#393939]"
+              className="text-2xl font-bold text-foreground"
             >
               Listen
             </motion.h1>
@@ -111,55 +111,55 @@ export const ListenHeader = memo(function ListenHeader({
         {/* Time Listened */}
         <motion.div
           whileHover={{ y: -2 }}
-          className="relative p-4 rounded-[16px] bg-white border border-[#F0E6DF] shadow-sm overflow-hidden group"
+          className="relative p-4 rounded-[16px] bg-white dark:bg-card border border-border shadow-sm overflow-hidden group"
         >
           {/* Decorative gradient */}
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-[#FF6631]/10 to-[#FFA300]/10 rounded-full blur-xl translate-x-4 -translate-y-4" />
 
           <div className="relative">
-            <div className="flex items-center gap-1.5 text-[#8D8D8D] mb-1.5">
+            <div className="flex items-center gap-1.5 text-muted-foreground mb-1.5">
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#FF6631]/10 to-[#FFA300]/10 flex items-center justify-center">
                 <Clock className="w-3.5 h-3.5 text-[#FF6631]" />
               </div>
               <span className="text-[10px] font-semibold uppercase tracking-wider">Listened</span>
             </div>
-            <p className="text-xl font-bold text-[#393939]">{formattedTime}</p>
+            <p className="text-xl font-bold text-foreground">{formattedTime}</p>
           </div>
         </motion.div>
 
         {/* Series Available */}
         <motion.div
           whileHover={{ y: -2 }}
-          className="relative p-4 rounded-[16px] bg-white border border-[#F0E6DF] shadow-sm overflow-hidden group"
+          className="relative p-4 rounded-[16px] bg-white dark:bg-card border border-border shadow-sm overflow-hidden group"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full blur-xl translate-x-4 -translate-y-4" />
 
           <div className="relative">
-            <div className="flex items-center gap-1.5 text-[#8D8D8D] mb-1.5">
+            <div className="flex items-center gap-1.5 text-muted-foreground mb-1.5">
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-indigo-500/10 to-purple-500/10 flex items-center justify-center">
                 <Headphones className="w-3.5 h-3.5 text-indigo-500" />
               </div>
               <span className="text-[10px] font-semibold uppercase tracking-wider">Series</span>
             </div>
-            <p className="text-xl font-bold text-[#393939]">{seriesCount}</p>
+            <p className="text-xl font-bold text-foreground">{seriesCount}</p>
           </div>
         </motion.div>
 
         {/* Completed */}
         <motion.div
           whileHover={{ y: -2 }}
-          className="relative p-4 rounded-[16px] bg-white border border-[#F0E6DF] shadow-sm overflow-hidden group"
+          className="relative p-4 rounded-[16px] bg-white dark:bg-card border border-border shadow-sm overflow-hidden group"
         >
           <div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full blur-xl translate-x-4 -translate-y-4" />
 
           <div className="relative">
-            <div className="flex items-center gap-1.5 text-[#8D8D8D] mb-1.5">
+            <div className="flex items-center gap-1.5 text-muted-foreground mb-1.5">
               <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-green-500/10 to-emerald-500/10 flex items-center justify-center">
                 <Trophy className="w-3.5 h-3.5 text-green-500" />
               </div>
               <span className="text-[10px] font-semibold uppercase tracking-wider">Done</span>
             </div>
-            <p className="text-xl font-bold text-[#393939]">{completedSeries}</p>
+            <p className="text-xl font-bold text-foreground">{completedSeries}</p>
           </div>
         </motion.div>
       </motion.div>
@@ -172,7 +172,7 @@ export const ListenHeader = memo(function ListenHeader({
         className="flex items-center gap-2"
       >
         <Sparkles className="w-4 h-4 text-[#FFA300]" />
-        <p className="text-sm text-[#8D8D8D]">
+        <p className="text-sm text-muted-foreground">
           Audio guides for mindful parenting moments
         </p>
       </motion.div>

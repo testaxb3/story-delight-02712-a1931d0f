@@ -25,7 +25,7 @@ export function LessonCTA({ data, onAction }: Props) {
     >
       {/* Card with gradient border */}
       <div className="p-[2px] rounded-[20px] bg-gradient-to-r from-[#FF6631] via-[#FFA300] to-[#FF6631]">
-        <div className="relative p-6 bg-gradient-to-br from-[#FFF9F5] to-white rounded-[18px] overflow-hidden">
+        <div className="relative p-6 bg-gradient-to-br from-amber-50 to-white dark:from-amber-900/20 dark:to-card rounded-[18px] overflow-hidden">
           {/* Decorative sparkles */}
           <motion.div
             animate={{ rotate: 360 }}
@@ -37,11 +37,11 @@ export function LessonCTA({ data, onAction }: Props) {
 
           {/* Content */}
           <div className="relative z-10">
-            <h3 className="text-lg font-bold text-[#393939] mb-2 pr-12">
+            <h3 className="text-lg font-bold text-foreground mb-2 pr-12">
               {data.text}
             </h3>
             {data.description && (
-              <p className="text-sm text-[#666] mb-5 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
                 {data.description}
               </p>
             )}

@@ -57,7 +57,7 @@ export default function ListenSeries() {
     return (
       <MainLayout>
         <div
-          className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5]"
+          className="min-h-screen bg-background"
           style={{
             paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
             paddingBottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 4rem))',
@@ -65,25 +65,25 @@ export default function ListenSeries() {
         >
           <div className="max-w-2xl mx-auto px-6 space-y-6">
             {/* Back button skeleton */}
-            <div className="h-8 w-20 bg-[#F0E6DF] animate-pulse rounded-full" />
+            <div className="h-8 w-20 bg-muted animate-pulse rounded-full" />
 
             {/* Cover skeleton */}
             <div className="flex items-start gap-5">
-              <div className="w-28 h-28 bg-[#F0E6DF] animate-pulse rounded-[16px]" />
+              <div className="w-28 h-28 bg-muted animate-pulse rounded-[16px]" />
               <div className="flex-1 space-y-3">
-                <div className="h-6 w-32 bg-[#F0E6DF] animate-pulse rounded" />
-                <div className="h-4 w-48 bg-[#F0E6DF] animate-pulse rounded" />
-                <div className="h-4 w-24 bg-[#F0E6DF] animate-pulse rounded" />
+                <div className="h-6 w-32 bg-muted animate-pulse rounded" />
+                <div className="h-4 w-48 bg-muted animate-pulse rounded" />
+                <div className="h-4 w-24 bg-muted animate-pulse rounded" />
               </div>
             </div>
 
             {/* Button skeleton */}
-            <div className="h-12 bg-[#F0E6DF] animate-pulse rounded-full" />
+            <div className="h-12 bg-muted animate-pulse rounded-full" />
 
             {/* Tracks skeleton */}
             <div className="space-y-3 pt-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-white border border-[#F0E6DF] animate-pulse rounded-[14px]" />
+                <div key={i} className="h-16 bg-card border border-border animate-pulse rounded-[14px]" />
               ))}
             </div>
           </div>
@@ -96,7 +96,7 @@ export default function ListenSeries() {
     return (
       <MainLayout>
         <div
-          className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5]"
+          className="min-h-screen bg-background"
           style={{
             paddingTop: 'max(1.5rem, calc(env(safe-area-inset-top) + 1rem))',
             paddingBottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 4rem))',
@@ -108,9 +108,9 @@ export default function ListenSeries() {
               animate={{ opacity: 1, x: 0 }}
               whileHover={{ x: -4 }}
               onClick={() => navigate('/listen')}
-              className="flex items-center gap-2 text-[#8D8D8D] hover:text-[#393939] transition-colors"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
             >
-              <div className="w-8 h-8 rounded-full bg-white border border-[#F0E6DF] flex items-center justify-center shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-white dark:bg-card border border-border flex items-center justify-center shadow-sm">
                 <ChevronLeft className="w-4 h-4" />
               </div>
               <span className="font-medium">Back to Series</span>
@@ -128,7 +128,7 @@ export default function ListenSeries() {
               >
                 <Headphones className="w-10 h-10 text-[#FF6631]/50" />
               </motion.div>
-              <p className="text-[#8D8D8D] font-medium">Series not found</p>
+              <p className="text-muted-foreground font-medium">Series not found</p>
             </motion.div>
           </div>
         </div>
@@ -139,7 +139,7 @@ export default function ListenSeries() {
   return (
     <MainLayout>
       <div
-        className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#FDF8F5]"
+        className="min-h-screen bg-background"
         style={{
           paddingBottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 4rem))',
         }}
@@ -157,11 +157,11 @@ export default function ListenSeries() {
                   style={{ filter: 'blur(60px) brightness(0.5) saturate(1.2)' }}
                 />
                 {/* Gradient overlay with orange tint */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-[#FEFBF9]" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/50 to-background" />
                 <div className="absolute inset-0 bg-gradient-to-br from-[#FF6631]/10 to-transparent" />
               </>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-b from-[#FF6631]/30 via-[#FFA300]/20 to-[#FEFBF9]" />
+              <div className="absolute inset-0 bg-gradient-to-b from-[#FF6631]/30 via-[#FFA300]/20 to-background" />
             )}
           </div>
 
@@ -358,8 +358,8 @@ export default function ListenSeries() {
               <Music className="w-4.5 h-4.5 text-[#FF6631]" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-[#393939]">Episodes</h2>
-              <p className="text-xs text-[#8D8D8D]">{tracks?.length || 0} tracks available</p>
+              <h2 className="text-base font-bold text-foreground">Episodes</h2>
+              <p className="text-xs text-muted-foreground">{tracks?.length || 0} tracks available</p>
             </div>
           </div>
 

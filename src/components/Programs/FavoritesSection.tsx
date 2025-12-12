@@ -25,10 +25,10 @@ export function FavoritesSection({ programId, programSlug }: FavoritesSectionPro
           <div className="w-10 h-10 rounded-[12px] bg-gradient-to-br from-[#FF6B6B] to-[#FF5252] flex items-center justify-center shadow-lg shadow-red-500/20">
             <Heart className="w-5 h-5 text-white" fill="white" />
           </div>
-          <h2 className="text-lg font-bold text-[#393939]">Favorites</h2>
+          <h2 className="text-lg font-bold text-foreground">Favorites</h2>
         </div>
-        <div className="bg-white rounded-[16px] border border-[#F0F0F0] p-6 animate-pulse">
-          <div className="h-20 bg-gray-100 rounded-xl" />
+        <div className="bg-white dark:bg-card rounded-[16px] border border-border p-6 animate-pulse">
+          <div className="h-20 bg-gray-100 dark:bg-gray-800 rounded-xl" />
         </div>
       </motion.div>
     );
@@ -51,9 +51,9 @@ export function FavoritesSection({ programId, programSlug }: FavoritesSectionPro
             <Heart className="w-5 h-5 text-white" fill="white" />
           </motion.div>
           <div>
-            <h2 className="text-lg font-bold text-[#393939]">Favorites</h2>
+            <h2 className="text-lg font-bold text-foreground">Favorites</h2>
             {favorites.length > 0 && (
-              <p className="text-xs text-[#8D8D8D]">{favorites.length} lesson{favorites.length !== 1 ? 's' : ''} saved</p>
+              <p className="text-xs text-muted-foreground">{favorites.length} lesson{favorites.length !== 1 ? 's' : ''} saved</p>
             )}
           </div>
         </div>
@@ -93,22 +93,22 @@ export function FavoritesSection({ programId, programSlug }: FavoritesSectionPro
           </motion.div>
 
           <h3 className="text-[#FF6B6B] font-bold text-base mb-1">No favorites yet</h3>
-          <p className="text-[#8D8D8D] text-sm text-center max-w-[200px]">
+          <p className="text-muted-foreground text-sm text-center max-w-[200px]">
             Click the <Heart className="w-3.5 h-3.5 inline text-[#FF6B6B]" fill="#FF6B6B" /> to save lessons you love for quick access.
           </p>
         </motion.div>
       ) : (
         /* Favorites List - Premium version */
-        <div className="bg-white rounded-[20px] border border-[#F0F0F0] overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-card rounded-[20px] border border-border overflow-hidden shadow-sm">
           {favorites.map((fav, index) => (
             <motion.button
               key={fav.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 * index }}
-              whileHover={{ backgroundColor: '#FFF5F5' }}
+              whileHover={{ backgroundColor: 'rgba(255, 107, 107, 0.05)' }}
               onClick={() => navigate(`/programs/${programSlug}/lesson/${fav.lesson?.day_number}`)}
-              className="group w-full flex items-center gap-3 p-4 border-b border-[#F0F0F0] last:border-b-0 transition-colors text-left"
+              className="group w-full flex items-center gap-3 p-4 border-b border-border last:border-b-0 transition-colors text-left"
             >
               {/* Thumbnail with gradient fallback */}
               <div className="relative w-14 h-14 rounded-[12px] overflow-hidden flex-shrink-0 shadow-sm">
@@ -119,7 +119,7 @@ export function FavoritesSection({ programId, programSlug }: FavoritesSectionPro
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-orange-100 to-amber-100 flex items-center justify-center">
+                  <div className="w-full h-full bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/30 dark:to-amber-900/30 flex items-center justify-center">
                     <Heart className="w-6 h-6 text-[#FF6B6B]/50" />
                   </div>
                 )}
@@ -135,11 +135,11 @@ export function FavoritesSection({ programId, programSlug }: FavoritesSectionPro
                     Day {fav.lesson?.day_number}
                   </span>
                 </div>
-                <p className="text-sm font-semibold text-[#393939] truncate group-hover:text-[#FF6B6B] transition-colors">
+                <p className="text-sm font-semibold text-foreground truncate group-hover:text-[#FF6B6B] transition-colors">
                   {fav.lesson?.title}
                 </p>
                 {fav.lesson?.summary && (
-                  <p className="text-xs text-[#8D8D8D] line-clamp-1 mt-0.5">
+                  <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">
                     {fav.lesson.summary}
                   </p>
                 )}

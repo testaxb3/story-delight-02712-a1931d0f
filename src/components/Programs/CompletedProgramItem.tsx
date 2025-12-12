@@ -71,14 +71,14 @@ export function CompletedProgramItem({ program, index = 0 }: CompletedProgramIte
         </div>
 
         {/* Title */}
-        <h3 className="text-[#393939] text-[17px] leading-[1.25] font-[700] line-clamp-2 group-hover:text-[#11C222] transition-colors">
+        <h3 className="text-foreground text-[17px] leading-[1.25] font-[700] line-clamp-2 group-hover:text-[#11C222] transition-colors">
           {program.title}
         </h3>
 
         {/* Completion date */}
         <div className="flex items-center gap-[6px]">
-          <Calendar className="w-[12px] h-[12px] text-[#8D8D8D]" />
-          <p className="text-[12px] text-[#8D8D8D] leading-[14px]">
+          <Calendar className="w-[12px] h-[12px] text-muted-foreground" />
+          <p className="text-[12px] text-muted-foreground leading-[14px]">
             Finished on {program.completed_at ? format(new Date(program.completed_at), 'MMM d, yyyy') : 'N/A'}
           </p>
         </div>

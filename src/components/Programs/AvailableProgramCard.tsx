@@ -44,9 +44,9 @@ export function AvailableProgramCard({ program, index = 0 }: AvailableProgramCar
         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
         {/* Lesson count badge */}
-        <div className="absolute bottom-[6px] left-[6px] flex items-center gap-[4px] bg-white/95 backdrop-blur-sm rounded-full px-[8px] py-[3px] shadow-sm">
+        <div className="absolute bottom-[6px] left-[6px] flex items-center gap-[4px] bg-white/95 dark:bg-card/95 backdrop-blur-sm rounded-full px-[8px] py-[3px] shadow-sm">
           <BookOpen className="w-[10px] h-[10px] text-[#FF6631]" />
-          <span className="text-[10px] font-[700] text-[#393939]">{program.total_lessons}</span>
+          <span className="text-[10px] font-[700] text-foreground">{program.total_lessons}</span>
         </div>
       </div>
 
@@ -74,12 +74,12 @@ export function AvailableProgramCard({ program, index = 0 }: AvailableProgramCar
         </div>
 
         {/* Title */}
-        <h3 className="text-[#393939] text-[17px] leading-[1.25] font-[700] line-clamp-2 group-hover:text-[#2791E0] transition-colors">
+        <h3 className="text-foreground text-[17px] leading-[1.25] font-[700] line-clamp-2 group-hover:text-[#2791E0] transition-colors">
           {program.title}
         </h3>
 
         {/* Description */}
-        <p className="text-[13px] text-[#8D8D8D] leading-[1.35] line-clamp-1">
+        <p className="text-[13px] text-muted-foreground leading-[1.35] line-clamp-1">
           {program.description}
         </p>
       </div>

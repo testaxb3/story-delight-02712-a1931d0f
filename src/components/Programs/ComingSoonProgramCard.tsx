@@ -95,7 +95,7 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
       </AnimatePresence>
 
       {/* Card container */}
-      <div className="h-full flex flex-col gap-[12px] p-[14px] bg-gradient-to-br from-white to-[#FEFBF9] rounded-[16px] border border-[#E8E4E1] shadow-sm hover:shadow-lg hover:border-purple-200 transition-all duration-300 overflow-hidden">
+      <div className="h-full flex flex-col gap-[12px] p-[14px] bg-gradient-to-br from-white to-purple-50/30 dark:from-card dark:to-purple-950/10 rounded-[16px] border border-border shadow-sm hover:shadow-lg hover:border-purple-200 dark:hover:border-purple-800 transition-all duration-300 overflow-hidden">
         {/* Coming Soon badge */}
         <div className="absolute top-[8px] right-[8px] z-10">
           <div className="flex items-center gap-[4px] bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-[8px] py-[3px] rounded-full text-[9px] font-[600] shadow-sm">
@@ -128,17 +128,17 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
         </div>
 
         {/* Title */}
-        <h3 className="text-center text-[14px] font-[700] leading-[1.2] text-[#393939] line-clamp-2 px-1">
+        <h3 className="text-center text-[14px] font-[700] leading-[1.2] text-foreground line-clamp-2 px-1">
           {program.title}
         </h3>
 
         {/* Vote progress bar */}
         <div className="w-full px-1">
           <div className="flex justify-between items-center mb-[4px]">
-            <span className="text-[10px] text-[#8D8D8D]">Community Interest</span>
-            <span className="text-[10px] font-[600] text-purple-600">{program.votes_count || 0} votes</span>
+            <span className="text-[10px] text-muted-foreground">Community Interest</span>
+            <span className="text-[10px] font-[600] text-purple-600 dark:text-purple-400">{program.votes_count || 0} votes</span>
           </div>
-          <div className="relative h-[6px] w-full bg-gray-100 rounded-full overflow-hidden">
+          <div className="relative h-[6px] w-full bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${voteProgress}%` }}
@@ -160,8 +160,8 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
           <Button
             variant="outline"
             className={`relative w-full rounded-full h-[36px] flex items-center justify-center gap-[6px] text-[12px] font-[600] border-2 px-0 transition-all overflow-hidden ${program.user_voted
-                ? 'bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white border-transparent hover:opacity-90'
-                : 'border-[#FF6631] text-[#FF6631] bg-transparent hover:bg-[#FF6631]/5'
+              ? 'bg-gradient-to-r from-[#FF6631] to-[#FFA300] text-white border-transparent hover:opacity-90'
+              : 'border-[#FF6631] text-[#FF6631] bg-transparent hover:bg-[#FF6631]/5'
               } ${isVoting ? 'cursor-wait opacity-70' : ''}`}
             onClick={handleVote}
             disabled={isVoting}
@@ -193,7 +193,7 @@ export function ComingSoonProgramCard({ program, index = 0 }: ComingSoonProgramC
 
           <Button
             variant="ghost"
-            className="w-full rounded-full h-[32px] flex items-center justify-center gap-[4px] text-[11px] font-[500] text-[#8D8D8D] hover:text-[#393939] hover:bg-gray-100 px-0"
+            className="w-full rounded-full h-[32px] flex items-center justify-center gap-[4px] text-[11px] font-[500] text-muted-foreground hover:text-foreground hover:bg-muted px-0"
           >
             <Info className="w-3 h-3" />
             <span>Learn more</span>

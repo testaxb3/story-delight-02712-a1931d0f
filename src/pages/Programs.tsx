@@ -516,7 +516,7 @@ export default function Programs() {
 
   return (
     <MainLayout>
-      <div className="min-h-screen bg-gradient-to-b from-[#FEFBF9] to-[#F8F6F4] pb-32">
+      <div className="min-h-screen bg-background pb-32">
         {/* Safe area */}
         <div style={{ height: 'env(safe-area-inset-top)' }} />
 

@@ -86,7 +86,7 @@ export function ExpandableTabs({
               "relative flex flex-col items-center justify-center rounded-2xl px-4 py-2 text-xs transition-colors duration-200 min-w-[60px]",
               isSelected
                 ? "text-[#FF6631]"
-                : "text-[#8D8D8D] hover:text-[#393939]"
+                : "text-muted-foreground hover:text-foreground"
             )}
           >
             {/* Active background with gradient */}

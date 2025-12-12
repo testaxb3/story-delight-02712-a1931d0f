@@ -14,11 +14,11 @@ export function LessonHeroCard({ data }: Props) {
         animate={{ opacity: 1, y: 0 }}
         className="mb-6 mx-5"
       >
-        <h1 className="text-2xl font-bold text-[#393939] leading-tight">
+        <h1 className="text-2xl font-bold text-foreground leading-tight">
           {data.title}
         </h1>
         {data.subtitle && (
-          <p className="text-[#666] text-sm mt-2 leading-relaxed">{data.subtitle}</p>
+          <p className="text-muted-foreground text-sm mt-2 leading-relaxed">{data.subtitle}</p>
         )}
       </motion.div>
     );

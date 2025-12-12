@@ -39,10 +39,10 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
           animate={status === 'completed' ? { scale: 1 } : {}}
           transition={{ delay: 0.2 + index * 0.02, type: 'spring' }}
           className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${status === 'completed'
-              ? 'bg-gradient-to-br from-green-500 to-emerald-400 shadow-md shadow-green-500/30'
-              : status === 'available'
-                ? 'bg-gradient-to-br from-[#FF6631] to-[#FFA300] shadow-md shadow-orange-500/30'
-                : 'border-2 border-[#E0E0E0] bg-gray-50'
+            ? 'bg-gradient-to-br from-green-500 to-emerald-400 shadow-md shadow-green-500/30'
+            : status === 'available'
+              ? 'bg-gradient-to-br from-[#FF6631] to-[#FFA300] shadow-md shadow-orange-500/30'
+              : 'border-2 border-[#E0E0E0] bg-gray-50'
             }`}
         >
           {status === 'completed' ? (
@@ -70,10 +70,10 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${status === 'completed'
-              ? 'bg-green-100 text-green-700'
-              : status === 'available'
-                ? 'bg-orange-100 text-[#FF6631]'
-                : 'bg-gray-100 text-gray-500'
+            ? 'bg-green-100 text-green-700'
+            : status === 'available'
+              ? 'bg-orange-100 text-[#FF6631]'
+              : 'bg-gray-100 text-gray-500'
             }`}>
             Day {lesson.day_number}
           </span>
@@ -90,10 +90,10 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
         </div>
 
         <h4 className={`text-[15px] font-semibold mt-1 transition-colors line-clamp-1 ${status === 'completed'
-            ? 'text-[#666]'
-            : status === 'available'
-              ? 'text-[#393939] group-hover:text-[#FF6631]'
-              : 'text-gray-400'
+          ? 'text-muted-foreground'
+          : status === 'available'
+            ? 'text-foreground group-hover:text-[#FF6631]'
+            : 'text-gray-400 dark:text-gray-600'
           }`}>
           {lesson.title}
         </h4>
@@ -101,14 +101,14 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
         {/* Meta info */}
         <div className="flex items-center gap-3 mt-1.5">
           {lesson.estimated_minutes && (
-            <span className={`flex items-center gap-1 text-[11px] ${status === 'locked' ? 'text-gray-400' : 'text-[#8D8D8D]'
+            <span className={`flex items-center gap-1 text-[11px] ${status === 'locked' ? 'text-gray-400 dark:text-gray-600' : 'text-muted-foreground'
               }`}>
               <Clock className="w-3 h-3" />
               {lesson.estimated_minutes} min
             </span>
           )}
           {lesson.audio_url && (
-            <span className={`flex items-center gap-1 text-[11px] ${status === 'locked' ? 'text-gray-400' : 'text-[#8D8D8D]'
+            <span className={`flex items-center gap-1 text-[11px] ${status === 'locked' ? 'text-gray-400 dark:text-gray-600' : 'text-muted-foreground'
               }`}>
               <Headphones className="w-3 h-3" />
               Audio
@@ -134,8 +134,8 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
             animate={{ x: [0, 4, 0] }}
             transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${status === 'completed'
-                ? 'bg-green-100 group-hover:bg-green-200'
-                : 'bg-orange-100 group-hover:bg-orange-200'
+              ? 'bg-green-100 group-hover:bg-green-200'
+              : 'bg-orange-100 group-hover:bg-orange-200'
               }`}
           >
             <ChevronRight className={`w-5 h-5 ${status === 'completed' ? 'text-green-600' : 'text-[#FF6631]'
@@ -146,8 +146,8 @@ export function LessonListItem({ lesson, programSlug, status, index }: LessonLis
 
       {/* Hover accent line */}
       <div className={`absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-0 rounded-r-full transition-all duration-300 group-hover:h-[60%] ${status === 'completed'
-          ? 'bg-gradient-to-b from-green-500 to-emerald-400'
-          : 'bg-gradient-to-b from-[#FF6631] to-[#FFA300]'
+        ? 'bg-gradient-to-b from-green-500 to-emerald-400'
+        : 'bg-gradient-to-b from-[#FF6631] to-[#FFA300]'
         }`} />
     </motion.div>
   );

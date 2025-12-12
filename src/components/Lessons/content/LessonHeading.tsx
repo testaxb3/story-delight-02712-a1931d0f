@@ -22,7 +22,7 @@ export function LessonHeading({ data }: Props) {
     >
       <HeadingTag
         className={cn(
-          'text-[#393939] relative inline-block',
+          'text-foreground relative inline-block',
           levels[data.level || 2]
         )}
       >

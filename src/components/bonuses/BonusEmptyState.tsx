@@ -107,8 +107,8 @@ export const BonusEmptyState = ({
           </motion.div>
         </motion.div>
 
-        <h3 className="text-2xl font-bold text-[#393939] mb-2">No Bonuses Yet</h3>
-        <p className="text-[#8D8D8D] max-w-sm mx-auto leading-relaxed">
+        <h3 className="text-2xl font-bold text-foreground mb-2">No Bonuses Yet</h3>
+        <p className="text-muted-foreground max-w-sm mx-auto leading-relaxed">
           Amazing bonus content will appear here as they become available. Check back soon!
         </p>
 
@@ -150,24 +150,24 @@ export const BonusEmptyState = ({
           <Icon className="w-12 h-12 text-white" />
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <Icon className="w-10 h-10 text-[#8D8D8D]" />
+          <Icon className="w-10 h-10 text-muted-foreground" />
         </div>
       </motion.div>
 
       {searchQuery ? (
         <>
-          <h3 className="text-xl font-bold text-[#393939] mb-2">No Results Found</h3>
-          <p className="text-[#8D8D8D] mb-6 max-w-sm mx-auto">
+          <h3 className="text-xl font-bold text-foreground mb-2">No Results Found</h3>
+          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
             No bonuses match your search for "<span className="text-[#FF6631] font-medium">{searchQuery}</span>"
             {selectedCategory && ` in ${categoryData?.name}`}
           </p>
         </>
       ) : (
         <>
-          <h3 className="text-xl font-bold text-[#393939] mb-2">
+          <h3 className="text-xl font-bold text-foreground mb-2">
             No {categoryData?.name} Available
           </h3>
-          <p className="text-[#8D8D8D] mb-6 max-w-sm mx-auto">
+          <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
             {categoryData?.suggestion}
           </p>
         </>

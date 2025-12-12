@@ -26,8 +26,8 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
             <Trophy className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-[#393939]">Achievements</h2>
-            <p className="text-xs text-[#8D8D8D]">{earnedCount} of {badges.length} unlocked</p>
+            <h2 className="text-lg font-bold text-foreground">Achievements</h2>
+            <p className="text-xs text-muted-foreground">{earnedCount} of {badges.length} unlocked</p>
           </div>
         </div>
 
@@ -40,8 +40,8 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
               animate={{ scale: 1 }}
               transition={{ delay: 0.4 + i * 0.1 }}
               className={`w-2 h-2 rounded-full ${i < earnedCount
-                  ? 'bg-gradient-to-r from-[#FFA300] to-[#FF8C00]'
-                  : 'bg-gray-200'
+                ? 'bg-gradient-to-r from-[#FFA300] to-[#FF8C00]'
+                : 'bg-gray-200 dark:bg-gray-700'
                 }`}
             />
           ))}
@@ -58,9 +58,9 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ delay: 0.3 + index * 0.1, type: 'spring' }}
               whileHover={badge.earned ? { scale: 1.05, y: -4 } : {}}
-              className={`relative bg-white rounded-[16px] p-4 border flex flex-col items-center justify-center min-h-[140px] transition-all ${badge.earned
-                  ? 'border-[#FFA300]/30 shadow-md shadow-orange-500/10 hover:shadow-lg hover:shadow-orange-500/20'
-                  : 'border-[#F0F0F0]'
+              className={`relative bg-white dark:bg-card rounded-[16px] p-4 border flex flex-col items-center justify-center min-h-[140px] transition-all ${badge.earned
+                ? 'border-[#FFA300]/30 shadow-md shadow-orange-500/10 hover:shadow-lg hover:shadow-orange-500/20'
+                : 'border-border'
                 }`}
             >
               {/* Earned glow effect */}
@@ -89,8 +89,8 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
                     />
                   ) : (
                     <div className={`w-full h-full rounded-full flex items-center justify-center ${badge.earned
-                        ? 'bg-gradient-to-br from-amber-100 to-orange-100'
-                        : 'bg-gray-100'
+                      ? 'bg-gradient-to-br from-amber-100 to-orange-100'
+                      : 'bg-gray-100'
                       }`}>
                       <Award className={`w-8 h-8 ${badge.earned ? 'text-amber-500' : 'text-gray-300'
                         }`} />
@@ -118,7 +118,7 @@ export function ProgramBadgesSection({ badges, lessonsCompleted = 0 }: ProgramBa
               </div>
 
               {/* Badge Name */}
-              <span className={`text-xs font-semibold text-center leading-tight line-clamp-2 ${badge.earned ? 'text-[#393939]' : 'text-gray-400'
+              <span className={`text-xs font-semibold text-center leading-tight line-clamp-2 ${badge.earned ? 'text-foreground' : 'text-gray-400 dark:text-gray-600'
                 }`}>
                 {badge.name}
               </span>
