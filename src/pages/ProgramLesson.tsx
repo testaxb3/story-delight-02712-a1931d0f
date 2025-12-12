@@ -171,9 +171,9 @@ export default function ProgramLesson() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
+    <div className="min-h-screen bg-[#F8F8F8] dark:bg-background pb-32">
       {/* Simple Header */}
-      <header className="px-5 pt-12 pb-4">
+      <header className="px-4 pt-12 pb-4">
         <div className="flex items-center justify-between">
           <button 
             onClick={() => navigate(`/programs/${slug}`)} 
@@ -182,56 +182,62 @@ export default function ProgramLesson() {
             <ChevronLeft className="w-5 h-5" />
             <span className="text-lg font-semibold">Lesson {lessonNumber}</span>
           </button>
-          
-          {lesson?.id && program && (
-            <button
-              onClick={() => toggleFavorite.mutate({ lessonId: lesson.id, programId: program.id })}
-              disabled={toggleFavorite.isPending}
-              className="p-2"
-            >
-              <Heart
-                className={`w-6 h-6 transition-colors ${
-                  isFavorite(lesson.id) 
-                    ? 'fill-primary text-primary' 
-                    : 'text-muted-foreground'
-                }`}
-              />
-            </button>
-          )}
         </div>
       </header>
 
-      <main className="px-5">
-        {/* Hero Section */}
-        <div className="mb-6">
-          {/* Cover Image */}
+      <main className="px-4">
+        {/* Hero Card Container */}
+        <div className="bg-white dark:bg-card rounded-2xl shadow-sm border border-border/30 overflow-hidden mb-6">
+          {/* Title inside card */}
+          <div className="px-4 pt-4">
+            <h1 className="text-lg font-bold text-[#393939] dark:text-foreground leading-tight">
+              Lesson {lessonNumber}. {lesson.title}
+            </h1>
+          </div>
+          
+          {/* Cover Image with Heart overlay */}
           {lesson.image_url && (
-            <div className="rounded-2xl overflow-hidden mb-4">
+            <div className="relative mt-3 mx-4">
               <img
                 src={lesson.image_url}
                 alt={lesson.title}
-                className="w-full h-48 object-cover"
+                className="w-full h-44 object-cover rounded-xl"
               />
+              {lesson?.id && program && (
+                <button
+                  onClick={() => toggleFavorite.mutate({ lessonId: lesson.id, programId: program.id })}
+                  disabled={toggleFavorite.isPending}
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 dark:bg-black/50 flex items-center justify-center shadow-sm"
+                >
+                  <Heart
+                    className={`w-5 h-5 transition-colors ${
+                      isFavorite(lesson.id) 
+                        ? 'fill-red-500 text-red-500' 
+                        : 'text-[#393939] dark:text-white'
+                    }`}
+                  />
+                </button>
+              )}
             </div>
           )}
           
           {/* Audio Player - Inline Simple */}
           {lesson.audio_url && (
-            <div className="mb-4">
+            <div className="px-4 py-3">
               <audio ref={audioRef} src={lesson.audio_url} preload="metadata" />
               <div className="flex items-center gap-3">
                 <button
                   onClick={togglePlay}
-                  className="w-11 h-11 rounded-full bg-primary flex items-center justify-center flex-shrink-0"
+                  className="w-11 h-11 rounded-full bg-[#FF6631] flex items-center justify-center flex-shrink-0 shadow-sm"
                 >
                   {isPlaying ? (
-                    <Pause className="w-5 h-5 text-primary-foreground" />
+                    <Pause className="w-5 h-5 text-white" />
                   ) : (
-                    <Play className="w-5 h-5 text-primary-foreground ml-0.5" />
+                    <Play className="w-5 h-5 text-white ml-0.5" />
                   )}
                 </button>
                 <div className="flex-1">
-                  <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                  <div className="flex justify-between text-xs text-muted-foreground mb-1.5">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                   </div>
@@ -241,28 +247,22 @@ export default function ProgramLesson() {
                     max={duration || 100}
                     value={currentTime}
                     onChange={handleSeek}
-                    className="w-full h-1 bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:bg-primary [&::-webkit-slider-thumb]:rounded-full"
+                    className="w-full h-1.5 bg-[#E5E5E5] dark:bg-muted rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:bg-[#FF6631] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-sm"
                   />
                 </div>
               </div>
             </div>
           )}
           
-          {/* Title */}
-          <h1 className="text-xl font-bold text-foreground mb-2">
-            {lesson.title}
-          </h1>
-          
           {/* Summary/Description */}
           {lesson.summary && (
-            <p className="text-[15px] text-muted-foreground leading-relaxed">
-              {lesson.summary}
-            </p>
+            <div className="px-4 pb-4">
+              <p className="text-[15px] text-[#393939]/80 dark:text-muted-foreground leading-relaxed">
+                {lesson.summary}
+              </p>
+            </div>
           )}
         </div>
-        
-        {/* Divider */}
-        <div className="h-px bg-border mb-6" />
 
         {/* Content */}
         {parsedContent ? (
