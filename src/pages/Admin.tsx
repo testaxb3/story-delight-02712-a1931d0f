@@ -38,7 +38,7 @@ import {
   ShoppingCart,
   GraduationCap
 } from 'lucide-react';
-import { AdminLessonsTab } from '@/components/Admin/AdminLessonsTab';
+import { AdminProgramsTab } from '@/components/Admin/AdminProgramsTab';
 
 interface TabItem {
   value: string;
@@ -172,8 +172,8 @@ export default function Admin() {
       badge: counts.audioTracks
     },
     { 
-      value: 'lessons', 
-      label: 'Lessons', 
+      value: 'programs', 
+      label: 'Programs', 
       icon: <GraduationCap className="w-4 h-4" />
     },
     { 
@@ -356,8 +356,8 @@ export default function Admin() {
                 <AdminAudioTab />
               </TabsContent>
 
-              <TabsContent value="lessons" className="mt-0">
-                <AdminLessonsTab />
+              <TabsContent value="programs" className="mt-0">
+                <AdminProgramsTab />
               </TabsContent>
             </div>
           </Tabs>
