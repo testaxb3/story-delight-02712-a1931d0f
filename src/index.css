@@ -31,11 +31,11 @@
 
 /* MOBILE SPACING FIX - PWA with translucent status bar */
 html, body {
-  margin: 0 !important;
-  padding: 0 !important;
+  margin: 0;
+  padding: 0;
   height: 100%;
   width: 100%;
-  background: #121212 !important;  /* Premium dark gray for status bar continuity */
+  background: #121212;  /* Premium dark gray for status bar continuity */
   overflow-x: hidden;
 }
 
@@ -44,26 +44,17 @@ html, body {
   width: 100vw;
 }
 
-body {
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  padding-left: 0 !important;
-  padding-right: env(safe-area-inset-right, 0) !important;
+/* PWA Safe Area - Critical for iOS status bar */
+#root {
+  min-height: 100vh;
+  padding-top: env(safe-area-inset-top, 0);
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-left: env(safe-area-inset-left, 0);
+  padding-right: env(safe-area-inset-right, 0);
 }
 
 * {
   box-sizing: border-box;
-}
-
-main, #root, .container, .wrapper {
-  background: transparent !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-
-header, main {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
 }
 
 /* ============================================
