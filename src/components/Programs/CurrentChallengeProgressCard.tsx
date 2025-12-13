@@ -36,7 +36,7 @@ export function CurrentChallengeProgressCard({
         />
 
         {/* Inner content */}
-        <div className="relative bg-gradient-to-br from-[#FFF9F5] to-[#FFEAD9] rounded-[18px] p-4">
+        <div className="relative bg-gradient-to-br from-[#FFF9F5] to-[#FFEAD9] dark:from-orange-950/40 dark:to-amber-950/30 rounded-[18px] p-4">
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-32 h-32 translate-x-8 -translate-y-8 opacity-20">
             <motion.div
@@ -62,7 +62,7 @@ export function CurrentChallengeProgressCard({
                   loading="lazy"
                   width={90}
                   height={90}
-                  className="rounded-full w-[90px] h-[90px] object-cover border-[3px] border-white shadow-lg"
+                  className="rounded-full w-[90px] h-[90px] object-cover border-[3px] border-white dark:border-white/20 shadow-lg"
                   src={imageUrl || '/program-images/picky-eating/28-day-picky-eater-mini.png'}
                 />
 
@@ -153,7 +153,7 @@ export function CurrentChallengeProgressCard({
           </div>
 
           {/* Progress Bar - Premium Version */}
-          <div className="relative z-10 mt-4 pt-3 border-t border-[#FFD9B3]/50">
+          <div className="relative z-10 mt-4 pt-3 border-t border-[#FFD9B3]/50 dark:border-orange-500/20">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 text-[#FF6631]" />
@@ -166,7 +166,7 @@ export function CurrentChallengeProgressCard({
               </div>
             </div>
 
-            <div className="relative h-3 rounded-full bg-white/80 overflow-hidden shadow-inner">
+            <div className="relative h-3 rounded-full bg-white/80 dark:bg-white/10 overflow-hidden shadow-inner">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${percentage}%` }}

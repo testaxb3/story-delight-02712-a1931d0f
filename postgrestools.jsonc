@@ -1,0 +1,11 @@
+{
+    "$schema": "https://pgtools.dev/postgrestools.schema.json",
+    "db": {
+        "host": "db.iogceaotdodvugrmogpp.supabase.co",
+        "port": 5432,
+        "database": "postgres",
+        "user": "postgres",
+        "password": "tCj75bWEN6GzC5Yn",
+        "ssl": "require"
+    }
+}

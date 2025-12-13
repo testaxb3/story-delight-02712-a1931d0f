@@ -11,31 +11,31 @@ const variants = {
   info: {
     borderColor: 'border-blue-500',
     dotColor: 'bg-blue-500',
-    bgColor: 'bg-gradient-to-r from-blue-50 to-blue-50/50',
-    titleColor: 'text-blue-600',
+    bgColor: 'bg-gradient-to-r from-blue-50 to-blue-50/50 dark:from-blue-950/40 dark:to-blue-950/20',
+    titleColor: 'text-blue-600 dark:text-blue-400',
     iconBg: 'bg-blue-500',
     Icon: Info,
   },
   warning: {
     borderColor: 'border-amber-500',
     dotColor: 'bg-amber-500',
-    bgColor: 'bg-gradient-to-r from-amber-50 to-amber-50/50',
-    titleColor: 'text-amber-600',
+    bgColor: 'bg-gradient-to-r from-amber-50 to-amber-50/50 dark:from-amber-950/40 dark:to-amber-950/20',
+    titleColor: 'text-amber-600 dark:text-amber-400',
     iconBg: 'bg-amber-500',
     Icon: AlertTriangle,
   },
   success: {
     borderColor: 'border-emerald-500',
     dotColor: 'bg-emerald-500',
-    bgColor: 'bg-gradient-to-r from-emerald-50 to-emerald-50/50',
-    titleColor: 'text-emerald-600',
+    bgColor: 'bg-gradient-to-r from-emerald-50 to-emerald-50/50 dark:from-emerald-950/40 dark:to-emerald-950/20',
+    titleColor: 'text-emerald-600 dark:text-emerald-400',
     iconBg: 'bg-emerald-500',
     Icon: CheckCircle,
   },
   tip: {
     borderColor: 'border-[#FF6631]',
     dotColor: 'bg-[#FF6631]',
-    bgColor: 'bg-gradient-to-r from-[#FFF5ED] to-[#FFF5ED]/50',
+    bgColor: 'bg-gradient-to-r from-[#FFF5ED] to-[#FFF5ED]/50 dark:from-orange-950/40 dark:to-orange-950/20',
     titleColor: 'text-[#FF6631]',
     iconBg: 'bg-gradient-to-br from-[#FF6631] to-[#FFA300]',
     Icon: Lightbulb,
@@ -74,7 +74,7 @@ export function LessonCallout({ data }: Props) {
               {variant === 'tip' && <Sparkles className="w-3.5 h-3.5" />}
             </h4>
           )}
-          <p className="text-[15px] text-[#4A4A4A] leading-relaxed">
+          <p className="text-[15px] text-foreground/80 dark:text-foreground/70 leading-relaxed">
             {data.content}
           </p>
         </div>

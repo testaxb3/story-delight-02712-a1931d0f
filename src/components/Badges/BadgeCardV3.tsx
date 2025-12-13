@@ -33,12 +33,12 @@ const ICON_SIZE_CLASSES = {
   featured: 'w-16 h-16'
 } as const;
 
-// Rarity Visual Config (Apple Watch + Duolingo inspired)
+// Rarity Visual Config - Premium Edition
 const RARITY_VISUALS = {
   common: {
     ringGradient: 'from-gray-400 to-gray-500',
     bgGradient: 'from-gray-300 to-gray-400',
-    glowColor: 'rgba(156, 163, 175, 0.4)',
+    glowColor: 'rgba(156, 163, 175, 0.3)',
     ringWidth: 2,
     hasShine: false,
     hasPulse: false
@@ -46,23 +46,23 @@ const RARITY_VISUALS = {
   rare: {
     ringGradient: 'from-blue-400 via-blue-500 to-blue-600',
     bgGradient: 'from-blue-400 to-blue-600',
-    glowColor: 'rgba(59, 130, 246, 0.5)',
+    glowColor: 'rgba(59, 130, 246, 0.6)',
     ringWidth: 3,
     hasShine: true,
     hasPulse: true
   },
   epic: {
-    ringGradient: 'from-purple-400 via-purple-500 to-pink-500',
+    ringGradient: 'from-purple-400 via-fuchsia-500 to-pink-500',
     bgGradient: 'from-purple-500 to-pink-600',
-    glowColor: 'rgba(139, 92, 246, 0.6)',
+    glowColor: 'rgba(192, 38, 211, 0.7)',
     ringWidth: 4,
     hasShine: true,
     hasPulse: true
   },
   legendary: {
-    ringGradient: 'from-yellow-300 via-orange-400 to-amber-500',
+    ringGradient: 'from-yellow-300 via-amber-400 to-orange-500',
     bgGradient: 'from-yellow-400 via-orange-500 to-red-500',
-    glowColor: 'rgba(251, 191, 36, 0.7)',
+    glowColor: 'rgba(251, 146, 60, 0.8)',
     ringWidth: 5,
     hasShine: true,
     hasPulse: true
@@ -118,13 +118,14 @@ export const BadgeCardV3 = memo(({ badge, size = 'md', onClick, onUnlock }: Badg
       return 'linear-gradient(135deg, hsl(var(--muted)), hsl(var(--muted-foreground) / 0.3))';
     }
 
+    // Premium multi-color gradients for each category
     const categoryGradients: Record<string, string> = {
-      streak: 'linear-gradient(135deg, #f97316, #ea580c, #c2410c)',
-      scripts: 'linear-gradient(135deg, #3b82f6, #2563eb, #1d4ed8)',
-      videos: 'linear-gradient(135deg, #8b5cf6, #7c3aed, #6d28d9)',
-      tracker: 'linear-gradient(135deg, #10b981, #059669, #047857)',
-      community: 'linear-gradient(135deg, #ec4899, #db2777, #be185d)',
-      special: 'linear-gradient(135deg, #f59e0b, #d97706, #b45309)'
+      streak: 'linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff4444 100%)',
+      scripts: 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #6b8dd6 100%)',
+      videos: 'linear-gradient(135deg, #a855f7 0%, #ec4899 50%, #8b5cf6 100%)',
+      tracker: 'linear-gradient(135deg, #11998e 0%, #38ef7d 50%, #0cebeb 100%)',
+      community: 'linear-gradient(135deg, #fc466b 0%, #3f5efb 50%, #fc466b 100%)',
+      special: 'linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd93d 100%)'
     };
 
     return categoryGradients[badge.category] || categoryGradients.special;

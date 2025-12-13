@@ -324,7 +324,7 @@ export default function ProgramLesson() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
-              className="mx-4 mb-4 p-4 bg-gradient-to-br from-[#FFF5ED] to-[#FFEAD9] rounded-[16px] border border-[#FFD9B3]/50"
+              className="mx-4 mb-4 p-4 bg-gradient-to-br from-[#FFF5ED] to-[#FFEAD9] dark:from-orange-950/30 dark:to-amber-950/20 rounded-[16px] border border-[#FFD9B3]/50 dark:border-orange-500/20"
             >
               <audio ref={audioRef} src={lesson.audio_url} preload="metadata" />
 
@@ -355,12 +355,12 @@ export default function ProgramLesson() {
                   {/* Audio label */}
                   <div className="flex items-center gap-2 mb-2">
                     <Volume2 className="w-4 h-4 text-[#FF6631]" />
-                    <span className="text-sm font-semibold text-[#393939]">Listen to lesson</span>
+                    <span className="text-sm font-semibold text-foreground">Listen to lesson</span>
                   </div>
 
                   {/* Progress bar container */}
                   <div className="relative">
-                    <div className="h-2 bg-white rounded-full overflow-hidden shadow-inner">
+                    <div className="h-2 bg-white dark:bg-white/20 rounded-full overflow-hidden shadow-inner">
                       <motion.div
                         className="h-full bg-gradient-to-r from-[#FF6631] to-[#FFA300] rounded-full"
                         style={{ width: `${progressPercentage}%` }}
@@ -377,7 +377,7 @@ export default function ProgramLesson() {
                   </div>
 
                   {/* Time labels */}
-                  <div className="flex justify-between text-[11px] font-medium text-[#8D8D8D] mt-1">
+                  <div className="flex justify-between text-[11px] font-medium text-muted-foreground mt-1">
                     <span>{formatTime(currentTime)}</span>
                     <span>{formatTime(duration)}</span>
                   </div>
@@ -389,7 +389,7 @@ export default function ProgramLesson() {
           {/* Summary */}
           {lesson.summary && (
             <div className="px-5 pb-5">
-              <p className="text-[15px] text-[#666] leading-relaxed">
+              <p className="text-[15px] text-muted-foreground leading-relaxed">
                 {lesson.summary}
               </p>
             </div>
@@ -421,16 +421,16 @@ export default function ProgramLesson() {
         >
           {/* Divider with sparkles */}
           <div className="flex items-center gap-3 mb-6">
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E8E8E6] to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
             <Sparkles className="w-5 h-5 text-[#FFA300]" />
-            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#E8E8E6] to-transparent" />
+            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
 
           <div className="text-center mb-5">
-            <h3 className="text-lg font-bold text-[#393939] mb-1">
+            <h3 className="text-lg font-bold text-foreground mb-1">
               {isCompleted ? 'Lesson Completed!' : 'Ready to continue?'}
             </h3>
-            <p className="text-sm text-[#8D8D8D] px-4">
+            <p className="text-sm text-muted-foreground px-4">
               {isCompleted
                 ? 'Great job! You can revisit this lesson anytime.'
                 : 'Mark this lesson as complete when you\'re done.'}
@@ -482,7 +482,7 @@ export default function ProgramLesson() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="text-center text-xs text-[#ABABAB] mt-3"
+              className="text-center text-xs text-muted-foreground mt-3"
             >
               You'll automatically go to the next lesson
             </motion.p>
@@ -497,7 +497,7 @@ export default function ProgramLesson() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-white/98 backdrop-blur-sm flex items-center justify-center p-6"
+            className="fixed inset-0 z-50 bg-background/98 backdrop-blur-sm flex items-center justify-center p-6"
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -528,10 +528,10 @@ export default function ProgramLesson() {
                 ))}
               </div>
 
-              <h2 className="text-2xl font-bold text-[#393939] mb-2">
+              <h2 className="text-2xl font-bold text-foreground mb-2">
                 Lesson Complete!
               </h2>
-              <p className="text-sm text-[#8D8D8D] mb-6 leading-relaxed">
+              <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                 {hasNextLesson
                   ? 'Amazing work! Moving to the next lesson...'
                   : '🎉 Congratulations! You completed the program!'}

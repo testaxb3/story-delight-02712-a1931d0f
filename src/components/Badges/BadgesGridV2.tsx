@@ -70,7 +70,7 @@ const BadgeList = memo(({ badges, onBadgeClick }: { badges: Badge[]; onBadgeClic
   return (
     <div className="space-y-8 pb-6">
       {unlockedBadges.length > 0 && (
-        <div className="grid grid-cols-3 gap-x-4 gap-y-6 justify-items-center">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-x-4 gap-y-6 justify-items-center">
           {unlockedBadges.map((badge) => (
             <BadgeCardV3 key={badge.id} badge={badge} onClick={onBadgeClick} />
           ))}
@@ -82,7 +82,7 @@ const BadgeList = memo(({ badges, onBadgeClick }: { badges: Badge[]; onBadgeClic
           <h2 className="text-base font-semibold text-muted-foreground mb-4 px-1">
             Locked Badges
           </h2>
-          <div className="grid grid-cols-3 gap-x-4 gap-y-6 justify-items-center">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-x-4 gap-y-6 justify-items-center">
             {lockedBadges.map((badge) => (
               <BadgeCardV3 key={badge.id} badge={badge} onClick={onBadgeClick} />
             ))}

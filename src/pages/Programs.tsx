@@ -32,7 +32,7 @@ const SectionHeader = memo(function SectionHeader({
       <div className={`w-10 h-10 rounded-[12px] bg-gradient-to-br ${iconGradient} flex items-center justify-center shadow-lg`}>
         {icon}
       </div>
-      <h2 className="text-[22px] font-bold text-[#1D1D1F] flex-1">{title}</h2>
+      <h2 className="text-[22px] font-bold text-foreground flex-1">{title}</h2>
       {badge && (
         <span className="px-3 py-1 bg-gradient-to-r from-[#FF6631]/10 to-[#FFA300]/10 text-[#FF6631] text-[12px] font-bold rounded-full">
           {badge}
@@ -70,7 +70,7 @@ const CurrentProgramCardPremium = memo(function CurrentProgramCardPremium({
       {/* Glow effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-[#FF6631]/20 to-[#FFA300]/10 rounded-[20px] blur-xl opacity-60" />
 
-      <div className="relative bg-white rounded-[20px] overflow-hidden shadow-xl shadow-orange-500/10 border border-orange-100/50">
+      <div className="relative bg-card dark:bg-card rounded-[20px] overflow-hidden shadow-xl shadow-orange-500/10 border border-orange-100/50 dark:border-orange-900/30">
         {/* Top gradient bar */}
         <div className="h-1 bg-gradient-to-r from-[#FF6631] via-[#FFA300] to-[#FF6631]" />
 
@@ -80,11 +80,11 @@ const CurrentProgramCardPremium = memo(function CurrentProgramCardPremium({
             <div className="w-9 h-9 rounded-[10px] bg-gradient-to-br from-[#FF6631]/15 to-[#FFA300]/15 flex items-center justify-center">
               <BookOpen className="w-[18px] h-[18px] text-[#FF6631]" />
             </div>
-            <p className="text-[16px] font-semibold text-[#1D1D1F]">{program.title}</p>
+            <p className="text-[16px] font-semibold text-foreground">{program.title}</p>
           </div>
 
           {/* Progress - Clear text */}
-          <p className="text-[15px] text-[#86868B]">
+          <p className="text-[15px] text-muted-foreground">
             <span className="text-[#FF6631] font-bold">{program.lessons_completed.length}</span>
             {' '}out of{' '}
             <span className="text-[#FF6631] font-bold">{program.total_lessons}</span>
@@ -93,8 +93,8 @@ const CurrentProgramCardPremium = memo(function CurrentProgramCardPremium({
 
         {/* Lesson title */}
         <div className="px-5 pb-3">
-          <p className="text-[13px] text-[#86868B] mb-1">Next up</p>
-          <h3 className="text-[20px] font-bold text-[#1D1D1F] leading-tight">
+          <p className="text-[13px] text-muted-foreground mb-1">Next up</p>
+          <h3 className="text-[20px] font-bold text-foreground leading-tight">
             <span className="text-[#FF6631]">#{nextLessonNumber}</span>{' '}
             {lessonTitle}
           </h3>
@@ -126,10 +126,10 @@ const CurrentProgramCardPremium = memo(function CurrentProgramCardPremium({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: 'spring' }}
-              className="absolute left-4 bottom-4 flex items-center gap-2 px-3 py-1.5 bg-white/95 backdrop-blur-sm rounded-full shadow-lg"
+              className="absolute left-4 bottom-4 flex items-center gap-2 px-3 py-1.5 bg-white/95 dark:bg-card/95 backdrop-blur-sm rounded-full shadow-lg"
             >
               <Play className="w-3.5 h-3.5 text-[#FF6631] fill-[#FF6631]" />
-              <span className="text-[12px] font-semibold text-[#1D1D1F]">Ready to play</span>
+              <span className="text-[12px] font-semibold text-foreground">Ready to play</span>
             </motion.div>
           </motion.div>
 
@@ -141,16 +141,16 @@ const CurrentProgramCardPremium = memo(function CurrentProgramCardPremium({
               e.stopPropagation();
               setIsFavorited(!isFavorited);
             }}
-            className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/95 backdrop-blur-sm flex items-center justify-center shadow-lg"
+            className="absolute top-3 right-3 w-10 h-10 rounded-full bg-white/95 dark:bg-card/95 backdrop-blur-sm flex items-center justify-center shadow-lg"
           >
-            <Heart className={`w-5 h-5 transition-all ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : 'text-gray-400'}`} />
+            <Heart className={`w-5 h-5 transition-all ${isFavorited ? 'fill-red-500 text-red-500 scale-110' : 'text-muted-foreground'}`} />
           </motion.button>
         </div>
 
         {/* Description */}
         {lessonSummary && (
           <div className="px-5 pb-4">
-            <p className="text-[15px] text-[#666] leading-relaxed line-clamp-2">
+            <p className="text-[15px] text-muted-foreground leading-relaxed line-clamp-2">
               {lessonSummary}
             </p>
           </div>
@@ -204,7 +204,7 @@ const UpcomingProgramCardPremium = memo(function UpcomingProgramCardPremium({
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay: index * 0.1 }}
       whileHover={{ y: -6, scale: 1.02 }}
-      className="bg-white rounded-[20px] overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100"
+      className="bg-card dark:bg-card rounded-[20px] overflow-hidden shadow-lg shadow-gray-200/50 dark:shadow-none border border-border"
     >
       {/* Image with gradient background */}
       <div className={`relative aspect-[4/3] bg-gradient-to-br ${bgColor} overflow-hidden`}>
@@ -225,7 +225,7 @@ const UpcomingProgramCardPremium = memo(function UpcomingProgramCardPremium({
 
       {/* Title */}
       <div className="px-4 py-3">
-        <h4 className="text-[15px] font-bold text-[#1D1D1F] text-center leading-tight line-clamp-2 min-h-[40px]">
+        <h4 className="text-[15px] font-bold text-foreground text-center leading-tight line-clamp-2 min-h-[40px]">
           {program.title}
         </h4>
       </div>
@@ -248,7 +248,7 @@ const UpcomingProgramCardPremium = memo(function UpcomingProgramCardPremium({
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => navigate(`/programs/${program.slug}`)}
-          className="w-full h-[42px] rounded-full border-2 border-gray-200 text-[14px] font-semibold text-[#666] hover:bg-gray-50 hover:border-gray-300 transition-all"
+          className="w-full h-[42px] rounded-full border-2 border-border text-[14px] font-semibold text-muted-foreground hover:bg-muted/50 hover:border-muted-foreground/30 transition-all"
         >
           Read more
         </motion.button>
@@ -284,7 +284,7 @@ const CompletedProgramCardPremium = memo(function CompletedProgramCardPremium({
       transition={{ delay: index * 0.08 }}
       whileHover={{ x: 6 }}
       onClick={() => navigate(`/programs/${program.slug}`)}
-      className="group relative flex items-start gap-4 p-4 bg-white rounded-[18px] shadow-md shadow-gray-100 border border-gray-100 cursor-pointer overflow-hidden"
+      className="group relative flex items-start gap-4 p-4 bg-card dark:bg-card rounded-[18px] shadow-md shadow-gray-100 dark:shadow-none border border-border cursor-pointer overflow-hidden"
     >
       {/* Accent line on hover */}
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 rounded-r-full bg-gradient-to-b from-[#11C222] to-[#22D933] group-hover:h-[60%] transition-all duration-300" />
@@ -324,12 +324,12 @@ const CompletedProgramCardPremium = memo(function CompletedProgramCardPremium({
         </div>
 
         {/* Title */}
-        <h4 className="text-[16px] font-bold text-[#1D1D1F] leading-tight mb-1 group-hover:text-[#11C222] transition-colors">
+        <h4 className="text-[16px] font-bold text-foreground leading-tight mb-1 group-hover:text-[#11C222] transition-colors">
           {program.title}
         </h4>
 
         {/* Date */}
-        <div className="flex items-center gap-1.5 text-[13px] text-[#86868B]">
+        <div className="flex items-center gap-1.5 text-[13px] text-muted-foreground">
           <Calendar className="w-3.5 h-3.5" />
           <span>Finished on {completedDate}</span>
         </div>
@@ -360,7 +360,7 @@ const AvailableProgramRowPremium = memo(function AvailableProgramRowPremium({
       transition={{ delay: index * 0.08 }}
       whileHover={{ x: 6 }}
       onClick={() => navigate(`/programs/${program.slug}`)}
-      className="group relative flex items-center gap-4 p-4 bg-white rounded-[18px] shadow-md shadow-gray-100 border border-gray-100 cursor-pointer overflow-hidden"
+      className="group relative flex items-center gap-4 p-4 bg-card dark:bg-card rounded-[18px] shadow-md shadow-gray-100 dark:shadow-none border border-border cursor-pointer overflow-hidden"
     >
       {/* Accent line */}
       <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-0 rounded-r-full bg-gradient-to-b from-[#2791E0] to-[#76B9FF] group-hover:h-[60%] transition-all duration-300" />
@@ -382,12 +382,12 @@ const AvailableProgramRowPremium = memo(function AvailableProgramRowPremium({
 
       {/* Content */}
       <div className="flex-1 min-w-0">
-        <h4 className="text-[16px] font-bold text-[#1D1D1F] mb-0.5 group-hover:text-[#2791E0] transition-colors">
+        <h4 className="text-[16px] font-bold text-foreground mb-0.5 group-hover:text-[#2791E0] transition-colors">
           {program.title}
         </h4>
         <div className="flex items-center gap-1.5">
-          <BookOpen className="w-3.5 h-3.5 text-[#86868B]" />
-          <span className="text-[14px] text-[#86868B]">{program.total_lessons} lessons</span>
+          <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+          <span className="text-[14px] text-muted-foreground">{program.total_lessons} lessons</span>
         </div>
       </div>
 
@@ -413,17 +413,17 @@ const ProgramsSkeletonPremium = memo(function ProgramsSkeletonPremium() {
       <div>
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-[12px] bg-orange-100 animate-pulse" />
-          <div className="h-7 w-40 bg-gray-200 rounded-lg animate-pulse" />
+          <div className="h-7 w-40 bg-muted rounded-lg animate-pulse" />
         </div>
-        <div className="bg-white rounded-[20px] p-5 shadow-lg">
+        <div className="bg-card dark:bg-card rounded-[20px] p-5 shadow-lg dark:shadow-none border border-border">
           <div className="flex justify-between mb-4">
-            <div className="h-5 w-32 bg-gray-100 rounded animate-pulse" />
+            <div className="h-5 w-32 bg-muted rounded animate-pulse" />
             <div className="h-8 w-20 bg-orange-50 rounded-full animate-pulse" />
           </div>
-          <div className="h-7 w-56 bg-gray-100 rounded animate-pulse mb-4" />
-          <div className="aspect-[16/9] bg-gray-100 rounded-[16px] animate-pulse mb-4" />
-          <div className="h-4 w-full bg-gray-100 rounded animate-pulse mb-2" />
-          <div className="h-4 w-3/4 bg-gray-100 rounded animate-pulse mb-5" />
+          <div className="h-7 w-56 bg-muted rounded animate-pulse mb-4" />
+          <div className="aspect-[16/9] bg-muted rounded-[16px] animate-pulse mb-4" />
+          <div className="h-4 w-full bg-muted rounded animate-pulse mb-2" />
+          <div className="h-4 w-3/4 bg-muted rounded animate-pulse mb-5" />
           <div className="h-14 bg-gradient-to-r from-orange-100 to-amber-100 rounded-full animate-pulse" />
         </div>
       </div>
@@ -432,16 +432,16 @@ const ProgramsSkeletonPremium = memo(function ProgramsSkeletonPremium() {
       <div>
         <div className="flex items-center gap-3 mb-5">
           <div className="w-10 h-10 rounded-[12px] bg-cyan-100 animate-pulse" />
-          <div className="h-7 w-48 bg-gray-200 rounded-lg animate-pulse" />
+          <div className="h-7 w-48 bg-muted rounded-lg animate-pulse" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           {[1, 2].map(i => (
-            <div key={i} className="bg-white rounded-[20px] overflow-hidden shadow-lg animate-pulse">
+            <div key={i} className="bg-card dark:bg-card rounded-[20px] overflow-hidden shadow-lg dark:shadow-none border border-border animate-pulse">
               <div className="aspect-square bg-gradient-to-br from-pink-50 to-rose-100" />
               <div className="p-4 space-y-3">
-                <div className="h-5 w-full bg-gray-100 rounded" />
+                <div className="h-5 w-full bg-muted rounded" />
                 <div className="h-10 bg-orange-100 rounded-full" />
-                <div className="h-10 bg-gray-100 rounded-full" />
+                <div className="h-10 bg-muted rounded-full" />
               </div>
             </div>
           ))}
@@ -481,7 +481,7 @@ const EmptyStatePremium = memo(function EmptyStatePremium() {
       <h3 className="text-[20px] font-bold bg-gradient-to-r from-[#FF6631] to-[#FFA300] bg-clip-text text-transparent mb-2">
         No Programs Yet
       </h3>
-      <p className="text-[15px] text-[#86868B] max-w-[260px] mx-auto">
+      <p className="text-[15px] text-muted-foreground max-w-[260px] mx-auto">
         Your learning journey is about to begin! Programs will appear here soon.
       </p>
       <div className="flex justify-center gap-2 mt-6">

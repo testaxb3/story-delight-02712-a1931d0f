@@ -69,14 +69,14 @@ export function LessonNumberedList({ data }: Props) {
         <motion.h3
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="text-lg font-bold text-[#393939] mb-4 flex items-center gap-2"
+          className="text-lg font-bold text-foreground mb-4 flex items-center gap-2"
         >
           <span className="w-1 h-5 bg-gradient-to-b from-[#FF6631] to-[#FFA300] rounded-full" />
           {data.title}
         </motion.h3>
       )}
       {data.subtitle && (
-        <p className="text-[15px] text-[#666] mb-4">{data.subtitle}</p>
+        <p className="text-[15px] text-muted-foreground mb-4">{data.subtitle}</p>
       )}
 
       <div className="space-y-3">
@@ -98,11 +98,11 @@ export function LessonNumberedList({ data }: Props) {
 
             {/* Content */}
             <div className="flex-1 pt-1">
-              <h4 className="font-bold text-[#393939] text-[15px] leading-tight">
+              <h4 className="font-bold text-foreground text-[15px] leading-tight">
                 {item.title}
               </h4>
               {item.description && (
-                <p className="text-[14px] text-[#666] mt-0.5 leading-relaxed">
+                <p className="text-[14px] text-muted-foreground mt-0.5 leading-relaxed">
                   {item.description}
                 </p>
               )}

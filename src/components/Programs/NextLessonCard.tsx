@@ -139,7 +139,7 @@ export function NextLessonCard({ lesson, programSlug, programId, isFirstLesson =
         {/* Summary */}
         {lesson.summary && (
           <div className="px-5 mb-4">
-            <p className={`text-[15px] text-[#666] font-normal leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-2' : ''}`}>
+            <p className={`text-[15px] text-muted-foreground font-normal leading-relaxed ${!isDescriptionExpanded && needsTruncation ? 'line-clamp-2' : ''}`}>
               {lesson.summary}
             </p>
             {needsTruncation && (

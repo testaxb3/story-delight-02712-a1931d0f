@@ -144,7 +144,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 100, scale: 0.95 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-md mx-4 mb-0 sm:mb-0"
+            className="relative w-full max-w-md mx-4 mb-20 sm:mb-0"
             style={{ 
               paddingBottom: 'env(safe-area-inset-bottom)',
             }}

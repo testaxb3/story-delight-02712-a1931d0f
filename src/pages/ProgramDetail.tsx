@@ -165,7 +165,7 @@ export default function ProgramDetail() {
                   transition={{ delay: 0.5 + i * 0.05 }}
                   className={`w-1.5 h-6 rounded-full ${i < completedLessons.length
                     ? 'bg-gradient-to-b from-green-500 to-emerald-400'
-                    : 'bg-gray-200'
+                    : 'bg-muted dark:bg-muted'
                     }`}
                 />
               ))}
@@ -272,9 +272,9 @@ function ProgramDetailSkeleton() {
         </div>
 
         {/* Lessons list skeleton */}
-        <div className="bg-white rounded-[20px] border border-gray-100 overflow-hidden">
+        <div className="bg-card dark:bg-card rounded-[20px] border border-border overflow-hidden">
           {[1, 2, 3, 4, 5].map(i => (
-            <div key={i} className="flex items-center gap-3 p-4 border-b border-gray-100 last:border-b-0">
+            <div key={i} className="flex items-center gap-3 p-4 border-b border-border last:border-b-0">
               <div className="relative w-10 h-10 rounded-full bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 overflow-hidden">
                 <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
               </div>
