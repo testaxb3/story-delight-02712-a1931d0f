@@ -17,51 +17,22 @@ const AnimatedBackground = memo(function AnimatedBackground() {
       {/* Base */}
       <div className="absolute inset-0 bg-[#030303]" />
 
-      {/* Animated gradient orbs */}
-      <motion.div
-        animate={{
-          x: [0, 30, 0],
-          y: [0, -20, 0],
-          scale: [1, 1.1, 1],
-        }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(251,146,60,0.25) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }}
-      />
-      <motion.div
-        animate={{
-          x: [0, -20, 0],
-          y: [0, 30, 0],
-          scale: [1, 1.15, 1],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute top-1/3 -right-1/4 w-[500px] h-[500px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }}
-      />
-      <motion.div
-        animate={{
-          x: [0, 25, 0],
-          y: [0, 20, 0],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute -bottom-1/4 left-1/4 w-[550px] h-[550px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 60%)',
-          filter: 'blur(60px)',
-        }}
-      />
-
-      {/* Subtle noise overlay */}
+      {/* Static gradient orbs - CSS animations instead of Framer Motion for performance */}
       <div
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] rounded-full animate-pulse"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+          background: 'radial-gradient(circle, rgba(251,146,60,0.2) 0%, transparent 60%)',
+          filter: 'blur(60px)',
+          animationDuration: '8s',
+        }}
+      />
+      <div
+        className="absolute top-1/3 -right-1/4 w-[500px] h-[500px] rounded-full animate-pulse"
+        style={{
+          background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 60%)',
+          filter: 'blur(60px)',
+          animationDuration: '10s',
+          animationDelay: '2s',
         }}
       />
     </div>
@@ -152,10 +123,16 @@ const HeroText = memo(function HeroText() {
   useEffect(() => {
     const interval = setInterval(() => {
       setPhraseIndex((prev) => (prev + 1) % phrases.length);
-      triggerHaptic('light');
     }, 3500);
     return () => clearInterval(interval);
-  }, [triggerHaptic]);
+  }, []);
+  
+  // Trigger haptic separately to avoid calling on every interval
+  useEffect(() => {
+    if (phraseIndex > 0) {
+      triggerHaptic('light');
+    }
+  }, [phraseIndex, triggerHaptic]);
 
   return (
     <div className="text-center">
