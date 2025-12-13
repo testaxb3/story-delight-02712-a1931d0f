@@ -2,7 +2,7 @@ import { useEffect, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Clock } from 'lucide-react';
+import { ArrowLeft, Clock, ChevronRight } from 'lucide-react';
 import { useHaptic } from '@/hooks/useHaptic';
 import { trackEvent } from '@/lib/analytics';
 
@@ -54,7 +54,7 @@ export default function Quiz() {
 
   // Track step changes
   useEffect(() => {
-    trackEvent('quiz_step_changed', { 
+    trackEvent('quiz_step_changed', {
       step: quizState.quizStep,
       question: quizState.quizStep === 'questions' ? quizState.currentQuestion + 1 : undefined
     });
@@ -82,14 +82,14 @@ export default function Quiz() {
     console.log('🔵 [Quiz] Iniciando conclusão do quiz');
     trackEvent('quiz_completing');
     const result = quizState.calculateResult();
-    
+
     if (!result) {
       console.log('❌ [Quiz] Nenhum resultado calculado');
       return;
     }
 
     const sanitizedName = validation.sanitizeName();
-    
+
     await submission.completeQuiz({
       childName: sanitizedName,
       brainProfile: result.type,
@@ -100,14 +100,14 @@ export default function Quiz() {
       triedApproaches: quizState.triedApproaches,
       resultSpeed: quizState.resultSpeed,
     });
-    
+
     trackEvent('quiz_completed', { brainProfile: result.type });
   }, [quizState, validation, submission]);
 
   // Countdown timer
   useEffect(() => {
     if (!quizState.showCountdown) return;
-    
+
     if (quizState.countdown > 0) {
       const timer = setTimeout(() => {
         quizState.setCountdown(quizState.countdown - 1);
@@ -212,18 +212,40 @@ export default function Quiz() {
             )}
           </AnimatePresence>
         </div>
-        <div className="fixed bottom-6 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-md z-50">
-          <div className="bg-background/80 backdrop-blur-2xl border border-border/20 shadow-2xl rounded-full p-1.5 ring-1 ring-border/10">
-            <Button 
-              onClick={() => { 
-                triggerHaptic('light'); 
-                quizState.setShowEnhancedResults(false); 
-                quizState.setShowFinalCelebration(true); 
-              }} 
-              className="w-full h-12 md:h-14 bg-foreground text-background hover:bg-foreground/90 text-base font-bold rounded-full shadow-lg transition-all active:scale-95"
+        <div className="fixed bottom-0 left-0 right-0 z-50" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 1rem)' }}>
+          <div className="px-4 md:px-0 md:max-w-md md:mx-auto">
+            {/* Micro-copy */}
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="text-center text-xs text-muted-foreground mb-2"
             >
-              See My Dashboard
-            </Button>
+              ✨ Your personalized plan is ready
+            </motion.p>
+
+            {/* Premium CTA Button */}
+            <motion.button
+              onClick={() => {
+                triggerHaptic('light');
+                quizState.setShowEnhancedResults(false);
+                quizState.setShowFinalCelebration(true);
+              }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="relative w-full py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-orange-500 text-white font-bold text-lg rounded-2xl shadow-lg shadow-orange-500/30 overflow-hidden flex items-center justify-center gap-2"
+            >
+              {/* Shine effect */}
+              <motion.div
+                initial={{ x: '-100%' }}
+                animate={{ x: '200%' }}
+                transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+                className="absolute inset-0 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12"
+              />
+
+              <span className="relative z-10">Start My Transformation</span>
+              <ChevronRight className="w-5 h-5 relative z-10" />
+            </motion.button>
           </div>
         </div>
       </div>

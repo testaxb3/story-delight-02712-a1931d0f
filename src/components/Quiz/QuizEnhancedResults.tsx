@@ -1,10 +1,13 @@
-import { memo, useCallback } from 'react';
+import { memo } from 'react';
 import { motion } from 'framer-motion';
-import { QuizResultRings } from './QuizResultRings';
-import { Sparkles, TrendingUp, Users, Target, Zap, Brain, Activity } from 'lucide-react';
-import { QuizProgressTimeline } from './QuizProgressTimeline';
-import { useHaptic } from '@/hooks/useHaptic';
+import {
+  Sparkles, TrendingUp, Target, Zap,
+  CheckCircle2, Star, Shield, Heart, Clock, Gift,
+  Flame, Trophy, BookOpen, Video, FileText
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLiveStats } from '@/hooks/useLiveStats';
+import { useContentCounts } from '@/hooks/useContentCounts';
 
 interface QuizEnhancedResultsProps {
   brainType: 'INTENSE' | 'DISTRACTED' | 'DEFIANT';
@@ -16,6 +19,7 @@ interface QuizEnhancedResultsProps {
 const brainTypeData = {
   INTENSE: {
     color: 'hsl(var(--intense))',
+    emoji: '🔥',
     scriptsCount: 45,
     videosCount: 12,
     ebooksCount: 3,
@@ -26,12 +30,20 @@ const brainTypeData = {
     sleepImprovement: 78,
     tantrumsReduction: 65,
     stressReduction: 90,
-    description: 'Highly sensitive nervous systems that feel everything more deeply.',
-    longDescription: 'Your child\'s brain is a Ferrari engine with bicycle brakes. They aren\'t ignoring you on purpose; their brain is just chasing the next dopamine hit.',
-    gradient: 'from-orange-500/40 via-red-500/30 to-pink-500/30'
+    title: 'The Intense Brain',
+    subtitle: 'Highly Sensitive Nervous System',
+    description: 'Your child feels everything more deeply. Their brain is like a Ferrari engine – powerful but needs the right handling.',
+    tips: [
+      'Validate feelings before solving problems',
+      'Use calm, predictable routines',
+      'Give warnings before transitions'
+    ],
+    gradient: 'from-orange-500 via-red-500 to-pink-500',
+    bgGradient: 'from-orange-500/20 via-red-500/10 to-pink-500/10'
   },
   DISTRACTED: {
     color: 'hsl(var(--distracted))',
+    emoji: '⚡',
     scriptsCount: 42,
     videosCount: 15,
     ebooksCount: 3,
@@ -42,12 +54,20 @@ const brainTypeData = {
     sleepImprovement: 68,
     tantrumsReduction: 55,
     stressReduction: 85,
-    description: 'Brains that seek constant novelty and stimulation to stay engaged.',
-    longDescription: 'Your child\'s brain is a Ferrari engine with bicycle brakes. They aren\'t ignoring you on purpose; their brain is just chasing the next dopamine hit.',
-    gradient: 'from-blue-500/40 via-cyan-500/30 to-teal-500/30'
+    title: 'The Explorer Brain',
+    subtitle: 'Novelty-Seeking Mind',
+    description: 'Your child\'s brain is constantly seeking stimulation. They aren\'t ignoring you – their brain is just chasing the next exciting thing.',
+    tips: [
+      'Make tasks into games',
+      'Use visual timers and checklists',
+      'Break big tasks into tiny steps'
+    ],
+    gradient: 'from-blue-500 via-cyan-500 to-teal-500',
+    bgGradient: 'from-blue-500/20 via-cyan-500/10 to-teal-500/10'
   },
   DEFIANT: {
     color: 'hsl(var(--defiant))',
+    emoji: '👑',
     scriptsCount: 38,
     videosCount: 14,
     ebooksCount: 3,
@@ -58,85 +78,367 @@ const brainTypeData = {
     sleepImprovement: 71,
     tantrumsReduction: 58,
     stressReduction: 88,
-    description: 'Strong-willed brains that need to understand the \'why\' behind rules.',
-    longDescription: 'Your child isn\'t just stubborn; they have a leadership brain. They need collaboration, not control. Once they buy in, they are unstoppable.',
-    gradient: 'from-purple-500/40 via-violet-500/30 to-indigo-500/30'
+    title: 'The Leader Brain',
+    subtitle: 'Strong-Willed Thinker',
+    description: 'Your child has a leadership brain. They need to understand the "why" behind rules. Once they buy in, they\'re unstoppable.',
+    tips: [
+      'Offer choices instead of commands',
+      'Explain the reason behind rules',
+      'Let them lead when possible'
+    ],
+    gradient: 'from-purple-500 via-violet-500 to-indigo-500',
+    bgGradient: 'from-purple-500/20 via-violet-500/10 to-indigo-500/10'
   }
+};
+
+const goalLabels: Record<string, string> = {
+  tantrums: 'Less Tantrums',
+  sleep: 'Better Sleep',
+  listening: 'Better Listening',
+  anxiety: 'Less Anxiety',
+  siblings: 'Sibling Harmony',
+  screen: 'Screen Balance',
+  eating: 'Better Eating',
+  confidence: 'More Confidence'
 };
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
+    transition: { staggerChildren: 0.08 }
   }
 };
 
 const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
+  hidden: { opacity: 0, y: 20 },
   visible: {
-    opacity: 1, 
-    y: 0, 
-    scale: 1,
-    transition: { type: "spring" as const, stiffness: 280, damping: 24 }
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 300, damping: 24 }
   }
 };
 
-const StatCard = memo(({
-  icon: Icon,
-  label,
-  value,
-  subtext,
-  color,
-  className
+// ============================================
+// SOCIAL PROOF COMPONENT
+// ============================================
+const avatarUrls = [
+  'https://i.pravatar.cc/100?img=1',
+  'https://i.pravatar.cc/100?img=5',
+  'https://i.pravatar.cc/100?img=9',
+  'https://i.pravatar.cc/100?img=16',
+  'https://i.pravatar.cc/100?img=20',
+];
+
+const SocialProofBanner = memo(({ totalMembers }: { totalMembers: number }) => (
+  <motion.div
+    variants={itemVariants}
+    className="flex items-center justify-center gap-3 py-3 px-4 rounded-2xl bg-green-500/10 border border-green-500/20"
+  >
+    <div className="flex -space-x-2">
+      {avatarUrls.map((url, i) => (
+        <img
+          key={i}
+          src={url}
+          alt="Parent"
+          className="w-8 h-8 rounded-full border-2 border-background object-cover"
+        />
+      ))}
+    </div>
+    <div className="text-left">
+      <p className="text-sm font-bold text-foreground">
+        {totalMembers > 0 ? totalMembers.toLocaleString() : '1,000'}+ parents
+      </p>
+      <p className="text-xs text-muted-foreground">transformed their home</p>
+    </div>
+    <div className="flex gap-0.5 ml-auto">
+      {[...Array(5)].map((_, i) => (
+        <Star key={i} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+      ))}
+    </div>
+  </motion.div>
+));
+
+SocialProofBanner.displayName = 'SocialProofBanner';
+
+// ============================================
+// BRAIN TYPE HERO
+// ============================================
+const BrainTypeHero = memo(({
+  brainType,
+  childName,
+  data
 }: {
-  icon: any;
-  label: string;
-  value: string;
-  subtext?: string;
-  color: string;
-  className?: string;
-}) => {
-  const { triggerHaptic } = useHaptic();
+  brainType: string;
+  childName: string;
+  data: typeof brainTypeData.INTENSE;
+}) => (
+  <motion.div variants={itemVariants} className="relative">
+    {/* Ambient glow */}
+    <div className={`absolute inset-0 bg-gradient-to-br ${data.bgGradient} blur-3xl opacity-60 rounded-full scale-150`} />
+
+    <div className="relative z-10 overflow-hidden rounded-[2rem] bg-card/80 backdrop-blur-xl border border-border/50 shadow-2xl">
+      {/* Top gradient bar */}
+      <div className={`h-1.5 w-full bg-gradient-to-r ${data.gradient}`} />
+
+      <div className="p-6 text-center">
+        {/* Emoji + Badge */}
+        <motion.div
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+          className="relative inline-block mb-4"
+        >
+          <div className="text-7xl">{data.emoji}</div>
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center"
+          >
+            <CheckCircle2 className="w-5 h-5 text-white" />
+          </motion.div>
+        </motion.div>
+
+        {/* Type badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r ${data.gradient} mb-3`}
+        >
+          <Zap className="w-4 h-4 text-white" />
+          <span className="text-sm font-bold text-white uppercase tracking-wide">
+            {brainType} PROFILE
+          </span>
+        </motion.div>
+
+        {/* Name callout */}
+        <p className="text-sm text-muted-foreground mb-2">
+          Results for <span className="font-bold text-foreground">{childName}</span>
+        </p>
+
+        {/* Title */}
+        <h1 className="text-3xl font-black text-foreground mb-1">
+          {data.title}
+        </h1>
+        <p className="text-base text-muted-foreground mb-4">
+          {data.subtitle}
+        </p>
+
+        {/* Description */}
+        <p className="text-sm text-foreground/80 leading-relaxed max-w-md mx-auto">
+          {data.description}
+        </p>
+      </div>
+    </div>
+  </motion.div>
+));
+
+BrainTypeHero.displayName = 'BrainTypeHero';
+
+// ============================================
+// WHAT YOU GET SECTION
+// ============================================
+const WhatYouGetSection = memo(({
+  scriptsCount,
+  videosCount,
+  ebooksCount
+}: {
+  scriptsCount: number;
+  videosCount: number;
+  ebooksCount: number;
+}) => (
+  <motion.div variants={itemVariants}>
+    <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+      <Gift className="w-5 h-5 text-primary" />
+      What's Waiting For You
+    </h3>
+
+    <div className="grid grid-cols-3 gap-3">
+      {[
+        { icon: FileText, count: scriptsCount, label: 'Scripts', color: 'text-orange-500', bg: 'bg-orange-500/10' },
+        { icon: Video, count: videosCount, label: 'Videos', color: 'text-blue-500', bg: 'bg-blue-500/10' },
+        { icon: BookOpen, count: ebooksCount, label: 'Ebooks', color: 'text-purple-500', bg: 'bg-purple-500/10' },
+      ].map((item) => (
+        <motion.div
+          key={item.label}
+          whileHover={{ scale: 1.02, y: -2 }}
+          className={`p-4 rounded-2xl ${item.bg} border border-border/50 text-center`}
+        >
+          <item.icon className={`w-8 h-8 mx-auto mb-2 ${item.color}`} />
+          <p className="text-2xl font-black text-foreground">{item.count}</p>
+          <p className="text-xs text-muted-foreground font-medium">{item.label}</p>
+        </motion.div>
+      ))}
+    </div>
+  </motion.div>
+));
+
+WhatYouGetSection.displayName = 'WhatYouGetSection';
+
+// ============================================
+// YOUR GOALS SECTION
+// ============================================
+const YourGoalsSection = memo(({ goals }: { goals: string[] }) => {
+  if (!goals || goals.length === 0) return null;
 
   return (
-    <motion.div
-      variants={itemVariants}
-      whileTap={{ scale: 0.98 }}
-      onClick={() => triggerHaptic('light')}
-      className={cn(
-        "relative overflow-hidden rounded-3xl bg-white/5 dark:bg-black/20 backdrop-blur-2xl border border-white/10 p-5 flex flex-col justify-between shadow-sm transition-all hover:bg-white/10 hover:shadow-md hover:border-white/20 group",
-        className
-      )}
-    >
-      <div className="absolute top-0 right-0 p-3 opacity-50 group-hover:opacity-100 transition-opacity">
-        <div className="p-2 rounded-full bg-white/5">
-          <Icon className="w-4 h-4" style={{ color }} />
-        </div>
-      </div>
-      
-      <div>
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-muted-foreground/80 mb-1">{label}</p>
-        <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>
-      </div>
-      
-      {subtext && (
-        <p className="text-xs text-muted-foreground/70 mt-2 leading-tight">{subtext}</p>
-      )}
+    <motion.div variants={itemVariants}>
+      <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+        <Target className="w-5 h-5 text-primary" />
+        Your Goals
+      </h3>
 
-      {/* Dynamic background glow */}
-      <div 
-        className="absolute -bottom-10 -right-10 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover:opacity-30 transition-opacity duration-700"
-        style={{ backgroundColor: color }} 
-      />
+      <div className="flex flex-wrap gap-2">
+        {goals.map((goal) => (
+          <div
+            key={goal}
+            className="flex items-center gap-2 px-3 py-2 rounded-full bg-primary/10 border border-primary/20"
+          >
+            <CheckCircle2 className="w-4 h-4 text-primary" />
+            <span className="text-sm font-medium text-foreground">
+              {goalLabels[goal] || goal}
+            </span>
+          </div>
+        ))}
+      </div>
     </motion.div>
   );
 });
 
-StatCard.displayName = 'StatCard';
+YourGoalsSection.displayName = 'YourGoalsSection';
 
+// ============================================
+// QUICK TIPS SECTION
+// ============================================
+const QuickTipsSection = memo(({ data }: { data: typeof brainTypeData.INTENSE }) => (
+  <motion.div variants={itemVariants}>
+    <h3 className="text-lg font-bold text-foreground mb-3 flex items-center gap-2">
+      <Sparkles className="w-5 h-5 text-amber-500" />
+      Quick Tips for {data.title.replace('The ', '')}s
+    </h3>
+
+    <div className="space-y-2">
+      {data.tips.map((tip, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.5 + i * 0.1 }}
+          className="flex items-center gap-3 p-3 rounded-xl bg-card/50 border border-border/50"
+        >
+          <div className={`w-7 h-7 rounded-full bg-gradient-to-br ${data.gradient} flex items-center justify-center text-white text-sm font-bold`}>
+            {i + 1}
+          </div>
+          <p className="text-sm text-foreground">{tip}</p>
+        </motion.div>
+      ))}
+    </div>
+  </motion.div>
+));
+
+QuickTipsSection.displayName = 'QuickTipsSection';
+
+// ============================================
+// SUCCESS METRICS
+// ============================================
+const SuccessMetrics = memo(({ data }: { data: typeof brainTypeData.INTENSE }) => (
+  <motion.div variants={itemVariants}>
+    <h3 className="text-lg font-bold text-foreground mb-4 flex items-center gap-2">
+      <TrendingUp className="w-5 h-5 text-green-500" />
+      What Parents Like You Achieved
+    </h3>
+
+    <div className="grid grid-cols-2 gap-3">
+      {[
+        { label: 'See Results In', value: data.averageImprovement, icon: Clock, color: 'text-blue-500' },
+        { label: 'Success Rate', value: `${data.successRate}%`, icon: Trophy, color: 'text-amber-500' },
+        { label: 'Calmer Home', value: `${data.tantrumsReduction}%`, icon: Heart, color: 'text-pink-500' },
+        { label: 'Parent Confidence', value: `${data.stressReduction}%`, icon: Shield, color: 'text-green-500' },
+      ].map((stat) => (
+        <motion.div
+          key={stat.label}
+          whileHover={{ scale: 1.02 }}
+          className="relative overflow-hidden p-4 rounded-2xl bg-card/50 border border-border/50"
+        >
+          <stat.icon className={`w-5 h-5 ${stat.color} mb-2`} />
+          <p className="text-2xl font-black text-foreground">{stat.value}</p>
+          <p className="text-xs text-muted-foreground">{stat.label}</p>
+        </motion.div>
+      ))}
+    </div>
+  </motion.div>
+));
+
+SuccessMetrics.displayName = 'SuccessMetrics';
+
+// ============================================
+// TESTIMONIAL CARD
+// ============================================
+const TestimonialCard = memo(() => (
+  <motion.div
+    variants={itemVariants}
+    className="relative overflow-hidden p-5 rounded-2xl bg-gradient-to-br from-primary/5 to-primary/10 border border-primary/20"
+  >
+    <div className="flex gap-0.5 mb-3">
+      {[...Array(5)].map((_, i) => (
+        <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
+      ))}
+    </div>
+
+    <p className="text-sm text-foreground/90 italic mb-4 leading-relaxed">
+      "After just one week, my daughter's tantrums reduced by half. The scripts gave me exactly the words I needed in the moment."
+    </p>
+
+    <div className="flex items-center gap-3">
+      <img
+        src="https://i.pravatar.cc/100?img=32"
+        alt="Sarah M."
+        className="w-10 h-10 rounded-full object-cover"
+      />
+      <div>
+        <p className="text-sm font-bold text-foreground">Sarah M.</p>
+        <p className="text-xs text-muted-foreground">Mom of 4-year-old</p>
+      </div>
+    </div>
+  </motion.div>
+));
+
+TestimonialCard.displayName = 'TestimonialCard';
+
+// ============================================
+// CHALLENGE LEVEL WARNING
+// ============================================
+const ChallengeLevelCard = memo(({ level }: { level: number }) => {
+  if (level < 7) return null;
+
+  return (
+    <motion.div
+      variants={itemVariants}
+      className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20"
+    >
+      <div className="flex items-start gap-3">
+        <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+          <Flame className="w-5 h-5 text-amber-500" />
+        </div>
+        <div>
+          <p className="text-sm font-bold text-foreground mb-1">
+            High Challenge Level ({level}/10)
+          </p>
+          <p className="text-xs text-muted-foreground">
+            Your plan prioritizes <strong>immediate relief scripts</strong> to help you regain control today.
+          </p>
+        </div>
+      </div>
+    </motion.div>
+  );
+});
+
+ChallengeLevelCard.displayName = 'ChallengeLevelCard';
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 export const QuizEnhancedResults = memo(({
   brainType,
   childName,
@@ -144,139 +446,43 @@ export const QuizEnhancedResults = memo(({
   parentGoals
 }: QuizEnhancedResultsProps) => {
   const data = brainTypeData[brainType];
+  const { stats } = useLiveStats();
+  const { data: contentCounts } = useContentCounts(brainType);
 
   return (
-    <motion.div 
+    <motion.div
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-6 pb-12"
+      className="space-y-5 pb-32"
     >
-      {/* HERO SECTION */}
-      <motion.div variants={itemVariants} className="relative">
-        {/* Ambient Background Light */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${data.gradient} blur-[80px] opacity-40 rounded-full transform -translate-y-10 scale-110`} />
+      {/* Social Proof */}
+      <SocialProofBanner totalMembers={stats.totalMembers} />
 
-        <div className="relative z-10 overflow-hidden rounded-[2.5rem] bg-white/40 dark:bg-black/40 backdrop-blur-3xl border border-white/20 dark:border-white/10 shadow-2xl p-8">
-          <div className="flex flex-col items-center text-center">
-            
-            {/* Badge */}
-            <div className="mb-6 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 dark:bg-black/20 border border-white/10 backdrop-blur-md shadow-sm">
-              <Zap className="w-3.5 h-3.5" style={{ color: data.color }} />
-              <span className="text-xs font-bold tracking-wide uppercase" style={{ color: data.color }}>
-                {brainType} Profile
-              </span>
-            </div>
+      {/* Hero Card */}
+      <BrainTypeHero brainType={brainType} childName={childName} data={data} />
 
-            {/* Title */}
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-foreground mb-4 leading-[0.95]">
-              <span className="block text-lg md:text-xl font-medium tracking-normal text-muted-foreground mb-2 opacity-80">The results are in for {childName}</span>
-              {brainType}
-            </h1>
+      {/* What You Get */}
+      <WhatYouGetSection
+        scriptsCount={contentCounts?.scripts || data.scriptsCount}
+        videosCount={contentCounts?.videos || data.videosCount}
+        ebooksCount={contentCounts?.ebooks || data.ebooksCount}
+      />
 
-            <p className="text-base md:text-lg text-foreground/80 leading-relaxed max-w-xl mx-auto font-medium">
-              {data.description}
-            </p>
-            
-            <div className="mt-6 p-4 rounded-2xl bg-background/30 border border-white/10 backdrop-blur-md">
-              <p className="text-sm text-muted-foreground italic">
-                "{data.longDescription}"
-              </p>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+      {/* Your Goals */}
+      <YourGoalsSection goals={parentGoals || []} />
 
-      {/* RINGS SECTION - WRAPPED IN GLASS */}
-      <motion.div variants={itemVariants} className="rounded-3xl bg-card/30 backdrop-blur-xl border border-border/30 p-6 shadow-lg">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mb-6 text-center">Your Personalized Plan</h3>
-        <QuizResultRings
-          brainType={brainType}
-          scriptsCount={data.scriptsCount}
-          videosCount={data.videosCount}
-          ebooksCount={data.ebooksCount}
-        />
-      </motion.div>
+      {/* Quick Tips */}
+      <QuickTipsSection data={data} />
 
-      {/* BENTO GRID STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <StatCard
-          icon={Brain}
-          label="Match"
-          value={`${data.percentile}%`}
-          subtext={`Parents with ${brainType} children`}
-          color={data.color}
-          className="md:col-span-2 bg-gradient-to-br from-card/50 to-transparent"
-        />
-        <StatCard
-          icon={TrendingUp}
-          label="First Results"
-          value={data.averageImprovement}
-          subtext="Expected timeline"
-          color={data.color}
-        />
-        <StatCard
-          icon={Activity}
-          label="Success Rate"
-          value={`${data.successRate}%`}
-          subtext="Parent satisfaction"
-          color={data.color}
-        />
-      </div>
+      {/* Success Metrics */}
+      <SuccessMetrics data={data} />
 
-      {/* IMPACT METRICS */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-         {[ 
-            { label: 'Sleep Quality', value: data.sleepImprovement, icon: Sparkles },
-            { label: 'Calmer Home', value: data.tantrumsReduction, icon: Users },
-            { label: 'Parent Confidence', value: data.stressReduction, icon: Target }
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-4 p-4 rounded-2xl bg-card/40 border border-border/30 backdrop-blur-lg">
-              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-background/50 text-foreground">
-                <item.icon className="w-5 h-5" />
-              </div>
-              <div>
-                <div className="text-2xl font-black text-foreground">{item.value}%</div>
-                <div className="text-xs text-muted-foreground font-medium">{item.label}</div>
-              </div>
-              {/* Mini progress bar */}
-              <div className="ml-auto w-16 h-1.5 bg-muted rounded-full overflow-hidden">
-                <motion.div 
-                  initial={{ width: 0 }}
-                  animate={{ width: `${item.value}%` }}
-                  transition={{ delay: 0.5 + (i * 0.1), duration: 1 }}
-                  className="h-full rounded-full"
-                  style={{ backgroundColor: data.color }}
-                />
-              </div>
-            </div>
-          ))}
-      </motion.div>
+      {/* Testimonial */}
+      <TestimonialCard />
 
-      {/* TIMELINE */}
-      <motion.div variants={itemVariants} className="pt-4">
-        <div className="rounded-[2.5rem] bg-white/60 dark:bg-black/40 backdrop-blur-3xl border border-white/20 p-1 shadow-xl">
-           <div className="rounded-[2.2rem] bg-background/50 p-6 border border-white/10">
-             <QuizProgressTimeline brainType={brainType} />
-           </div>
-        </div>
-      </motion.div>
-
-      {/* DISCLAIMER / EMPATHY CARD */}
-      {challengeLevel && challengeLevel >= 7 && (
-        <motion.div 
-          variants={itemVariants}
-          className="mt-8 p-6 rounded-2xl bg-red-500/5 border border-red-500/10 text-center"
-        >
-          <p className="text-sm text-muted-foreground">
-            We noticed your challenge level is high <strong>({challengeLevel}/10)</strong>. 
-            The generated plan prioritizes <em>immediate relief scripts</em> to help you regain control today.
-          </p>
-        </motion.div>
-      )}
-
-      {/* Spacer for floating button */}
-      <div className="h-24" />
+      {/* Challenge Level Warning */}
+      {challengeLevel && <ChallengeLevelCard level={challengeLevel} />}
     </motion.div>
   );
 });
