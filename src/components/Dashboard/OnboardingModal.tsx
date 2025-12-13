@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Download, Moon, Sun, Bell, Check, ChevronRight, X, Smartphone } from 'lucide-react';
+import { Moon, Sun, Bell, Check, X, Smartphone, Download } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { initOneSignal, showPermissionPrompt } from '@/lib/onesignal';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,72 +17,93 @@ type Step = 'pwa' | 'theme' | 'notifications';
 export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   const [currentStep, setCurrentStep] = useState<Step>('pwa');
   const [isVisible, setIsVisible] = useState(true);
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme, resolvedTheme } = useTheme();
   const { user } = useAuth();
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(isStandaloneMode());
+  const [selectedTheme, setSelectedTheme] = useState<'light' | 'dark' | null>(null);
 
-  // Listen for PWA install prompt
-  useEffect(() => {
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  // Check if already in standalone mode
+  // Check if already in standalone mode - auto-skip PWA step
   useEffect(() => {
     if (isStandaloneMode()) {
       setIsInstalled(true);
-      // Auto-skip PWA step if already installed
       if (currentStep === 'pwa') {
         setCurrentStep('theme');
       }
     }
   }, [currentStep]);
 
-  const handleInstallPWA = useCallback(async () => {
-    // Try to use the pwa-install dialog first
+  // Listen for PWA install success from pwa-install component
+  useEffect(() => {
+    const pwaInstall = document.querySelector('pwa-install');
+    if (!pwaInstall) return;
+
+    const handleSuccess = () => {
+      console.log('[Onboarding] PWA installed successfully via pwa-install');
+      toast.success('App installed!');
+      setIsInstalled(true);
+      setCurrentStep('theme');
+    };
+
+    const handleUserChoice = (e: CustomEvent) => {
+      console.log('[Onboarding] PWA user choice:', e.detail);
+      // User dismissed or completed - move to next step regardless
+      setTimeout(() => {
+        setCurrentStep('theme');
+      }, 500);
+    };
+
+    pwaInstall.addEventListener('pwa-install-success-event', handleSuccess);
+    pwaInstall.addEventListener('pwa-user-choice-result-event', handleUserChoice as EventListener);
+
+    return () => {
+      pwaInstall.removeEventListener('pwa-install-success-event', handleSuccess);
+      pwaInstall.removeEventListener('pwa-user-choice-result-event', handleUserChoice as EventListener);
+    };
+  }, []);
+
+  // Handle PWA install click - use pwa-install component dialog
+  const handleInstallPWA = useCallback(() => {
     const pwaInstall = document.querySelector('pwa-install') as any;
 
     if (pwaInstall?.showDialog) {
+      console.log('[Onboarding] Opening pwa-install dialog');
       pwaInstall.showDialog();
-      // Don't auto-advance - let user complete the install flow
-      return;
+    } else {
+      // If pwa-install dialog not available, just proceed
+      console.log('[Onboarding] pwa-install dialog not available, proceeding');
+      setCurrentStep('theme');
     }
+  }, []);
 
-    // Fallback to native prompt if pwa-install not available
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        toast.success('App installed!');
-        setIsInstalled(true);
-      }
-      setDeferredPrompt(null);
-    }
-
-    // Move to next step
-    setCurrentStep('theme');
-  }, [deferredPrompt]);
-
-  const handleThemeSelect = useCallback((selectedTheme: 'light' | 'dark') => {
-    setTheme(selectedTheme);
+  // Handle theme selection with visual confirmation
+  const handleThemeSelect = useCallback((selected: 'light' | 'dark') => {
+    console.log('[Onboarding] Theme selected:', selected);
+    setSelectedTheme(selected);
+    setTheme(selected);
     localStorage.setItem('theme_selected', 'true');
-    setCurrentStep('notifications');
+
+    // Small delay to show visual feedback before proceeding
+    setTimeout(() => {
+      setCurrentStep('notifications');
+    }, 400);
   }, [setTheme]);
 
+  // Handle notifications
   const handleNotifications = useCallback(async (enable: boolean) => {
     if (enable) {
       try {
-        await initOneSignal();
-        await showPermissionPrompt(user?.id);
+        console.log('[Onboarding] Enabling notifications...');
+        const initSuccess = await initOneSignal();
+
+        if (initSuccess) {
+          const promptSuccess = await showPermissionPrompt(user?.id);
+          if (promptSuccess) {
+            toast.success('Notifications enabled!');
+          }
+        }
         localStorage.setItem('notification_prompted', 'true');
-        toast.success('Notifications enabled!');
       } catch (err) {
-        console.error('Failed to enable notifications:', err);
+        console.error('[Onboarding] Failed to enable notifications:', err);
         localStorage.setItem('notification_prompted', 'true');
       }
     } else {
@@ -95,6 +116,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     setTimeout(onComplete, 300);
   }, [user?.id, onComplete]);
 
+  // Skip current step
   const handleSkip = useCallback(() => {
     if (currentStep === 'pwa') {
       setCurrentStep('theme');
@@ -109,8 +131,8 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
     }
   }, [currentStep, onComplete]);
 
+  // Close modal completely
   const handleClose = useCallback(() => {
-    // Mark all as completed when closing
     localStorage.setItem('pwa_flow_completed', 'true');
     localStorage.setItem('theme_selected', 'true');
     localStorage.setItem('notification_prompted', 'true');
@@ -126,6 +148,9 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
   ];
 
   const currentStepIndex = steps.findIndex(s => s.key === currentStep);
+
+  // Get display theme (selected or resolved)
+  const displayTheme = selectedTheme || resolvedTheme || 'dark';
 
   return (
     <>
@@ -184,7 +209,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                 {/* Content */}
                 <div className="px-6 pb-6 pt-4">
                   <AnimatePresence mode="wait">
-                    {/* PWA Step - Enhanced with instructions */}
+                    {/* PWA Step */}
                     {currentStep === 'pwa' && (
                       <motion.div
                         key="pwa"
@@ -226,7 +251,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                           </motion.div>
                         ) : (
                           <>
-                            {/* Installation instructions based on platform */}
+                            {/* Installation instructions */}
                             <div className="text-left bg-muted/50 rounded-2xl p-4 mb-4 space-y-3">
                               {isIOSDevice() ? (
                                 <>
@@ -296,7 +321,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                         className="text-center"
                       >
                         <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary/10 flex items-center justify-center">
-                          {theme === 'dark' ? (
+                          {displayTheme === 'dark' ? (
                             <Moon className="w-8 h-8 text-primary" />
                           ) : (
                             <Sun className="w-8 h-8 text-primary" />
@@ -312,28 +337,46 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
                         <div className="grid grid-cols-2 gap-3 mb-4">
                           <button
                             onClick={() => handleThemeSelect('light')}
-                            className={`p-4 rounded-2xl border-2 transition-all ${theme === 'light'
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
+                            className={`p-4 rounded-2xl border-2 transition-all ${displayTheme === 'light' || selectedTheme === 'light'
+                                ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                                : 'border-border hover:border-primary/50'
                               }`}
                           >
-                            <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+                            <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-white border border-gray-200 flex items-center justify-center shadow-sm">
                               <Sun className="w-6 h-6 text-amber-500" />
                             </div>
                             <span className="text-sm font-medium text-foreground">Light</span>
+                            {selectedTheme === 'light' && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="mt-2"
+                              >
+                                <Check className="w-4 h-4 text-primary mx-auto" />
+                              </motion.div>
+                            )}
                           </button>
 
                           <button
                             onClick={() => handleThemeSelect('dark')}
-                            className={`p-4 rounded-2xl border-2 transition-all ${theme === 'dark'
-                              ? 'border-primary bg-primary/10'
-                              : 'border-border hover:border-primary/50'
+                            className={`p-4 rounded-2xl border-2 transition-all ${displayTheme === 'dark' || selectedTheme === 'dark'
+                                ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
+                                : 'border-border hover:border-primary/50'
                               }`}
                           >
-                            <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center">
+                            <div className="w-12 h-12 mx-auto mb-2 rounded-xl bg-gray-900 border border-gray-700 flex items-center justify-center shadow-sm">
                               <Moon className="w-6 h-6 text-indigo-400" />
                             </div>
                             <span className="text-sm font-medium text-foreground">Dark</span>
+                            {selectedTheme === 'dark' && (
+                              <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                className="mt-2"
+                              >
+                                <Check className="w-4 h-4 text-primary mx-auto" />
+                              </motion.div>
+                            )}
                           </button>
                         </div>
                       </motion.div>
@@ -382,7 +425,7 @@ export function OnboardingModal({ onComplete }: OnboardingModalProps) {
         )}
       </AnimatePresence>
 
-      {/* PWA Install Dialog from @khmyznikov/pwa-install */}
+      {/* PWA Install Dialog - Single source of truth for PWA installation */}
       <pwa-install
         manifest-url="/manifest.json"
         name="NEP System"
